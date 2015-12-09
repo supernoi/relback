@@ -9,7 +9,7 @@
             "name": "Juliano Ribeiro",
             "email": "supernoi@msn.com",
             "linkedin": "https://www.linkedin.com/in/supernoi"
-        }
+        }]
 	"require": {
 		"php": ">=5.5.9",
 		"laravel/framework": "5.1.*",
