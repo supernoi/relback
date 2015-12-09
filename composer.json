@@ -1,0 +1,15 @@
+{
+	"name": "supernoi/relback",
+	"description": "relBack is a facilitator in the lives of Oracle DBAs.",
+	"keywords": ["relback", "oracle", "report", "backup"],
+	"license": "MIT",
+	"type": "project",
+	"require": {
+		"php": ">=5.5.9",
+		"laravel/framework": "5.1.*",
+		"bestmomo/scafold": "dev-master",
+		"twbs/bootstrap": "^3.3",
+		"guzzlehttp/guzzle": "~5.3|~6.0",
+		"yajra/laravel-oci8": "~3.0"
+	}
+}
