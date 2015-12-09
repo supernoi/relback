@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
 
+    protected $username = 'username';
+
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
     public function __construct()

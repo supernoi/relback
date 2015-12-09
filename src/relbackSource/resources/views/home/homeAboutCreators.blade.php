@@ -16,7 +16,7 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<center>
-					<h1>Creators of Created</h1>
+					<h1>Creators of Created, HA HA!</h1>
 				</center>
 			</div>
 				<div class="panel-body" >
@@ -50,7 +50,7 @@
 											<img class="img-circle" src="images/creator01.png" alt="Creator Eduardo Bessa" height="201" width="201">
 										</p>
 										<p>
-											<a href="https://www.linkedin.com/in/eduardo-moreira-5658681a">
+											<a target="_blank" href="https://www.linkedin.com/in/eduardo-moreira-5658681a">
 												<img src="images/In-2C-21px-R.png" alt="Linkedin of Eduardo Bessa">/in/Eduardo-Moreira-5658681a
 											</a>
 										</p>
@@ -96,12 +96,12 @@
 											<img class="img-circle " src="images/creator02.png" alt="Creator Juliano Ribeiro" height="201" width="201">
 										</p>
 										<p>
-											<a href="https://www.linkedin.com/in/supernoi">
-												<img src="images/In-2C-21px-R.png" alt="Linkedin of Juliano Ribeiro">/in/SuperNoi
+											<a target="_blank" href="https://www.linkedin.com/in/supernoi">
+												<img src="images/In-2C-21px-R.png" alt="Linkedin of Juliano Ribeiro">/in/superNoi
 											</a>
 										</p>
 										<p>
-											<a href="https://github.com/supernoi" alt="GitHub of Juliano Ribeiro">
+											<a target="_blank" href="https://github.com/supernoi" alt="GitHub of Juliano Ribeiro">
 												<span class="mega-octicon octicon-mark-github"></span>/SuperNoi
 											</a>
 										</p>

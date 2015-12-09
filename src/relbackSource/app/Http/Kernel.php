@@ -15,9 +15,6 @@ class Kernel extends HttpKernel
         \Illuminate\View\Middleware\ShareErrorsFromSession::class,
         \relback\Http\Middleware\VerifyCsrfToken::class,
 
-        // Class HTTPS protocol
-        \relback\Http\Middleware\HttpsProtocol::class,
-
     ];
 
     protected $routeMiddleware = [

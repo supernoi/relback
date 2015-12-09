@@ -18,7 +18,8 @@ class Kernel extends ConsoleKernel
         $schedule->call(function()
         {
             DB::statement('call RELBACK.SP_CREATE_SCHEDULE(sysdate-7)');
-        })  ->daily()
-            ->sendOutputTo(storage_path('logs/exec_sp_create_schedule.log'));
+        })->twiceDaily(0, 6, 12, 18);
+            //->sendOutputTo(storage_path() . "logs/exec_sp_create_schedule.log");
+            //->twiceDaily(0, 6, 12, 18)
     }
 }
