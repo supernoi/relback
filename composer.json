@@ -9,7 +9,6 @@
 		"laravel/framework": "5.1.*",
 		"bestmomo/scafold": "dev-master",
 		"twbs/bootstrap": "^3.3",
-		"guzzlehttp/guzzle": "~5.3|~6.0",
 		"yajra/laravel-oci8": "~3.0"
 	}
 }
