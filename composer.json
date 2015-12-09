@@ -15,5 +15,10 @@
 		"laravel/framework": "5.1.*",
 		"twbs/bootstrap": "^3.3",
 		"yajra/laravel-oci8": "~3.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"supernoi\\": "src/"
+		}
 	}
 }
