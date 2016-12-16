@@ -1,24 +1,57 @@
 {
-	"name": "supernoi/relback",
-	"description": "relBack is a facilitator in the lives of Oracle DBAs.",
-	"keywords": ["relback", "oracle", "report", "backup"],
-	"license": "MIT",
-	"type": "project",
-	"authors": [
-        {
-            "name": "Juliano Ribeiro",
-            "email": "supernoi@msn.com",
-            "linkedin": "https://www.linkedin.com/in/supernoi"
-        }],
-	"require": {
-		"php": ">=5.5.9",
-		"laravel/framework": "5.1.*",
-		"twbs/bootstrap": "^3.3",
-		"yajra/laravel-oci8": "~3.0"
-	},
-	"autoload": {
-		"psr-4": {
-			"supernoi\\": "src/"
-		}
-	}
+    "name": "laravel/laravel",
+    "description": "The Laravel Framework.",
+    "keywords": ["framework", "laravel"],
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": ">=5.5.9",
+        "laravel/framework": "5.3.*",
+        "bestmomo/scafold": "dev-master",
+        "twbs/bootstrap": "^3.3",
+        "guzzlehttp/guzzle": "~5.3|~6.0",
+        "yajra/laravel-oci8": "5.3.*"
+    },
+    "require-dev": {
+        "fzaninotto/faker": "~1.4",
+        "mockery/mockery": "0.9.*",
+        "phpunit/phpunit": "~4.0",
+        "phpspec/phpspec": "~2.1",
+        "symfony/dom-crawler": "3.1.*",
+        "symfony/css-selector": "3.1.*"
+    },
+    "autoload": {
+        "classmap": [
+            "database"
+        ],
+        "psr-4": {
+            "relback\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/TestCase.php"
+        ]
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php artisan clear-compiled",
+            "php artisan optimize"
+        ],
+        "pre-update-cmd": [
+            "php artisan clear-compiled"
+        ],
+        "post-update-cmd": [
+            "php artisan optimize"
+        ],
+        "post-root-package-install": [
+            "php -r \"copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "php artisan key:generate"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist"
+    }
 }

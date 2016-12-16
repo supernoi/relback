@@ -1,0 +1,150 @@
+
+
+<?php $__env->startSection('title', 'Creators'); ?>
+
+<?php $__env->startSection('content'); ?>
+
+<style>
+	
+	.tab-content{
+		background-color: #fff;
+	}
+
+</style>
+
+	<div class="container container-fluid">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<center>
+					<h1>Creators of Created, HA HA!</h1>
+				</center>
+			</div>
+				<div class="panel-body" >
+
+						<ul class="nav nav-tabs" role="tablist">
+
+							<li role="presentation" class="active">
+								<a href="#creator01" aria-controls="creator01" role="tab" data-toggle="tab">
+									<img class="img-circle" src="images/creator01.png" alt="Creator Juliano Ribeiro" height="50" width="50">
+									<b>Eduardo Bessa</b>
+								</a>
+							</li>
+
+							<li role="presentation">
+								<a href="#creator02" aria-controls="creator02" role="tab" data-toggle="tab">
+									<img class="img-circle" src="images/creator02.png" alt="Creator Juliano Ribeiro" height="50" width="50">
+									<b>Juliano Ribeiro</b>
+								</a>
+							</li>
+						</ul>
+						<div >
+						
+						<div class="tab-content">
+							
+							<div role="tabpanel" class="tab-pane fade in active" id="creator01" >
+								<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+									<div class="col-md-3 text-center">
+										<br><br><br>
+										<p>
+											<img class="img-circle" src="images/creator01.png" alt="Creator Eduardo Bessa" height="201" width="201">
+										</p>
+										<p>
+											<a target="_blank" href="https://www.linkedin.com/in/eduardo-moreira-5658681a">
+												<img src="images/In-2C-21px-R.png" alt="Linkedin of Eduardo Bessa">/in/Eduardo-Moreira-5658681a
+											</a>
+										</p>
+									</div>
+									<div class="col-md-8">
+
+										<h2>Eduardo Bessa</h2>
+										<p>
+											Creation and implementation of centralized environment management and monitoring databases using 
+											Oracle Enterprise Manager (Cloud 12c and 10g Grid) This environment currently manages 120 instances 
+											sending notifications criticism for SNMP traps, SMS and email.
+										</p>
+										<p>
+											Based on these characteristics, professionally really I consider myself proactive, 
+											not just as a beautiful term used in an interview, but enough to get bothered with 
+											recurrent problems happening in environments where job. I always try to solve these 
+											problems even when it is the responsibility of other sectors, or I strive suppliers 
+											to demonstrate that the environment can be improved and when I have knowledge on the 
+											subject suggest the solution that can be applied and when I do not try to learn about it. ..
+										</p>
+										<p>
+											Currently work as a Database Administrator primarily focused on meeting demands 
+											environments with Oracle Databases 10g and 11g (single instance and RAC) and 
+											operating systems RedHat and Solaris, but also attend less frequently demands of 
+											SQL Server and MySQL ... I have used a lot OEM Cloud Control 12c for administration 
+											and monitoring the day to day ...
+										</p>
+										<p>
+											As this should be a summary. I am a person dedicated to improving the environments 
+											they attend to people who use them may also make its activities quickly and thus help 
+											improve the environment as a whole.
+										</p>
+									</div>
+										
+								</div>
+							</div>
+
+								<div role="tabpanel" class="tab-pane fade" id="creator02" >
+
+									<div class="col-md-3 text-center">
+										<br><br><br>
+										<p>
+											<img class="img-circle " src="images/creator02.png" alt="Creator Juliano Ribeiro" height="201" width="201">
+										</p>
+										<p>
+											<a target="_blank" href="https://www.linkedin.com/in/supernoi">
+												<img src="images/In-2C-21px-R.png" alt="Linkedin of Juliano Ribeiro">/in/superNoi
+											</a>
+										</p>
+										<p>
+											<a target="_blank" href="https://github.com/supernoi" alt="GitHub of Juliano Ribeiro">
+												<span class="mega-octicon octicon-mark-github"></span>/SuperNoi
+											</a>
+										</p>
+									</div>
+									<div class="col-md-8 ">
+
+										<h2>Juliano Ribeiro</h2>
+										<p>
+											I love learning about anything, love my daughter, I love to stick with it and follow the 
+											growth of it, I like to play sports ... "sound mind in a sound body" ...
+											My biggest learning to date has been to learn that more important than I already know 
+											today is what I can learn to improve ...
+										</p>
+										<p>
+											Based on these characteristics, professionally really I consider myself proactive, 
+											not just as a beautiful term used in an interview, but enough to get bothered with 
+											recurrent problems happening in environments where job. I always try to solve these 
+											problems even when it is the responsibility of other sectors, or I strive suppliers 
+											to demonstrate that the environment can be improved and when I have knowledge on 
+											the subject suggest the solution that can be applied and when I do not try to 
+											learn about it. ..
+										</p>
+										<p>
+											Currently work as a Database Administrator primarily focused on meeting demands 
+											environments with Oracle Databases 10g and 11g (single instance and RAC) and 
+											operating systems RedHat and Solaris, but also attend less frequently demands 
+											of SQL Server and MySQL ... I have used a lot OEM Cloud Control 12c for 
+											administration and monitoring the day to day ...
+										</p>
+										<p>
+											As this should be a summary. I am a person dedicated to improving the environments 
+											they attend to people who use them may also make its activities quickly and thus 
+											help improve the environment as a whole.
+										</p>
+									</div> <!-- div texto juliano -->
+												
+								</div> <!-- div tabPanel juliano -->
+							
+						</div> <!-- div tabContent -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layout.principal', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
