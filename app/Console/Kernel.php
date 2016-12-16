@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function()
         {
             DB::statement('call RELBACK.SP_CREATE_SCHEDULE(sysdate-7)');
-        })ENV('CRON_SCHEDULE','->twiceDaily(0, 6, 12, 18)');
+        })->twiceDaily(0, 6, 12, 18);
 
         $schedule->call(function()
         {
