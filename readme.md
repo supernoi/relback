@@ -8,17 +8,22 @@ The relBack query information stored by the RMAN catalog to be able to cross the
 ### Instalation
 
 1. Prepare Apache + PHP server environment, for people who do not have a lot of experience in apache configuration as I do, I suggest create a user on OS and using the LAMP package (https://bitnami.com/stack/lamp), simple installation, fast, works very well.
-     1.1. Install apache >= 2
-     1.2. Install PHP >= 5.6
-     1.3. Install OCI8 in PHP
-4. Download project
-5. Extract for path destination (relBackPath), if you used LAMP, move the project to the APPS folder and change the file conf / httpd-prefix.conf, updating the folder path.
-6. Configure CRON for schedules of project, this line is for the project to execute the routines with cron.
+Install apache >= 2.
+Install PHP >= 5.6.
+Install OCI8 in PHP.
+     
+2. Download project, zip.
+
+3. Extract for path destination (relBackPath), if you used LAMP, move the project to the APPS folder and change the file conf / httpd-prefix.conf, updating the folder path.
+
+4. Configure CRON for schedules of project, this line is for the project to execute the routines with cron.
      ex: * * * * * php /relBackPath/artisan schedule:run >> /dev/null 2>&1
-7. Edit file of configurations ".env"
+     
+5. Edit file of configurations ".env"
      Basically base connection settings and for sending mail.
        ex: /relBackPath/.env
-8. Execute script to create schema relback, preferably with user with dba permission
+       
+6. Execute script to create schema relback, preferably with user with dba permission
    ex: /relBackPath/database/script_create_relback.sql
      This script do:
          Create tablespace for relback, is necessary alter location of datafile.
@@ -29,15 +34,18 @@ The relBack query information stored by the RMAN catalog to be able to cross the
          Create Views;
          Create Procedure;
          
-9. In this step, when you start and configure apache, you should already be able to open the project.
+7. In this step, when you start and configure apache, you should already be able to open the project.
      9.1. If the project start page opened normally, okay pass on.
      9.2. Review the apache configuration from the previous steps.
-10. Start by registering the necessary information, in this order Client> Host> Database> Backup Policies;
-11. After adding some policies, it is necessary to update the schedule, which by default is set to update the hours 00h, 06h, 12h and 18h (format HH24).
+     
+8. Start by registering the necessary information, in this order Client> Host> Database> Backup Policies;
+
+9. After adding some policies, it is necessary to update the schedule, which by default is set to update the hours 00h, 06h, 12h and 18h (format HH24).
 To update the schedule manually execute a procedure on the base:
 execute RELBACK.SP_CREATE_SCHEDULE (sysdate-7);
 By default I chose to set up the calendar with information for the last 7 days.
-12. Like any good manual, if everything works out you can access the report by crossing the information between the policy agenda and the executions you perform on the Report screen.
+
+10. Like any good manual, if everything works out you can access the report by crossing the information between the policy agenda and the executions you perform on the Report screen.
 
 ### License
 
