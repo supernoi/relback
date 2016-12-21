@@ -29,6 +29,10 @@
 				color:#000000;  
 				background-color:#EAF2D3; 
 			} 
+			#server td.textcenter, 
+			#server th.textcenter {
+				text-align: center;
+			}
 		</style>  
 	</head> 
 	<body>  
@@ -57,19 +61,19 @@
 			$l_title_cols=
 					'<tr>				
 						<h4>					
-							<td> POL </td>
-							<td> Hostname </td>
-							<td> db_name </td>
-							<td> Status </td>
-							<td> Start Estimate </td>
-							<td> Start Real </td>
-							<td> Time Max </td>
-							<td> Time Real </td>
-							<td> Size MAX(GB) </td>
-							<td> Size Real(GB) </td>
-							<td> Content </td>
-							<td> Destiny </td>
-							<td> Description </td>
+							<th class="textcenter" > POL </th>
+							<th class="textcenter" > Hostname </th>
+							<th class="textcenter" > db_name </th>
+							<th class="textcenter" > Status </th>
+							<th class="textcenter" > Start Estimate </th>
+							<th class="textcenter" > Start Real </th>
+							<th class="textcenter" > Time Max </th>
+							<th class="textcenter" > Time Real </th>
+							<th class="textcenter" > Size MAX(GB) </th>
+							<th class="textcenter" > Size Real(GB) </th>
+							<th class="textcenter" > Content </th>
+							<th class="textcenter" > Destiny </th>
+							<th class="textcenter" > Description </th>
 						</h4>				
 					</tr>'
 			@endphp		
@@ -113,19 +117,19 @@
 
 					<tr style="background-color:{!! $trColor !!};">
 
-						<td class="text-center" > {!! $r->id_policy !!} </td>
-						<td class="text-center" > {!! $r->hostname !!} </td>
-						<td class="text-center" > {!! $r->db_name !!} </td>
-						<td class="text-center" > {!! $r->status !!} </td>
-						<td class="text-center" > {!! date('d/m H:i', strtotime($r->schedule_start)) !!} </td>
-						<td class="text-center" > {!! date('d/m H:i', strtotime($r->start_r)) !!} </td>			
-						<td class="text-center" > {!! $r->duration_e !!} </td>
-						<td class="text-center" > {!! $r->duration_r !!} </td>
-						<td class="text-center" > {!! $r->size_backup_p_gb !!} </td>
-						<td class="text-center" > {!! $r->size_backup_r_gb !!} </td>
-						<td class="text-center" > {!! $r->backup_type !!} </td>
-						<td class="text-center" > {!! $r->destination !!} </td>
-						<td class="text-center" > {!! $r->description !!} </td>
+						<td class="textcenter" > {!! $r->id_policy !!} </td>
+						<td class="textcenter" > {!! $r->hostname !!} </td>
+						<td class="textcenter" > {!! $r->db_name !!} </td>
+						<td class="textcenter" > {!! $r->status !!} </td>
+						<td class="textcenter" > {!! date('d/m H:i', strtotime($r->schedule_start)) !!} </td>
+						<td class="textcenter" > {!! date('d/m H:i', strtotime($r->start_r)) !!} </td>			
+						<td class="textcenter" > {!! $r->duration_e !!} </td>
+						<td class="textcenter" > {!! $r->duration_r !!} </td>
+						<td class="textcenter" > {!! $r->size_backup_p_gb !!} </td>
+						<td class="textcenter" > {!! $r->size_backup_r_gb !!} </td>
+						<td class="textcenter" > {!! $r->backup_type !!} </td>
+						<td class="textcenter" > {!! $r->destination !!} </td>
+						<td class="textcenter" > {!! $r->description !!} </td>
 					</tr>
 				@endif
 			@endforeach
@@ -164,26 +168,26 @@
 
 					<tr style="background-color:{!! $trColor !!};">
 
-						<td class="text-center" > {!! $r->id_policy !!} </td>
-						<td class="text-center" > {!! $r->hostname !!} </td>
-						<td class="text-center" > {!! $r->db_name !!} </td>
-						<td class="text-center" > {!! $r->status !!} </td>
-						<td class="text-center" > {!! date('d/m H:i', strtotime($r->schedule_start)) !!} </td>
-						<td class="text-center" > {!! (empty($r->start_r) ? '' : date('d/m H:i', strtotime(($r->start_r)))) !!} </td>			
-						<td class="text-center" > {!! (empty($r->duration_r) ? '' : $r->duration_e) !!} </td>
-						<td class="text-center" > {!! $r->duration_r !!} </td>
-						<td class="text-center" > {!! (empty($r->size_backup_r_gb) ? '' : $r->size_backup_p_gb) !!} </td>
-						<td class="text-center" > {!! $r->size_backup_r_gb !!} </td>
-						<td class="text-center" > {!! $r->backup_type !!} </td>
-						<td class="text-center" > {!! $r->destination !!} </td>
-						<td class="text-center" > {!! $r->description !!} </td>
+						<td class="textcenter" > {!! $r->id_policy !!} </td>
+						<td class="textcenter" > {!! $r->hostname !!} </td>
+						<td class="textcenter" > {!! $r->db_name !!} </td>
+						<td class="textcenter" > {!! $r->status !!} </td>
+						<td class="textcenter" > {!! date('d/m H:i', strtotime($r->schedule_start)) !!} </td>
+						<td class="textcenter" > {!! (empty($r->start_r) ? '' : date('d/m H:i', strtotime(($r->start_r)))) !!} </td>			
+						<td class="textcenter" > {!! (empty($r->duration_r) ? '' : $r->duration_e) !!} </td>
+						<td class="textcenter" > {!! $r->duration_r !!} </td>
+						<td class="textcenter" > {!! (empty($r->size_backup_r_gb) ? '' : $r->size_backup_p_gb) !!} </td>
+						<td class="textcenter" > {!! $r->size_backup_r_gb !!} </td>
+						<td class="textcenter" > {!! $r->backup_type !!} </td>
+						<td class="textcenter" > {!! $r->destination !!} </td>
+						<td class="textcenter" > {!! $r->description !!} </td>
 					</tr>
 				@endif
 			@endforeach	
 
 		</table>  
 		<br>
-		<footer class="container-fluid text-center">
+		<footer class="container-fluid textcenter">
 			<center>
 				<a href="#top" title="To Top">
 					<span class="glyphicon glyphicon-chevron-up"></span>
