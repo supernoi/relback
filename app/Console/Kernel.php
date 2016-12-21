@@ -33,6 +33,6 @@ class Kernel extends ConsoleKernel
             {
                 $message->to('juliano.ribeiro@ativas.com.br')->subject('relBackMail');
             });
-        })->twiceDaily(0, 6, 12, 18)->everyMinute(2);      
+        })->twiceDaily(0, 6, 12, 18);      
     }
 }
