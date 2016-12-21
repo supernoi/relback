@@ -31,8 +31,8 @@ class Kernel extends ConsoleKernel
 
             Mail::send('reports.reportsReadMailDaily', array('reportMailDefault' => $data), function($message)
             {
-                $message->to('juliano.ribeiro@ativas.com.br')->subject('relBackMail');
+                $message->to('juliano.ribeiro@ativas.com.br')->subject('relBackMail - date: ' . date('d/m/Y H:i'));
             });
-        })->twiceDaily(0, 6, 12, 18);      
+        })->twiceDaily(0, 6, 12, 18);    
     }
 }
