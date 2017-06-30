@@ -20,41 +20,41 @@
 						</div>
 					@endif
 
-					<form class="form-horizontal" role="form" method="POST" action="{{ url('/auth/register') }}">
-						{!! csrf_field() !!}
+					<form class="form-horizontal" role="form" method="POST" action="{{ route('register') }}">
+                        {{ csrf_field() }}
 
 						<div class="form-group">
 							<label class="col-md-4 control-label">Name</label>
 							<div class="col-md-6">
-								<input type="text" class="form-control" name="name" value="{{ old('name') }}">
+								<input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required autofocus>
 							</div>
 						</div>		
 
 						<div class="form-group">
 							<label class="col-md-4 control-label">E-Mail Address</label>
 							<div class="col-md-6">
-								<input type="email" class="form-control" name="email" value="{{ old('email') }}">
+								<input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
 							</div>
 						</div>
 
 						<div class="form-group">
 							<label class="col-md-4 control-label">Username</label>
 							<div class="col-md-6">
-								<input type="text" class="form-control" name="username" value="{{ old('username') }}">
+								<input  id="username" type="text" class="form-control" name="username" value="{{ old('username') }}" required autofocus>
 							</div>
 						</div>	
 
 						<div class="form-group">
 							<label class="col-md-4 control-label">Password</label>
 							<div class="col-md-6">
-								<input type="password" class="form-control" name="password">
+								<input  id="password" type="password" class="form-control" name="password" required >
 							</div>
 						</div>
 
 						<div class="form-group">
 							<label class="col-md-4 control-label">Confirm Password</label>
 							<div class="col-md-6">
-								<input type="password" class="form-control" name="password_confirmation">
+								<input  id="password_confirmation" type="password" class="form-control" name="password_confirmation" required >
 							</div>
 						</div>
 

@@ -23,7 +23,7 @@ class mailReportDaily extends Mailable
 
     $address = 'juliano.ribeiro@ativas.com.br';
     $name = 'Juliano';
-    $subject = 'relBack teste';
+    $subject = 'relBack';
 
     public function build()
     {

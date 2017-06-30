@@ -314,7 +314,7 @@ trait OracleReservedWords
         'PACKAGE',
         'PARALLEL',
         'PARTITION',
-        'PASSWORD',
+        /*'PASSWORD',*/
         'PASSWORD_GRACE_TIME',
         'PASSWORD_LIFE_TIME',
         'PASSWORD_LOCK_TIME',

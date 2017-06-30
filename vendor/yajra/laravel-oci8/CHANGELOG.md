@@ -1,5 +1,50 @@
 #Laravel-OCI8 Change Log
 
+#v5.4.9 - 2017-05-10
+- Upgrade connection resolver for Oracle DB driver registration. #285
+- Fix #279.
+
+#v5.4.8 - 2017-05-01
+- Change getDoctrineConnection() to use a singleton.
+- PR #282, credits to @abdgad.
+
+#v5.4.7 - 2017-03-16
+- Added parameter length in executeFunction.
+- PR #266, credits to @ardani.
+
+#v5.4.6 - 2017-03-15
+- Convert reserved words to lower case.
+- Fix #250, delete unit test.
+
+#v5.4.5 - 2017-03-01
+- Add oci8 dependency for composer. 
+- PR #261, credits to @mstaack.
+
+#v5.4.4 - 2017-02-17
+- When updating OracleEloquent, pass save options through. 
+- PR #257, credits to @kmcgill88.
+
+#v5.4.3 - 2017-02-15
+- Fix #254.
+- Patch custom sequence compatibility. #256
+
+#v5.4.2 - 2017-02-07
+- Fix error while migrate:rollback: PR #253, credits to @vystepanenko.
+
+#v5.4.1 - 2017-02-02
+- Update pdo-via-oci8 to ^1.3.1
+- Fix #246 fetchAll fetchMode issue.
+
+#v5.4.0 - 2017-01-25
+- Add support for Laravel 5.4.
+
+#v5.3.8 - 2017-01-05
+- Rename phpunit.xml to fix export-ignore.
+- Update license to 2017.
+
+#v5.3.7 - 2016-12-07
+- Allow update of sessionVars from config. PR #232, credits to @XavRsl 
+
 #v5.3.6 - 2016-11-08
 - Fix git attributes and github template.
 - Fix wrapping of schema, table and column name.

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>relBack - @yield('title')</title>
 
-    <link rel="shortcut icon" href="images/icon/relback.ico" /> 
+    <link rel="shortcut icon" href="{!! asset('images/favicon.ico') !!}" /> 
     
     <link href="{!! asset('css/bootstrap.min.css') !!}" rel="stylesheet" type="text/css" />
 	<link href="{!! asset('css/octicons.css') !!}" rel="stylesheet"type="text/css" />
@@ -46,10 +46,11 @@
 						<li><a href="{{action('PoliciesController@read')}}">Backup Policies</a></li>
 
 						<!-- With the update from 5.1 to 5.3, auth began to display error.
-							 Pending correction / adaptation.						
+							 Pending correction / adaptation. -->
+
 							@if(auth()->guest())
-								@if(!Request::is('auth/login'))
-									<li><a href="{{ url('/auth/login') }}">Login  </a></li>
+								@if(!Request::is('/login'))
+									<li><a href="{{ route('login') }}">Login  </a></li>
 								@endif
 							@else
 								<li class="dropdown">
@@ -58,11 +59,15 @@
 										<span class="caret"></span>
 									</a>
 									<ul class="dropdown-menu" role="menu">
-										<li><a href="{{ url('/auth/register') }}">Register  </a></li>
-										<li><a href="{{ url('/auth/logout') }}">Logout  </a></li>
+										<li>
+											<a href="{{ route('register') }}">Register  </a></li>
+										<li>
+											<a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout  </a> 
+											<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">{{ csrf_field() }}</form>
+										</li>
 									</ul>
 								</li>
-							@endif -->
+							@endif 
 
 						<li>&nbsp&nbsp&nbsp</li>
 					</ul>
@@ -92,13 +97,13 @@
 	</footer>
 
 	<!-- Scripts -->
-	<script type="text/javascript" src="{!! asset('js/jquery.min.js') !!}"></script>
-	<script type="text/javascript" src="{!! asset('js/bootstrap.min.js') !!}"></script>
-	<script type="text/javascript" src="{!! asset('js/nanobar.min.js') !!}"></script>
+	<script type="text/javascript" src="{!! asset('js/jquery.min.js') !!}" async></script>
+	<script type="text/javascript" src="{!! asset('js/bootstrap.min.js') !!}" async></script>
+	<script type="text/javascript" src="{!! asset('js/nanobar.min.js') !!}" async></script>
 
-	<script type="text/javascript" src="{!! asset('js/moment.min.js') !!}"></script>
-	<script type="text/javascript" src="{!! asset('js/datatables.min.js') !!}"></script>
-	<script type="text/javascript" src="{!! asset('js/datatime-moment.js') !!}"></script>
+	<script type="text/javascript" src="{!! asset('js/moment.min.js') !!}" async></script>
+	<script type="text/javascript" src="{!! asset('js/datatables.min.js') !!}" async></script>
+	<script type="text/javascript" src="{!! asset('js/datatime-moment.js') !!}" async></script>
 	<script type="text/javascript" src="{!! asset('js/main.js') !!}"></script>
 
 	<link href='{!! asset('css/fonts.css') !!}' rel='stylesheet' type='text/css'>

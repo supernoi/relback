@@ -1,52 +1,51 @@
-## relBack - Oracle Backup Report 
+<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
-The relBack system was developed from the need for the DBA team's verify the implementation of existing backup policies for each Oracle database serviced by the team's task was carried out previously manually accessing each base and referring to the information related to backup or through emails sent by scripts stored on each server.
-The centralization of information provides a quick and efficient in verifying the execution of each backup policy scheduling and as more systems are serviced and monitored is decentralized verification is concerned more and more staff time, both in check as the maintenance of scripts.
+<p align="center">
+<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
+</p>
 
-The relBack query information stored by the RMAN catalog to be able to cross the information regarding existing policies and thereby confirm that the backup performed was completed successfully and can be used at a time of crisis a restore and recovery of a base is needed.
+## About Laravel
 
-### Instalation
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
 
-1. Prepare Apache + PHP server environment, for people who do not have a lot of experience in apache configuration as I do, I suggest create a user on OS and using the LAMP package (https://bitnami.com/stack/lamp), simple installation, fast, works very well.
-Install apache >= 2.
-Install PHP >= 5.6.
-Install OCI8 in PHP.
-     
-2. Download project, zip.
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-3. Extract for path destination (relBackPath), if you used LAMP, move the project to the APPS folder and change the file conf / httpd-prefix.conf, updating the folder path.
+Laravel is accessible, yet powerful, providing tools needed for large, robust applications. A superb combination of simplicity, elegance, and innovation give you tools you need to build any application with which you are tasked.
 
-4. Configure CRON for schedules of project, this line is for the project to execute the routines with cron.
-     ex: * * * * * php /relBackPath/artisan schedule:run >> /dev/null 2>&1
-     
-5. Edit file of configurations ".env"
-     Basically base connection settings and for sending mail.
-       ex: /relBackPath/.env
-       
-6. Execute script to create schema relback, preferably with user with dba permission
-   ex: /relBackPath/database/script_create_relback.sql
-     This script do:
-         Create tablespace for relback, is necessary alter location of datafile.
-         Create User relback;
-         Grant permissons to relback;
-         Grant Select permision on RMAN views;
-         Create Tables;
-         Create Views;
-         Create Procedure;
-         
-7. In this step, when you start and configure apache, you should already be able to open the project.
-     9.1. If the project start page opened normally, okay pass on.
-     9.2. Review the apache configuration from the previous steps.
-     
-8. Start by registering the necessary information, in this order Client> Host> Database> Backup Policies;
+## Learning Laravel
 
-9. After adding some policies, it is necessary to update the schedule, which by default is set to update the hours 00h, 06h, 12h and 18h (format HH24).
-To update the schedule manually execute a procedure on the base:
-execute RELBACK.SP_CREATE_SCHEDULE (sysdate-7);
-By default I chose to set up the calendar with information for the last 7 days.
+Laravel has the most extensive and thorough documentation and video tutorial library of any modern web application framework. The [Laravel documentation](https://laravel.com/docs) is thorough, complete, and makes it a breeze to get started learning the framework.
 
-10. Like any good manual, if everything works out you can access the report by crossing the information between the policy agenda and the executions you perform on the Report screen.
+If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 900 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
 
-### License
+## Laravel Sponsors
 
-The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](http://patreon.com/taylorotwell):
+
+- **[Vehikl](http://vehikl.com)**
+- **[Tighten Co.](https://tighten.co)**
+- **[British Software Development](https://www.britishsoftware.co)**
+- **[Styde](https://styde.net)**
+- [Fragrantica](https://www.fragrantica.com)
+- [SOFTonSOFA](https://softonsofa.com/)
+
+## Contributing
+
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](http://laravel.com/docs/contributions).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).

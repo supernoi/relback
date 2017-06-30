@@ -20,20 +20,20 @@
 						</div>
 					@endif
 
-					<form class="form-horizontal" role="form" method="POST" action="{{ url('/auth/login') }}">
+					<form class="form-horizontal" role="form" method="POST" action="{{ route('login') }}">
 						{!! csrf_field() !!}
 
 						<div class="form-group">
 							<label class="col-md-4 control-label">Userame</label>
 							<div class="col-md-6">
-								<input type="username" class="form-control" name="username" value="{{ old('username') }}">
+								<input id="username" type="username" class="form-control" name="username" value="{{ old('username') }}">
 							</div>
 						</div>
 
 						<div class="form-group">
 							<label class="col-md-4 control-label">Password</label>
 							<div class="col-md-6">
-								<input type="password" class="form-control" name="password">
+								<input id="password" type="password" class="form-control" name="password" required>
 							</div>
 						</div>
 

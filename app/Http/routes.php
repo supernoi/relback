@@ -1,12 +1,14 @@
 <?php
 
-// Route::controllers([
-// 	'auth' => 'Auth\AuthController',
-// 	'password' => 'Auth\PasswordController'
-// 	]);
+/*Route::controllers([
+	'auth' => 'Auth\AuthController',
+	'password' => 'Auth\PasswordController'
+	]);*/
 
 Route::get('/', 'HomeController@index');
 Route::get('/about', 'HomeController@about');
+
+Auth::routes();
 
 //Rotas dos Clients
 
