@@ -4,9 +4,13 @@ The centralization of information provides a quick and efficient in verifying th
 The relBack query information stored by the RMAN catalog to be able to cross the information regarding existing policies and thereby confirm that the backup performed was completed successfully and can be used at a time of crisis a restore and recovery of a base is needed.
 ### Instalation
 1. Prepare Apache + PHP server environment, for people who do not have a lot of experience in apache configuration as I do, I suggest create a user on OS and using the LAMP package (https://bitnami.com/stack/lamp), simple installation, fast, works very well.
+
      1.1. Install apache >= 2
+     
      1.2. Install PHP >= 5.6
+     
      1.3. Install OCI8 in PHP
+     
 4. Download project
 5. Extract for path destination (relBackPath), if you used LAMP, move the project to the APPS folder and change the file conf / httpd-prefix.conf, updating the folder path.
 6. Configure CRON for schedules of project, this line is for the project to execute the routines with cron.
