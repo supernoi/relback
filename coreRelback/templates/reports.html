@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} relBack - Reports{% endblock %}
+
+{% block content %}
+
+    <div class="container container-fluid">
+        
+        <div class="panel panel-default" >
+            <div class="panel-heading text-center"><h3>Report Backup Policy</h3></div>	
+        
+                <table class="table table-striped table-responsive display" id="myTable" >
+                    <thead>
+                        <tr>
+                            <th class="text-center">Policy</th>
+                            <th class="text-center">Hostname</th>
+                            <th class="text-center">DB_NAME</th>				
+                            <th class="text-center">Expected<br>Start</th>
+                            <th class="text-center">Start<br>Realized</th>
+                            <th class="text-center">Executed<br>Time</th>
+                            <th class="text-center">Status</th>				
+                            <th class="text-center">Destination</th>	
+                            <th class="text-center">Backup<br>Type</th>						
+                            <th class="text-center">Details</th>
+                        </tr>
+                    </thead>
+
+                    <tfoot>
+                        <tr>
+                            <!-- space reserved for select-filter -->
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+
+                    <tbody>
+                    {% for report in report.items %}    
+                        {% if report.status == 'COMPLETED' %}
+                            {{ trStyle | default:'success' }}
+                        {% elif report.status == 'SCHEDULED')
+                            {{ trStyle | default:'info' }}				
+                        {% elif report.status == 'NOT RUN')
+                            {{ trStyle | default:'danger' }}							
+                        {% elif report.status == 'RUNNING') 
+                            {{ trStyle | default:'active' }}
+                        {% elif report.status == 'COMPLETED WITH WARNINGS') 
+                            {{ trStyle | default:'warning' }}
+                        {% elif report.status == 'FAILED') 
+                            {{ trStyle | default:'danger' }}
+                        {% endif %}
+
+                        <tr class="{{ trStyle }}" style="font-size:12px">
+                        
+                            <td class="text-center" > {{ report.id_policy }} </td>
+                            <td class="text-center" > {{ report.hostname }} </td>
+                            <td class="text-center" > {{ report.db_name }} </td>
+                            <td class="text-center" > {{ report.schedule_start }} </td>
+                            <td class="text-center" > {{ report.start_r }} </td>							
+                            <td class="text-center" > {{ report.duration_r }} </td>
+                            <td class="text-center" > {{ report.status }} </td>
+                            <td class="text-center" > {{ report.destination }} </td>
+                            <td class="text-center" > {{ report.backup_type }} </td>
+
+                            <td class="text-center">
+
+                                {% if report.session_key %}
+                                    <a class="glyphicon glyphicon-eye-open" href="{% url 'coreRelback:index' %}" />
+                                {% else %}
+                                    <span class="glyphicon glyphicon-eye-close" />
+                                {% endif %}									
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>	
+        </div>
+    </div>
+        
+    <!-- modify select-filter of botton to top table -->
+    <style type="text/css">
+        tfoot {
+            display: table-header-group;
+        }
+    </style>
+
+{% endblock %}

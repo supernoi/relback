@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}relBack - Clients{% endblock %}
+
+{% block content %}
+
+    <div class="container container-fluid"> 
+        <h1>Client list</h1>  
+        
+        <br>
+            <a href="" class="btn btn-primary" data-target="#modalAddNew" data-toggle="modal">Add New</a>
+        <br><br>
+
+        <!-- Modal of addNew -->
+		<div class="modal fade" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        {% if form.errors %}
+                            <!-- Error messaging -->
+                            <div id="errors">
+                                <div class="inner">
+                                    <p>There were some errors in the information you entered. Please correct the following:</p>
+                                    {{ form.non_field_errors }}
+                                    <ul>
+                                        {% for field in form %}
+                                            {% if field.errors %}<li>{{ field.label }}: {{ field.errors|striptags }}</li>{% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- /Error messaging -->
+                        {% endif %}
+                         <div class="modal-header">
+                            <h2 class="modal-title">Add new Client</h2>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+    
+                            <form class="form-horizontal" action="{% url 'coreRelback:clientCreate' %}" method="POST">
+                                {% csrf_token %}
+                                            
+                                    <div class="row form-group">
+                                        <div class="col-md-8">
+                                            <div class="input-group">									
+                                                <span class="input-group-addon">Client Name: </span>
+                                                <input name="name" type="text" class="form-control" value="{{ name }}">
+                                            </div>
+                                        </div>
+                                    </div>
+    
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">Description: </span>					
+                                                <input name="description" type="text" class="form-control" value="{{ description }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <a class="btn btn-default" data-dismiss="modal">Close</a>
+                                    <button class="btn btn-primary" type="submit">Add</button>							
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+        <!-- End Modal of addNew -->
+        
+        <div class="panel panel-default">
+            <table class="table table-striped">
+                <tr>
+                    <td class="text-center"><h4><strong>Client Name</strong></h4></td>
+                    <td class="text-center"><h4><strong>Description</strong></h4></td>
+                    <td class="text-center"><h4><strong>Options</strong></h4></td>
+                </tr>
+            {% for c in clients %}
+                <tr>
+                    <td class="text-center">{{ c.name }}</td>
+                    <td class="text-center">{{ c.description }}</td>
+                    <td class="text-center">
+                        <a href="" data-target="#modalReadDetail-{{ c.id_client }}" id="fetch" data-toggle="modal" >
+                            <img src="{% static 'images/icons/info.svg' %}" width="32" height="32" title="Details">
+                        </a>                        
+                        <a href="" data-target="#modalUpdate-{{ c.id_client }}" id="fetch" data-toggle="modal">
+                            <img src="{% static 'images/icons/document-text.svg' %}" width="32" height="32" title="Edit">
+                        </a>                        
+                        <a href="" data-target="#modalDelete-{{ c.id_client }}" id="fetch" data-toggle="modal" >
+                            <img src="{% static 'images/icons/trash.svg' %}" width="32" height="32" title="Delete">
+                        </a>	
+                    </td>
+                </tr>
+
+
+    <!-- Modal of ReadDetail -->
+    <div class="modal fade" id="modalReadDetail-{{ c.id_client }}" role="dialog" aria-labelledby="ModalLabel-ReadDetail">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                     <div class="modal-header">
+                        <h2 class="modal-title">{{ c.name }}</h2>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">								
+                        <ul>
+                            <li>
+                                <b>Client name:</b> {{ c.name }} 
+                            </li>
+                            <li>
+                                <b>Client description:</b> {{ c.description }}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="btn btn-default" data-dismiss="modal">Close</a>								
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Modal of ReadDetail -->
+
+        <!-- Modal of update -->
+            <div class="modal fade" id="modalUpdate-{{ c.id_client }}" role="dialog" aria-labelledby="ModalLabel-Update">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title">{{ c.name }}</h2>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <form class="form-horizontal" action="{% url 'coreRelback:clientUpdate' c.id_client %}" method="POST">
+                            {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="row form-group">
+                                    <div class="col-md-8 ">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Client name: </span>
+                                            <input type="name" class="form-control" name="name" value="{{ c.name }}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row form-group">
+                                    <div class="col-md-12 ">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Description: </span>
+                                            <input type="description" class="form-control" name="description" value="{{ c.description }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>	
+                            <div class="modal-footer">
+                                <a class="btn btn-default" data-dismiss="modal">Close</a>
+                                <button class="btn btn-warning" type="submit">Update</button> 
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        <!-- End Modal of update -->
+
+        <!-- Modal of Delete -->
+
+        <div class="modal fade" id="modalDelete-{{ c.id_client }}" role="dialog" aria-labelledby="ModalLabel-Delete">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title">Confirmation</h2>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Deleting the <b>Client</b>, all dependent <b>Hosts</b>, <b>Databases</b> and <b>Backup Policies</b> will also be deleted.</p>
+                            <p>Really want to delete the client <b>{{ c.name }}</b>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a class="btn btn-default" data-dismiss="modal">Close</a>
+                            <a href="{% url 'coreRelback:clientDelete' c.id_client %}" id="{{ c.id_client }}" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- End Modal of Delete -->
+
+        {% endfor %}
+    </table>
+</div>	        
+</div>
+{% endblock %}

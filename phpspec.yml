@@ -1,5 +1,0 @@
-suites:
-    main:
-        namespace: relback
-        psr4_prefix: relback
-        src_path: app

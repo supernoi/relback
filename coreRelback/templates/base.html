@@ -1,0 +1,99 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}{% endblock %}</title>
+
+        <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" /> 
+        
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'css/datatables.css' %}" rel="stylesheet"type="text/css" />
+
+        <style>
+
+            body {
+                    font-family: 'FiraCode', sans-serif;
+                    font-size: 13px;
+                }
+
+        </style>
+
+    </head>
+    <body>
+        <span id="top"></span>
+
+            <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+                <div class="container-fluid">
+                    <div class="nav navbar-nav navbar-header">
+                        <a class="navbar-brand" href="{% url 'coreRelback:index' %}"><font face='Courier' size='20' color='bdccd4'>rel</font><font face='FiraCode, Courier New Bold,Courier' size='20' color='569bbe'><b>Back</b></font></a>
+                    </div>
+
+                    <div class="navbar-text">
+                        <left>Created by <a href="{% url 'coreRelback:creators' %}">Creators</a>, duh!</left>
+                    </div>
+
+                    <div id="navbar" class="navbar">					
+                        <ul class="navbar-nav navbar-right">
+                            <li class='nav-item'><a class='nav-link' href="{% url 'coreRelback:index' %}">Home</a></li>
+                            <li class='nav-item'><a class='nav-link' href="{% url 'coreRelback:reportRead' %}">Reports</a></li>
+                            <li class='nav-item'><a class='nav-link' href="{% url 'coreRelback:client' %}">Clients</a></li>		
+                            <li class='nav-item'><a class='nav-link' href="{% url 'coreRelback:host' %}">Hosts</a></li>
+                            <li class='nav-item'><a class='nav-link' href="{% url 'coreRelback:database' %}">Databases</a></li>
+                            <li class='nav-item'><a class='nav-link' href="{% url 'coreRelback:policies' %}">Backup Policies</a></li>
+
+                            <li>&nbsp&nbsp&nbsp</li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+        <br><br><br><br><br><br>
+
+        {% block content %}
+
+        {% endblock %}
+
+        <br><br>
+
+        <footer class="container-fluid text-center">
+            <a href="#top" title="To Top">
+                <span class="glyphicon glyphicon-chevron-up"></span>
+            </a>
+            <p><h3>Random Report Company</h3></p>
+                <a target="_blank" href="https://github.com/supernoi/relback" alt="GitHub of relBack">
+                    <span class="mega-octicon octicon-mark-github"></span>/relBack
+                </a>
+            <p><b>relBack v1.0.0</b></p>
+            <p>Created by <a href="{% url 'coreRelback:index' %}">Creators</a>, duh!</p>
+
+            <br>
+        </footer>
+
+        <!-- Scripts -->
+        <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/jquery.slim.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/nanobar.min.js' %}"></script>
+
+        <script type="text/javascript" src="{% static 'js/moment.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/datatables.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/datatime-moment.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+
+        <link href= "{% static 'css/fonts.css' %}" rel='stylesheet' type='text/css'>
+
+        <script>
+            var options = {
+                bg: '#569bbe',
+            };
+
+            var nanobar = new Nanobar(options);
+            nanobar.go(10);
+            nanobar.go(100);
+        </script>
+
+    </body>
+</html>
