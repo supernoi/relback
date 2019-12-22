@@ -80,6 +80,9 @@ DATABASES = {
         'NAME': 'databasesServer:1521/orclpdb',
         'USER': 'relback',
         'PASSWORD': 'relback',
+        'TEST': {
+            'MIRROR': 'default',
+        }
     }
 }
 
