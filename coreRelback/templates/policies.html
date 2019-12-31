@@ -6,6 +6,15 @@
 
 {%  block content  %}
 
+    <style>
+        th {
+            text-align:center
+        }
+        td {
+            text-align:center
+        }
+    </style>
+
     <div class="container container-fluid"> 
         <h1>Backup Policy list</h1>  
         
@@ -185,25 +194,26 @@
 
         <div class="panel panel-default">
             <table class="table table-striped">
-                <tr>
-                    <th class="text-center">Id Policy</th class="text-center">
-                    <th class="text-center">Hostname</th class="text-center">
-                    <th class="text-center">DB_NAME</th class="text-center">
-                    <th class="text-center">Backup Type</th class="text-center">
-                    <th class="text-center">Status</th class="text-center">
-                    <th class="text-center">Description</th class="text-center">
-                    <th class="text-center">Option</th class="text-center">	
-
-                </tr> 
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Id Policy</th>
+                        <th scope="col">Hostname</th>
+                        <th scope="col">DB_NAME</th>
+                        <th scope="col">Backup Type</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Option</th>	
+                    </tr> 
+                </thead>
             {% for p in policies %}
                 <tr>
-                    <td class="text-center">{{ p.id_policy }}</td>
-                    <td class="text-center">{{ p.id_host.hostname }}</td>
-                    <td class="text-center">{{ p.id_database.db_name }}</td>
-                    <td class="text-center">{{ p.backup_type }}</td>
-                    <td class="text-center">{{ p.status }}</td>
-                    <td class="text-center">{{ p.description }}</td>
-                    <td class="text-center">
+                    <td>{{ p.id_policy }}</td>
+                    <td>{{ p.id_host.hostname }}</td>
+                    <td>{{ p.id_database.db_name }}</td>
+                    <td>{{ p.backup_type }}</td>
+                    <td>{{ p.status }}</td>
+                    <td>{{ p.description }}</td>
+                    <td>
                         <a href="" data-target="#modalReadDetail-{{ p.id_policy }}" id="fetch" data-toggle="modal" >
                             <img src="{% static 'images/icons/info.svg' %}" width="32" height="32" title="Details">
                         </a>                        

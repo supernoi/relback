@@ -6,6 +6,15 @@
 
 {% block content %}
 
+    <style>
+        th {
+            text-align:center
+        }
+        td {
+            text-align:center
+        }
+    </style>
+
 <div class="container container-fluid"> 
         <h1>Hosts list</h1>  
         
@@ -83,18 +92,20 @@
     
         <div class="panel panel-default">
             <table class="table table-striped">
-                <tr>
-                    <td class="text-center"><h4><strong>Client Name</strong></h4></td>
-                    <td class="text-center"><h4><strong>Hostname</strong></h4></td>
-                    <td class="text-center"><h4><strong>Description</strong></h4></td>
-                    <td class="text-center"><h4><strong>Options</strong></h4></td>
-                </tr>
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Client Name</th>
+                        <th scope="col">Hostname</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Options</th>
+                    </tr>
+                </thead>
             {% for h in hosts %}
                 <tr>
-                    <td class="text-center">{{ h.id_client.name }}</td>
-                    <td class="text-center">{{ h.hostname }}</td>
-                    <td class="text-center">{{ h.description }}</td>
-                    <td class="text-center">
+                    <td>{{ h.id_client.name }}</td>
+                    <td>{{ h.hostname }}</td>
+                    <td>{{ h.description }}</td>
+                    <td>
                         <a href="" data-target="#modalReadDetail-{{ h.id_host }}" id="fetch" data-toggle="modal" >
                             <img src="{% static 'images/icons/info.svg' %}" width="32" height="32" title="Details">
                         </a>                        

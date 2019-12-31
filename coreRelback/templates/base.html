@@ -13,26 +13,21 @@
         <link href="{% static 'css/datatables.css' %}" rel="stylesheet"type="text/css" />
 
         <style>
-
-            body {
-                    font-family: 'FiraCode', sans-serif;
-                    font-size: 13px;
-                }
-
+            body { font-family: 'Roboto', sans-serif; }
         </style>
 
     </head>
     <body>
         <span id="top"></span>
 
-            <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+            <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark w-500">
                 <div class="container-fluid">
                     <div class="nav navbar-nav navbar-header">
-                        <a class="navbar-brand" href="{% url 'coreRelback:index' %}"><font face='Courier' size='20' color='bdccd4'>rel</font><font face='FiraCode, Courier New Bold,Courier' size='20' color='569bbe'><b>Back</b></font></a>
-                    </div>
-
-                    <div class="navbar-text">
-                        <left>Created by <a href="{% url 'coreRelback:creators' %}">Creators</a>, duh!</left>
+                        <a class="navbar-brand" href="{% url 'coreRelback:index' %}">
+                            <font face='Courier' color='bdccd4'>rel</font><font face='Roboto, Courier New Bold,Courier' color='569bbe'><b>Back</b></font></a>
+                        <div class="navbar-text">
+                            <left>Created by <a href="{% url 'coreRelback:creators' %}">Creators</a>, duh!</left>
+                        </div>
                     </div>
 
                     <div id="navbar" class="navbar">					
@@ -43,14 +38,12 @@
                             <li class='nav-item'><a class='nav-link' href="{% url 'coreRelback:host' %}">Hosts</a></li>
                             <li class='nav-item'><a class='nav-link' href="{% url 'coreRelback:database' %}">Databases</a></li>
                             <li class='nav-item'><a class='nav-link' href="{% url 'coreRelback:policies' %}">Backup Policies</a></li>
-
-                            <li>&nbsp&nbsp&nbsp</li>
                         </ul>
                     </div>
                 </div>
             </nav>
 
-        <br><br><br><br><br><br>
+        <br><br><br><br>
 
         {% block content %}
 
@@ -59,17 +52,20 @@
         <br><br>
 
         <footer class="container-fluid text-center">
-            <a href="#top" title="To Top">
-                <span class="glyphicon glyphicon-chevron-up"></span>
-            </a>
-            <p><h3>Random Report Company</h3></p>
-                <a target="_blank" href="https://github.com/supernoi/relback" alt="GitHub of relBack">
-                    <span class="mega-octicon octicon-mark-github"></span>/relBack
+            <!-- <div class="row"> -->
+                <a href="#top" title="To Top">
+                    <span class="glyphicon glyphicon-chevron-up"></span>
                 </a>
-            <p><b>relBack v1.0.0</b></p>
-            <p>Created by <a href="{% url 'coreRelback:index' %}">Creators</a>, duh!</p>
-
-            <br>
+                <p><h3>Random Report Enterprise Company</h3></p>
+                <p>
+                    <a target="_blank" href="https://github.com/supernoi/relback" alt="GitHub of relBack">
+                        <h6>
+                            <img src="{% static 'images/GitHub-Mark-32px.png' %}" alt="GitHub of relBack" style="width:21px;height:21px;"><b>/relBack</b>
+                        </h6>                        
+                    </a>
+                </p>
+                <p>relBack v1.0</p>
+                <br>
         </footer>
 
         <!-- Scripts -->

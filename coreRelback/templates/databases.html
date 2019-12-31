@@ -6,6 +6,15 @@
 
 {% block content %}
 
+    <style>
+        th {
+            text-align:center
+        }
+        td {
+            text-align:center
+        }
+    </style>
+
     <div class="container container-fluid"> 
         <h1>Databases list</h1>         
 
@@ -95,22 +104,24 @@
 
         <div class="panel panel-default">
             <table class="table table-striped">
-                <tr>
-                    <th class="text-center"><h4><strong>Client Name</strong></h4></th>
-                    <th class="text-center"><h4><strong>Hostname</strong></h4></th>
-                    <th class="text-center"><h4><strong>DB_NAME</strong></h4></th>
-                    <th class="text-center"><h4><strong>DBID</strong></h4></th>			
-                    <th class="text-center"><h4><strong>Description</strong></h4></th>
-                    <th class="text-center"><h4><strong>Options</strong></h4></th>
-                </tr> 
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"><b>Client Name</b></th>
+                        <th scope="col"><b>Hostname</b></th>
+                        <th scope="col"><b>DB_NAME</b></th>
+                        <th scope="col"><b>DBID</b></th>			
+                        <th scope="col"><b>Description</b></th>
+                        <th scope="col"><b>Options</b></th>
+                    </tr> 
+                </thead>
             {% for d in databases %}
                 <tr>
-                    <td class="text-center">{{ d.id_client.name }}</td>
-                    <td class="text-center">{{ d.id_host.hostname }}</td>
-                    <td class="text-center">{{ d.db_name }}</td>
-                    <td class="text-center">{{ d.dbid }}</td>
-                    <td class="text-center">{{ d.description }}</td>
-                    <td class="text-center">
+                    <td>{{ d.id_client.name }}</td>
+                    <td>{{ d.id_host.hostname }}</td>
+                    <td>{{ d.db_name }}</td>
+                    <td>{{ d.dbid }}</td>
+                    <td>{{ d.description }}</td>
+                    <td>
                         <a href="" data-target="#modalReadDetail-{{ d.id_database }}" id="fetch" data-toggle="modal" >
                             <img src="{% static 'images/icons/info.svg' %}" width="32" height="32" title="Details">
                         </a>                        
@@ -243,7 +254,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title">Confirmation</h4>
+                                <h4 class="modal-title">Confirmation
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>                                
                             </div>
                             <div class="modal-body">
