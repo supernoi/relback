@@ -19,7 +19,7 @@
         <h1>Databases list</h1>         
 
         <br>
-        <a href="" data-target="#modalAddNew" id="fetch" data-toggle="modal"  class="btn btn-primary">Add New</a>
+        <a href="" data-target="#modalAddNew" id="fetch" data-toggle="modal"  class="btn btn-outline-primary">Add New</a>
         <br><br>
 
     <!-- Modal of addNew -->
@@ -92,8 +92,8 @@
                             </div>
                             
                             <div class="modal-footer">
-                                <a class="btn btn-default" data-dismiss="modal">Close</a>
-                                <button class="btn btn-primary" type="submit">Add</button>							
+                                <a class="btn btn-outline-secondary" data-dismiss="modal">Close</a>
+                                <button class="btn btn-outline-primary" type="submit">Add</button>							
                             </div>
                         </form>
                     </div>
@@ -163,7 +163,7 @@
                                 </ul>
                             </div>
                             <div class="modal-footer">
-                                <a class="btn btn-default" data-dismiss="modal">Close</a>								
+                                <a class="btn btn-outline-secondary" data-dismiss="modal">Close</a>								
                             </div>
                         </div>
                     </div>
@@ -240,7 +240,7 @@
                                     </div>
                                 </div>	
                                 <div class="modal-footer">
-                                    <a class="btn btn-default" data-dismiss="modal">Close</a>
+                                    <a class="btn btn-outline-secondary" data-dismiss="modal">Close</a>
                                     <button class="btn btn-warning" type="submit">Update</button> 
                                 </div>
                             </form>
@@ -261,8 +261,8 @@
                                 <h5>Really want to delete the client <b>{{ d.db_name }}</b>?</h5>
                             </div>
                             <div class="modal-footer">
-                                <a class="btn btn-default" data-dismiss="modal">Close</a>
-                                <a href="{% url 'coreRelback:databaseDelete' d.id_database %}" class="btn btn-danger">Delete</a>
+                                <a class="btn btn-outline-secondary" data-dismiss="modal">Close</a>
+                                <a href="{% url 'coreRelback:databaseDelete' d.id_database %}" class="btn btn-outline-danger">Delete</a>
                             </div>
                         </div>
                     </div>

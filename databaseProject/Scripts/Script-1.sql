@@ -1,12 +1,1 @@
-SELECT * 
-FROM clients
-WHERE ID_CLIENT = 27;
 
-SELECT * 
-FROM hosts;
-
-SELECT *
-FROM databases;
-
-SELECT * 
-FROM BACKUP_POLICIES bp

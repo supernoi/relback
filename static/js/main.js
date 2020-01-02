@@ -11,7 +11,7 @@ $(document).ready(function() {
 
     $.fn.dataTable.moment( 'DD/MM/YY HH:mm' );
 
-    $('#myTable').DataTable( {
+    $('#tableReport').DataTable( {
     
         "pageLength": 25,
         "lengthChange": true,

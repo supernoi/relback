@@ -18,6 +18,21 @@
     <div class="container container-fluid"> 
         <h1>Backup Policy list</h1>  
         
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+
         <br>
             <a href="" data-target="#modalAddNew" id="fetch" data-toggle="modal" class="btn btn-primary">Add New</a>
         <br><br>
@@ -241,13 +256,13 @@
                                         <b>Id Policy:</b> {{ p.id_policy }} 
                                     </li>
                                     <li>
-                                        <b>Client name:</b> {{ p.client.name }} 
+                                        <b>Client name:</b> {{ p.id_client.name }} 
                                     </li>
                                     <li>
-                                        <b>Database(DB_NAME):</b> {{ p.database.db_name }} 
+                                        <b>Database(DB_NAME):</b> {{ p.id_database.db_name }} 
                                     </li>
                                     <li>
-                                        <b>Hostname:</b> {{ p.host.hostname }}
+                                        <b>Hostname:</b> {{ p.id_host.hostname }}
                                     </li>
                                     <li>
                                         <b>Backup Type:</b> {{ p.backup_type }}

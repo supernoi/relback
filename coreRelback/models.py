@@ -99,7 +99,7 @@ class BackupPolicies(models.Model):
     class Meta:
         managed = False
         db_table = 'backup_policies'
-        unique_together = (('id_database', 'id_client', 'id_host'),)
+        #unique_together = (('id_database', 'id_client', 'id_host'),)
 
 
 class Schedules(models.Model):
@@ -238,14 +238,13 @@ class VwRmanDatabase(models.Model):
 class VwRmanOutput(models.Model):
     db_key = models.FloatField()
     session_key = models.FloatField()
-    recid = models.FloatField()
+    recid = models.FloatField(primary_key=True)
     stamp = models.FloatField()
     output = models.CharField(max_length=130)
 
     class Meta:
         managed = False  # Created from a view. Don't remove.
         db_table = 'vw_rman_output'
-
 
 class VwRmanStatus(models.Model):
     db_key = models.FloatField()

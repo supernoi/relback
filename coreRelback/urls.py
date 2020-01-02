@@ -9,7 +9,6 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
     path('creators/', views.creators, name='creators'),
-    path('reports/', views.reportRead, name='reportRead'),
     # Routes - Clients
     path('client/', views.clientRead, name='client'),
     path('client/create/', views.clientCreate, name='clientCreate'),
@@ -30,4 +29,7 @@ urlpatterns = [
     path('policies/create/', views.policiesCreate, name='policiesCreate'),
     path('policies/update/<int:idPolicy>/', views.policiesUpdate, name='policiesUpdate'),
     path('policies/delete/<int:idPolicy>/', views.policiesDelete, name='policiesDelete'),
+    # Routes - Reports
+    path('reports/', views.reportRead, name='reportRead'),
+    path('reports/readLogDetail/<int:idPolicy>/<int:dbKey>/<int:sessionKey>/', views.reportReadLogDetail, name='reportReadLogDetail'),
 ]

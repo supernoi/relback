@@ -4,12 +4,12 @@
 		"oracle_thin-16e95869316-6e8186b394f0698c": {
 			"provider": "oracle",
 			"driver": "oracle_thin",
-			"name": "ORCL.system",
+			"name": "ORCLPDB.system",
 			"save-password": true,
 			"read-only": false,
 			"configuration": {
-				"database": "ORCL",
-				"url": "jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = databasesserver)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = orcl) ) )",
+				"database": "ORCLPDB",
+				"url": "jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = databasesserver)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = orclpdb) ) )",
 				"home": "/opt/oracle/instantclient_19_5",
 				"type": "dev",
 				"properties": {
@@ -33,7 +33,7 @@
 		"oracle_thin-16e98106980-ca3587e180e6a59": {
 			"provider": "oracle",
 			"driver": "oracle_thin",
-			"name": "ORCL.relback",
+			"name": "ORCLPDB.relback",
 			"save-password": true,
 			"read-only": false,
 			"configuration": {
@@ -54,9 +54,11 @@
 					"@dbeaver-connection-type@": "TNS",
 					"@dbeaver-check-schema-content@": "false",
 					"@dbeaver-session-language@": "ENGLISH",
+					"@dbeaver-session-territory@": "BRAZIL",
 					"@dbeaver-meta-use-sys-schema@": "false",
 					"@dbeaver-always-show-dba@": "false"
-				}
+				},
+				"handlers": {}
 			},
 			"filters": [
 				{
@@ -104,7 +106,7 @@
 			"name": "Development",
 			"color": "255,255,255",
 			"description": "Regular development database",
-			"auto-commit": true,
+			"auto-commit": false,
 			"confirm-execute": false,
 			"confirm-data-change": false
 		}
