@@ -64,7 +64,7 @@
                                 <div class="col-md-9">
                                     <div class="input-group">
                                         <span class="input-group-addon">Policy Name</span>					
-                                        <input name="policy_name" type="text" class="form-control" value="">
+                                        <input required  name="policy_name" type="text" class="form-control" value="">
                                     </div>
                                 </div>
                             </div>
@@ -135,35 +135,35 @@
                                 <div class="col-md-2">
                                         <div class="input-group">
                                                 <span class="input-group-addon">Minute</span>					
-                                                <input name="minute" type="text" class="form-control" value="">
+                                                <input required  name="minute" type="text" class="form-control" value="">
                                         </div>
                                     </div>
 
                                 <div class="col-md-2">
                                     <div class="input-group">
                                             <span class="input-group-addon">Hour</span>					
-                                            <input name="hour" type="text" class="form-control" value="">
+                                            <input required  name="hour" type="text" class="form-control" value="">
                                     </div>
                                 </div>
 
                                 <div class="col-md-2">
                                     <div class="input-group">
                                             <span class="input-group-addon">Day</span>					
-                                            <input name="day" type="text" class="form-control" value="">
+                                            <input required  name="day" type="text" class="form-control" value="">
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="input-group">
                                             <span class="input-group-addon">Day Month</span>					
-                                            <input name="month" type="text" class="form-control" value="">
+                                            <input required  name="month" type="text" class="form-control" value="">
                                     </div>
                                 </div>
 
                                 <div class="col-md-3">
                                     <div class="input-group">
                                             <span class="input-group-addon">Day Week</span>					
-                                            <input name="day_week" type="text" class="form-control" value="">
+                                            <input required  name="day_week" type="text" class="form-control" value="">
                                     </div>
                                 </div>
 
@@ -173,14 +173,14 @@
                                 <div class="col-md-6">
                                     <div class="input-group">
                                             <span class="input-group-addon">Duration Estimate</span>					
-                                            <input name="duration" type="text" class="form-control" value="">
+                                            <input required  name="duration" type="text" class="form-control" value="">
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="input-group">
                                             <span class="input-group-addon">Backup Size Estimate</span>					
-                                            <input name="size_backup" type="text" class="form-control" value="">
+                                            <input required  name="size_backup" type="text" class="form-control" value="">
                                     </div>
                                 </div>
                             </div>
@@ -189,14 +189,20 @@
                                 <div class="col-md-12">
                                     <div class="input-group">
                                             <span class="input-group-addon">Description</span>					
-                                            <input name="description" type="text" class="form-control" value="">
+                                            <input required  name="description" type="text" class="form-control" value="">
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="modal-footer">
-                                <a class="btn btn-default" data-dismiss="modal">Close</a>
-                                <button class="btn btn-primary" type="submit">Add</button>							
+                            <div class="modal-footer">                                                               
+                                <button class="btn waves-effect waves-light green" type="submit" name="action">
+                                    Add
+                                    <i class="material-icons left">add</i>
+                                </button>
+                                <a class="modal-close btn waves-effect waves-light">
+                                    Back
+                                    <i class="material-icons left">exit_to_app</i>                                    
+                                </a>							
                             </div>
 
                         </form>
@@ -337,7 +343,7 @@
                                             <div class="col-md-9">
                                                 <div class="input-group">
                                                         <span class="input-group-addon">Policy Name</span>					
-                                                        <input name="policy_name" type="text" class="form-control" value="{{ p.policy_name }}">
+                                                        <input required  name="policy_name" type="text" class="form-control" value="{{ p.policy_name }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -417,35 +423,35 @@
                                             <div class="col-md-2">
                                                 <div class="input-group">
                                                         <span class="input-group-addon">Minute</span>					
-                                                        <input name="minute" type="text" class="form-control" value="{{ p.minute }}">
+                                                        <input required  name="minute" type="text" class="form-control" value="{{ p.minute }}">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <div class="input-group">
                                                         <span class="input-group-addon">Hour</span>					
-                                                        <input name="hour" type="text" class="form-control" value="{{ p.hour }}">
+                                                        <input required  name="hour" type="text" class="form-control" value="{{ p.hour }}">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <div class="input-group">
                                                         <span class="input-group-addon">Day</span>					
-                                                        <input name="day" type="text" class="form-control" value="{{ p.day }}">
+                                                        <input required  name="day" type="text" class="form-control" value="{{ p.day }}">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-2">
                                                 <div class="input-group">
                                                         <span class="input-group-addon">Month</span>					
-                                                        <input name="month" type="text" class="form-control" value="{{ p.month }}">
+                                                        <input required  name="month" type="text" class="form-control" value="{{ p.month }}">
                                                 </div>
                                             </div>
 
                                             <div class="col-md-4">
                                                 <div class="input-group">
                                                         <span class="input-group-addon">Day Week</span>					
-                                                        <input name="day_week" type="text" class="form-control" value="{{ p.day_week }}">
+                                                        <input required  name="day_week" type="text" class="form-control" value="{{ p.day_week }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -454,14 +460,14 @@
                                             <div class="col-md-6">
                                                 <div class="input-group">
                                                         <span class="input-group-addon">Duration Estimate</span>					
-                                                        <input name="duration" type="text" class="form-control" value="{{ p.duration }}">
+                                                        <input required  name="duration" type="text" class="form-control" value="{{ p.duration }}">
                                                 </div>
                                             </div>							
 
                                             <div class="col-md-6">
                                                 <div class="input-group">
                                                         <span class="input-group-addon">Backup Size Estimate</span>					
-                                                        <input name="size_backup" type="text" class="form-control" value="{{ p.size_backup }}">
+                                                        <input required  name="size_backup" type="text" class="form-control" value="{{ p.size_backup }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -470,7 +476,7 @@
                                             <div class="col-md-12">
                                                 <div class="input-group">
                                                         <span class="input-group-addon">Description</span>					
-                                                        <input name="description" type="text" class="form-control" value="{{ p.description }}">
+                                                        <input required  name="description" type="text" class="form-control" value="{{ p.description }}">
                                                 </div>
                                             </div>
                                         </div>

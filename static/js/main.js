@@ -1,11 +1,32 @@
+// MaterializeCSS - Tab
 
-// Basic dataTable
+$(document).ready(function(){
+    $('.tabs').tabs({
+        // swipeable : true,
+        responsiveThreshold : 1920
+    });
+});
 
-/*$(document).ready(function(){
-    $('#myTable').DataTable();
-});*/
+// MaterializeCSS - Modal
 
+    $(document).ready(function(){
+        $('.modal').modal();
+    });
 
+// MaterializeCSS - Form - Select
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('select');
+    var instances = M.FormSelect.init(elems, options);
+  });
+
+  // Or with jQuery
+
+  $(document).ready(function(){
+    $('select').formSelect();
+  });
+
+// Datatables used on Reports
 
 $(document).ready(function() {
 

@@ -6,93 +6,68 @@
 
 {% block content %}
 
-    <style>
-        th {
-            text-align:center
-        }
-        td {
-            text-align:center
-        }
-    </style>
-
-<div class="container container-fluid"> 
-        <h1>Hosts list</h1>  
-        
-        <br>
-        <a href="" data-target="#modalAddNew" id="fetch" data-toggle="modal" class="btn btn-primary">Add New</a>
+    <div class="container">
+        <div class="left-align">
+            <h1>Hosts list</h1>  
+            <a href="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
+                <i class="material-icons">add</i>
+            </a>
+        </div>
         <br><br>
        
         <!-- Modal of addNew -->
-    
-            <div class="modal fade" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                         <div class="modal-header">
-                            <h2 class="modal-title">Add new Host</h2>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-    
-                            <form class="form-horizontal" action="{% url 'coreRelback:hostCreate' %}" method="POST">                                
-                                {% csrf_token %}
-                                
-                                <div class="form-group">
-                                    <div class="col-md-10">
-                                        <div class="input-group">									
-                                            <span class="input-group-addon">Client name</span>
-                                            <select type="id_client" class="form-control" name="id_client">
-                                                <option value="{{ h.id_client }}" selected>{{ h.id_client.name }}</option>
-                                                <option disabled>------</option>
-                                                {% for c in clients %}
-                                                    <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
+            <div class="modal" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">
+                <div class="modal-content">
+                    <div class="row">
+                        <h2>Add new Host</h2>                
+                        <form class="col s12" action="{% url 'coreRelback:hostCreate' %}" method="POST">                                
+                            {% csrf_token %}
+                                                          
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <select type="id_client" name="id_client">
+                                        <option value="" disabled selected>Choose your option</option>                                            
+                                        {% for c in clients %}
+                                            <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label>Client name</label>
                                 </div>
-    
-                                <div class="form-group">
-                                    <div class="col-md-10">
-                                        <div class="input-group">									
-                                            <span class="input-group-addon">Hostname</span>
-                                            <input name="hostname" type="text" class="form-control" value="">
-                                        </div>
-                                    </div>
-                                </div>
-    
-                                <div class="form-group">
-                                    <div class="col-md-8">
-                                        <div class="input-group">					
-                                                <span class="input-group-addon">IP</span>					
-                                                <input name="ip" type="text" class="form-control" value="">
-                                        </div>
-                                    </div>
-                                </div>
-    
-                                <div class="form-group">
-                                    <div class="col-md-12">
-                                        <div class="input-group">
-                                                <span class="input-group-addon">Description</span>					
-                                                <input name="description" type="text" class="form-control" value="">
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="modal-footer">
-                                    <a class="btn btn-default" data-dismiss="modal">Close</a>
-                                    <button class="btn btn-primary" type="submit">Add</button>							
-                                </div>
-                            </form>
                             </div>
-                        </div>
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input required name="hostname" type="text" class="form-control" value="{{ h.description }}">
+                                    <label for="hostname">Hostname</label>
+                                </div>                                
+                                <div class="input-field col s6">					
+                                        <input required name="ip" type="text" class="form-control" value="{{ h.ip }}">
+                                        <label for='ip'>IP Address</label>
+                                </div>
+                            <!-- </div>
+                            <div class="row"> -->
+                                <div class="input-field col s12">			
+                                    <input required name="description" type="text" class="form-control" value="{{ h.description }}">
+                                    <label for="description">Description</label>
+                                </div>                                
+                            </div>                            
+                            <div class="modal-footer">                                                               
+                                <button class="btn waves-effect waves-light green" type="submit" name="action">
+                                    Add
+                                    <i class="material-icons left">add</i>
+                                </button>
+                                <a class="modal-close btn waves-effect waves-light">
+                                    Back
+                                    <i class="material-icons left">exit_to_app</i>                                    
+                                </a>							
+                            </div>
+                        </form>
                     </div>
                 </div>
+            </div>
         <!-- End Modal of addNew -->
     
-    
-        <div class="panel panel-default">
-            <table class="table table-striped">
-                <thead class="thead-dark">
+            <table class="table striped highlight centered responsive-table">
+                <thead class="">
                     <tr>
                         <th scope="col">Client Name</th>
                         <th scope="col">Hostname</th>
@@ -106,129 +81,120 @@
                     <td>{{ h.hostname }}</td>
                     <td>{{ h.description }}</td>
                     <td>
-                        <a href="" data-target="#modalReadDetail-{{ h.id_host }}" id="fetch" data-toggle="modal" >
-                            <img src="{% static 'images/icons/info.svg' %}" width="32" height="32" title="Details">
+                        <a href="#modalReadDetail-{{ h.id_host }}" class="btn btn-floating waves-effect waves-light modal-trigger blue" >
+                            <i class="material-icons">info</i>
                         </a>                        
-                        <a href="" data-target="#modalUpdate-{{ h.id_host }}" id="fetch" data-toggle="modal">
-                            <img src="{% static 'images/icons/document-text.svg' %}" width="32" height="32" title="Edit">
+                        <a href="#modalUpdate-{{ h.id_host }}" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                            <i class="material-icons">edit</i>
                         </a>                        
-                        <a href="" data-target="#modalDelete-{{ h.id_host }}" id="fetch" data-toggle="modal" >
-                            <img src="{% static 'images/icons/trash.svg' %}" width="32" height="32" title="Delete">
+                        <a href="#modalDelete-{{ h.id_host }}" class="btn btn-floating waves-effect waves-light modal-trigger red" >
+                            <i class="material-icons">delete</i>
                         </a>	
                     </td>	
                 </tr>
     
                 <!-- Modal of ReadDetail -->
     
-                    <div class="modal fade" id="modalReadDetail-{{ h.id_host }}" role="dialog" aria-labelledby="ModalLabel-ReadDetail">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                 <div class="modal-header">
-                                    <h2 class="modal-title">{{ h.hostname }}</h2>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                </div>
-                                <div class="modal-body">								
-                                    <ul>
-                                        <li>
-                                            <b>Client name:</b> {{ h.id_client.name }} 
-                                        </li>
-                                        <li>
-                                            <b>Hostname:</b> {{ h.hostname }}
-                                        </li>
-                                        <li>
-                                            <b>IP Address:</b> {{ h.ip }}
-                                        </li>
-                                        <li>
-                                            <b>Client description:</b> {{ h.description }}
-                                        </li>
-                                    </ul>
-                                </div>
+                    <div class="modal" id="modalReadDetail-{{ h.id_host }}" role="dialog" aria-labelledby="ModalLabel-ReadDetail">
+                        <div class="modal-content">
+                            <div class="row">
+                                <h2>{{ h.hostname }}</h2>							
+                                <ul>
+                                    <li>
+                                        <b>Client name:</b> {{ h.id_client.name }} 
+                                    </li>
+                                    <li>
+                                        <b>Hostname:</b> {{ h.hostname }}
+                                    </li>
+                                    <li>
+                                        <b>IP Address:</b> {{ h.ip }}
+                                    </li>
+                                    <li>
+                                        <b>Client description:</b> {{ h.description }}
+                                    </li>
+                                </ul>
                                 <div class="modal-footer">
-                                    <a class="btn btn-default" data-dismiss="modal">Close</a>								
+                                    <a class="modal-close btn waves-effect waves-light">
+                                        Back
+                                        <i class="material-icons left">exit_to_app</i>                                    
+                                    </a>								
                                 </div>
                             </div>
                         </div>
                     </div>
                 <!-- Modal of update -->
     
-                <div class="modal fade" id="modalUpdate-{{ h.id_host }}" role="dialog" aria-labelledby="ModalLabel-Update">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                             <div class="modal-header">
-                                <h2 class="modal-title">{{ h.hostname }}</h2>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <form class="form-horizontal" action="{% url 'coreRelback:hostUpdate' h.id_host %}" method="POST">
-                                {% csrf_token %}
-                                
-                                <div class="modal-body">
-                                    <div class="row form-group">
-                                        <div class="col-md-6">
-                                            <div class="input-group">									
-                                                <span class="input-group-addon">Client name</span>
-                                                <select type="id_client" class="form-control" name="id_client">
-                                                    <option value="{{ h.id_client }}" selected>{{ h.id_client.name }}</option>
-                                                    <option disabled>------</option>
-                                                    {% for c in clients %}
-                                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
+                <div class="modal" id="modalUpdate-{{ h.id_host }}" role="dialog" aria-labelledby="ModalLabel-Update">
+                    <div class="modal-content">
+                        <div class="row">
+                            <h2>{{ h.hostname }}</h2>
+                        </div>                
+                        <form class="col s12" action="{% url 'coreRelback:hostUpdate' h.id_host %}" method="POST">
+                            {% csrf_token %}
+                                <div class="row">									
+                                    <div class="input-field col s6">
+                                        <select type="id_client" name="id_client">
+                                            <option value="h.id_client" selected>{{ h.id_client.name }}</option>                                            
+                                            {% for c in clients %}
+                                                <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label>Client name</label>
                                     </div>
-
-                                    <div class="row form-group">
-                                        <div class="col-md-8 ">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">Hostname</span>
-                                                <input type="hostname" class="form-control" name="hostname" value="{{ h.hostname }}">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row form-group">
-                                        <div class="col-md-6 ">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">IP Address</span>
-                                                <input t<input type="ip" class="form-control" name="ip" value="{{ h.ip }}">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row form-group">
-                                        <div class="col-md-12 ">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">Description</span>
-                                                <input type="description" class="form-control" name="description" value="{{ h.description }}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>	
-                                <div class="modal-footer">
-                                    <a class="btn btn-default" data-dismiss="modal">Close</a>
-                                    <button class="btn btn-warning" type="submit">Update</button> 
                                 </div>
-                            </form>
-                        </div>
-                    </div>
-                </div> 
+
+                                <div class="row">
+                                    <div class="input-field col s6">
+                                        <input required type="text" class="form-control" name="hostname" value="{{ h.hostname }}">
+                                        <label for="hostname">Hostname</label>
+                                    </div>
+                                    <div class="input-field col s6">
+                                        <input required type="text" class="form-control" name="ip" value="{{ h.ip }}">
+                                        <label for="ip">IP Address</label>
+                                    </div>                                    
+                                </div>
+
+                                <div class="row">
+                                    <div class="input-field col s12">
+                                        <input required type="text" class="form-control" name="description" value="{{ h.description }}">
+                                        <label for="description">Description</label>
+                                    </div>
+                                </div>
+                    	
+                            <div class="modal-footer">
+                                <button class="btn waves-effect waves-light green" type="submit" name="action">
+                                    Update
+                                    <i class="material-icons left">system_update_alt</i>
+                                </button>
+                                <a class="modal-close btn waves-effect waves-light">
+                                    Back
+                                    <i class="material-icons left">exit_to_app</i>                                    
+                                </a>
+                            </div>
+                        </form>
+                    </div> <!-- end modal content -->
+                </div> <!-- end modal -->
                                    
                 <!-- Modal of Delete -->
     
-                <div class="modal fade" id="modalDelete-{{ h.id_host }}" role="dialog" aria-labelledby="SmallModalLabel-Delete">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                             <div class="modal-header">
-                                <h4 class="modal-title">Confirmation</h4>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                            <div class="modal-body">
-                                <h5>Really want to delete the host: <b>{{ h.hostname }}</b>?</h5>
-                            </div>
-                            <div class="modal-footer">
-                                <a class="btn btn-default" data-dismiss="modal">Close</a>
-                                <a href="{% url 'coreRelback:hostDelete' h.id_host %}" id="{{ h.id_host }}" class="btn btn-danger">Delete</a>
-                            </div>
+                <div class="modal" id="modalDelete-{{ h.id_host }}" role="dialog" aria-labelledby="SmallModalLabel-Delete">
+                    <div class="modal-content">
+                        <div class="row">                             
+                            <h2>Confirmation to delete</h2>
+                        </div>
+                        <div class="row">                          
+                            <p>Deleting the Host, all dependents: Databases and Backup Policies will also be deleted.</p>
+                            <p>Really want to delete the host <b>{{ h.hostname }}</b>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a class="modal-close btn waves-effect waves-light">
+                                Back
+                                <i class="material-icons left">exit_to_app</i>                                    
+                            </a> 
+                            <a href="{% url 'coreRelback:hostDelete' h.id_host %}" id="{{ h.id_host }}" class="btn waves-effect waves-light red" type="submit" name="action">
+                                Delete
+                                <i class="material-icons left">delete_forever</i>
+                            </a>
                         </div>
                     </div>
                 </div>

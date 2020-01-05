@@ -116,7 +116,9 @@ def databaseUpdate(request, idDatabase):
         formDatabaseUpdate = formDatabase(request.POST, instance=databaseIdSelect)
         if formDatabaseUpdate.is_valid():
             formDatabaseUpdate.save()
-    return redirect('coreRelback:database', {'form':formDatabaseUpdate})
+        else:
+            return render(request, 'databases.html', {'form': formDatabaseUpdate})
+    return render(request, 'databases.html')
 
 def databaseDelete(request, idDatabase):
     try:

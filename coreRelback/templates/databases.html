@@ -6,100 +6,80 @@
 
 {% block content %}
 
-    <style>
-        th {
-            text-align:center
-        }
-        td {
-            text-align:center
-        }
-    </style>
-
-    <div class="container container-fluid"> 
-        <h1>Databases list</h1>         
-
-        <br>
-        <a href="" data-target="#modalAddNew" id="fetch" data-toggle="modal"  class="btn btn-outline-primary">Add New</a>
+    <div class="container"> 
+        <div class="left-align">
+            <h1>Databases list</h1>  
+            <a href="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
+                <i class="material-icons">add</i>
+            </a>
+        </div>
         <br><br>
 
     <!-- Modal of addNew -->
 
-        <div class="modal fade" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 class="modal-title">Add new Database</h2>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>                        
-                    </div>
-                    <div class="modal-body">
-
-                        <form class="form-horizontal" action="{% url 'coreRelback:databaseCreate' %}" method="POST">
-                            {% csrf_token %}
-                            
-                            <div class="form-group">
-                                <div class="col-md-10">
-                                    <div class="input-group">									
-                                        <span class="input-group-addon">Client name</span>
-                                        <select type="id_client" class="form-control" name="id_client">
-                                            <option value="{{ c.id_client }}" selected='selected' >{{ c.name }}</option>                                            
-                                            {% for c in clients %}
-                                                <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-md-10">
-                                    <div class="input-group">									
-                                        <span class="input-group-addon">Hostname</span>
-                                        <select type="id_host" class="form-control" name="id_host">
-                                            <option value="d.id_host" selected='selected' ></option>
-                                            {% for h in hosts %}
-                                                <option value="{{ h.id_host }}">{{ h.hostname }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-md-10">
-                                    <div class="input-group">					
-                                            <span class="input-group-addon">Database(DB_NAME)</span>					
-                                            <input name="db_name" type="text" class="form-control" value="">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-md-8">
-                                    <div class="input-group">					
-                                            <span class="input-group-addon">DBID</span>					
-                                            <input name="dbid" type="text" class="form-control" value="">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-md-12">
-                                    <div class="input-group">
-                                            <span class="input-group-addon">Description</span>					
-                                            <input name="description" type="text" class="form-control" value="">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="modal-footer">
-                                <a class="btn btn-outline-secondary" data-dismiss="modal">Close</a>
-                                <button class="btn btn-outline-primary" type="submit">Add</button>							
-                            </div>
-                        </form>
-                    </div>
+        <div class="modal" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">            
+            <div class="modal-content">    
+                <div class="row">                
+                    <h2>Add new Database</h2>                                                
                 </div>
-            </div>
-        </div>
+                <div class="row">
+                    <form class="col s12" action="{% url 'coreRelback:databaseCreate' %}" method="POST">
+                        {% csrf_token %}                            
+                        
+                        <div class="row">
+                            <div class="input-field col s6">				
+                                <select type="id_client" name="id_client">
+                                    <option value="" disabled selected>Choose your option</option>                                            
+                                    {% for c in clients %}
+                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label>Client name</label>
+                            </div>
+                        
+                            <div class="input-field col s6">
+                                <select type="id_host" name="id_host">
+                                    <option value="" disabled selected>Choose your option</option>
+                                    {% for h in hosts %}
+                                        <option value="{{ h.id_host }}">{{ h.hostname }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label>Hostname</label>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="input-field col s6">			
+                                <input required  name="db_name" type="text" class="form-control" value="">
+                                <label for="db_name">Database Name(DB_NAME)</label>
+                            </div>                        
+                            <div class="input-field col s6">
+                                <input required  name="dbid" type="text" class="form-control" value="">
+                                <label for="dbid">DBID</label>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="input-field col s12">					
+                                <input required  name="description" type="text" class="form-control" value="">
+                                <label for="description">Description</label>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">                                                               
+                            <button class="btn waves-effect waves-light green" type="submit" name="action">
+                                Add
+                                <i class="material-icons left">add</i>
+                            </button>
+                            <a class="modal-close btn waves-effect waves-light">
+                                Back
+                                <i class="material-icons left">exit_to_app</i>                                    
+                            </a>							
+                        </div>
+                    </form>
+                </div>
+            </div><!-- end modal content-->
+        </div> <!-- end modal -->
     <!-- End Modal of addNew -->
 
         <div class="panel panel-default">
@@ -122,31 +102,30 @@
                     <td>{{ d.dbid }}</td>
                     <td>{{ d.description }}</td>
                     <td>
-                        <a href="" data-target="#modalReadDetail-{{ d.id_database }}" id="fetch" data-toggle="modal" >
-                            <img src="{% static 'images/icons/info.svg' %}" width="32" height="32" title="Details">
+                        <a href="#modalReadDetail-{{ d.id_database }}" class="btn btn-floating waves-effect waves-light modal-trigger blue" >
+                            <i class="material-icons">info</i>
                         </a>                        
-                        <a href="" data-target="#modalUpdate-{{ d.id_database }}" id="fetch" data-toggle="modal">
-                            <img src="{% static 'images/icons/document-text.svg' %}" width="32" height="32" title="Edit">
+                        <a href="#modalUpdate-{{ d.id_database }}" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                            <i class="material-icons">edit</i>
                         </a>                        
-                        <a href="" data-target="#modalDelete-{{ d.id_database }}" id="fetch" data-toggle="modal" >
-                            <img src="{% static 'images/icons/trash.svg' %}" width="32" height="32" title="Delete">
+                        <a href="#modalDelete-{{ d.id_database }}" class="btn btn-floating waves-effect waves-light modal-trigger red" >
+                            <i class="material-icons">delete</i>
                         </a>	
                     </td>	
                 </tr>
 
             <!-- Modal of ReadDetail -->
 
-                <div class="modal fade" id="modalReadDetail-{{ d.id_database }}" role="dialog" aria-labelledby="ModalLabel-ReadDetail">
-                    <div class="modal-dialog">
+                <div class="modal" id="modalReadDetail-{{ d.id_database }}" role="dialog" aria-labelledby="ModalLabel-ReadDetail">
+                    
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h2 class="modal-title">{{ d.db_name }}</h2>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                           <div class="row"> 
+                                <h2>{{ d.db_name }}</h2>                                
                             </div>
-                            <div class="modal-body">								
+                            <div class="row">								
                                 <ul>
                                     <li>
-                                        <b>Client name:</b> {{ d.id_client.name }} 
+                                        <b>Database name:</b> {{ d.id_client.name }} 
                                     </li>
                                     <li>
                                         <b>Hostname:</b> {{ d.id_host.hostname }}
@@ -158,115 +137,106 @@
                                         <b>DBID:</b> {{ d.dbid }}
                                     </li>
                                     <li>
-                                        <b>Client description:</b> {{ d.description }}
+                                        <b>Database description:</b> {{ d.description }}
                                     </li>
                                 </ul>
                             </div>
-                            <div class="modal-footer">
-                                <a class="btn btn-outline-secondary" data-dismiss="modal">Close</a>								
-                            </div>
+                        <div class="modal-footer">
+                            <a class="modal-close btn waves-effect waves-light">
+                                Back
+                                <i class="material-icons left">exit_to_app</i>                                    
+                            </a>
                         </div>
                     </div>
                 </div>	
 
             <!-- Modal of update -->
 
-                <div class="modal fade" id="modalUpdate-{{ d.id_database }}" role="dialog" aria-labelledby="ModalLabel-Update">
-                    <div class="modal-dialog">
+                <div class="modal" id="modalUpdate-{{ d.id_database }}" role="dialog" aria-labelledby="ModalLabel-Update">                    
                         <div class="modal-content">
-                            <div class="modal-header">
-                                <h2 class="modal-title">{{ d.db_name }}</h2>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>                                
+                            <div class="row">
+                                <h2>{{ d.db_name }}</h2>                                                                
                             </div>
-                            <form class="form-horizontal" action="{% url 'coreRelback:databaseUpdate' d.id_database %}" method="POST">
+                            <form class="col s12" action="{% url 'coreRelback:databaseUpdate' d.id_database %}" method="POST">
                                 {% csrf_token %}
                                 
-                                <div class="modal-body">
-                                    <div class="row form-group">
-                                        <div class="col-md-6">
-                                            <div class="input-group">									
-                                                <span class="input-group-addon">Client name</span>
-                                                <select type="id_client" class="form-control" name="id_client">
-                                                        <option value="{{ d.id_client }}" selected="selected">{{ d.id_client.name }}</option>
-                                                        <option disabled>------</option>
-                                                    {% for c in clients %}
-                                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
+                                <div class="row">
+                                    <div class="input-field col s6">				
+                                        <select type="id_client" name="id_client">
+                                            <option value="{{ d.id_client }}" selected>{{ d.id_client.name }}</option>                                            
+                                            {% for c in clients %}
+                                                <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label>Client name</label>
                                     </div>
-
-                                    <div class="row form-group">
-                                        <div class="col-md-6">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">Hostname</span>
-                                                <select type="id_host" class="form-control" name="id_host">
-                                                        <option value="{{ d.id_host }}" selected="selected" >{{ d.id_host.hostname }}</option>
-                                                        <option disabled>------</option>
-                                                    {% for h in hosts %}
-                                                        <option value="{{ h.id_host }}">{{ h.hostname }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
-                                        </div>
+                                
+                                    <div class="input-field col s6">
+                                        <select type="id_host" name="id_host">
+                                            <option value="{{ d.id_host }}" selected>{{ d.id_host.hostname }}</option>
+                                            {% for h in hosts %}
+                                                <option value="{{ h.id_host }}">{{ h.hostname }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label>Hostname</label>
                                     </div>
-
-                                    <div class="row form-group">
-                                        <div class="col-md-8 ">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">Hostname</span>
-                                                <input type="db_name" class="form-control" name="db_name" value="{{ d.db_name }}">
-                                            </div>
-                                        </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s6">			
+                                        <input required  name="db_name" type="text" class="form-control" value="{{ d.db_name }}">
+                                        <label for="db_name">Database Name(DB_NAME)</label>
+                                    </div>                        
+                                    <div class="input-field col s6">
+                                        <input required  name="dbid" type="text" class="form-control" value="{{ d.dbid }}">
+                                        <label for="dbid">DBID</label>
                                     </div>
-
-                                    <div class="row form-group">
-                                        <div class="col-md-6 ">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">DBID</span>
-                                                <input t<input type="dbid" class="form-control" name="dbid" value="{{ d.dbid }}">
-                                            </div>
-                                        </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="input-field col s12">					
+                                        <input required  name="description" type="text" class="form-control" value="{{ d.description }}">
+                                        <label for="description">Description</label>
                                     </div>
-
-                                    <div class="row form-group">
-                                        <div class="col-md-12 ">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">Description</span>
-                                                <input type="description" class="form-control" name="description" value="{{ d.description }}">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>	
+                                </div>
+                                	
                                 <div class="modal-footer">
-                                    <a class="btn btn-outline-secondary" data-dismiss="modal">Close</a>
-                                    <button class="btn btn-warning" type="submit">Update</button> 
+                                    <button class="btn waves-effect waves-light green" type="submit" name="action">
+                                        Update
+                                        <i class="material-icons left">system_update_alt</i>
+                                    </button>
+                                    <a class="modal-close btn waves-effect waves-light">
+                                        Back
+                                        <i class="material-icons left">exit_to_app</i>                                    
+                                    </a>
                                 </div>
                             </form>
-                        </div>
-                    </div>
-                </div>
+                    </div> <!--  end modal content -->
+                </div> <!--  end modal -->
 
             <!-- Modal of Delete -->
 
-                <div class="modal fade" id="modalDelete-{{ d.id_database }}" role="dialog" aria-labelledby="SmallModalLabel-Delete">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title">Confirmation
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>                                
-                            </div>
-                            <div class="modal-body">
-                                <h5>Really want to delete the client <b>{{ d.db_name }}</b>?</h5>
-                            </div>
-                            <div class="modal-footer">
-                                <a class="btn btn-outline-secondary" data-dismiss="modal">Close</a>
-                                <a href="{% url 'coreRelback:databaseDelete' d.id_database %}" class="btn btn-outline-danger">Delete</a>
-                            </div>
+                <div class="modal" id="modalDelete-{{ d.id_database }}" role="dialog" aria-labelledby="SmallModalLabel-Delete">                    
+                    <div class="modal-content">
+                        <div class="row">                             
+                            <h2>Confirmation to delete</h2>
+                        </div>
+                        <div class="row">                          
+                            <p>Deleting the database, all dependents: Backup Policies will also be deleted.</p>
+                            <p>Really want to delete the database <b>{{ d.db_name }}</b>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a class="modal-close btn waves-effect waves-light">
+                                Back
+                                <i class="material-icons left">exit_to_app</i>                                    
+                            </a>
+                            <a href="{% url 'coreRelback:databaseDelete' d.id_database %}" id="{{ d.id_database }}" class="btn waves-effect waves-light red" type="submit" name="action">
+                                Delete
+                                <i class="material-icons left">delete_forever</i>
+                            </a>
                         </div>
                     </div>
                 </div>
+                
 
             {% endfor %}
             </table>
