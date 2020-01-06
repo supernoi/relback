@@ -25,28 +25,28 @@
                                                           
                             <div class="row">
                                 <div class="input-field col s6">
-                                    <select type="id_client" name="id_client">
+                                    <select name="id_client" id="hostSelectAddIdClient">
                                         <option value="" disabled selected>Choose your option</option>                                            
                                         {% for c in clients %}
                                             <option value="{{ c.id_client }}">{{ c.name }}</option>
                                         {% endfor %}
                                     </select>
-                                    <label>Client name</label>
+                                    <label for="id_client" >Client name</label>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="input-field col s6">
-                                    <input required name="hostname" type="text" class="form-control" value="{{ h.description }}">
+                                    <input required name="hostname" type="text" value="{{ h.description }}">
                                     <label for="hostname">Hostname</label>
                                 </div>                                
                                 <div class="input-field col s6">					
-                                        <input required name="ip" type="text" class="form-control" value="{{ h.ip }}">
+                                        <input required name="ip" type="text" value="{{ h.ip }}">
                                         <label for='ip'>IP Address</label>
                                 </div>
                             <!-- </div>
                             <div class="row"> -->
                                 <div class="input-field col s12">			
-                                    <input required name="description" type="text" class="form-control" value="{{ h.description }}">
+                                    <input required name="description" type="text" value="{{ h.description }}">
                                     <label for="description">Description</label>
                                 </div>                                
                             </div>                            
@@ -131,10 +131,11 @@
                         </div>                
                         <form class="col s12" action="{% url 'coreRelback:hostUpdate' h.id_host %}" method="POST">
                             {% csrf_token %}
-                                <div class="row">									
+
+                                <div class="row">
                                     <div class="input-field col s6">
-                                        <select type="id_client" name="id_client">
-                                            <option value="h.id_client" selected>{{ h.id_client.name }}</option>                                            
+                                        <select name="id_client" id="hostSelectUpdateIdClient" >
+                                            <option value="{{ h.id_client }}" selected>{{ h.id_client.name }}</option>                                            
                                             {% for c in clients %}
                                                 <option value="{{ c.id_client }}">{{ c.name }}</option>
                                             {% endfor %}
@@ -145,24 +146,24 @@
 
                                 <div class="row">
                                     <div class="input-field col s6">
-                                        <input required type="text" class="form-control" name="hostname" value="{{ h.hostname }}">
+                                        <input required type="text" name="hostname" value="{{ h.hostname }}">
                                         <label for="hostname">Hostname</label>
                                     </div>
                                     <div class="input-field col s6">
-                                        <input required type="text" class="form-control" name="ip" value="{{ h.ip }}">
+                                        <input required type="text" name="ip" value="{{ h.ip }}">
                                         <label for="ip">IP Address</label>
                                     </div>                                    
                                 </div>
 
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <input required type="text" class="form-control" name="description" value="{{ h.description }}">
+                                        <input required type="text" name="description" value="{{ h.description }}">
                                         <label for="description">Description</label>
                                     </div>
                                 </div>
                     	
                             <div class="modal-footer">
-                                <button class="btn waves-effect waves-light green" type="submit" name="action">
+                                <button class="btn waves-effect waves-light green" type="submit">
                                     Update
                                     <i class="material-icons left">system_update_alt</i>
                                 </button>
@@ -191,7 +192,7 @@
                                 Back
                                 <i class="material-icons left">exit_to_app</i>                                    
                             </a> 
-                            <a href="{% url 'coreRelback:hostDelete' h.id_host %}" id="{{ h.id_host }}" class="btn waves-effect waves-light red" type="submit" name="action">
+                            <a href="{% url 'coreRelback:hostDelete' h.id_host %}" class="btn waves-effect waves-light red" type="submit" name="action">
                                 Delete
                                 <i class="material-icons left">delete_forever</i>
                             </a>

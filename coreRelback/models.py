@@ -43,7 +43,7 @@ class Hosts(models.Model):
     id_host = models.FloatField(primary_key=True)
     hostname = models.CharField(max_length=100)
     description = models.CharField(max_length=100)
-    ip = models.CharField(max_length=15)
+    ip = models.CharField(max_length=39)
     id_client = models.ForeignKey('Clients', models.DO_NOTHING, db_column='id_client', related_name='host_client_id')
     created_id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='created_id_user', related_name='host_user_creator', default=1)
     created_at = models.DateField(auto_now_add=True)
@@ -53,7 +53,6 @@ class Hosts(models.Model):
     class Meta:
         managed = False
         db_table = 'hosts'
-
 
 class Databases(models.Model):
     id_database = models.BigIntegerField(primary_key=True)

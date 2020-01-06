@@ -25,13 +25,13 @@
 
                         <div class="row">
                             <div class="input-field col s6">									
-                                <input required  name="name" id="name" type="text" class="validate" value="{{ name }}">
+                                <input required name="name" id="name" type="text" class="validate" value="{{ name }}">
                                 <label for="name">Client Name</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">					
-                                <input required  name="description" id="description" type="text" class="validate" value="{{ description }}">
+                                <input required name="description" id="description" type="text" class="validate" value="{{ description }}">
                                 <label for="description">Description</label>
                             </div>
                         </div>                                   
@@ -107,13 +107,13 @@
                                     {% csrf_token %}
                                         <div class="row">
                                             <div class="input-field col s6">
-                                                <input required  name="name" id="name" type="text" class="validate" value="{{ c.name }}">
+                                                <input required name="name" id="name" type="text" class="validate" value="{{ c.name }}">
                                                 <label for="name">Name</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="input-field col s12">
-                                                <input required  name="description" type="text" class="validate" value="{{ c.description }}">
+                                                <input required name="description" type="text" class="validate" value="{{ c.description }}">
                                                 <label for="description">Description</label>
                                             </div>
                                         </div>

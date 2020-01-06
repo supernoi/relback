@@ -11,8 +11,8 @@ from .forms import formClient, formHost, formDatabase, formPolicies
 from .models import Clients, Hosts, Databases, BackupPolicies, VwRmanOutput, VwRmanBackupJobDetails
 
 # Debug ipdb
-# from django.http import HttpResponse
-# import ipdb
+from django.http import HttpResponse
+import ipdb
 # ipdb.set_trace()
 
 def index(request):
@@ -83,7 +83,9 @@ def hostUpdate(request, idHost):
         formHostUpdate = formHost(request.POST, instance=hostIdSelected)
         if formHostUpdate.is_valid():
             formHostUpdate.save()
-    return render(request, 'hosts.html')
+        # ipdb.set_trace()
+        return HttpResponse(request, content_type='text/plain')
+    return redirect('coreRelback:host')
 
 def hostDelete(request, idHost):
     try:
@@ -118,7 +120,7 @@ def databaseUpdate(request, idDatabase):
             formDatabaseUpdate.save()
         else:
             return render(request, 'databases.html', {'form': formDatabaseUpdate})
-    return render(request, 'databases.html')
+    return redirect('coreRelback:database')
 
 def databaseDelete(request, idDatabase):
     try:
