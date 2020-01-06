@@ -20,3 +20,10 @@ main {
     margin-top: 0px;
     margin-bottom: 0px;
 }
+
+/* Modal personalization */
+
+.modal-policies { 
+    width: 75% !important ;
+    height: 85% !important ; 
+}
