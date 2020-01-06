@@ -19,6 +19,7 @@ $(document).ready(function(){
         $('select').formSelect();
     });
 
+
 // Datatables used on Reports
 
 $(document).ready(function() {
