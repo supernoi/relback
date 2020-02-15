@@ -15,10 +15,11 @@ urlpatterns = [
     path('client/update/<int:idClient>', views.clientUpdate, name='clientUpdate'),
     path('client/delete/<int:idClient>', views.clientDelete, name='clientDelete'),
     # Routes - Hosts
-    path('host/', views.hostRead, name='host'),
-    path('host/create/', views.hostCreate, name='hostCreate'),
-    path('host/update/<int:idHost>/', views.hostUpdate, name='hostUpdate'),
-    path('hots/delete/<int:idHost>/', views.hostDelete, name='hostDelete'),
+    # path('host/', views.hostRead, name='host'),
+    path('host/', views.hostRead.as_view(), name='host'),
+    path('host/create/', views.hostCreate.as_view(), name='hostCreate'),
+    path('host/update/', views.hostUpdate.as_view(), name='hostUpdate'),
+    path('host/delete/', views.hostDelete.as_view(), name='hostDelete'),
     # Routes - Databases
     path('database/', views.databaseRead, name='database'),
     path('database/create/', views.databaseCreate, name='databaseCreate'),

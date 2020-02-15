@@ -1,10 +1,3 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey has `on_delete` set to the desired behavior.
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
 
@@ -26,7 +19,7 @@ class Users(models.Model):
 
 
 class Clients(models.Model):
-    id_client = models.BigIntegerField(primary_key=True, blank=True)
+    id_client = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100, blank=True, null=True)
     description = models.CharField(max_length=200, blank=True, null=True)
     created_id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='created_id_user', related_name='client_user_creator', blank=True, default=1)
@@ -38,9 +31,14 @@ class Clients(models.Model):
         managed = False
         db_table = 'clients'
 
+    def __str__(self):
+        return self.name
+
+    def __unicode__(self):
+        return unicode(self.id_client)
 
 class Hosts(models.Model):
-    id_host = models.FloatField(primary_key=True)
+    id_host = models.AutoField(primary_key=True)
     hostname = models.CharField(max_length=100)
     description = models.CharField(max_length=100)
     ip = models.CharField(max_length=39)
@@ -53,6 +51,9 @@ class Hosts(models.Model):
     class Meta:
         managed = False
         db_table = 'hosts'
+
+    def __str__(self):
+        return self.hostname
 
 class Databases(models.Model):
     id_database = models.BigIntegerField(primary_key=True)
@@ -72,6 +73,8 @@ class Databases(models.Model):
         db_table = 'databases'
         unique_together = (('id_database', 'id_client', 'id_host'),)
 
+    def __str__(self):
+        return self.db_name
 
 class BackupPolicies(models.Model):
     id_policy = models.BigIntegerField(primary_key=True)

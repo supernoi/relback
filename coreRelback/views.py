@@ -1,6 +1,10 @@
 # Imported from Django
 from django.shortcuts import render, redirect
 from django.db  import connection
+from django.core import serializers
+
+from django.http import JsonResponse
+from django.views.generic import TemplateView, View, DeleteView
 
 # Imported from project relBack
 
@@ -63,37 +67,70 @@ def clientDelete(request, idClient):
 
 # CRUD - Hosts - Initial
 
-def hostCreate(request):
-    if request.method == 'POST':
-        formCreateHost = formHost(request.POST)
-        if formCreateHost.is_valid():
-            formCreateHost.save()
-        return redirect('coreRelback:host')
-    formCreateHost = formHost()
-    return render(request, 'hosts.html', {'hostForm':formCreateHost})
+class hostRead(TemplateView):
+    template_name = 'hosts.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['hosts'] = Hosts.objects.all().order_by('id_host')
+        context['clients'] = Clients.objects.all().order_by('name')
+        return context
 
-def hostRead(request):
-    clients = Clients.objects.all().order_by('pk')
-    hosts = Hosts.objects.all().order_by('pk')
-    return render(request, 'hosts.html', {'clients':clients, 'hosts':hosts})
+class hostCreate(View):
+    def get(self, request):
+        idClient = request.GET.get('id_client', None)
+        hostname = request.GET.get('hostname', None)
+        ip = request.GET.get('ip', None)
+        description = request.GET.get('description', None)
 
-def hostUpdate(request, idHost):
-    hostIdSelected = Hosts.objects.get(pk=idHost)
-    if request.method == 'POST':
-        formHostUpdate = formHost(request.POST, instance=hostIdSelected)
-        if formHostUpdate.is_valid():
-            formHostUpdate.save()
+        obj = Hosts.objects.create(
+            id_client_id=idClient,
+            hostname=hostname,
+            ip=ip,
+            description=description,
+        )
+
+        host = {'id_host':obj.id_host, 'id_client':obj.id_client_id, 'client_name':obj.id_client.name, 'hostname':obj.hostname, 'ip':obj.ip, 'description':obj.description}
+
+        data = {
+            'host': host
+        }
         # ipdb.set_trace()
-        return HttpResponse(request, content_type='text/plain')
-    return redirect('coreRelback:host')
 
-def hostDelete(request, idHost):
-    try:
-        hostIdSelected = Hosts.objects.get(pk=idHost)
-    except Hosts.DoesNotExist:
-        return redirect('coreRelback:host')
-    hostIdSelected.delete()
-    return redirect('coreRelback:host')
+        return JsonResponse(data)
+
+class hostUpdate(View):
+    def  get(self, request):
+        idhost = request.GET.get('idHost', None)
+        idclient = request.GET.get('idClient', None)
+        hostname = request.GET.get('hostname', None)
+        ip = request.GET.get('ip', None)
+        description = request.GET.get('description', None)
+
+        obj = Hosts.objects.get(pk=idhost)
+        obj.id_client_id = idclient
+        obj.hostname = hostname
+        obj.ip = ip
+        obj.description = description
+
+        # ipdb.set_trace()
+
+        obj.save()
+
+        host = {'id_host':obj.id_host, 'id_client':obj.id_client_id, 'hostname':obj.hostname, 'ip':obj.ip, 'description':obj.description}
+
+        data = {
+            'host': host
+        }
+        return JsonResponse(data)
+
+class hostDelete(View):
+    def get(self, request):
+        id_host = request.GET.get('id_host', None)
+        Hosts.objects.get(pk=id_host).delete()
+        data = {
+            'deleted': True
+        }
+        return JsonResponse(data)
 
 # CRUD - Hosts - End
 
@@ -230,6 +267,4 @@ def reportReadLogDetail(request, idPolicy, dbKey, sessionKey):
 
     policyDetail = BackupPolicies.objects.get(id_policy=idPolicy)
 
-    return render(request, 'reportsReadLog.html', {'reportLog':reportLog, 
-                                                    'execDetail':execDetail, 
-                                                    'policyDetail':policyDetail})
+    return render(request, 'reportsReadLog.html', {'reportLog':reportLog, 'execDetail':execDetail, 'policyDetail':policyDetail})

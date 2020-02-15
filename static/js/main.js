@@ -15,10 +15,9 @@ $(document).ready(function(){
 
 // MaterializeCSS - Form - Select
 
-    $(document).ready(function() {
+    $(document).ready(function(){
         $('select').formSelect();
     });
-
 
 // Datatables used on Reports
 
