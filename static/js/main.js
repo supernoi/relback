@@ -19,6 +19,16 @@ $(document).ready(function(){
         $('select').formSelect();
     });
 
+// MaterializeCSS - Form - Prefilled Input
+
+    // $(document).ready(function() {
+    //     M.updateTextFields();
+    // });
+
+    $(document).ready(function() {
+        Materialize.updateTextFields(); 
+    });
+
 // Datatables used on Reports
 
 $(document).ready(function() {

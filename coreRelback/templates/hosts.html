@@ -102,7 +102,7 @@
                 <div class="modal" id="hostModalUpdate" role="dialog" aria-labelledby="ModalLabel-hostUpdate">
                     <div class="modal-content">
                         <div class="row">
-                            <h2>{{ h.hostname }}</h2>
+                            <h2 id="hostUpdateTitle"></h2>
                         </div>                
                         <form class="col s12" id="hostFormUpdate" action="">
                             {% csrf_token %}
@@ -110,8 +110,8 @@
 
                                 <div class="row">
                                     <div class="input-field col s6"">
-                                        <select id="hostUpdateIdClient" name="id_client">
-                                            <option value="{{ h.id_client }}" selected>{{ h.id_client.name }}</option>                                            
+                                        <select id="hostUpdateClient" name="id_client">
+                                            <option value="" selected disabled></option>                                            
                                             {% for c in clients %}
                                                 <option value="{{ c.id_client }}">{{ c.name }}</option>
                                             {% endfor %}
@@ -123,18 +123,18 @@
                                 <div class="row">
                                     <div class="input-field col s6">
                                         <input required id="hostUpdateHostname" type="text" name="formHostname" value="{{ h.hostname }}">
-                                        <label for="formHostname" class="active">Hostname</label>
+                                        <label class="active" for="formHostname">Hostname</label>
                                     </div>
                                     <div class="input-field col s6">
                                         <input required id="hostUpdateIp" type="text" name="formIp" value="{{ h.ip }}">
-                                        <label for="formIp" class="active">IP Address</label>
+                                        <label class="active" for="formIp">IP Address</label>
                                     </div>                                    
                                 </div>
 
                                 <div class="row">
                                     <div class="input-field col s12">
                                         <input required id="hostUpdateDescription" type="text" name="formDescription" value="{{ h.description }}">
-                                        <label for="formDescription" class="active">Description</label>
+                                        <label class="active" for="formDescription">Description</label>
                                     </div>
                                 </div>
                     	
@@ -159,7 +159,7 @@
 {% block javascript %}
 
 <script>
-    // Create Django Ajax Call
+
     $("form#hostFormCreate").submit(function() {
         
         $.ajax({
@@ -209,13 +209,13 @@
     // Update Django Ajax Call
     $("form#hostFormUpdate").submit(function() {
 
-        if (hostUpdateIdHost && hostUpdateIdClient && hostUpdateHostname && hostUpdateIp && hostUpdateDescription) {
+        if (hostUpdateIdHost && hostUpdateClient && hostUpdateHostname && hostUpdateIp && hostUpdateDescription) {
 
             $.ajax({
                 url: '{% url "coreRelback:hostUpdate" %}',
                 data: {                
                     'idHost':       $('#hostUpdateIdHost').val(),
-                    'idClient':     $('#hostUpdateIdClient option:selected').val(),
+                    'idClient':     $('#hostUpdateClient option:selected').val(),
                     'hostname':     $('#hostUpdateHostname').val(),
                     'ip':           $('#hostUpdateIp').val(),
                     'description':  $('#hostUpdateDescription').val(),
@@ -231,7 +231,7 @@
         } else {
             alert("All fields must have a valid value.");
         }
-        $('form#hostFormUpdate').trigger("reset");
+
         $('#hostModalUpdate').modal('close');
         return false;
     });
@@ -261,12 +261,16 @@
             ip = $(tr_id).find(".hostIp").text();
             description = $(tr_id).find(".hostDescription").text();
 
+            $('#hostUpdateTitle').text(hostname);
             $('#hostUpdateIdHost').val(id_host);
-            $('#hostUpdateClient').val(client_name);
+            document.getElementById("hostUpdateClient").selected.textContent = "client_name";
+            // $('#hostUpdateClient :selected').val();
+            // $('#hostUpdateClient :selected').text(client_name);
             $('#hostUpdateHostname').val(hostname);
             $('#hostUpdateIp').val(ip);
             $('#hostUpdateDescription').val(description);
         }
+
     }
 
     // Delete Django Ajax Call
