@@ -9,6 +9,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
     path('creators/', views.creators, name='creators'),
+    
     # Routes - Clients
     path('client/', views.clientRead, name='client'),
     path('client/create/', views.clientCreate, name='clientCreate'),
@@ -24,7 +25,7 @@ urlpatterns = [
     # Routes - Databases
     path('database/', views.databaseRead, name='database'),
     path('database/create/', views.databaseCreate, name='databaseCreate'),
-    # path('database/update/<int:idDatabase>/', views.databaseUpdate, name='databaseUpdate'),
+    path('database/update/<int:idDatabase>/', views.databaseUpdate, name='databaseUpdate'),
     path('database/delete/<int:idDatabase>/', views.databaseDelete, name='databaseDelete'),
 
     # Routes - Policies
@@ -36,4 +37,5 @@ urlpatterns = [
     # Routes - Reports
     path('reports/', views.reportRead, name='reportRead'),
     path('reports/readLogDetail/<int:idPolicy>/<int:dbKey>/<int:sessionKey>/', views.reportReadLogDetail, name='reportReadLogDetail'),
+
 ]

@@ -15,18 +15,15 @@ $(document).ready(function(){
 
 // MaterializeCSS - Form - Select
 
-    $(document).ready(function(){
-        $('select').formSelect();
+    document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('select');
+        var instances = M.FormSelect.init(elems);
     });
 
 // MaterializeCSS - Form - Prefilled Input
 
-    // $(document).ready(function() {
-    //     M.updateTextFields();
-    // });
-
     $(document).ready(function() {
-        Materialize.updateTextFields(); 
+        M.updateTextFields();
     });
 
 // Datatables used on Reports

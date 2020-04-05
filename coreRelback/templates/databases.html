@@ -161,7 +161,7 @@
                             <div class="row">
                                 <h2>{{ d.db_name }}</h2>                                                                
                             </div>
-                            <form class="col s12" action="{% url 'coreRelback:databaseUpdate' d.id_database %}" method="POST">
+                            <form class="form-horizontal col s12" action="{% url 'coreRelback:databaseUpdate' 0 %}" method="POST">
                                 {% csrf_token %}
                                 
                                 <div class="row">
@@ -233,7 +233,7 @@
                                 Back
                                 <i class="material-icons left">exit_to_app</i>                                    
                             </a>
-                            <a href="{% url 'coreRelback:databaseDelete' d.id_database %}" id="{{ d.id_database }}" class="btn waves-effect waves-light red" type="submit" name="action">
+                            <a href="{% url 'coreRelback:databaseDelete' 0 %}" id="{{ d.id_database }}" class="btn waves-effect waves-light red" type="submit" name="action">
                                 Delete
                                 <i class="material-icons left">delete_forever</i>
                             </a>

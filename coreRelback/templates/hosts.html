@@ -79,14 +79,17 @@
                     {% for h in hosts %}
                         <tr id="host-{{ h.id_host }}">
                             <td class='hostClientName hostData' name='id_name'>{{ h.id_client.name }}</td>
-                            <td class='hostHostname hostData' name='hostname'>{{ h.hostname }}</td>
+                                <input type="hidden" id="hostClientID" name='clientID' value={{ h.id_client.id_client }}>
+                            <td id='hostHostname' class='hostHostname hostData' name='hostname'>{{ h.hostname }}</td>
+                                <input id='hostID' type='hidden' name='hostID' value={{ h.id_host }}>
                             <td class='hostIp hostData' name='ip'>{{ h.ip }}</td>
                             <td class='hostDescription hostData' name='description'>{{ h.description }}</td>
                             <td>                            
                                 <a href="#hostModalUpdate" onClick="hostUpdate({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
                                     <i class="material-icons">edit</i>
-                                </a>                        
-                                <a onClick="hostDelete({{ h.id_host }})" class="btn btn-floating waves-effect waves-light modal-trigger red" >
+                                </a>
+                                <a href="#hostModalDelete" onClick="hostModalDelete({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
+                                <!-- <a onClick="hostDelete({{ h.id_host }})" class="btn btn-floating waves-effect waves-light modal-trigger red" > -->
                                     <i class="material-icons">delete</i>
                                 </a>	
                             </td>	
@@ -99,6 +102,7 @@
                 </table>
 
                 <!-- Start Modal of update -->
+                
                 <div class="modal" id="hostModalUpdate" role="dialog" aria-labelledby="ModalLabel-hostUpdate">
                     <div class="modal-content">
                         <div class="row">
@@ -122,19 +126,19 @@
 
                                 <div class="row">
                                     <div class="input-field col s6">
-                                        <input required id="hostUpdateHostname" type="text" name="formHostname" value="{{ h.hostname }}">
-                                        <label class="active" for="formHostname">Hostname</label>
+                                        <input required id="hostUpdateHostname" type="text" name="formHostname">
+                                        <label id="hostUpdateHostnameLabel" for="formHostname">Hostname</label>
                                     </div>
                                     <div class="input-field col s6">
-                                        <input required id="hostUpdateIp" type="text" name="formIp" value="{{ h.ip }}">
-                                        <label class="active" for="formIp">IP Address</label>
+                                        <input required id="hostUpdateIp" type="text" name="formIp">
+                                        <label id="hostUpdateIpLabel" for="formIp">IP Address</label>
                                     </div>                                    
                                 </div>
 
                                 <div class="row">
                                     <div class="input-field col s12">
-                                        <input required id="hostUpdateDescription" type="text" name="formDescription" value="{{ h.description }}">
-                                        <label class="active" for="formDescription">Description</label>
+                                        <input required id="hostUpdateDescription" type="text" name="formDescription">
+                                        <label id="hostUpdateDescriptionLabel" for="formDescription">Description</label>
                                     </div>
                                 </div>
                     	
@@ -152,10 +156,37 @@
                     </div> <!-- end modal content -->
                 </div> <!-- end modal -->
 
+                <!-- Modal of Delete -->
+                <div class="modal" id="hostModalDelete">                            
+                    <div class="modal-content">
+                        <div class="row">                             
+                            <h2>Confirmation to delete</h2>
+                        </div>
+                        <div class="row">                          
+                            <p>Deleting the Host, all dependent Databases and Backup Policies will also be deleted.</p>
+                            <p>Really want to delete the host: <b id='deleteHostname'></b>?</p>
+                        </div> 
+                        <div class="modal-footer">
+                            <div class="modal-footer">                                    
+                                <a class="modal-close btn waves-effect waves-light">
+                                    Back
+                                    <i class="material-icons left">exit_to_app</i>                                    
+                                </a> 
+                                <a id="hostButtonDelete" class="btn waves-effect waves-light green" type="submit" name="action">
+                                    Delete
+                                    <i class="material-icons left">delete_forever</i>
+                                </a>					
+                            </div>
+                        </div>
+                    </div>                            
+                </div>
+                <!-- End Modal of Delete -->
+
         </div>
         
 
 {% endblock %}
+
 {% block javascript %}
 
 <script>
@@ -173,9 +204,9 @@
             dataType: 'json',
             success: function (data) {
                 if (data.host) {
-                    hostAppendToTable(data.host);
-                    // parent.location.reload();
-                    $("#modalAddNew").modal('close');                    
+                    hostAppendToTable(data.host);                    
+                    $("#modalAddNew").modal('close');
+                    parent.location.reload();                 
                 }
             },
             error : function(xhr,errmsg,err) {
@@ -224,6 +255,7 @@
                 success: function (data) {
                     if (data.host) {
                         updateHostTable(data.host);
+                        parent.location.reload();
                     }
                 }
             });
@@ -255,28 +287,50 @@
     function hostUpdate(id_host) {
         
         if (id_host) {
-            tr_id = "#host-" + id_host;
+
+            tr_id = "#host-" + id_host;            
             client_name = $(tr_id).find(".hostClientName").text();
+            client_id = $(tr_id).find("#hostClientID").val();
             hostname = $(tr_id).find(".hostHostname").text();
             ip = $(tr_id).find(".hostIp").text();
             description = $(tr_id).find(".hostDescription").text();
 
             $('#hostUpdateTitle').text(hostname);
             $('#hostUpdateIdHost').val(id_host);
-            document.getElementById("hostUpdateClient").selected.textContent = "client_name";
-            // $('#hostUpdateClient :selected').val();
-            // $('#hostUpdateClient :selected').text(client_name);
-            $('#hostUpdateHostname').val(hostname);
-            $('#hostUpdateIp').val(ip);
-            $('#hostUpdateDescription').val(description);
-        }
+      
+            $('#hostUpdateClient option:first').prop('selected', true);
+            $('#hostUpdateClient option:first').val(client_id);
+            $('#hostUpdateClient option:first').text(client_name);
+            $('#hostUpdateClient').formSelect();
 
+            $('#hostUpdateHostname').val(hostname);
+            $('#hostUpdateHostnameLabel').addClass(" active");
+
+            $('#hostUpdateIp').val(ip);
+            $('#hostUpdateIpLabel').addClass(" active");
+
+            $('#hostUpdateDescription').val(description);
+            $('#hostUpdateDescriptionLabel').addClass(" active");
+ 
+        }
+    }
+
+    function hostModalDelete(id_host) {
+
+        if(id_host) {
+
+            tr_id = "#host-" + id_host;
+            hostName = $(tr_id).find(".hostHostname").text();
+
+            $('#deleteHostname').text(hostName);
+            $('#hostButtonDelete').attr("onclick","hostDelete("+id_host+")");
+            
+        }
     }
 
     // Delete Django Ajax Call
     function hostDelete(id_host) {
-        var action = confirm("Are you sure you want to delete this Host?");
-        if (action != false) {
+        if (id_host) {
             $.ajax({
                 url: '{% url "coreRelback:hostDelete" %}',
                 data: {
@@ -286,7 +340,8 @@
                 success: function (data) {
                     if (data.deleted) {
                         $("#hostTable #host-" + id_host).remove();
-                        }
+                        $("#hostModalDelete").modal('close');
+                    }
                 }
             });       
         }        
