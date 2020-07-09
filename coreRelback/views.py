@@ -16,7 +16,7 @@ from .models import Clients, Hosts, Databases, BackupPolicies, VwRmanOutput, VwR
 
 # Debug ipdb
 from django.http import HttpResponse
-import ipdb
+# import ipdb
 # ipdb.set_trace()
 
 def index(request):
@@ -27,41 +27,61 @@ def creators(request):
 
 # CRUD - Client - Initial
 
-def clientCreate(request):
-    if request.method == 'POST':
-        formCreateClient = formClient(request.POST)
-        if formCreateClient.is_valid():
-            formCreateClient.save()
-        return redirect('coreRelback:client')
-    formCreateClient = formClient()
-    return render(request, 'clients.html', {'hostForm': formCreateClient})
+class clientRead(TemplateView):
+    template_name = 'clients.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clients'] = Clients.objects.all().order_by('name')
+        return context
 
-def clientRead(request):
-    clients = Clients.objects.all().order_by('pk')
-    return render(request, 'clients.html', {'clients':clients})
+class clientCreate(View):
+    def get(self, request):
+        clientName = request.GET.get('clientName', None)
+        description = request.GET.get('description', None)
 
-def clientReadDetails(request, idClient):
-    clientIdDetails = Clients.objects.get(pk=idClient)
-    return render(request, 'clients.html', {'clientiddetails':clientIdDetails})
+        obj = Clients.objects.create(
+            name=clientName,
+            description=description,
+        )
 
-def clientUpdate(request, idClient):
-    clientIdSelected = Clients.objects.get(pk=idClient)
-    if request.method == 'POST':
-        formClientUpdate = formClient(request.POST, instance=clientIdSelected)
-        if formClientUpdate.is_valid():
-            formClientUpdate.save()
-            return redirect('coreRelback:client')
-    else:
-        formClientUpdate = formClient(instance=clientIdSelected)
-    return render(request, 'clients.html', {'form': formClientUpdate})
+        client = {'id_client':obj.id_client, 'name':obj.name, 'description':obj.description}
 
-def clientDelete(request, idClient):
-    try:
-        clientIdSelected = Clients.objects.get(pk=idClient)
-    except Clients.DoesNotExist:
-        return redirect('coreRelback:client')
-    clientIdSelected.delete()
-    return redirect('coreRelback:client')
+        data = {
+            'client': client
+        }
+        # ipdb.set_trace()
+
+        return JsonResponse(data)
+
+class clientUpdate(View):
+    def  get(self, request):
+        idclient = request.GET.get('idClient', None)
+        name = request.GET.get('name', None)
+        description = request.GET.get('description', None)
+
+        obj = Clients.objects.get(pk=idclient)
+        obj.name = name
+        obj.description = description
+
+        # ipdb.set_trace()
+
+        obj.save()
+
+        client = {'id_client':obj.id_client, 'name':obj.name, 'description':obj.description}
+
+        data = {
+            'client': client
+        }
+        return JsonResponse(data)
+
+class clientDelete(View):
+    def get(self, request):
+        id_client = request.GET.get('id_client', None)
+        Clients.objects.get(pk=id_client).delete()
+        data = {
+            'deleted': True
+        }
+        return JsonResponse(data)
 
 # CRUD - Clients - End
 

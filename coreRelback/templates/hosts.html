@@ -9,7 +9,7 @@
     <div class="container">
         <div class="left-align">
             <h1>Hosts list</h1>  
-            <a href="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
+            <a href="#modalAddNew" title="Add" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
                 <i class="material-icons">add</i>
             </a>
         </div>
@@ -20,7 +20,7 @@
                 <div class="modal-content">
                     <div class="row">
                         <h2>Add new Host</h2>                
-                        <form class="col s12" id="hostFormCreate" action="{% url 'coreRelback:hostCreate' %}" action="">                                
+                        <form class="col s12" id="hostFormCreate" >                                
                             {% csrf_token %}   
                                                           
                             <div class="row">
@@ -85,10 +85,10 @@
                             <td class='hostIp hostData' name='ip'>{{ h.ip }}</td>
                             <td class='hostDescription hostData' name='description'>{{ h.description }}</td>
                             <td>                            
-                                <a href="#hostModalUpdate" onClick="hostUpdate({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                                <a href="#hostModalUpdate" title="Edit" onClick="hostUpdate({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
                                     <i class="material-icons">edit</i>
                                 </a>
-                                <a href="#hostModalDelete" onClick="hostModalDelete({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
+                                <a href="#hostModalDelete" title="Delete" onClick="hostModalDelete({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
                                 <!-- <a onClick="hostDelete({{ h.id_host }})" class="btn btn-floating waves-effect waves-light modal-trigger red" > -->
                                     <i class="material-icons">delete</i>
                                 </a>	
@@ -191,7 +191,7 @@
 
 <script>
 
-    $("form#hostFormCreate").submit(function() {
+    $("#hostFormCreate").submit(function() {
         
         $.ajax({
             url: '{% url "coreRelback:hostCreate" %}',
@@ -214,7 +214,7 @@
             }
         });
 
-        $('form#hostFormCreate').trigger("reset");
+        $("#hostFormCreate").trigger("reset");
         return false;
     });
 
@@ -226,10 +226,10 @@
                 <td class='hostIp hostData' name='hostIp'>${ host.ip }</td>
                 <td class='hostDescription hostData' name='hostDescription'>${ host.description }</td>
                 <td>                            
-                    <a onClick="hostUpdate(${ host.id_host })" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                    <a onClick="hostUpdate(${ host.id_host })" title="Edit" class="btn btn-floating waves-effect waves-light modal-trigger green" >
                         <i class="material-icons">edit</i>
                     </a>                        
-                    <a onClick="hostDelete(${ host.id_host })" class="btn btn-floating waves-effect waves-light modal-trigger red" >
+                    <a onClick="hostDelete(${ host.id_host })" title="Delete" class="btn btn-floating waves-effect waves-light modal-trigger red" >
                         <i class="material-icons">delete</i>
                     </a>	
                 </td>

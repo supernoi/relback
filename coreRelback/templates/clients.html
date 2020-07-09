@@ -9,29 +9,29 @@
     <div class="container"> 
         <div class="left-align">
             <h1>Clients list</h1>  
-            <a href="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green" >
+            <a href="#modalAddNew" title="Add" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green" >
                 <i class="material-icons">add</i>
             </a>
         </div>
         <br><br>
 
         <!-- Modal of addNew -->
-		<div class="modal" id="modalAddNew" aria-labelledby="ModalLabel-AddNew">
+		<div class="modal" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">
             <div class="modal-content">
                 <div class="row">
                     <h2>Add new Client</h2>    
-                    <form class="col s12" action="{% url 'coreRelback:clientCreate' %}" method="POST">
+                    <form class="col s12" id="clientFormCreate">
                         {% csrf_token %}                              
 
                         <div class="row">
                             <div class="input-field col s6">									
-                                <input required name="name" id="name" type="text" class="validate" value="{{ name }}">
-                                <label for="name">Client Name</label>
+                                <input required name="name" id="clientCreateName" type="text" class="validate" value="{{ name }}">
+                                <label for="name">Client name</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">					
-                                <input required name="description" id="description" type="text" class="validate" value="{{ description }}">
+                                <input required name="description" id="clientCreateDescription" type="text" class="validate" value="{{ description }}">
                                 <label for="description">Description</label>
                             </div>
                         </div>                                   
@@ -51,70 +51,54 @@
         </div>
         <!-- End Modal of addNew -->
         
-            <table class="table striped highlight centered responsive-table">
+            <table id="clientTable" class="table striped highlight centered responsive-table">
                 <thead class="">
                     <tr>
-                        <th scope="col">Client Name</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Options</th>
+                        <th>Client name</th>
+                        <th>Description</th>
+                        <th>Options</th>
                     </tr>
                 </thead>
                         {% for c in clients %}
-                            <tr>
-                                <td>{{ c.name }}</td>
-                                <td>{{ c.description }}</td>
-                                <td>
-                                    <a href="#modalReadDetail-{{ c.id_client }}" class="btn btn-floating waves-effect waves-light modal-trigger blue" >
-                                        <i class="material-icons">info</i>
-                                    </a>                        
-                                    <a href="#modalUpdate-{{ c.id_client }}" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                            <tr id="client-{{ c.id_client }}"> 
+                                <td class="name">{{ c.name }}</td>
+                                    <input id='clientID' type='hidden' name='clientID' value={{ h.id_client }}>
+                                <td class="clientDescription" name='description'>{{ c.description }}</td>
+                                <td>                        
+                                    <a href="#clientModalUpdate" title="Edit" onClick="clientUpdate({{ c.id_client }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
                                         <i class="material-icons">edit</i>
                                     </a>                        
-                                    <a href="#modalDelete-{{ c.id_client }}" class="btn btn-floating waves-effect waves-light modal-trigger red" >
+                                    <a href="#clientModalDelete" title="Delete" onClick="clientModalDelete({{ c.id_client }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
                                         <i class="material-icons">delete</i>
                                     </a>	
                                 </td>
                             </tr>
-
-
-                <!-- Modal of ReadDetail -->
-                <div class="modal" id="modalReadDetail-{{ c.id_client }}" role="dialog" aria-labelledby="ModalLabel-ReadDetail">
-                    <div class="modal-content">
-                        <h2 class="modal-title">{{ c.name }}</h2>
-                        <ul>
-                            <li>
-                                <b>Client name: </b> {{ c.name }} 
-                            </li>
-                            <li>
-                                <b>Client description: </b> {{ c.description }}
-                            </li>
-                        </ul>
-                        <div class="modal-footer">
-                            <a class="modal-close btn waves-effect waves-light">
-                                Back
-                                <i class="material-icons left">exit_to_app</i>                                    
-                            </a>								
-                        </div>                            
-                    </div>
-                </div>
-                    <!-- End Modal of ReadDetail -->
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center bg-warning">No client</td>
+                            </tr>
+                        {% endfor %}
 
                     <!-- Modal of update -->
-                        <div class="modal" id="modalUpdate-{{ c.id_client }}" role="dialog" aria-labelledby="ModalLabel-Update">
+                        <div class="modal" id="clientModalUpdate" role="dialog" aria-labelledby="ModalLabel-clientUpdate">
                             <div class="modal-content">
-                                <h2>{{ c.name }}</h2>
-                                <form class="col s12" action="{% url 'coreRelback:clientUpdate' c.id_client %}" method="POST">
+                                <div class="row">
+                                    <h2 id="clientUpdateTitle"></h2>
+                                </div> 
+                                <form class="col s12" id="clientFormUpdate" action="">
                                     {% csrf_token %}
+                                    <input id="clientUpdateIdClient" type="hidden" name="formIdClient"/>
+
                                         <div class="row">
                                             <div class="input-field col s6">
-                                                <input required name="name" id="name" type="text" class="validate" value="{{ c.name }}">
-                                                <label for="name">Name</label>
+                                                <input required id="clientUpdateName" type="text" name="formClientName">
+                                                <label id="clientUpdateNameLabel" for="formName">name</label>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="input-field col s12">
-                                                <input required name="description" type="text" class="validate" value="{{ c.description }}">
-                                                <label for="description">Description</label>
+                                                <input required id="clientUpdateDescription" type="text" name="formClientDescription">
+                                                <label id="clientUpdateDescriptionLabel" for="formClientDescription">Description</label>
                                             </div>
                                         </div>
                                         
@@ -129,14 +113,14 @@
                                             </a> 					
                                         </div>
                                 </form>
-                            </div>
-                        </div>
+                            </div> <!-- end modal content -->
+                        </div> <!-- end modal -->
     
                     <!-- End Modal of update -->
 
                     <!-- Modal of Delete -->
 
-                    <div class="modal" id="modalDelete-{{ c.id_client }}">                            
+                    <div class="modal" id="clientModalDelete">                            
                         <div class="modal-content">
                             <div class="row">                             
                                 <h2>Confirmation to delete</h2>
@@ -151,8 +135,7 @@
                                         Back
                                         <i class="material-icons left">exit_to_app</i>                                    
                                     </a> 
-                                    <a href="{% url 'coreRelback:clientDelete' c.id_client %}" id="{{ c.id_client }}" class="btn waves-effect waves-light green" type="submit" name="action">
-                                        Delete
+                                    <a id="clientButtonDelete" class="btn waves-effect waves-light green" type="submit" name="action">                                        Delete
                                         <i class="material-icons left">delete_forever</i>
                                     </a>					
                                 </div>
@@ -161,7 +144,153 @@
                     </div>
                     <!-- End Modal of Delete -->
 
-                    {% endfor %}
             </table>
      </div> <!-- end div container -->
 {% endblock %}
+
+{% block javascript %}
+
+<script>
+
+    $("#clientFormCreate").submit(function() {
+        
+        $.ajax({
+            url: '{% url "coreRelback:clientCreate" %}',
+            data: {
+                'Name':   $('#clientCreateName').val(),
+                'description':  $('#clientCreateDescription').val(),
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.client) {
+                    clientAppendToTable(data.client);                    
+                    $("#modalAddNew").modal('close');
+                    parent.location.reload();                 
+                }
+            },
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+
+        $("#clientFormCreate").trigger("reset");
+        return false;
+    });
+
+    function clientAppendToTable(client) {
+        $("#clientTable > tbody:last-child").append(`
+            <tr id="client-${ client.id_client }">
+                <td class='clientName clientData' name='clientName'>${ client.Name }</td>
+                <td class='clientDescription clientData' name='clientDescription'>${ client.description }</td>
+                <td>                            
+                    <a onClick="clientUpdate(${ client.id_client })" title="Edit" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                        <i class="material-icons">edit</i>
+                    </a>                        
+                    <a onClick="clientDelete(${ client.id_client })" title="Delete" class="btn btn-floating waves-effect waves-light modal-trigger red" >
+                        <i class="material-icons">delete</i>
+                    </a>	
+                </td>
+            </tr>
+        `);
+    }
+
+    // Update Django Ajax Call
+    $("form#clientFormUpdate").submit(function() {
+
+        if ( clientUpdateName && clientUpdateDescription ) {
+
+            console.log($('#clientUpdateIdClient').val());
+            console.log($('#clientUpdateName').val());
+            console.log($('#clientUpdateDescription').val());
+
+            $.ajax({
+                url: '{% url "coreRelback:clientUpdate" %}',
+                data: {                
+                    'idClient':     $('#clientUpdateIdClient').val(),
+                    'name':         $('#clientUpdateName').val(),
+                    'description':  $('#clientUpdateDescription').val(),
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.client) {
+                        updateclientTable(data.client);
+                        parent.location.reload();
+                    }
+                }
+            });
+
+        } else {
+            alert("All fields must have a valid value.");
+        }
+
+        $('#clientModalUpdate').modal('close');
+        return false;
+    });
+
+    function updateclientTable(client){
+        $("#clientTable #client-" + client.id_client).children().each(function() {
+            var attr = $(this).attr("clientName");
+            if (attr == "clientName") {
+                $(this).text(client.name);
+            } else if (attr == "clientDescription") {
+                $(this).text(client.description);    
+            } 
+        });
+    }
+
+    // Update Django Ajax Call
+    function clientUpdate(id_client) {
+        
+        if (id_client) {
+
+            tr_id = "#client-" + id_client;            
+            name = $(tr_id).find(".name").text();
+            description = $(tr_id).find(".clientDescription").text();
+
+            $('#clientUpdateTitle').text(name);
+            $('#clientUpdateIdClient').val(id_client);    
+
+            $('#clientUpdateName').val(name);
+            $('#clientUpdateNameLabel').addClass(" active");
+
+            $('#clientUpdateDescription').val(description);
+            $('#clientUpdateDescriptionLabel').addClass(" active");
+ 
+        }
+    }
+
+    function clientModalDelete(id_client) {
+
+        if(id_client) {
+
+            tr_id = "#client-" + id_client;
+            name = $(tr_id).find(".clientName").text();
+
+            $('#deleteName').text(name);
+            $('#clientButtonDelete').attr("onclick","clientDelete("+id_client+")");
+            
+        }
+    }
+
+    // Delete Django Ajax Call
+    function clientDelete(id_client) {
+        if (id_client) {
+            $.ajax({
+                url: '{% url "coreRelback:clientDelete" %}',
+                data: {
+                    'id_client': id_client,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.deleted) {
+                        $("#clientTable #client-" + id_client).remove();
+                        $("#clientModalDelete").modal('close');
+                    }
+                }
+            });       
+        }        
+    }
+
+    </script>
+
+{% endblock javascript %}

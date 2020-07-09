@@ -9,12 +9,12 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('admin/', admin.site.urls),
     path('creators/', views.creators, name='creators'),
-    
+
     # Routes - Clients
-    path('client/', views.clientRead, name='client'),
-    path('client/create/', views.clientCreate, name='clientCreate'),
-    path('client/update/<int:idClient>', views.clientUpdate, name='clientUpdate'),
-    path('client/delete/<int:idClient>', views.clientDelete, name='clientDelete'),
+    path('client/', views.clientRead.as_view(), name='client'),
+    path('client/create/', views.clientCreate.as_view(), name='clientCreate'),
+    path('client/update/', views.clientUpdate.as_view(), name='clientUpdate'),
+    path('client/delete/', views.clientDelete.as_view(), name='clientDelete'),
 
     # Routes - Hosts
     path('host/', views.hostRead.as_view(), name='host'),

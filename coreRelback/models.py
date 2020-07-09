@@ -34,9 +34,6 @@ class Clients(models.Model):
     def __str__(self):
         return self.name
 
-    # def __unicode__(self):
-    #     return unicode(self.id_client)
-
 class Hosts(models.Model):
     id_host = models.AutoField(primary_key=True)
     hostname = models.CharField(max_length=100)
