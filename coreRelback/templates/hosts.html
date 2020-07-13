@@ -8,7 +8,7 @@
 
     <div class="container">
         <div class="left-align">
-            <h1>Hosts list</h1>  
+            <h1>Hosts</h1>  
             <a href="#modalAddNew" title="Add" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
                 <i class="material-icons">add</i>
             </a>
@@ -19,7 +19,8 @@
             <div class="modal" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-hostAddNew">
                 <div class="modal-content">
                     <div class="row">
-                        <h2>Add new Host</h2>                
+                        <h2>Add new Host</h2> 
+
                         <form class="col s12" id="hostFormCreate" >                                
                             {% csrf_token %}   
                                                           
@@ -36,17 +37,17 @@
                             </div>
                             <div class="row">
                                 <div class="input-field col s6">
-                                    <input required name="hostname" id="hostCreateHostname" type="text" class="validate" value="{{ h.hostname }}">
+                                    <input required name="hostname" id="hostCreateHostname" type="text" class="validate" value="">
                                     <label for="name">Hostname</label>
                                 </div>                                
                                 <div class="input-field col s6">
-                                    <input required name="ip" id="hostCreateIp" type="text" class="validate" value="{{ h.hostname }}">
+                                    <input required name="ip" id="hostCreateIp" type="text" class="validate" value="">
                                     <label for="ip">IP Address</label>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="input-field col s12">			
-                                    <input required name="description" id="hostCreateDescription" type="text" class="validate" value="{{ description }}">
+                                    <input required name="description" id="hostCreateDescription" type="text" class="validate" value="">
                                     <label for="description">Description</label>
                                 </div>                                
                             </div>                            
@@ -78,18 +79,17 @@
                 </thead>
                     {% for h in hosts %}
                         <tr id="host-{{ h.id_host }}">
-                            <td class='hostClientName hostData' name='id_name'>{{ h.id_client.name }}</td>
-                                <input type="hidden" id="hostClientID" name='clientID' value={{ h.id_client.id_client }}>
-                            <td id='hostHostname' class='hostHostname hostData' name='hostname'>{{ h.hostname }}</td>
-                                <input id='hostID' type='hidden' name='hostID' value={{ h.id_host }}>
-                            <td class='hostIp hostData' name='ip'>{{ h.ip }}</td>
-                            <td class='hostDescription hostData' name='description'>{{ h.description }}</td>
+                            <td class="hostClientName hostData" name="clientName">{{ h.id_client.name }}</td>
+                                <input type="hidden" id="hostClientID" name="clientID" value={{ h.id_client.id_client }}>
+                            <td id="hostHostname" class="hostHostname hostData" name="hostname">{{ h.hostname }}</td>
+                                <input id="hostID" type="hidden" name="hostID" value={{ h.id_host }}>
+                            <td class="hostIp hostData" name="ip">{{ h.ip }}</td>
+                            <td class="hostDescription hostData" name="description">{{ h.description }}</td>
                             <td>                            
                                 <a href="#hostModalUpdate" title="Edit" onClick="hostUpdate({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
                                     <i class="material-icons">edit</i>
                                 </a>
                                 <a href="#hostModalDelete" title="Delete" onClick="hostModalDelete({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
-                                <!-- <a onClick="hostDelete({{ h.id_host }})" class="btn btn-floating waves-effect waves-light modal-trigger red" > -->
                                     <i class="material-icons">delete</i>
                                 </a>	
                             </td>	
@@ -110,6 +110,7 @@
                         </div>                
                         <form class="col s12" id="hostFormUpdate" action="">
                             {% csrf_token %}
+                            
                             <input id="hostUpdateIdHost" type="hidden" name="formIdHost"/>
 
                                 <div class="row">
@@ -283,7 +284,7 @@
         });
     }
 
-    // Update Django Ajax Call
+    // Update Django Ajax Call - load data in the Model window
     function hostUpdate(id_host) {
         
         if (id_host) {

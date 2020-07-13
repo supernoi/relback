@@ -156,36 +156,92 @@ class hostDelete(View):
 
 # CRUD - Databases - Initial
 
-def databaseCreate(request):
-    if request.method == 'POST':
-        formCreateDatabase = formDatabase(request.POST)
-        if formCreateDatabase.is_valid():
-            formCreateDatabase.save()
-    return redirect('coreRelback:database')
+class databaseRead(TemplateView):
+    template_name = 'databases.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)        
+        context['hosts'] = Hosts.objects.all().order_by('hostname')
+        context['clients'] = Clients.objects.all().order_by('name')
+        context['databases'] = Databases.objects.all().order_by('id_database')
 
-def databaseRead(request):
-    clients = Clients.objects.all().order_by('pk')
-    hosts = Hosts.objects.all().order_by('pk')
-    databases = Databases.objects.all().order_by('pk')
-    return render(request, 'databases.html', {'clients':clients, 'hosts':hosts, 'databases':databases})
+        return context
 
-def databaseUpdate(request, idDatabase):
-    databaseIdSelect = Databases.objects.get(pk=idDatabase)
-    if request.method == 'POST':
-        formDatabaseUpdate = formDatabase(request.POST, instance=databaseIdSelect)
-        if formDatabaseUpdate.is_valid():
-            formDatabaseUpdate.save()
-        else:
-            return render(request, 'databases.html', {'form': formDatabaseUpdate})
-    return redirect('coreRelback:database')
+class databaseCreate(View):
+    def get(self, request):
+        idClient = request.GET.get('id_client', None)
+        idHost = request.GET.get('id_host', None)
+        dbName = request.GET.get('db_name', None)
+        dbId = request.GET.get('db_id', None)
+        description = request.GET.get('description', None)
 
-def databaseDelete(request, idDatabase):
-    try:
-        databaseIdSelect = Databases.objects.get(pk=idDatabase)
-    except Databases.DoesNotExist:
-        return redirect('coreRelback:database')
-    databaseIdSelect.delete()
-    return redirect('coreRelback:database')
+        obj = Databases.objects.create(
+            id_client_id=idClient,
+            id_host_id=idHost,
+            db_name=dbName,
+            dbid=dbId,
+            description=description,
+        )
+
+        database = {'id_database':obj.id_database
+                    , 'id_client':obj.id_client_id
+                    , 'client_name':obj.id_client.name
+                    , 'id_host':obj.id_host_id
+                    , 'hostname':obj.id_host.hostname                   
+                    , 'dbname':obj.db_name
+                    , 'dbid':obj.dbid
+                    , 'description':obj.description}
+
+        data = {
+            'database': database
+        }
+        # ipdb.set_trace()
+
+        return JsonResponse(data)
+
+class databaseUpdate(View):
+    def  get(self, request):
+        idDatabase = request.GET.get('id_database', None)
+        idClient = request.GET.get('id_client', None)
+        idHost = request.GET.get('id_host', None)
+        dbName = request.GET.get('db_name', None)
+        dbId = request.GET.get('db_id', None)
+        description = request.GET.get('description', None)
+
+        obj = Databases.objects.get(pk=idDatabase)
+        obj.id_database = idDatabase
+        obj.id_client_id = idClient
+        obj.id_host_id = idHost
+        obj.db_name = dbName
+        obj.dbid = dbId
+        obj.description = description
+
+        # ipdb.set_trace()
+
+        obj.save()
+
+        database = {'id_database':obj.id_database
+                    , 'id_client':obj.id_client_id
+                    , 'client_name':obj.id_client.name
+                    , 'id_host':obj.id_host_id
+                    , 'hostname':obj.id_host.hostname
+                    , 'db_name':obj.db_name
+                    , 'dbid':obj.dbid
+                    , 'description':obj.description
+                    }
+
+        data = {
+            'database': database
+        }
+        return JsonResponse(data)
+
+class databaseDelete(View):
+    def get(self, request):
+        id_database = request.GET.get('id_database', None)
+        Databases.objects.get(pk=id_database).delete()
+        data = {
+            'deleted': True
+        }
+        return JsonResponse(data)
 
 # CRUD - Databases - End
 

@@ -23,10 +23,10 @@ urlpatterns = [
     path('host/delete/', views.hostDelete.as_view(), name='hostDelete'),
 
     # Routes - Databases
-    path('database/', views.databaseRead, name='database'),
-    path('database/create/', views.databaseCreate, name='databaseCreate'),
-    path('database/update/<int:idDatabase>/', views.databaseUpdate, name='databaseUpdate'),
-    path('database/delete/<int:idDatabase>/', views.databaseDelete, name='databaseDelete'),
+    path('database/', views.databaseRead.as_view(), name='database'),
+    path('database/create/', views.databaseCreate.as_view(), name='databaseCreate'),
+    path('database/update/', views.databaseUpdate.as_view(), name='databaseUpdate'),
+    path('database/delete/', views.databaseDelete.as_view(), name='databaseDelete'),
 
     # Routes - Policies
     path('policies/', views.policiesRead, name='policies'),
