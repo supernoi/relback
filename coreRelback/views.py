@@ -2,6 +2,8 @@
 from django.shortcuts import render, redirect
 from django.db  import connection
 from django.core import serializers
+from django.forms.models import model_to_dict
+
 
 from django.http import JsonResponse
 from django.views.generic import TemplateView, View, DeleteView
@@ -17,7 +19,7 @@ from .models import Clients, Hosts, Databases, BackupPolicies, VwRmanOutput, VwR
 # Debug ipdb
 from django.http import HttpResponse
 # import ipdb
-# ipdb.set_trace()
+# exi
 
 def index(request):
     return render(request, 'index.html')
@@ -245,39 +247,195 @@ class databaseDelete(View):
 
 # CRUD - Databases - End
 
-# CRUD - Policiess - Initial
+# CRUD - Policies - Initial
 
-def policiesCreate(request):
-    if request.method == 'POST':
-        formCreatePolicies = formPolicies(request.POST)
-        if formCreatePolicies.is_valid():
-            formCreatePolicies.save()
-            return render(request, 'policies.html')
-            # return redirect('coreRelback:policies')
-    return render(request, 'policies.html', {'form':formCreatePolicies})
+class policyRead(TemplateView):
+    template_name = 'policies.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)        
+        context['hosts'] = Hosts.objects.all().order_by('hostname')
+        context['clients'] = Clients.objects.all().order_by('name')
+        context['databases'] = Databases.objects.all().order_by('db_name')
+        context['policies'] = BackupPolicies.objects.all().order_by('policy_name')
 
-def policiesRead(request):
-    clients = Clients.objects.all().order_by('name')
-    hosts = Hosts.objects.all().order_by('hostname')
-    databases = Databases.objects.all().order_by('db_name')
-    policies = BackupPolicies.objects.all().order_by('pk')
-    return render(request, 'policies.html', {'clients':clients, 'hosts':hosts, 'databases':databases, 'policies':policies})
+        return context
 
-def policiesUpdate(request, idPolicy):
-    policieIdSelected = BackupPolicies.objects.get(pk=idPolicy)
-    if request.method == 'POST':
-        formPoliciesUpdate = formPolicies(request.POST, instance=policieIdSelected)
-        if formPoliciesUpdate.is_valid():
-            formPoliciesUpdate.save()
-    return redirect('coreRelback:policies')
+    def policyDetail(request):
 
-def policiesDelete(request, idPolicy):
-    try:
-        policyIdSelected = BackupPolicies.objects.get(pk=idPolicy)
-    except BackupPolicies.DoesNotExist:
-        return redirect('coreRelback:policies')
-    policyIdSelected.delete()
-    return redirect('coreRelback:policies')
+        idPolicy = request.GET.get('id_policy', None)
+
+        obj = BackupPolicies.objects.get(pk=idPolicy)
+
+        policy = {
+                'id_policy':obj.id_policy
+                , 'policy_name':obj.policy_name
+                , 'id_client':obj.id_client_id
+                , 'client_name':obj.id_client.name
+                , 'id_host':obj.id_host_id
+                , 'hostname':obj.id_host.hostname  
+                , 'id_database':obj.id_database_id                
+                , 'db_name':obj.id_database.db_name
+                , 'backup_type':obj.backup_type
+                , 'destination':obj.destination
+                , 'minute':obj.minute 
+                , 'hour':obj.hour 
+                , 'day':obj.day 
+                , 'month':obj.month 
+                , 'day_week':obj.day_week 
+                , 'duration':obj.duration 
+                , 'size_backup':obj.size_backup
+                , 'status':obj.status
+                , 'description':obj.description
+        }
+
+        data = {
+            'policy': policy
+        }
+
+        return JsonResponse(data)
+
+
+class policyCreate(View):
+    def get(self, request):
+        idClient = request.GET.get('id_client', None)
+        idHost = request.GET.get('id_host', None)
+        idDatabase = request.GET.get('id_database', None)
+        policyName = request.GET.get('policy_name', None)
+        backupType = request.GET.get('backup_type', None)
+        destination = request.GET.get('destination', None)
+        minute = request.GET.get('minute', None)
+        hour = request.GET.get('hour', None)
+        day = request.GET.get('day', None)
+        month = request.GET.get('month', None)
+        dayWeek = request.GET.get('day_week', None)
+        duration = request.GET.get('duration', None)
+        sizeBackup = request.GET.get('size_backup', None)
+        status = request.GET.get('status', None)               
+        description = request.GET.get('description', None)
+
+        obj = BackupPolicies.objects.create(
+            policy_name=policyName,
+            id_client_id=idClient,
+            id_host_id=idHost,
+            id_database_id=idDatabase,
+            backup_type=backupType,
+            destination=destination,
+            minute=minute,
+            hour=hour,
+            day=day,
+            month=month,
+            day_week=dayWeek,
+            duration=duration,
+            size_backup=sizeBackup,
+            status=status,
+            description=description,
+        )
+
+        policy = {'id_policy':obj.id_policy
+                    , 'policy_name':obj.policy_name
+                    , 'id_client':obj.id_client_id
+                    , 'client_name':obj.id_client.name
+                    , 'id_host':obj.id_host_id
+                    , 'hostname':obj.id_host.hostname  
+                    , 'id_database':obj.id_database_id                
+                    , 'dbname':obj.id_database.db_name
+                    , 'dbid':obj.dbid
+                    , 'backup_type':obj.backup_type
+                    , 'destination':obj.destination
+                    , 'minute':obj.minute 
+                    , 'hour':obj.hour 
+                    , 'day':obj.day 
+                    , 'month':obj.month 
+                    , 'day_week':obj.day_week 
+                    , 'duration':obj.duration 
+                    , 'size_backup':obj.size_backup
+                    , 'status':status
+                    , 'description':obj.description}
+
+        data = {
+            'policy': policy
+        }
+
+        # ipdb.set_trace()
+
+        return JsonResponse(data)
+
+class policyUpdate(View):
+    def  get(self, request):
+        idPolicy = request.GET.get('id_policy', None)
+        idClient = request.GET.get('id_client', None)
+        idHost = request.GET.get('id_host', None)
+        idDatabase = request.GET.get('id_database', None)
+        policyName = request.GET.get('policy_name', None)
+        backupType = request.GET.get('backup_type', None)
+        destination = request.GET.get('destination', None)
+        minute = request.GET.get('minute', None)
+        hour = request.GET.get('hour', None)
+        day = request.GET.get('day', None)
+        month = request.GET.get('month', None)
+        dayWeek = request.GET.get('day_week', None)
+        duration = request.GET.get('duration', None)
+        sizeBackup = request.GET.get('size_backup', None)
+        status = request.GET.get('status', None)               
+        description = request.GET.get('description', None)
+
+        obj = BackupPolicies.objects.get(pk=idPolicy)
+        obj.id_policy = idPolicy
+        obj.id_database_id = idDatabase
+        obj.id_client_id = idClient
+        obj.id_host_id = idHost
+        obj.policy_name = policyName
+        obj.backup_type = backupType
+        obj.destination = destination
+        obj.minute = minute
+        obj.hour = hour
+        obj.day = day
+        obj.day_week = dayWeek
+        obj.month = month
+        obj.duration = duration
+        obj.size_backup = sizeBackup
+        obj.status = status
+        obj.description = description
+
+        # import ipdb
+        # ipdb.set_trace()
+
+        obj.save()
+
+        policy = {'id_policy':obj.id_policy
+                    , 'policy_name':obj.policy_name
+                    , 'id_client':obj.id_client_id
+                    , 'client_name':obj.id_client.name
+                    , 'id_host':obj.id_host_id
+                    , 'hostname':obj.id_host.hostname  
+                    , 'id_database':obj.id_database_id                
+                    , 'dbname':obj.id_database.db_name
+                    , 'backup_type':obj.backup_type
+                    , 'destination':obj.destination
+                    , 'minute':obj.minute 
+                    , 'hour':obj.hour 
+                    , 'day':obj.day 
+                    , 'month':obj.month 
+                    , 'day_week':obj.day_week 
+                    , 'duration':obj.duration 
+                    , 'size_backup':obj.size_backup
+                    , 'status':status
+                    , 'description':obj.description}
+
+        data = {
+            'policy': policy
+        }
+
+        return JsonResponse(data)
+
+class policyDelete(View):
+    def get(self, request):
+        id_policy = request.GET.get('id_policy', None)
+        BackupPolicies.objects.get(pk=id_policy).delete()
+        data = {
+            'deleted': True
+        }
+        return JsonResponse(data)
 
 # CRUD - Policies - End
 

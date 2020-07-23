@@ -29,10 +29,11 @@ urlpatterns = [
     path('database/delete/', views.databaseDelete.as_view(), name='databaseDelete'),
 
     # Routes - Policies
-    path('policies/', views.policiesRead, name='policies'),
-    path('policies/create/', views.policiesCreate, name='policiesCreate'),
-    path('policies/update/<int:idPolicy>/', views.policiesUpdate, name='policiesUpdate'),
-    path('policies/delete/<int:idPolicy>/', views.policiesDelete, name='policiesDelete'),
+    path('policy/', views.policyRead.as_view(), name='policy'),
+    path('policy/detail/', views.policyRead.policyDetail, name='policyDetail'),
+    path('policy/create/', views.policyCreate.as_view(), name='policyCreate'),
+    path('policy/update/', views.policyUpdate.as_view(), name='policyUpdate'),
+    path('policy/delete/', views.policyDelete.as_view(), name='policyDelete'),
 
     # Routes - Reports
     path('reports/', views.reportRead, name='reportRead'),

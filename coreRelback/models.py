@@ -75,7 +75,7 @@ class Databases(models.Model):
 
 class BackupPolicies(models.Model):
     id_policy = models.BigIntegerField(primary_key=True)
-    policy_name = models.CharField(max_length=150, blank=True, null=True)
+    policy_name = models.CharField(max_length=150)
     id_client = models.ForeignKey('Clients', models.DO_NOTHING, db_column='id_client', related_name='policy_client_id')
     id_database = models.ForeignKey('Databases', models.DO_NOTHING, db_column='id_database', related_name='policy_database_id')
     id_host = models.ForeignKey('Hosts', models.DO_NOTHING, db_column='id_host', related_name='policy_host_id')

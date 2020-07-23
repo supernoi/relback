@@ -26,8 +26,8 @@
                         {% csrf_token %}                            
                         
                         <div class="row">
-                            <div class="input-field col s6">				
-                                <div class="input-field col s6">                                    
+                            <div class="input-field col s6">			
+                                                                    
                                     <select id="databaseCreateIdClient" name="id_client">
                                         <option value="" disabled selected>Choose your option</option>                                            
                                         {% for c in clients %}
@@ -35,7 +35,7 @@
                                         {% endfor %}
                                     </select>
                                     <label for="id_client">Client name</label>
-                                </div>
+                                
                             </div>
                         
                             <div class="input-field col s6">
@@ -45,24 +45,24 @@
                                         <option value="{{ h.id_host }}">{{ h.hostname }}</option>
                                     {% endfor %}
                                 </select>
-                                <label>Hostname</label>
+                                <label for="id_host" >Hostname</label>
                             </div>
                         </div>
                         
                         <div class="row">
                             <div class="input-field col s6">			
-                                <input required name="db_name" id="databaseCreateDbName" type="text" class="validate" value="">
+                                <input required id="databaseCreateDbName" name="db_name" class="validate" type="text" value="">
                                 <label for="db_name">Database Name(DB_NAME)</label>
                             </div>                        
                             <div class="input-field col s6">
-                                <input required name="dbid" id="databaseCreateDbId" type="text" class="validate" value="">
+                                <input required id="databaseCreateDbId" name="dbid" class="validate" type="text"  value="">
                                 <label for="dbid">DBID</label>
                             </div>
                         </div>
                         
                         <div class="row">
                             <div class="input-field col s12">					
-                                <input required id="databaseCreateDescription" name="description" type="text" class="validate" value="">
+                                <input required id="databaseCreateDescription" name="description" class="validate" type="text" value="">
                                 <label for="description">Description</label>
                             </div>
                         </div>
@@ -97,13 +97,13 @@
                 </thead>
             {% for d in databases %}
                 <tr id="database-{{ d.id_database }}">
-                    <td class="databaseClientName" name="clientName">{{ d.id_client.name }}</td>
+                    <td id="databaseClientName" name="clientName">{{ d.id_client.name }}</td>
                         <input type="hidden" id="databaseClientId" name="databaseClientId" value={{ d.id_client.id_client }}>
                     <td id="databaseHostname" class="databaseHostname" name="databaseHostname">{{ d.id_host.hostname }}</td>
                         <input type="hidden" id="databaseHostId" name="databaseHostId" value={{ d.id_host.id_host }}>
-                    <td class="databaseDbName" id="databaseDbName" name="db_name">{{ d.db_name }}</td>
-                    <td class="databaseDbId" id="databaseDbId" name="dbid">{{ d.dbid }}</td>
-                    <td class="databaseDescription" name="description">{{ d.description }}</td>
+                    <td id="databaseDbName" class="databaseDbName" name="db_name">{{ d.db_name }}</td>
+                    <td id="databaseDbId" class="databaseDbId" name="dbid">{{ d.dbid }}</tdid="databaseDbId" >
+                    <td id="databaseDescription" class="databaseDescription" name="description">{{ d.description }}</td>
                     <td>
                         <a href="#databaseModalUpdate" title="Edit" onClick="databaseUpdate({{ d.id_database }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
                             <i class="material-icons">edit</i>
@@ -123,7 +123,7 @@
 
             <!-- Modal of update -->
 
-                <div class="modal" id="databaseModalUpdate" role="dialog" aria-labelledby="ModalLabel-Update">                    
+                <div id="databaseModalUpdate" class="modal" role="dialog" aria-labelledby="ModalLabel-Update">                    
                         <div class="modal-content">
                             <div class="row">
                                 <h2 id="databaseUpdateTitle"></h2>                                                                
@@ -131,7 +131,7 @@
                             <form class="col s12" id="databaseFormUpdate" action="">
                                 {% csrf_token %}
 
-                                <input id="databaseUpdateIdDatabase" type="hidden" name="formIdDatabase"/>
+                                <input id="databaseUpdateIdDatabase" name="formIdDatabase" type="hidden"/>
                                 
                                 <div class="row">
                                     <div class="input-field col s6">				
@@ -156,18 +156,18 @@
                                 </div>
                                 <div class="row">
                                     <div class="input-field col s6">			
-                                        <input required name="db_name" id="databaseUpdateDbName" name="formDbName" value="{{ d.db_name }}">
+                                        <input required id="databaseUpdateDbName" name="formDbName" value="{{ d.db_name }}">
                                         <label id="databaseUpdateDbNameLabel" for="formDbName">Database Name(DB_NAME)</label>
                                     </div>                        
                                     <div class="input-field col s6">
-                                        <input required name="dbid" id="databaseUpdateDbId" name="formDbId" value="{{ d.dbid }}">
+                                        <input require id="databaseUpdateDbId" name="formDbId" value="{{ d.dbid }}">
                                         <label id="databaseUpdateDbIdLabel" for="formDbId">DBID</label>
                                     </div>
                                 </div>
                                 
                                 <div class="row">
                                     <div class="input-field col s12">					
-                                        <input required id="databaseUpdateDescription" type="text" name="formDescription">
+                                        <input required id="databaseUpdateDescription" name="formDescription" type="text">
                                         <label id="databaseUpdateDescriptionLabel" for="formDescription">Description</label>
                                     </div>
                                 </div>
@@ -188,7 +188,7 @@
 
             <!-- Modal of Delete -->
 
-                <div class="modal" id="databaseModalDelete" role="dialog" aria-labelledby="SmallModalLabel-Delete">                    
+                <div id="databaseModalDelete" class="modal" role="dialog" aria-labelledby="SmallModalLabel-Delete">                    
                     <div class="modal-content">
                         <div class="row">                             
                             <h2>Confirmation to delete</h2>
@@ -251,11 +251,11 @@
     function databaseAppendToTable(database) {
         $("#databaseTable > tbody:last-child").append(`
             <tr id="database-${ database.id_database }">
-                <td class='databaseClientName' name='databaseClientName'>${ database.client_name }</td>
-                <td class='databaseHostname' name='databaseHostname'>${ database.hostname }</td>
-                <td class='databaseDbName' name='databaseDbName'>${ database.dbname }</td>
-                <td class='databaseDbId' name='databaseDbId'>${ database.dbid }</td>
-                <td class='databaseDescription' name='databaseDescription'>${ database.description }</td>
+                <td id="databaseClientName" class="databaseClientName" name="databaseClientName">${ database.client_name }</td>
+                <td id="databaseHostname" class="databaseHostname" name="databaseHostname">${ database.hostname }</td>
+                <td id="databaseDbName" class="databaseDbName" name="databaseDbName">${ database.dbname }</td>
+                <td id="databaseDbId" class="databaseDbId" name="databaseDbId">${ database.dbid }</td>
+                <td id="databaseDescription" class="databaseDescription" name="databaseDescription">${ database.description }</td>
                 <td>                            
                     <a onClick="databaseUpdate(${ database.id_database })" title="Edit" class="btn btn-floating waves-effect waves-light modal-trigger green" >
                         <i class="material-icons">edit</i>
@@ -277,7 +277,7 @@
             && databaseUpdateDbName 
             && databaseUpdateDbId 
             && databaseUpdateDescription) {
-            console.log("teste");
+
             $.ajax({
                 url: '{% url "coreRelback:databaseUpdate" %}',
                 data: {
@@ -314,7 +314,7 @@
                 $(this).text(database.hostname);
             } else if (attr == "databaseDb") {
                 $(this).text(database.db_name);
-            } else if (attr == "databaseIp") {
+            } else if (attr == "databaseId") {
                 $(this).text(database.dbid);
             } else if (attr == "databaseDescription") {
                 $(this).text(database.description);    
@@ -328,16 +328,13 @@
         if (id_database) {
 
             tr_id = "#database-" + id_database;            
-            client_name = $(tr_id).find(".databaseClientName").text();
+            client_name = $(tr_id).find("#databaseClientName").text();
             client_id = $(tr_id).find("#databaseClientId").val();
             hostname = $(tr_id).find(".databaseHostname").text();
             host_id = $(tr_id).find("#databaseHostId").val();
             db_name = $(tr_id).find(".databaseDbName").text();
             dbId = $(tr_id).find(".databaseDbId").text();
             description = $(tr_id).find(".databaseDescription").text();
-
-            console.log(client_id);
-            console.log(host_id);
 
             $('#databaseUpdateTitle').text(db_name);
             $('#databaseUpdateIdDatabase').val(id_database);
