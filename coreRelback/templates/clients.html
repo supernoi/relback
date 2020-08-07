@@ -25,13 +25,13 @@
 
                         <div class="row">
                             <div class="input-field col s6">									
-                                <input required name="name" id="clientCreateName" type="text" class="validate" value="{{ name }}">
+                                <input required id="clientCreateName" name="name" type="text" class="validate" value="{{ name }}">
                                 <label for="name">Client name</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12">					
-                                <input required name="description" id="clientCreateDescription" type="text" class="validate" value="{{ description }}">
+                                <input required id="clientCreateDescription" name="description" type="text" class="validate" value="{{ description }}">
                                 <label for="description">Description</label>
                             </div>
                         </div>                                   
@@ -92,7 +92,7 @@
                                         <div class="row">
                                             <div class="input-field col s6">
                                                 <input required id="clientUpdateName" type="text" name="formClientName">
-                                                <label id="clientUpdateNameLabel" for="formName">name</label>
+                                                <label id="clientUpdateNameLabel" for="formName">Name</label>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -157,7 +157,7 @@
         $.ajax({
             url: '{% url "coreRelback:clientCreate" %}',
             data: {
-                'Name':   $('#clientCreateName').val(),
+                'name':   $('#clientCreateName').val(),
                 'description':  $('#clientCreateDescription').val(),
             },
             dataType: 'json',
@@ -180,8 +180,8 @@
     function clientAppendToTable(client) {
         $("#clientTable > tbody:last-child").append(`
             <tr id="client-${ client.id_client }">
-                <td class='clientName clientData' name='clientName'>${ client.Name }</td>
-                <td class='clientDescription clientData' name='clientDescription'>${ client.description }</td>
+                <td id="clientName" class='clientName' name='clientName'>${ client.Name }</td>
+                <td id="clientDescription" class='clientDescription' name='clientDescription'>${ client.description }</td>
                 <td>                            
                     <a onClick="clientUpdate(${ client.id_client })" title="Edit" class="btn btn-floating waves-effect waves-light modal-trigger green" >
                         <i class="material-icons">edit</i>

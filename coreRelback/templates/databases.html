@@ -28,7 +28,7 @@
                         <div class="row">
                             <div class="input-field col s6">			
                                                                     
-                                    <select id="databaseCreateIdClient" name="id_client">
+                                    <select id="databaseCreateIdClient" name="id_client" onchange="reloadHostList(null, this.value)">
                                         <option value="" disabled selected>Choose your option</option>                                            
                                         {% for c in clients %}
                                             <option value="{{ c.id_client }}">{{ c.name }}</option>
@@ -40,10 +40,10 @@
                         
                             <div class="input-field col s6">
                                 <select id="databaseCreateIdHost" name="id_host">
-                                    <option value="" disabled selected>Choose your option</option>
-                                    {% for h in hosts %}
+                                    <option value="" disabled selected>Choose client first</option>
+                                    <!-- {% for h in hosts %}
                                         <option value="{{ h.id_host }}">{{ h.hostname }}</option>
-                                    {% endfor %}
+                                    {% endfor %} -->
                                 </select>
                                 <label for="id_host" >Hostname</label>
                             </div>
@@ -391,6 +391,33 @@
                 }
             });       
         }        
+    }
+
+    // Show hosts client
+    function reloadHostList(elemSelectId,idClient) {
+
+        console.log(idClient);
+        $.ajax(
+        {
+            url: "coreRelback:databaseUpdateHostList",
+            data: { 'id_client': idClient },          
+            dataType: 'json',
+            success: function (data) {
+                console.log("test 2");
+                console.log(data);
+                $(data).each(function(){
+                    console.log("test 3");
+                    
+                    $("#databaseCreateIdHost").append($('<option>', {
+                        value: this.id_host,
+                        text: this.hostname,
+                    }));
+                })  
+            },
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
     }
 
     </script>

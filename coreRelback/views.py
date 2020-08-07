@@ -18,8 +18,8 @@ from .models import Clients, Hosts, Databases, BackupPolicies, VwRmanOutput, VwR
 
 # Debug ipdb
 from django.http import HttpResponse
-# import ipdb
-# exi
+import ipdb
+
 
 def index(request):
     return render(request, 'index.html')
@@ -38,7 +38,7 @@ class clientRead(TemplateView):
 
 class clientCreate(View):
     def get(self, request):
-        clientName = request.GET.get('clientName', None)
+        clientName = request.GET.get('name', None)
         description = request.GET.get('description', None)
 
         obj = Clients.objects.create(
@@ -236,6 +236,28 @@ class databaseUpdate(View):
         }
         return JsonResponse(data)
 
+    
+def databaseUpdateHostList(request, id_client):
+
+    obj = Hosts.objects.filter(id_client_id=id_client).order_by('hostname')
+
+    # ipdb.set_trace()
+
+    clientHosts = {
+        'id_host':obj.values,
+        'hostname':obj.hostname,
+        'id_client':obj.id_client_id,
+        'clientname':obj.id_client.name,
+    }
+
+    data = {
+        'clientHosts': clientHosts
+    }
+
+
+
+    return JsonResponse(data)
+
 class databaseDelete(View):
     def get(self, request):
         id_database = request.GET.get('id_database', None)
@@ -339,7 +361,6 @@ class policyCreate(View):
                     , 'hostname':obj.id_host.hostname  
                     , 'id_database':obj.id_database_id                
                     , 'dbname':obj.id_database.db_name
-                    , 'dbid':obj.dbid
                     , 'backup_type':obj.backup_type
                     , 'destination':obj.destination
                     , 'minute':obj.minute 

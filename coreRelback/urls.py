@@ -26,7 +26,9 @@ urlpatterns = [
     path('database/', views.databaseRead.as_view(), name='database'),
     path('database/create/', views.databaseCreate.as_view(), name='databaseCreate'),
     path('database/update/', views.databaseUpdate.as_view(), name='databaseUpdate'),
+    path('database/updateHostList/<int:id_client>/', views.databaseUpdateHostList, name='databaseUpdateHostList'),
     path('database/delete/', views.databaseDelete.as_view(), name='databaseDelete'),
+    
 
     # Routes - Policies
     path('policy/', views.policyRead.as_view(), name='policy'),

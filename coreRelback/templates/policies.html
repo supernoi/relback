@@ -478,6 +478,7 @@
             dataType: 'json',
             success: function (data) {
                 if (data.policy) {
+                    console.log(data.policy);
                     policyAppendToTable(data.policy);                    
                     $("#modalAddNew").modal('close');
                     parent.location.reload(); // How to improve the refresh?                 
@@ -493,7 +494,7 @@
     });
 
     function policyAppendToTable(policy) {
-        $("#policyTable > tbody:last-child").append(`
+        $("#policyTable>tbody:last-child").append(`
             <tr id="policy-${ policy.id_policy }">
                 <td id="policyId" name="policyId">{{ policy.id_policy }}</td>
                 <td id="policyClientName" class='policyClientName' name='policyClientName'>${ policy.client_name }</td>
