@@ -379,9 +379,7 @@
         if (id_database) {
             $.ajax({
                 url: '{% url "coreRelback:databaseDelete" %}',
-                data: {
-                    'id_database': id_database,
-                },
+                data: { 'id_database': id_database },
                 dataType: 'json',
                 success: function (data) {
                     if (data.deleted) {
@@ -396,25 +394,39 @@
     // Show hosts client
     function reloadHostList(elemSelectId,idClient) {
 
-        console.log(idClient);
-        $.ajax(
-        {
-            url: "coreRelback:databaseUpdateHostList",
+        $.ajax({
+            url: '{% url "coreRelback:databaseUpdateHostList" %}',
             data: { 'id_client': idClient },          
             dataType: 'json',
             success: function (data) {
-                console.log("test 2");
-                console.log(data);
                 $(data).each(function(){
-                    console.log("test 3");
+                    var cobaia = JSON.parse(data.hosts);
+                    console.log(cobaia.length);
+
+                    var selectHosts = document.getElementById("databaseCreateIdHost");
+                    selectHosts.innerHTML = "";
                     
-                    $("#databaseCreateIdHost").append($('<option>', {
-                        value: this.id_host,
-                        text: this.hostname,
-                    }));
+                    var optPlaceHolder = document.createElement("option");
+                    optPlaceHolder.text = "Choose a host";
+                    optPlaceHolder.disabled;
+                    selectHosts.append(optPlaceHolder);
+
+                    for (i = 0; i < cobaia.length; ++i) {
+                        var opt = document.createElement("option");
+                        opt.text = cobaia[i].fields.hostname;
+                        opt.value = cobaia[i].pk;
+                        
+                        selectHosts.appendChild(opt);
+                        
+                    }
+                    M.FormSelect.init(selectHosts);
+                    return;
+                    
+
                 })  
             },
             error : function(xhr,errmsg,err) {
+                console.log("reloadHostList - msg error")
                 console.log(xhr.status + ": " + xhr.responseText);
             }
         });
