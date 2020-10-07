@@ -26,24 +26,20 @@
                         {% csrf_token %}                            
                         
                         <div class="row">
-                            <div class="input-field col s6">			
-                                                                    
-                                    <select id="databaseCreateIdClient" name="id_client" onchange="reloadHostList(null, this.value)">
-                                        <option value="" disabled selected>Choose your option</option>                                            
-                                        {% for c in clients %}
-                                            <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <label for="id_client">Client name</label>
+                            <div class="input-field col s6">
+                                <select id="databaseCreateIdClient" name="id_client" onchange="reloadHostList('databaseCreateIdHost', this.value)">
+                                    <option value="" disabled selected>Choose your option</option>                                            
+                                    {% for c in clients %}
+                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="id_client">Client name</label>
                                 
                             </div>
                         
                             <div class="input-field col s6">
                                 <select id="databaseCreateIdHost" name="id_host">
                                     <option value="" disabled selected>Choose client first</option>
-                                    <!-- {% for h in hosts %}
-                                        <option value="{{ h.id_host }}">{{ h.hostname }}</option>
-                                    {% endfor %} -->
                                 </select>
                                 <label for="id_host" >Hostname</label>
                             </div>
@@ -135,7 +131,7 @@
                                 
                                 <div class="row">
                                     <div class="input-field col s6">				
-                                        <select required id="databaseUpdateClient" name="id_client">
+                                        <select required id="databaseUpdateClient" name="id_client" onchange="reloadHostList('databaseUpdateHost', this.value)">
                                             <option value="{{ d.id_client }}" selected>{{ d.id_client.name }}</option>                                            
                                             {% for c in clients %}
                                                 <option value="{{ c.id_client }}">{{ c.name }}</option>
@@ -147,9 +143,9 @@
                                     <div class="input-field col s6">
                                         <select required id="databaseUpdateHost" name="id_host">
                                             <option value="{{ d.id_host }}" selected>{{ d.id_database.hostname }}</option>
-                                            {% for h in hosts %}
+                                            <!-- {% for h in hosts %}
                                                 <option value="{{ h.id_host }}">{{ h.hostname }}</option>
-                                            {% endfor %}
+                                            {% endfor %} -->
                                         </select>
                                         <label>Hostname</label>
                                     </div>
@@ -395,15 +391,14 @@
     function reloadHostList(elemSelectId,idClient) {
 
         $.ajax({
-            url: '{% url "coreRelback:databaseUpdateHostList" %}',
+            url: '{% url "coreRelback:hostsList" %}',
             data: { 'id_client': idClient },          
             dataType: 'json',
             success: function (data) {
                 $(data).each(function(){
                     var cobaia = JSON.parse(data.hosts);
-                    console.log(cobaia.length);
 
-                    var selectHosts = document.getElementById("databaseCreateIdHost");
+                    var selectHosts = document.getElementById(elemSelectId);
                     selectHosts.innerHTML = "";
                     
                     var optPlaceHolder = document.createElement("option");
@@ -416,13 +411,12 @@
                         opt.text = cobaia[i].fields.hostname;
                         opt.value = cobaia[i].pk;
                         
-                        selectHosts.appendChild(opt);
-                        
+                        selectHosts.appendChild(opt);                        
                     }
+                    
                     M.FormSelect.init(selectHosts);
                     return;
                     
-
                 })  
             },
             error : function(xhr,errmsg,err) {

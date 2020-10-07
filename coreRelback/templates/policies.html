@@ -27,19 +27,7 @@
 
                         <div class="row">
 
-                            <div class="input-field col s2">
-                                <!-- to improve UI
-                                    <div class="switch">
-                                    <label class=>
-                                      Inactive
-                                      <input type="checkbox">
-                                      <span class="lever"></span>
-                                      Active
-                                    </label>
-                                    <label for="status">Status</label>
-                                  </div> -->
-                                
-
+                            <div class="input-field col s2">                       
                                 <select id="policyCreateStatus" name="status">
                                     <option value="ACTIVE" selected>Active</option>
                                     <option value="INACTIVE">Inactive</option>
@@ -62,7 +50,7 @@
                         <div class="row"> 
 
                             <div class="input-field col s4">
-                                <select id="policyCreateIdClient" name="id_client">
+                                <select id="policyCreateIdClient" name="id_client" onchange="reloadListHost('policyCreateIdHost', this.value)">
                                     <option value="" disabled selected>Choose your option</option>                                            
                                     {% for c in clients %}
                                         <option value="{{ c.id_client }}">{{ c.name }}</option>
@@ -72,21 +60,18 @@
                             </div>
                         
                             <div class="input-field col s4">
-                                <select id="policyCreateIdHost" name="id_host">
-                                    <option value="" disabled selected>Choose your option</option>
-                                    {% for h in hosts %}
-                                        <option value="{{ h.id_host }}">{{ h.hostname }}</option>
-                                    {% endfor %}
+                                <select id="policyCreateIdHost" name="id_host" onchange="reloadListDatabase('policyCreateIdDatabase', policyCreateIdClient.value, this.value)">
+                                    <option value="" disabled selected>Choose client first</option>
                                 </select>
                                 <label>Hostname</label>
                             </div>
 
                             <div class="input-field col s4">
                                 <select id="policyCreateIdDatabase" name="id_database">
-                                    <option value="" disabled selected>Choose your option</option> 
-                                    {% for d in databases %}
-                                        <option value="{{ d.id_database }}">{{ d.db_name }}</option>
-                                    {% endfor %}
+                                    <option value="" disabled selected>Choose client and host first</option> 
+                                    <!-- {% for d in databases %}
+                                        <option>{{ d.db_name|add:d.db_name }}</option>
+                                    {% endfor %} -->
                                 </select>
                                 <label for="id_database">Database Name</label>
                             </div>                          
@@ -724,6 +709,90 @@
         }        
     }
 
-    </script>
+    // Update Select Hosts
+    function reloadListHost(elemSelectId,idClient) {
+
+        $.ajax({
+            url: '{% url "coreRelback:hostsList" %}',
+            data: { 'id_client': idClient },          
+            dataType: 'json',
+            success: function (data) {
+                $(data).each(function(){
+                    var hosts = JSON.parse(data.hosts);
+
+                    var selectHosts = document.getElementById(elemSelectId);
+                    selectHosts.innerHTML = "";
+                    
+                    var optPlaceHolder = document.createElement("option");
+                    optPlaceHolder.text = "Choose a host";
+                    optPlaceHolder.disabled;
+                    selectHosts.append(optPlaceHolder);
+
+                    for (i = 0; i < hosts.length; ++i) {
+                        var opt = document.createElement("option");
+                        opt.text = hosts[i].fields.hostname;
+                        opt.value = hosts[i].pk;
+                        
+                        selectHosts.appendChild(opt);                        
+                    }
+                    
+                    M.FormSelect.init(selectHosts);
+                    return;
+                    
+                })  
+            },
+            error : function(xhr,errmsg,err) {
+                console.log("reloadHostList - msg error")
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+
+    // Update Select Databases
+    function reloadListDatabase(elemSelectId,idClient,idHost) {
+
+        $.ajax({
+            url: '{% url "coreRelback:databasesList" %}',
+            data: {  'id_client': idClient
+                    ,'id_host': idHost
+                },          
+            dataType: 'json',
+            success: function (data) {
+                console.log(data.databases);
+                
+                $(data).each(function(){
+                    var databases = JSON.parse(data.databases);
+
+                    // console.log(data);
+
+                    var selectDatabases = document.getElementById(elemSelectId);
+                    selectDatabases.innerHTML = "";
+                    
+                    var optPlaceHolder = document.createElement("option");
+                    optPlaceHolder.text = "Choose a database";
+                    optPlaceHolder.disabled;
+                    selectDatabases.append(optPlaceHolder);
+
+                    for (i = 0; i < databases.length; ++i) {
+                        var opt = document.createElement("option");
+                        opt.text = databases[i].fields.db_name;
+                        opt.value = databases[i].pk;
+                        
+                        selectDatabases.appendChild(opt);                        
+                    }
+                    
+                    M.FormSelect.init(selectDatabases);
+                    return;
+                    
+                })  
+            },
+            error : function(xhr,errmsg,err) {
+                console.log("reloadHostList - msg error")
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+
+</script>
 
 {% endblock javascript %}

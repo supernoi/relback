@@ -26,9 +26,8 @@ urlpatterns = [
     path('database/', views.databaseRead.as_view(), name='database'),
     path('database/create/', views.databaseCreate.as_view(), name='databaseCreate'),
     path('database/update/', views.databaseUpdate.as_view(), name='databaseUpdate'),
-    path('database/updateHostList/', views.databaseUpdateHostList, name='databaseUpdateHostList'),
     path('database/delete/', views.databaseDelete.as_view(), name='databaseDelete'),
-    
+    path('database/hostsList/', views.hostsList, name='hostsList'),    
 
     # Routes - Policies
     path('policy/', views.policyRead.as_view(), name='policy'),
@@ -36,6 +35,8 @@ urlpatterns = [
     path('policy/create/', views.policyCreate.as_view(), name='policyCreate'),
     path('policy/update/', views.policyUpdate.as_view(), name='policyUpdate'),
     path('policy/delete/', views.policyDelete.as_view(), name='policyDelete'),
+    path('policy/hostsList/', views.hostsList, name='hostsList'),  
+    path('policy/databasesList/', views.databasesList, name='databasesList'),  
 
     # Routes - Reports
     path('reports/', views.reportRead, name='reportRead'),

@@ -235,21 +235,23 @@ class databaseUpdate(View):
             'database': database
         }
         return JsonResponse(data)
-    
-def databaseUpdateHostList(request):
 
+def hostsList(request):
     id_client = request.GET.get('id_client', None)
-
-    # obj = Hosts.objects.filter(id_client_id=id_client).order_by('hostname').values_list('id_host', 'id_client_id', 'hostname')
-
-    # ipdb.set_trace()
-    
-
     clientHosts = serializers.serialize('json'
                                         , list(Hosts.objects.filter(id_client_id=id_client).order_by('hostname'))
                                         , fields=('id_host','hostname'))
-
     return JsonResponse({'hosts': clientHosts})
+
+def databasesList(request):
+    id_client = request.GET.get('id_client', None)
+    id_host = request.GET.get('id_host', None)
+    databases = serializers.serialize('json'
+                                        , list(Databases.objects.filter(id_client_id=id_client, id_host_id=id_host).order_by('db_name'))
+                                        , fields=('id_database','db_name'))
+
+    # ipdb.set_trace()
+    return JsonResponse({'databases': databases})
 
 
 class databaseDelete(View):
