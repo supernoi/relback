@@ -6,69 +6,87 @@
 
 {% block content %}
 
-    <div class="container">
         <div class="left-align">
-            <h1>Hosts</h1>  
-            <a href="#modalAddNew" title="Add" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
-                <i class="material-icons">add</i>
+            <br>
+            <h1>Hosts</h1>
+            <br>
+            <a href="#modalAddNew" title="Add" data-bs-toggle="modal" data-bs-target="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
+                <button type="button" class="btn btn-primary shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>                     
+                    </svg>
+                    Add
+                </button>
             </a>
         </div>
-        <br><br>
+        <br>
        
         <!-- Modal of addNew -->
-            <div class="modal" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-hostAddNew">
+            <div class="modal" tabindex="-1" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-hostAddNew">
+                <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="row">
+                    <div class="modal-header">
                         <h2>Add new Host</h2> 
-
-                        <form class="col s12" id="hostFormCreate" >                                
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                        <form class="col s12" id="hostFormCreate" >
                             {% csrf_token %}   
                                                           
                             <div class="row">
-                                <div class="input-field col s6">                                    
-                                    <select id="hostCreateIdClient" name="id_client">
-                                        <option value="" disabled selected>Choose your option</option>                                            
-                                        {% for c in clients %}
-                                            <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <label for="id_client">Client name</label>
+                                <div class="input-group mb-3">	
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Client name</span>
+                                    </div>
+                                        <select class="form-control" id="hostCreateIdClient" name="id_client">
+                                            <option value="" disabled selected>Choose an option</option>
+                                            {% for c in clients %}
+                                                <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                            {% endfor %}
+                                        </select>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="input-field col s6">
-                                    <input required name="hostname" id="hostCreateHostname" type="text" class="validate" value="">
-                                    <label for="name">Hostname</label>
-                                </div>                                
-                                <div class="input-field col s6">
-                                    <input required name="ip" id="hostCreateIp" type="text" class="validate" value="">
-                                    <label for="ip">IP Address</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Hostname</span>
+                                    </div>
+                                    <input required aria-describedby="hostCreateHostname" id="hostCreateHostname" name="hostCreateHostname" type="text" class="form-control" value="">
                                 </div>
                             </div>
+
                             <div class="row">
-                                <div class="input-field col s12">			
-                                    <input required name="description" id="hostCreateDescription" type="text" class="validate" value="">
-                                    <label for="description">Description</label>
-                                </div>                                
-                            </div>                            
-                            <div class="modal-footer">                                                               
-                                <button class="btn waves-effect waves-light green" type="submit" name="action">
-                                    Add
-                                    <i class="material-icons left">add</i>
-                                </button>
-                                <a class="modal-close btn waves-effect waves-light">
-                                    Back
-                                    <i class="material-icons left">exit_to_app</i>                                    
-                                </a>							
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Ip</span>
+                                    </div>
+                                    <input required aria-describedby="hostCreateIp" id="hostCreateIp" name="ip" type="text" class="form-control" value="">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Description</span>
+                                    </div>
+                                    <input required aria-describedby="hostCreateDescription" id="hostCreateDescription" name="description" type="text" class="form-control" value="{{ description }}">
+                                </div>
+                            </div>
+
+                            <div class="modal-footer"> 
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" name="action">Save</button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+            </div>
+            </div>
         <!-- End Modal of addNew -->
     
-            <table id="hostTable" class="table striped highlight centered responsive-table">
-                <thead class="">
+            <table class="table table-striped table-hover shadow" id="hostTable">
+                <thead class="table-light">
                     <tr>
                         <th>Client Name</th>
                         <th>Hostname</th>
@@ -85,12 +103,18 @@
                                 <input id="hostID" type="hidden" name="hostID" value={{ h.id_host }}>
                             <td class="hostIp hostData" name="ip">{{ h.ip }}</td>
                             <td class="hostDescription hostData" name="description">{{ h.description }}</td>
-                            <td>                            
-                                <a href="#hostModalUpdate" title="Edit" onClick="hostUpdate({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
-                                    <i class="material-icons">edit</i>
+                            <td>
+                                <!-- <a href="#hostModalUpdate" title="Edit" onClick="hostUpdate({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                                    <i class="bi bi-pencil-fill"></i>
                                 </a>
                                 <a href="#hostModalDelete" title="Delete" onClick="hostModalDelete({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
-                                    <i class="material-icons">delete</i>
+                                    <i class="bi bi-trash-fill"></i>
+                                </a> -->
+                                <a href="#hostModalUpdate" data-bs-toggle="modal" data-bs-target="#hostModalUpdate" title="Edit" onClick="hostUpdate({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>                        
+                                <a href="#hostModalDelete" data-bs-toggle="modal" data-bs-target="#hostModalDelete" title="Delete" onClick="hostModalDelete({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
+                                    <i class="bi bi-trash-fill"></i>
                                 </a>	
                             </td>	
                         </tr>
@@ -103,88 +127,102 @@
 
                 <!-- Start Modal of update -->
                 
-                <div class="modal" id="hostModalUpdate" role="dialog" aria-labelledby="ModalLabel-hostUpdate">
-                    <div class="modal-content">
-                        <div class="row">
-                            <h2 id="hostUpdateTitle"></h2>
-                        </div>                
-                        <form class="col s12" id="hostFormUpdate" action="">
-                            {% csrf_token %}
-                            
-                            <input id="hostUpdateIdHost" type="hidden" name="formIdHost"/>
-
-                                <div class="row">
-                                    <div class="input-field col s6"">
-                                        <select id="hostUpdateClient" name="id_client">
-                                            <option value="" selected disabled></option>                                            
-                                            {% for c in clients %}
-                                                <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        <label>Client name</label>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="input-field col s6">
-                                        <input required id="hostUpdateHostname" type="text" name="formHostname">
-                                        <label id="hostUpdateHostnameLabel" for="formHostname">Hostname</label>
-                                    </div>
-                                    <div class="input-field col s6">
-                                        <input required id="hostUpdateIp" type="text" name="formIp">
-                                        <label id="hostUpdateIpLabel" for="formIp">IP Address</label>
-                                    </div>                                    
-                                </div>
-
-                                <div class="row">
-                                    <div class="input-field col s12">
-                                        <input required id="hostUpdateDescription" type="text" name="formDescription">
-                                        <label id="hostUpdateDescriptionLabel" for="formDescription">Description</label>
-                                    </div>
-                                </div>
-                    	
-                            <div class="modal-footer">
-                                <button class="btn waves-effect waves-light green" type="submit">
-                                    Update
-                                    <i class="material-icons left">system_update_alt</i>
-                                </button>
-                                <a class="modal-close btn waves-effect waves-light" data-dismiss="modal">
-                                    Back
-                                    <i class="material-icons left">exit_to_app</i>                                    
-                                </a>
+                <div class="modal" tabindex="-1" id="hostModalUpdate" role="dialog" aria-labelledby="ModalLabel-hostUpdate">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header"> 
+                                <h2  class="modal-title" id="hostUpdateTitle"></h2>
                             </div>
-                        </form>
-                    </div> <!-- end modal content -->
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                <form class="col s12" id="hostFormUpdate" action="">
+                                    {% csrf_token %}
+                                    
+                                    <input id="hostUpdateIdHost" type="hidden" name="formIdHost"/>
+
+                                    <div class="row">
+                                        <div class="input-group mb-3">	
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">Client Name</span>
+                                            </div>
+                                                <select class="form-control" id="hostUpdateClient" name="id_client">
+                                                    <option value="" selected disabled></option>                                            
+                                                    {% for c in clients %}
+                                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                        </div>
+                                    </div>
+
+                                        <div class="row">
+                                            <div class="input-group mb-3">	
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Hostname</span>
+                                                </div>
+                                                <input required class="form-control" id="hostUpdateHostname" type="text" name="formHostname">
+                                            </div>
+                                            <div class="input-group mb-3">	
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">IP Address</span>
+                                                </div>
+                                                <input required class="form-control" id="hostUpdateIp" type="text" name="formIp">
+                                            </div>                                    
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="input-group mb-3">	
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Description</span>
+                                                </div>
+                                                <input required class="form-control" id="hostUpdateDescription" type="text" name="formDescription">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer"> 
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" name="action">Save</button>
+                                </div>
+                            </form>
+                        </div> <!-- end modal content -->
+                    </div>
                 </div> <!-- end modal -->
 
                 <!-- Modal of Delete -->
-                <div class="modal" id="hostModalDelete">                            
-                    <div class="modal-content">
-                        <div class="row">                             
-                            <h2>Confirmation to delete</h2>
-                        </div>
-                        <div class="row">                          
-                            <p>Deleting the Host, all dependent Databases and Backup Policies will also be deleted.</p>
-                            <p>Really want to delete the host: <b id='deleteHostname'></b>?</p>
-                        </div> 
-                        <div class="modal-footer">
-                            <div class="modal-footer">                                    
-                                <a class="modal-close btn waves-effect waves-light">
-                                    Back
-                                    <i class="material-icons left">exit_to_app</i>                                    
-                                </a> 
-                                <a id="hostButtonDelete" class="btn waves-effect waves-light green" type="submit" name="action">
-                                    Delete
-                                    <i class="material-icons left">delete_forever</i>
-                                </a>					
+                <div class="modal" tabindex="-1" id="hostModalDelete">                            
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">                             
+                                <h2>Confirmation to delete</h2>
+                            </div>
+                            <div class="modal-body"> 
+                                <div class="row">                          
+                                    <p>Deleting the Host, all dependent Databases and Backup Policies will also be deleted.</p>
+                                    <p>Really want to delete the host: <b id='deleteHostname'></b>?</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                    <!-- <a class="modal-hide btn waves-effect waves-light">
+                                        Back
+                                        <i class="material-icons left">exit_to_app</i>                                    
+                                    </a>
+                                    <a id="hostButtonDelete" class="btn waves-effect waves-light green" type="submit" name="action">
+                                        Delete
+                                        <i class="material-icons left">delete_forever</i>
+                                    </a> -->
+                                <form id="hostFormDelete" action="" onsubmit="return false;">
+                                    {% csrf_token %}
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button id="hostButtonDelete" type="submit" class="btn btn-danger" name="action">Delete</button>
+                                </form>
                             </div>
                         </div>
-                    </div>                            
+                    </div>
                 </div>
                 <!-- End Modal of Delete -->
-
+            </table>
         </div>
-        
+    
 
 {% endblock %}
 
@@ -206,7 +244,7 @@
             success: function (data) {
                 if (data.host) {
                     hostAppendToTable(data.host);                    
-                    $("#modalAddNew").modal('close');
+                    $("#modalAddNew").modal('hide');
                     parent.location.reload();                 
                 }
             },
@@ -226,12 +264,20 @@
                 <td class='hostHostname hostData' name='hostHostname'>${ host.hostname }</td>
                 <td class='hostIp hostData' name='hostIp'>${ host.ip }</td>
                 <td class='hostDescription hostData' name='hostDescription'>${ host.description }</td>
+                <td>
+                    <a href="#clientModalUpdate" data-bs-toggle="modal" data-bs-target="#clientModalUpdate" title="Edit" onClick="clientUpdate({{ c.id_client }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>                        
+                    <a href="#clientModalDelete" data-bs-toggle="modal" data-bs-target="#clientModalDelete" title="Delete" onClick="clientModalDelete({{ c.id_client }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
+                        <i class="bi bi-trash-fill"></i>
+                    </a>	
+                </td>
                 <td>                            
                     <a onClick="hostUpdate(${ host.id_host })" title="Edit" class="btn btn-floating waves-effect waves-light modal-trigger green" >
-                        <i class="material-icons">edit</i>
+                        <i class="bi bi-pencil-fill"></i>
                     </a>                        
                     <a onClick="hostDelete(${ host.id_host })" title="Delete" class="btn btn-floating waves-effect waves-light modal-trigger red" >
-                        <i class="material-icons">delete</i>
+                        <i class="bi bi-trash-fill"></i>
                     </a>	
                 </td>
             </tr>
@@ -265,7 +311,7 @@
             alert("All fields must have a valid value.");
         }
 
-        $('#hostModalUpdate').modal('close');
+        $('#hostModalUpdate').modal('hide');
         return false;
     });
 
@@ -302,7 +348,7 @@
             $('#hostUpdateClient option:first').prop('selected', true);
             $('#hostUpdateClient option:first').val(client_id);
             $('#hostUpdateClient option:first').text(client_name);
-            $('#hostUpdateClient').formSelect();
+
 
             $('#hostUpdateHostname').val(hostname);
             $('#hostUpdateHostnameLabel').addClass(" active");
@@ -341,7 +387,7 @@
                 success: function (data) {
                     if (data.deleted) {
                         $("#hostTable #host-" + id_host).remove();
-                        $("#hostModalDelete").modal('close');
+                        $("#hostModalDelete").modal('hide');
                     }
                 }
             });       
