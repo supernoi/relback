@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram version="1" name="relbackER.erd">
+	<entities>
+		<data-source id="oracle_thin-16e98106980-ca3587e180e6a59">
+			<entity id="1" name="BACKUP_POLICIES" fq-name="RELBACK.BACKUP_POLICIES" order="0" x="10" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="2" name="CLIENTS" fq-name="RELBACK.CLIENTS" order="1" x="496" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="3" name="CRON_DAY" fq-name="RELBACK.CRON_DAY" order="2" x="982" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="4" name="CRON_DAY_WEEK" fq-name="RELBACK.CRON_DAY_WEEK" order="3" x="1348" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="5" name="CRON_HOUR" fq-name="RELBACK.CRON_HOUR" order="4" x="1714" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="6" name="CRON_MINUTE" fq-name="RELBACK.CRON_MINUTE" order="5" x="2080" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="7" name="CRON_MONTH" fq-name="RELBACK.CRON_MONTH" order="6" x="2446" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="8" name="CRON_YEAR" fq-name="RELBACK.CRON_YEAR" order="7" x="2812" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="9" name="DATABASES" fq-name="RELBACK.DATABASES" order="8" x="3178" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="10" name="HOSTS" fq-name="RELBACK.HOSTS" order="9" x="3664" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="11" name="SCHEDULES" fq-name="RELBACK.SCHEDULES" order="10" x="4150" y="10">
+				<path name="RELBACK"/>
+			</entity>
+			<entity id="12" name="USERS" fq-name="RELBACK.USERS" order="11" x="4591" y="10">
+				<path name="RELBACK"/>
+			</entity>
+		</data-source>
+	</entities>
+	<relations>
+		<relation name="DATABASES_CLIENTS_FK" fq-name="RELBACK.DATABASES.DATABASES_CLIENTS_FK" type="fk" pk-ref="2" fk-ref="9"/>
+		<relation name="HOSTS_CLIENTS_FK" fq-name="RELBACK.HOSTS.HOSTS_CLIENTS_FK" type="fk" pk-ref="2" fk-ref="10"/>
+		<relation name="BACKUP_POLICIES_DATABASES_FK" fq-name="RELBACK.BACKUP_POLICIES.BACKUP_POLICIES_DATABASES_FK" type="fk" pk-ref="9" fk-ref="1"/>
+		<relation name="DATABASES_HOSTS_FK" fq-name="RELBACK.DATABASES.DATABASES_HOSTS_FK" type="fk" pk-ref="10" fk-ref="9"/>
+		<relation name="BKP_POLICIES_USERS_CREATED_FK" fq-name="RELBACK.BACKUP_POLICIES.BKP_POLICIES_USERS_CREATED_FK" type="fk" pk-ref="12" fk-ref="1"/>
+		<relation name="BKP_POLICIES_USERS_UPDATED_FK" fq-name="RELBACK.BACKUP_POLICIES.BKP_POLICIES_USERS_UPDATED_FK" type="fk" pk-ref="12" fk-ref="1"/>
+		<relation name="CLIENTS_USERS_CREATED_FK" fq-name="RELBACK.CLIENTS.CLIENTS_USERS_CREATED_FK" type="fk" pk-ref="12" fk-ref="2"/>
+		<relation name="CLIENTS_USERS_UPDATED_FK" fq-name="RELBACK.CLIENTS.CLIENTS_USERS_UPDATED_FK" type="fk" pk-ref="12" fk-ref="2"/>
+		<relation name="DATABASES_USERS_CREATED_FK" fq-name="RELBACK.DATABASES.DATABASES_USERS_CREATED_FK" type="fk" pk-ref="12" fk-ref="9"/>
+		<relation name="DATABASES_USERS_UPDATED_FK" fq-name="RELBACK.DATABASES.DATABASES_USERS_UPDATED_FK" type="fk" pk-ref="12" fk-ref="9"/>
+		<relation name="HOSTS_USERS_CREATED_FK" fq-name="RELBACK.HOSTS.HOSTS_USERS_CREATED_FK" type="fk" pk-ref="12" fk-ref="10"/>
+		<relation name="HOSTS_USERS_UPDATED_FK" fq-name="RELBACK.HOSTS.HOSTS_USERS_UPDATED_FK" type="fk" pk-ref="12" fk-ref="10"/>
+	</relations>
+</diagram>

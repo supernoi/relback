@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} relBack - Reports{% endblock %}
+
+{% block content %}
+
+    <div class="input-field col s12">
+        <h1>Report Backup Policy</h1>
+        
+            <!-- <div class="table-responsive">                 -->
+                <table class="responsive-table centered highlight display" id="tableReport" style="width:100%">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Policy</th>
+                            <th scope="col">Hostname</th>
+                            <th scope="col">DB_NAME</th>				
+                            <th scope="col">Expected Start</th>
+                            <th scope="col">Start Realized</th>
+                            <th scope="col">Executed Time</th>
+                            <th scope="col">Status</th>				
+                            <th scope="col">Destination</th>	
+                            <th scope="col">Backup Type</th>						
+                            <th scope="col">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in report %}     
+                        {% if r.STATUS == 'COMPLETED' %}
+                            <tr class="table-success">
+                        {% elif r.STATUS == 'SCHEDULED' %}
+                            <tr class="table-info">				
+                        {% elif r.STATUS == 'NOT RUN' %}
+                            <tr class="table-danger">							
+                        {% elif r.STATUS == 'RUNNING' %}
+                            <tr class="table-active">
+                        {% elif r.STATUS == 'COMPLETED WITH WARNINGS' %}
+                            <tr class="table-warning">
+                        {% elif r.STATUS == 'FAILED' %}
+                            <tr class="table-danger">
+                        {% endif %}
+
+                            <td> {{ r.ID_POLICY }} </td>
+                            <td> {{ r.HOSTNAME|lower|capfirst }} </td>
+                            <td> {{ r.DB_NAME|lower|capfirst }} </td>
+                            <td> {{ r.SCHEDULE_START }} </td>
+                            <td> {{ r.START_R }} </td>							
+                            <td> {{ r.DURATION_R }} </td>
+                            <td> {{ r.STATUS|lower|capfirst }} </td>
+                            <td> {{ r.DESTINATION|lower|capfirst }} </td>
+                            <td> {{ r.BACKUP_TYPE|lower|capfirst }} </td>
+
+                            <td>
+
+                                {% if r.SESSION_KEY %}
+                                    <a href="{% url 'coreRelback:reportReadLogDetail' idPolicy=r.ID_POLICY dbKey=r.DB_KEY sessionKey=r.SESSION_KEY %}">
+                                        <img src="{% static 'images/icons/eye.svg' %}" width="32" height="32" title="Details">
+                                    </a>
+                                {% else %}
+                                    <img src="{% static 'images/icons/eye-slash.svg' %}" width="32" height="32" title="Details">
+                                {% endif %}									
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+        
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} relBack - Report Log Detail{% endblock %}
+
+{% block content %}
+
+    <style>
+        th {
+            text-align:center
+        }
+        td {
+            text-align:center
+        }
+    </style>
+
+<div class="container-fluid">
+    <br><br>
+           <div class="row">
+               
+                   <h1>Report Backup Policy Detail</h1>
+               
+               <br>
+           </div>
+            <table>
+                <tr>
+                    <b>ID Policy: </b>{{ policyDetail.id_policy }}
+                    <b>Policy Name: </b> {{ policyDetail.policy_name }}
+                    <b>Status: </b> {{ policyDetail.status }}
+                    <b>Backup Type: </b> {{ policyDetail.backup_type }}                    
+                </tr>
+                <tr>
+                    <b>Client: </b>{{ policyDetail.id_client.name }}
+                    <b>Database(DB_NAME): </b> {{ policyDetail.id_database.db_name }}
+                    <b>Hostname: </b> {{ policyDetail.id_host.hostname }}                    
+                </tr>
+                <tr>
+                    <b>Duration Estimated: </b> {{ policyDetail.duration }} Minutes
+                    <b>Size Backup Estimated: </b> {{ policyDetail.size_backup }}
+                    <b>Duration Realized: </b> {{ execDetail.time_taken_display }} H:M:S
+                    <b>Size Backup Realized: </b> {{ execDetail.output_bytes_display }}
+                </tr>
+            </table>
+           
+           <br>
+           <div class="panel panel-default">
+               <div class="panel-heading text-center"><h4>Log of the backup execution (RMAN_OUTPUT)</h4></div>
+               <div class="table-responsive">
+               <table class="table table-striped table-bordered">
+                   <tr>					
+                       <th class="text-center" id="text-middle">RECID</th>
+                       <th class="text-center" id="text-middle">RNAN Output</th>
+                   </tr>
+                   {% for rl in reportLog %}
+                       <tr>
+                           <td class="text-center" id="text-middle">{{ rl.recid }}</td>
+                           <td class="text-center" id="text-middle">{{ rl.output }}</td>
+                       </tr>
+                   {% endfor %}
+               </table>
+
+                   <div class="form-actions">
+                       <br>
+                     <a class="btn btn-outline-secondary" href="{% url 'coreRelback:reportRead' %}">Back</a>
+                   </div>
+                
+               </div>
+           </div>
+       </div>
+                
+   </div>
+
+{% endblock %}

@@ -1,0 +1,431 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}relBack - Databases{% endblock %}
+
+{% block content %}
+
+    <div class="container"> 
+        <div class="left-align">
+            <h1>Databases</h1>  
+            <a href="#modalAddNew" title="Add" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
+                <i class="material-icons">add</i>
+            </a>
+        </div>
+        <br><br>
+
+    <!-- Modal of addNew -->
+
+        <div class="modal" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">            
+            <div class="modal-content">    
+                <div class="row">                
+                    <h2>Add new Database</h2>    
+                
+                    <form class="col s12" id="databaseFormCreate">
+                        {% csrf_token %}                            
+                        
+                        <div class="row">
+                            <div class="input-field col s6">
+                                <select id="databaseCreateIdClient" name="id_client" onchange="reloadHostList('databaseCreateIdHost', this.value)">
+                                    <option value="" disabled selected>Choose your option</option>                                            
+                                    {% for c in clients %}
+                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="id_client">Client name</label>
+                                
+                            </div>
+                        
+                            <div class="input-field col s6">
+                                <select id="databaseCreateIdHost" name="id_host">
+                                    <option value="" disabled selected>Choose client first</option>
+                                </select>
+                                <label for="id_host" >Hostname</label>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="input-field col s6">			
+                                <input required id="databaseCreateDbName" name="db_name" class="validate" type="text" value="">
+                                <label for="db_name">Database Name(DB_NAME)</label>
+                            </div>                        
+                            <div class="input-field col s6">
+                                <input required id="databaseCreateDbId" name="dbid" class="validate" type="text"  value="">
+                                <label for="dbid">DBID</label>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="input-field col s12">					
+                                <input required id="databaseCreateDescription" name="description" class="validate" type="text" value="">
+                                <label for="description">Description</label>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">                                                               
+                            <button class="btn waves-effect waves-light green" type="submit" name="action">
+                                Add
+                                <i class="material-icons left">add</i>
+                            </button>
+                            <a class="modal-close btn waves-effect waves-light">
+                                Back
+                                <i class="material-icons left">exit_to_app</i>                                    
+                            </a>							
+                        </div>
+                    </form>
+                </div>
+            </div><!-- end modal content-->
+        </div> <!-- end modal -->
+    <!-- End Modal of addNew -->
+
+        <!-- <div class="panel panel-default"> -->
+            <table id="databaseTable" class="table striped highlight centered responsive-table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col"><b>Client Name</b></th>
+                        <th scope="col"><b>Hostname</b></th>
+                        <th scope="col"><b>DB_NAME</b></th>
+                        <th scope="col"><b>DBID</b></th>			
+                        <th scope="col"><b>Description</b></th>
+                        <th scope="col"><b>Options</b></th>
+                    </tr> 
+                </thead>
+            {% for d in databases %}
+                <tr id="database-{{ d.id_database }}">
+                    <td id="databaseClientName" name="clientName">{{ d.id_client.name }}</td>
+                        <input type="hidden" id="databaseClientId" name="databaseClientId" value={{ d.id_client.id_client }}>
+                    <td id="databaseHostname" class="databaseHostname" name="databaseHostname">{{ d.id_host.hostname }}</td>
+                        <input type="hidden" id="databaseHostId" name="databaseHostId" value={{ d.id_host.id_host }}>
+                    <td id="databaseDbName" class="databaseDbName" name="db_name">{{ d.db_name }}</td>
+                    <td id="databaseDbId" class="databaseDbId" name="dbid">{{ d.dbid }}</tdid="databaseDbId" >
+                    <td id="databaseDescription" class="databaseDescription" name="description">{{ d.description }}</td>
+                    <td>
+                        <a href="#databaseModalUpdate" title="Edit" onClick="databaseUpdate({{ d.id_database }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                            <i class="material-icons">edit</i>
+                        </a>
+                        <a href="#databaseModalDelete" title="Delete" onClick="databaseModalDelete({{ d.id_database }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
+                            <i class="material-icons">delete</i>
+                        </a>	
+                    </td>	
+                </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center bg-warning">No database</td>
+                    </tr>
+                {% endfor %}
+            </table>
+
+
+            <!-- Modal of update -->
+
+                <div id="databaseModalUpdate" class="modal" role="dialog" aria-labelledby="ModalLabel-Update">                    
+                        <div class="modal-content">
+                            <div class="row">
+                                <h2 id="databaseUpdateTitle"></h2>                                                                
+                            </div>
+                            <form class="col s12" id="databaseFormUpdate" action="">
+                                {% csrf_token %}
+
+                                <input id="databaseUpdateIdDatabase" name="formIdDatabase" type="hidden"/>
+                                
+                                <div class="row">
+                                    <div class="input-field col s6">				
+                                        <select required id="databaseUpdateClient" name="id_client" onchange="reloadHostList('databaseUpdateHost', this.value)">
+                                            <option value="{{ d.id_client }}" selected>{{ d.id_client.name }}</option>                                            
+                                            {% for c in clients %}
+                                                <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label>Client name</label>
+                                    </div>
+                                
+                                    <div class="input-field col s6">
+                                        <select required id="databaseUpdateHost" name="id_host">
+                                            <option value="{{ d.id_host }}" selected>{{ d.id_database.hostname }}</option>
+                                            <!-- {% for h in hosts %}
+                                                <option value="{{ h.id_host }}">{{ h.hostname }}</option>
+                                            {% endfor %} -->
+                                        </select>
+                                        <label>Hostname</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s6">			
+                                        <input required id="databaseUpdateDbName" name="formDbName" value="{{ d.db_name }}">
+                                        <label id="databaseUpdateDbNameLabel" for="formDbName">Database Name(DB_NAME)</label>
+                                    </div>                        
+                                    <div class="input-field col s6">
+                                        <input require id="databaseUpdateDbId" name="formDbId" value="{{ d.dbid }}">
+                                        <label id="databaseUpdateDbIdLabel" for="formDbId">DBID</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="input-field col s12">					
+                                        <input required id="databaseUpdateDescription" name="formDescription" type="text">
+                                        <label id="databaseUpdateDescriptionLabel" for="formDescription">Description</label>
+                                    </div>
+                                </div>
+                                	
+                                <div class="modal-footer">
+                                    <button class="btn waves-effect waves-light green" type="submit">
+                                        Update
+                                        <i class="material-icons left">system_update_alt</i>
+                                    </button>
+                                    <a class="modal-close btn waves-effect waves-light" data-dismiss="modal">
+                                        Back
+                                        <i class="material-icons left">exit_to_app</i>                                    
+                                    </a>
+                                </div>
+                            </form>
+                    </div> <!--  end modal content -->
+                </div> <!--  end modal -->
+
+            <!-- Modal of Delete -->
+
+                <div id="databaseModalDelete" class="modal" role="dialog" aria-labelledby="SmallModalLabel-Delete">                    
+                    <div class="modal-content">
+                        <div class="row">                             
+                            <h2>Confirmation to delete</h2>
+                        </div>
+                        <div class="row">                          
+                            <p>Deleting the database, all dependents: Backup Policies will also be deleted.</p>
+                            <p>Really want to delete the database <b id='deleteDbName'></b>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a class="modal-close btn waves-effect waves-light">
+                                Back
+                                <i class="material-icons left">exit_to_app</i>                                    
+                            </a> 
+                            <a id="databaseButtonDelete" class="btn waves-effect waves-light green" type="submit" name="action">
+                                Delete
+                                <i class="material-icons left">delete_forever</i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+        </div>
+        
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+
+<script>
+
+    $("#databaseFormCreate").submit(function() {
+        
+        $.ajax({
+            url: '{% url "coreRelback:databaseCreate" %}',
+            data: {
+                'id_client':    $('#databaseCreateIdClient option:selected').val(),
+                'id_host':      $('#databaseCreateIdHost option:selected').val(),
+                'db_name':      $('#databaseCreateDbName').val(),
+                'db_id':        $('#databaseCreateDbId').val(),
+                'description':  $('#databaseCreateDescription').val(),
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.database) {
+                    databaseAppendToTable(data.database);                    
+                    $("#modalAddNew").modal('close');
+                    parent.location.reload();                 
+                }
+            },
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+
+        $("#databaseFormCreate").trigger("reset");
+        return false;
+    });
+
+    function databaseAppendToTable(database) {
+        $("#databaseTable > tbody:last-child").append(`
+            <tr id="database-${ database.id_database }">
+                <td id="databaseClientName" class="databaseClientName" name="databaseClientName">${ database.client_name }</td>
+                <td id="databaseHostname" class="databaseHostname" name="databaseHostname">${ database.hostname }</td>
+                <td id="databaseDbName" class="databaseDbName" name="databaseDbName">${ database.dbname }</td>
+                <td id="databaseDbId" class="databaseDbId" name="databaseDbId">${ database.dbid }</td>
+                <td id="databaseDescription" class="databaseDescription" name="databaseDescription">${ database.description }</td>
+                <td>                            
+                    <a onClick="databaseUpdate(${ database.id_database })" title="Edit" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                        <i class="material-icons">edit</i>
+                    </a>                        
+                    <a onClick="databaseDelete(${ database.id_database })" title="Delete" class="btn btn-floating waves-effect waves-light modal-trigger red" >
+                        <i class="material-icons">delete</i>
+                    </a>	
+                </td>
+            </tr>
+        `);
+    }
+
+    // Update Django Ajax Call
+    $("form#databaseFormUpdate").submit(function() {
+
+        if (databaseUpdateIdDatabase 
+            && databaseUpdateClient 
+            && databaseUpdateHost  
+            && databaseUpdateDbName 
+            && databaseUpdateDbId 
+            && databaseUpdateDescription) {
+
+            $.ajax({
+                url: '{% url "coreRelback:databaseUpdate" %}',
+                data: {
+                    'id_database':  $('#databaseUpdateIdDatabase').val(),                
+                    'id_client':    $('#databaseUpdateClient option:selected').val(),
+                    'id_host':      $('#databaseUpdateHost option:selected').val(),
+                    'db_name':      $('#databaseUpdateDbName').val(),
+                    'db_id':        $('#databaseUpdateDbId').val(),
+                    'description':  $('#databaseUpdateDescription').val(),
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.database) {
+                        updateDatabaseTable(data.database);
+                        parent.location.reload();
+                    }
+                }
+            });
+
+        } else {
+            alert("All fields must have a valid value.");
+        }
+
+        $('#databaseModalUpdate').modal('close');
+        return false;
+    });
+
+    function updateDatabaseTable(database){
+        $("#databaseTable #database-" + database.id_database).children().each(function() {
+            var attr = $(this).attr("databaseDbName");
+            if (attr == "databaseClientName") {
+                $(this).text(database.client_name);
+            } else if (attr == "databaseHostname") {
+                $(this).text(database.hostname);
+            } else if (attr == "databaseDb") {
+                $(this).text(database.db_name);
+            } else if (attr == "databaseId") {
+                $(this).text(database.dbid);
+            } else if (attr == "databaseDescription") {
+                $(this).text(database.description);    
+            } 
+        });
+    }
+
+    // Update Django Ajax Call
+    function databaseUpdate(id_database) {
+        
+        if (id_database) {
+
+            tr_id = "#database-" + id_database;            
+            client_name = $(tr_id).find("#databaseClientName").text();
+            client_id = $(tr_id).find("#databaseClientId").val();
+            hostname = $(tr_id).find(".databaseHostname").text();
+            host_id = $(tr_id).find("#databaseHostId").val();
+            db_name = $(tr_id).find(".databaseDbName").text();
+            dbId = $(tr_id).find(".databaseDbId").text();
+            description = $(tr_id).find(".databaseDescription").text();
+
+            $('#databaseUpdateTitle').text(db_name);
+            $('#databaseUpdateIdDatabase').val(id_database);
+      
+            $('#databaseUpdateClient option:first').prop('selected', true);
+            $('#databaseUpdateClient option:first').val(client_id);
+            $('#databaseUpdateClient option:first').text(client_name);
+            $('#databaseUpdateClient').formSelect();
+
+            $('#databaseUpdateHost option:first').prop('selected', true);
+            $('#databaseUpdateHost option:first').val(host_id);
+            $('#databaseUpdateHost option:first').text(hostname);
+            $('#databaseUpdateHost').formSelect();
+
+            $('#databaseUpdateDbName').val(db_name);
+            $('#databaseUpdateDbNameLabel').addClass(" active");
+
+            $('#databaseUpdateDbId').val(dbId);
+            $('#databaseUpdateDbIdLabel').addClass(" active");
+
+            $('#databaseUpdateDescription').val(description);
+            $('#databaseUpdateDescriptionLabel').addClass(" active");
+ 
+        }
+    }
+
+    function databaseModalDelete(id_database) {
+
+        if(id_database) {
+
+            tr_id = "#database-" + id_database;
+            databaseName = $(tr_id).find(".databaseDbName").text();
+
+            $('#deleteDbName').text(databaseName);
+            $('#databaseButtonDelete').attr("onclick","databaseDelete("+id_database+")");
+            
+        }
+    }
+
+    // Delete Django Ajax Call
+    function databaseDelete(id_database) {
+        if (id_database) {
+            $.ajax({
+                url: '{% url "coreRelback:databaseDelete" %}',
+                data: { 'id_database': id_database },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.deleted) {
+                        $("#databaseTable #database-" + id_database).remove();
+                        $("#databaseModalDelete").modal('close');
+                    }
+                }
+            });       
+        }        
+    }
+
+    // Show hosts client
+    function reloadHostList(elemSelectId,idClient) {
+
+        $.ajax({
+            url: '{% url "coreRelback:hostsList" %}',
+            data: { 'id_client': idClient },          
+            dataType: 'json',
+            success: function (data) {
+                $(data).each(function(){
+                    var cobaia = JSON.parse(data.hosts);
+
+                    var selectHosts = document.getElementById(elemSelectId);
+                    selectHosts.innerHTML = "";
+                    
+                    var optPlaceHolder = document.createElement("option");
+                    optPlaceHolder.text = "Choose a host";
+                    optPlaceHolder.disabled;
+                    selectHosts.append(optPlaceHolder);
+
+                    for (i = 0; i < cobaia.length; ++i) {
+                        var opt = document.createElement("option");
+                        opt.text = cobaia[i].fields.hostname;
+                        opt.value = cobaia[i].pk;
+                        
+                        selectHosts.appendChild(opt);                        
+                    }
+                    
+                    M.FormSelect.init(selectHosts);
+                    return;
+                    
+                })  
+            },
+            error : function(xhr,errmsg,err) {
+                console.log("reloadHostList - msg error")
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+
+    </script>
+
+{% endblock javascript %}

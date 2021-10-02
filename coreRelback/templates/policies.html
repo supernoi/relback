@@ -1,0 +1,798 @@
+{%  extends 'base.html'  %}
+
+{%  load static  %}
+
+{%  block title %}relBack - Clients{%  endblock  %}
+
+{%  block content  %}
+
+    <div class="container">  
+        <div class="left-align">
+            <h1>Backup Policies</h1>
+                <a href="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
+                    <i class="material-icons">add</i>
+                </a>
+        </div>
+        <br><br>
+
+        <!-- Modal of addNew -->
+
+        <div class="modal" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">            
+            <div class="modal-content">    
+                <div class="row">
+                    <h2>Add new Backup Policy</h2>
+
+                    <form class="col s12" id="policyFormCreate">
+                        {% csrf_token %}
+
+                        <div class="row">
+
+                            <div class="input-field col s2">                       
+                                <select id="policyCreateStatus" name="status">
+                                    <option value="ACTIVE" selected>Active</option>
+                                    <option value="INACTIVE">Inactive</option>
+                                </select>
+                                <label for="status">Status</label>
+                            </div>
+                        
+                            <div class="input-field col s4">				
+                                <input required id="policyCreateName" name="policy_name" type="text" value="">
+                                <label for="policy_name">Policy Name</label>
+                            </div>
+
+                            <div class="input-field col s6">				
+                                <input required id="policyCreateDescription" name="description" type="text" type="text" value="{{ h.description }}">
+                                <label for="description">Description</label>
+                            </div>                             
+                            
+                        </div>
+
+                        <div class="row"> 
+
+                            <div class="input-field col s4">
+                                <select id="policyCreateIdClient" name="id_client" onchange="reloadListHost('policyCreateIdHost', this.value)">
+                                    <option value="" disabled selected>Choose your option</option>                                            
+                                    {% for c in clients %}
+                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label for="id_client">Client name</label>
+                            </div>
+                        
+                            <div class="input-field col s4">
+                                <select id="policyCreateIdHost" name="id_host" onchange="reloadListDatabase('policyCreateIdDatabase', policyCreateIdClient.value, this.value)">
+                                    <option value="" disabled selected>Choose client first</option>
+                                </select>
+                                <label>Hostname</label>
+                            </div>
+
+                            <div class="input-field col s4">
+                                <select id="policyCreateIdDatabase" name="id_database">
+                                    <option value="" disabled selected>Choose client and host first</option> 
+                                    <!-- {% for d in databases %}
+                                        <option>{{ d.db_name|add:d.db_name }}</option>
+                                    {% endfor %} -->
+                                </select>
+                                <label for="id_database">Database Name</label>
+                            </div>                          
+
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s3">
+                                <select id="policyCreateBackupType" name="backup_type">
+                                    <option value="" disabled selected>Choose your option</option> 
+                                    <option value="ARCHIVELOG">ARCHIVELOG</option>
+                                    <option value="DB FULL">DB FULL</option>
+                                    <option value="DB INCR">DB INCR</option>
+                                    <option value="RECVR AREA">RECVR AREA</option>
+                                    <option value="BACKUPSET">BACKUPSET</option>
+                                </select>
+                                <label for="backup_type">Backup Type</label>
+                            </div> 
+                            <div class="input-field col s3">
+                                <select id="policyCreateDestination" name="destination">
+                                    <option value="" disabled selected>Choose your option</option> 
+                                    <option value="SBT_TAPE">SBT_TAPE</option>
+                                    <option value="DISK">DISK</option>
+                                </select>
+                                <label for="destination">Destination</label>
+                            </div>                            
+                            <div class="input-field col s3">					
+                                    <input required id="policyCreateSizeBackup" name="size_backup" type="text" value="">
+                                    <label for="size_backup">Backup Size</label>
+                            </div>
+                            <div class="input-field col s3">
+                                <input required id="policyCreateDuration" name="duration" type="text" value="">
+                                <label for="duration">Duration</label>
+                            </div>                            
+                        </div>
+
+                        <div class="row">                                
+                            <div class="input-field col s2">                                        					
+                                    <input required id="policyCreateMinute" name="minute" type="text" value="">
+                                    <label for="minute">Minute</label>
+                            </div>  
+                            <div class="input-field col s2">					
+                                    <input required id="policyCreateHour" name="hour" type="text" value="">
+                                    <label for="hour">Hour</label>
+                            </div>                                
+                            <div class="input-field col s2">				
+                                    <input required id="policyCreateDay" name="day" type="text" value="">
+                                    <label for="day">Day</label>
+                            </div>    
+                            <div class="input-field col s2">					
+                                    <input required id="policyCreateMonth" name="month" type="text" value="">
+                                    <label for="month">Month</label>
+                            </div>                               
+                            <div class="input-field col s2">					
+                                    <input required id="policyCreateDayWeek" name="day_week" type="text" value="">
+                                    <label for="day_week">Day Week</label>
+                            </div>   
+                        </div>
+
+                        <div class="modal-footer">                                                               
+                            <button class="btn waves-effect waves-light green" type="submit" name="action">
+                                Add
+                                <i class="material-icons left">add</i>
+                            </button>
+                            <a class="modal-close btn waves-effect waves-light">
+                                Back
+                                <i class="material-icons left">exit_to_app</i>                                    
+                            </a>							
+                        </div>
+                    </form>
+                </div>
+            </div> <!-- end modal content-->
+        </div> <!-- end modal AddNew -->
+        
+            <table id="policyTable" class="table striped highlight centered responsive-table">
+                <thead>
+                    <tr>
+                        <th scope="col"><b>Id Policy</b></th>
+                        <th scope="col"><b>Client</b></th>
+                        <th scope="col"><b>Hostname</b></th>
+                        <th scope="col"><b>DB_NAME</b></th>
+                        <th scope="col"><b>Policy Name</b></th>
+                        <th scope="col"><b>Backup Type</b></th>
+                        <th scope="col"><b>Status</b></th>                        
+                        <th scope="col"><b>Option</b></th>	
+                    </tr> 
+                </thead>
+            {% for p in policies %}
+                <tr id="policy-{{ p.id_policy }}">
+                    <td id="policyId" name="policyId">{{ p.id_policy }}</td>
+                    <td id="policyClientName" class="policyClientName" name="clientName">{{ p.id_client.name }}</td>                        
+                    <td id="policyHostname" class="policyHostname" name="policyHostname" >{{ p.id_host.hostname }}</td>                        
+                    <td id="policyDbName" class="policyDbName" name="dbName">{{ p.id_database.db_name }}</td>                        
+                    <td id="policyName" class="policyName" name="policyName">{{ p.policy_name }}</td>
+                    <td id="policyBackupType" name="backupType">{{ p.backup_type }}</td>
+                    <td id="policyStatus" name="status">{{ p.status }}</td>
+                    <td>
+                        <a href="#policyModalDetail" title="Detail" onClick="policyDetail({{ p.id_policy }})" class="btn btn-floating waves-effect waves-light modal-trigger blue" >
+                            <i class="material-icons">info</i>
+                        </a>                        
+                        <a href="#policyModalUpdate" title="Edit" onClick="policyUpdate({{ p.id_policy }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                            <i class="material-icons">edit</i>
+                        </a>
+                        <a href="#policyModalDelete" title="Delete" onClick="policyModalDelete({{ p.id_policy }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
+                            <i class="material-icons">delete</i>
+                        </a>	
+                    </td>                
+                    <input type="hidden" id="policyClientId" name="policyClientId" value={{ p.id_client.id_client }}>
+                    <input type="hidden" id="policyHostId" name="policyHostId" value={{ p.id_host.id_host }}>
+                    <input type="hidden" id="policyDatabaseId" name="dbId" value={{ p.id_database.id_database }}>
+                    <input type="hidden" id="policyDestination" name="destination" value={{ p.destination }}>
+                    <input type="hidden" id="policyDuration" name="duration" value={{ p.duration }}>
+                    <input type="hidden" id="policySizeBackup" name="size_backup" value={{ p.size_backup }}>
+                    <input type="hidden" id="policyMinute" name="minute" value={{ p.minute }}>
+                    <input type="hidden" id="policyHour" name="hour" value={{ p.hour }}>
+                    <input type="hidden" id="policyDay" name="day" value={{ p.day }}>
+                    <input type="hidden" id="policyDayWeek" name="day_week" value={{ p.day_week }}>
+                    <input type="hidden" id="policyMonth" name="month" value={{ p.month }}>
+                    <input type="hidden" id="policyDescription" name="description" value={{ p.description }}>
+                </tr>
+
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center bg-warning">No backup policy</td>
+                    </tr>
+                {% endfor %}
+            </table>
+                
+            <!-- Modal of ReadDetail -->
+
+            <div class="modal" id="policyModalDetail" class="modal" role="dialog" aria-labelledby="SmallModalLabel-Delete">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 id="policyDetailTitle"></h2>                                                           
+                            </div>
+                            <div class="modal-body">								
+                                <ul id="policyDetailList">
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <a class="modal-close btn waves-effect waves-light">
+                                    Back
+                                    <i class="material-icons left">exit_to_app</i>                                    
+                                </a>								
+                            </div>
+                    </div>
+                </div>
+            </div>	
+
+            <!-- End Modal of ReadDetail -->
+
+            <!-- Modal of update -->
+
+                <div id="policyModalUpdate" class="modal" role="dialog" aria-labelledby="ModalLabel-Update">
+                    <div class="modal-content">
+                        <div class="row">
+                            <h2 id="policyUpdateTitle"></h2>                                                            
+                        </div>
+                        <form class="col s12" id="policyFormUpdate" action="">
+                                {% csrf_token %}
+
+                                <input id="policyUpdateIdPolicy" name="formIdPolicy" type="hidden"/>
+
+                                <div class="row">        
+                                    <div class="input-field col s2">					
+                                        <select required id="policyUpdateStatus" name="formStatus">
+                                            <option value="{{ p.status }}" selected>{{ p.status }}</option>
+                                            <option value="ACTIVE">Active</option>
+                                            <option value="INACTIVE">Inactive</option>
+                                        </select>
+                                        <label id="policyUpdateStatusLabel" for="formStatus">Status</label>
+                                    </div>
+                                
+                                    <div class="input-field col s4">				
+                                        <input required id="policyUpdateName" name="policy_name" type="text" value="{{ p.policy_name }}">
+                                        <label id="policyUpdateNameLabel" for="policy_name">Policy Name</label>
+                                    </div>
+        
+                                    <div class="input-field col s6">				
+                                        <input required id="policyUpdateDescription" name="description" type="text" type="text" value="{{ p.description }}">
+                                        <label id="policyUpdateDescriptionLabel" for="description">Description</label>
+                                    </div>                             
+                                    
+                                </div>
+        
+                                <div class="row"> 
+        
+                                    <div class="input-field col s4">
+                                        <select id="policyUpdateClient" name="id_client">
+                                            <option value="{{ p.id_client }}" disabled selected>Choose your option</option>                                            
+                                            {% for c in clients %}
+                                                <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="id_client">Client name</label>
+                                    </div>
+                                
+                                    <div class="input-field col s4">
+                                        <select id="policyUpdateHost" name="id_host">
+                                            <option value="{{ p.id_host }}" disabled selected>Choose your option</option>
+                                            {% for h in hosts %}
+                                                <option value="{{ h.id_host }}">{{ h.hostname }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label>Hostname</label>
+                                    </div>
+        
+                                    <div class="input-field col s4">
+                                        <select id="policyUpdateDatabase" name="id_database">
+                                            <option value="" disabled selected>Choose your option</option> 
+                                            {% for d in databases %}
+                                                <option value="{{ d.id_database }}">{{ d.db_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="id_database">Database Name</label>
+                                    </div>                          
+        
+                                </div>
+        
+                                <div class="row">
+                                    <div class="input-field col s3">
+                                        <select id="policyUpdateBackupType" name="backup_type">
+                                            <option disabled selected>Choose your option</option> 
+                                            <option value="ARCHIVELOG">ARCHIVELOG</option>
+                                            <option value="DB FULL">DB FULL</option>
+                                            <option value="DB INCR">DB INCR</option>
+                                            <option value="RECVR AREA">RECVR AREA</option>
+                                            <option value="BACKUPSET">BACKUPSET</option>
+                                        </select>
+                                        <label for="backup_type">Backup Type</label>
+                                    </div> 
+                                    <div class="input-field col s3">
+                                        <select id="policyUpdateDestination" name="destination">
+                                            <option disabled selected>Choose your option</option> 
+                                            <option value="SBT_TAPE">SBT_TAPE</option>
+                                            <option value="DISK">DISK</option>
+                                        </select>
+                                        <label for="destination">Destination</label>
+                                    </div>                            
+                                    <div class="input-field col s3">					
+                                            <input required id="policyUpdateSizeBackup" class="" name="size_backup" type="text" value="">
+                                            <label id="policyUpdateSizeBackupLabel" for="size_backup">Backup Size</label>
+                                    </div>
+                                    <div class="input-field col s3">
+                                        <input required id="policyUpdateDuration" class="" name="duration" type="text" value="">
+                                        <label id="policyUpdateDurationLabel" for="duration">Duration</label>
+                                    </div>                            
+                                </div>
+        
+                                <div class="row">                                
+                                    <div class="input-field col s2">                                        					
+                                            <input required id="policyUpdateMinute" name="minute" type="text" value="">
+                                            <label id="policyUpdateMinuteLabel" for="minute">Minute</label>
+                                    </div>  
+                                    <div class="input-field col s2">					
+                                            <input required id="policyUpdateHour" name="hour" type="text" value="">
+                                            <label id="policyUpdateHourLabel" for="hour">Hour</label>
+                                    </div>                                
+                                    <div class="input-field col s2">				
+                                            <input required id="policyUpdateDay" name="day" type="text" value="">
+                                            <label id="policyUpdateDayLabel" for="day">Day</label>
+                                    </div>    
+                                    <div class="input-field col s2">					
+                                            <input required id="policyUpdateMonth" name="month" type="text" value="">
+                                            <label id="policyUpdateMonthLabel" for="month">Month</label>
+                                    </div>                               
+                                    <div class="input-field col s2">					
+                                            <input required id="policyUpdateDayWeek" name="day_week" type="text" value="">
+                                            <label id="policyUpdateDayWeekLabel" for="day_week">Day Week</label>
+                                    </div>   
+                                </div>
+        
+                                <div class="modal-footer">
+                                    <button class="btn waves-effect waves-light green" type="submit">
+                                        Update
+                                        <i class="material-icons left">system_update_alt</i>
+                                    </button>
+                                    <a class="modal-close btn waves-effect waves-light" data-dismiss="modal">
+                                        Back
+                                        <i class="material-icons left">exit_to_app</i>                                    
+                                    </a>
+                                </div>
+                            </form>
+                    </div> <!-- end modal content-->
+                </div> <!-- end modal Update -->
+
+
+            <!-- Modal of Delete -->
+
+                <div id="policyModalDelete" class="modal" role="dialog" aria-labelledby="SmallModalLabel-Delete">
+                    <div class="modal-content">
+                        <div class="row">                                
+                            <h2>Confirmation</h2>
+                        </div>
+                        <div class="row">
+                            <p>Really want to delete the Policy: <b id='deletePolicyName'></b>?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a class="modal-close btn waves-effect waves-light">
+                                Back
+                                <i class="material-icons left">exit_to_app</i>                                    
+                            </a> 
+                            <a id="policyButtonDelete" class="btn waves-effect waves-light green" type="submit" name="action">
+                                Delete
+                                <i class="material-icons left">delete_forever</i>
+                            </a>
+                        </div>
+                    </div>
+                </div>   
+        </div>
+        
+    </div>
+
+{%  endblock  %}
+
+{% block javascript %}
+
+<script>
+
+    function policyDetail(id_policy, callback) {
+
+        if (id_policy) {
+            $.ajax({
+                url: '{% url "coreRelback:policyDetail" %}',
+                data: {
+                    'id_policy': id_policy
+                    // , 'csrfmiddlewaretoken': '{{csrf_token}}'
+                },
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        policyDetailList(data.policy);
+                    }
+                },
+                error : function(xhr,errmsg,err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            }); 
+        }
+    }
+
+    function policyDetailList(policy) {
+
+        $('#policyDetailTitle').text(policy.policy_name);
+
+        $("#policyDetailList").empty();
+
+        $("#policyDetailList").append('<li><b>Id Policy: </b>'+ policy.id_policy +'</a></li>');
+        $("#policyDetailList").append('<li><b>Status: </b>'+ policy.status +'</a></li>');
+        $("#policyDetailList").append('<li><b>Client: </b>' + policy.client_name +'</a></li>');
+        $("#policyDetailList").append('<li><b>Hostname: </b>'+ policy.hostname +'</a></li>');
+        $("#policyDetailList").append('<li><b>DbName: </b>'+ policy.db_name +'</a></li>');
+        $("#policyDetailList").append('<li><b>Backup Type: </b>'+ policy.backup_type +'</a></li>');
+        $("#policyDetailList").append('<li><b>Destination: </b>'+ policy.destination +'</a></li>');
+        $("#policyDetailList").append('<li><b>Duration: </b>'+ policy.duration +'</a></li>');
+        $("#policyDetailList").append('<li><b>Minute: </b>'+ policy.minute +'</a></li>');
+        $("#policyDetailList").append('<li><b>Hour: </b>'+ policy.hour +'</a></li>');
+        $("#policyDetailList").append('<li><b>Day: </b>'+ policy.day +'</a></li>');
+        $("#policyDetailList").append('<li><b>Day Week: </b>'+ policy.day_week +'</a></li>');
+        $("#policyDetailList").append('<li><b>Month: </b>'+ policy.month +'</a></li>');        
+        $("#policyDetailList").append('<li><b>Description: </b>'+ policy.description +'</a></li>');
+
+    }
+    
+
+    $("#policyFormCreate").submit(function() {
+        
+        $.ajax({
+            url: '{% url "coreRelback:policyCreate" %}',
+            data: {
+                'id_client':    $('#policyCreateIdClient option:selected').val().trim(),
+                'id_host':      $('#policyCreateIdHost option:selected').val().trim(),
+                'id_database':  $('#policyCreateIdDatabase option:selected').val().trim(),
+                'policy_name':  $('#policyCreateName').val().trim(),
+                'backup_type':  $('#policyCreateBackupType').val().trim(),
+                'destination':  $('#policyCreateDestination').val().trim(),
+                'minute':       $('#policyCreateMinute').val().trim(),
+                'hour':         $('#policyCreateHour').val().trim(),
+                'day':          $('#policyCreateDay').val().trim(),
+                'month':        $('#policyCreateMonth').val().trim(),
+                'day_week':     $('#policyCreateDayWeek').val().trim(),
+                'duration':     $('#policyCreateDuration').val().trim(),
+                'size_backup':  $('#policyCreateSizeBackup').val().trim(),
+                'status':       $('#policyCreateStatus').val().trim(),
+                'description':  $('#policyCreateDescription').val().trim(),
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.policy) {
+                    console.log(data.policy);
+                    policyAppendToTable(data.policy);                    
+                    $("#modalAddNew").modal('close');
+                    parent.location.reload(); // How to improve the refresh?                 
+                }
+            },
+            error : function(xhr,errmsg,err) {
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+
+        $("#policyFormCreate").trigger("reset");
+        return false;
+    });
+
+    function policyAppendToTable(policy) {
+        $("#policyTable>tbody:last-child").append(`
+            <tr id="policy-${ policy.id_policy }">
+                <td id="policyId" name="policyId">{{ policy.id_policy }}</td>
+                <td id="policyClientName" class='policyClientName' name='policyClientName'>${ policy.client_name }</td>
+                    <input type="hidden" id="policyClientId" name="policyClientId" value={{ policy.id_client.id_client }}>
+                <td id="policyHostname" class='policyHostname' name='policyHostname'>${ policy.hostname }</td>
+                    <input type="hidden" id="policyHostId" name="policyHostId" value={{ policy.id_host.id_host }}>
+                <td id="policyDbName" class='policyDbName' name='policyDbName'>${ policy.dbname }</td>
+                    <input type="hidden" id="policyIdDatabase" name="policyIdDatabase" value={{ policy.id_database.id_database }}>
+                <td id="policyName" class='policyName' name='policyName'>${ policy.policy_name }</td>
+                <td>                            
+                    <a href="#policyModalDetail" title="Detail" onClick="policyDetail({{ policy.id_policy }})" class="btn btn-floating waves-effect waves-light modal-trigger blue" >
+                        <i class="material-icons">info</i>
+                    </a>                        
+                    <a href="#policyModalUpdate" title="Edit" onClick="policyUpdate({{ policy.id_policy }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                        <i class="material-icons">edit</i>
+                    </a>
+                    <a href="#policyModalDelete" title="Delete" onClick="policyModalDelete({{ policy.id_policy }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
+                        <i class="material-icons">delete</i>
+                    </a>	
+                </td>                
+                <input type="hidden" id="policyClientId" name="policyClientId" value={{ policy.id_client.id_client }}>
+                <input type="hidden" id="policyHostId" name="policyHostId" value={{ policy.id_host.id_host }}>
+                <input type="hidden" id="policyDbId" name="dbId" value={{ policy.id_database.id_database }}>
+                <input type="hidden" id="policyDestination" name="destination" value={{ policy.destination }}>
+                <input type="hidden" id="policyDuration" name="duration" value={{ policy.duration }}>
+                <input type="hidden" id="policySizeBackup" name="size_backup" value={{ policy.size_backup }}>
+                <input type="hidden" id="policyMinute" name="minute" value={{ policy.minute }}>
+                <input type="hidden" id="policyHour" name="hour" value={{ policy.hour }}>
+                <input type="hidden" id="policyDay" name="day" value={{ policy.day }}>
+                <input type="hidden" id="policyDayWeek" name="day_week" value={{ policy.day_week }}>
+                <input type="hidden" id="policyMonth" name="month" value={{ policy.month }}>
+                <input type="hidden" id="policyDescription" name="description" value={{ policy.description }}>
+            </tr>
+        `);
+    }
+
+    // Update Django Ajax Call
+    function policyUpdate(id_policy) {
+        
+        if (id_policy) {
+
+            tr_id = "#policy-" + id_policy;            
+            client_name = $(tr_id).find("#policyClientName").text();
+            client_id = $(tr_id).find("#policyClientId").val();
+            hostname = $(tr_id).find("#policyHostname").text();
+            host_id = $(tr_id).find("#policyHostId").val();
+            db_name = $(tr_id).find("#policyDbName").text();
+            database_id = $(tr_id).find("#policyDatabaseId").val();
+            policy_name = $(tr_id).find("#policyName").text();
+            backup_type = $(tr_id).find("#policyBackupType").text();
+            minute = $(tr_id).find("#policyMinute").val();
+            hour = $(tr_id).find("#policyHour").val();
+            day = $(tr_id).find("#policyDay").val();
+            month = $(tr_id).find("#policyMonth").val();
+            day_week = $(tr_id).find("#policyDayWeek").val();
+            duration = $(tr_id).find("#policyDuration").val();
+            destination = $(tr_id).find("#policyDestination").val();
+            size_backup = $(tr_id).find("#policySizeBackup").val();
+            status = $(tr_id).find("#policyStatus").text();
+            description = $(tr_id).find("#policyDescription").val();
+
+            console.log(backup_type);
+
+            $('#policyUpdateTitle').text(policy_name);
+            $('#policyUpdateIdPolicy').val(id_policy);
+
+            $('#policyUpdateStatus option:first').prop('selected', true);
+            $('#policyUpdateStatus option:first').val(status);
+            $('#policyUpdateStatus option:first').text(status);
+            $('#policyUpdateStatus').formSelect();
+
+            $('#policyUpdateName').val(policy_name);
+            $('#policyUpdateNameLabel').addClass(" active");
+
+            $('#policyUpdateDescription').val(description);
+            $('#policyUpdateDescriptionLabel').addClass(" active");
+      
+            $('#policyUpdateClient option:first').prop('selected', true);
+            $('#policyUpdateClient option:first').val(client_id);
+            $('#policyUpdateClient option:first').text(client_name);
+            $('#policyUpdateClient').formSelect();
+
+            $('#policyUpdateHost option:first').prop('selected', true);
+            $('#policyUpdateHost option:first').val(host_id);
+            $('#policyUpdateHost option:first').text(hostname);
+            $('#policyUpdateHost').formSelect();
+
+            $('#policyUpdateDatabase option:first').prop('selected', true);
+            $('#policyUpdateDatabase option:first').val(database_id);
+            $('#policyUpdateDatabase option:first').text(db_name);
+            $('#policyUpdateDatabase').formSelect();
+
+            $('#policyUpdateBackupType option:first').prop('selected', true);
+            // $('#policyUpdateBackupType option:first').val('Test');
+            $('#policyUpdateBackupType option:selected').val(backup_type);
+            $('#policyUpdateBackupType option:first').text(backup_type);
+            $('#policyUpdateBackupType').formSelect();
+
+            $('#policyUpdateDestination option:first').prop('selected', true);
+            $('#policyUpdateDestination option:first').val(destination);
+            $('#policyUpdateDestination option:first').text(destination);
+            $('#policyUpdateDestination').formSelect();
+            
+            $('#policyUpdateName').val(policy_name);
+            $('#policyUpdateNameLabel').addClass(" active");
+
+            $('#policyUpdateDbName').val(db_name);
+            $('#policyUpdateDbNameLabel').addClass(" active");
+
+            $('#policyUpdateSizeBackup').val(size_backup);
+            $('#policyUpdateSizeBackupLabel').addClass(" active");
+
+            $('#policyUpdateDuration').val(duration);
+            $('#policyUpdateDurationLabel').addClass(" active");
+
+            $('#policyUpdateMinute').val(minute);
+            $('#policyUpdateMinuteLabel').addClass(" active");
+
+            $('#policyUpdateHour').val(hour);
+            $('#policyUpdateHourLabel').addClass(" active");
+            
+            $('#policyUpdateDay').val(day);
+            $('#policyUpdateDayLabel').addClass(" active");
+
+            $('#policyUpdateMonth').val(month);
+            $('#policyUpdateMonthLabel').addClass(" active");
+
+            $('#policyUpdateDayWeek').val(day_week);
+            $('#policyUpdateDayWeekLabel').addClass(" active");
+ 
+        }
+    }
+
+    $("form#policyFormUpdate").submit(function() {
+
+        if (policyUpdateIdPolicy            
+            && policyUpdateClient 
+            && policyUpdateHost
+            && policyUpdateDatabase 
+            ) {
+
+            // console.log("before ajax...");
+
+            $.ajax({
+                url: '{% url "coreRelback:policyUpdate" %}',
+                data: {
+                    'id_policy':    $('#policyUpdateIdPolicy').val(),                    
+                    'id_client':    $('#policyUpdateClient option:selected').val(),
+                    'id_host':      $('#policyUpdateHost option:selected').val(),
+                    'id_database':  $('#policyUpdateDatabase option:selected').val(), 
+                    'policy_name':  $('#policyUpdateName').val(),                    
+                    'backup_type':  $('#policyUpdateBackupType option:selected').val(),
+                    'destination':  $('#policyUpdateDestination option:selected').val(),
+                    'minute':       $('#policyUpdateMinute').val(),
+                    'hour':         $('#policyUpdateHour').val(),
+                    'day':          $('#policyUpdateDay').val(),
+                    'day_week':     $('#policyUpdateDayWeek').val(),
+                    'month':        $('#policyUpdateMonth').val(),
+                    'duration':     $('#policyUpdateDuration').val(),
+                    'size_backup':  $('#policyUpdateSizeBackup').val(),
+                    'status':       $('#policyUpdateStatus').val(),
+                    'description':  $('#policyUpdateDescription').val(),
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.policy) {
+                        updateDatabaseTable(data.policy);
+                        parent.location.reload();
+                    }
+                }
+            });
+
+        } else {
+            alert("All fields must have a valid value.");
+        }
+
+        $('#policyModalUpdate').modal('close');
+        return false;
+    });
+
+    function updateDatabaseTable(policy){
+        $("#policyTable #policy-" + policy.id_policy).children().each(function() {
+            var attr = $(this).attr("policyId");
+            if (attr == "policyClientName") {
+                $(this).text(policy.client_name);
+            } else if (attr == "policyHostname") {
+                $(this).text(policy.hostname);
+            } else if (attr == "policyDbName") {
+                $(this).text(policy.db_name);
+            } else if (attr == "policyName") {
+                $(this).text(policy.policy_name);
+            } else if (attr == "policyBackupType") {
+                $(this).text(policy.backup_type);    
+            } 
+        });
+    }
+
+    function policyModalDelete(id_policy) {
+
+        if(id_policy) {
+
+            tr_id = "#policy-" + id_policy;
+            policyName = $(tr_id).find(".policyName").text();
+
+            $('#deletePolicyName').text(policyName);
+            $('#policyButtonDelete').attr("onclick","policyDelete("+id_policy+")");
+            
+        }
+    }
+
+    // Delete Django Ajax Call
+    function policyDelete(id_policy) {
+        if (id_policy) {
+            $.ajax({
+                url: '{% url "coreRelback:policyDelete" %}',
+                data: {
+                    'id_policy': id_policy,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.deleted) {
+                        $("#policyTable #policy-" + id_policy).remove();
+                        $("#policyModalDelete").modal('close');
+                    }
+                }
+            });       
+        }        
+    }
+
+    // Update Select Hosts
+    function reloadListHost(elemSelectId,idClient) {
+
+        $.ajax({
+            url: '{% url "coreRelback:hostsList" %}',
+            data: { 'id_client': idClient },          
+            dataType: 'json',
+            success: function (data) {
+                $(data).each(function(){
+                    var hosts = JSON.parse(data.hosts);
+
+                    var selectHosts = document.getElementById(elemSelectId);
+                    selectHosts.innerHTML = "";
+                    
+                    var optPlaceHolder = document.createElement("option");
+                    optPlaceHolder.text = "Choose a host";
+                    optPlaceHolder.disabled;
+                    selectHosts.append(optPlaceHolder);
+
+                    for (i = 0; i < hosts.length; ++i) {
+                        var opt = document.createElement("option");
+                        opt.text = hosts[i].fields.hostname;
+                        opt.value = hosts[i].pk;
+                        
+                        selectHosts.appendChild(opt);                        
+                    }
+                    
+                    M.FormSelect.init(selectHosts);
+                    return;
+                    
+                })  
+            },
+            error : function(xhr,errmsg,err) {
+                console.log("reloadHostList - msg error")
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+
+    // Update Select Databases
+    function reloadListDatabase(elemSelectId,idClient,idHost) {
+
+        $.ajax({
+            url: '{% url "coreRelback:databasesList" %}',
+            data: {  'id_client': idClient
+                    ,'id_host': idHost
+                },          
+            dataType: 'json',
+            success: function (data) {
+                console.log(data.databases);
+                
+                $(data).each(function(){
+                    var databases = JSON.parse(data.databases);
+
+                    // console.log(data);
+
+                    var selectDatabases = document.getElementById(elemSelectId);
+                    selectDatabases.innerHTML = "";
+                    
+                    var optPlaceHolder = document.createElement("option");
+                    optPlaceHolder.text = "Choose a database";
+                    optPlaceHolder.disabled;
+                    selectDatabases.append(optPlaceHolder);
+
+                    for (i = 0; i < databases.length; ++i) {
+                        var opt = document.createElement("option");
+                        opt.text = databases[i].fields.db_name;
+                        opt.value = databases[i].pk;
+                        
+                        selectDatabases.appendChild(opt);                        
+                    }
+                    
+                    M.FormSelect.init(selectDatabases);
+                    return;
+                    
+                })  
+            },
+            error : function(xhr,errmsg,err) {
+                console.log("reloadHostList - msg error")
+                console.log(xhr.status + ": " + xhr.responseText);
+            }
+        });
+    }
+
+</script>
+
+{% endblock javascript %}
