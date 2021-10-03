@@ -1,40 +1,10 @@
-// Bootstrap - Modal
+// Bootstrap - toolstips
 
-// var myModal = document.getElementById('myModal')
-// var myInput = document.getElementById('myInput')
-
-// myModal.addEventListener('shown.bs.modal', function () {
-//   myInput.focus()
+// var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+// var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+//   return new bootstrap.Tooltip(tooltipTriggerEl)
 // })
 
-
-// MaterializeCSS - Tab
-
-// $(document).ready(function(){
-//     $('.tabs').tabs({
-//         // swipeable : true,
-//         responsiveThreshold : 1920
-//     });
-// });
-
-// // MaterializeCSS - Modal
-
-//     $(document).ready(function(){
-//         $('.modal').modal();
-//     });
-
-// // MaterializeCSS - Form - Select
-
-//     document.addEventListener('DOMContentLoaded', function() {
-//         var elems = document.querySelectorAll('select');
-//         var instances = M.FormSelect.init(elems);
-//     });
-
-// // MaterializeCSS - Form - Prefilled Input
-
-//     $(document).ready(function() {
-//         M.updateTextFields();
-//     });
 
 // Datatables used on Reports
 

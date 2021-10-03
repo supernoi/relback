@@ -65,9 +65,6 @@ class clientUpdate(View):
         obj = Clients.objects.get(pk=idclient)
         obj.name = name
         obj.description = description
-
-        # ipdb.set_trace()
-
         obj.save()
 
         client = {'id_client':obj.id_client, 'name':obj.name, 'description':obj.description}

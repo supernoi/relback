@@ -118,49 +118,57 @@
                             <div class="row mb-3">
                                 <div class="col-sm">
                                     <div class="form-floating col s3">					
-                                        <input required class="form-control" id="policyCreateSizeBackup" name="size_backup" type="text" value="" placeholder="Estimated Backup Size in GB">
-                                        <label for="policyCreateSizeBackup">Estimated Backup Size in GB</label>
+                                        <input required class="form-control" id="policyCreateSizeBackup" name="size_backup" type="text" value="" placeholder="Estimated backup size in GB">
+                                        <label for="policyCreateSizeBackup">Estimated backup size in GB</label>
                                     </div>
                                 </div>
                                 <div class="col-sm">
                                     <div class="form-floating col s3">
-                                        <input required class="form-control" id="policyCreateDuration" name="duration" type="text" value="" placeholder="Estimated Duration in minutes">
-                                        <label for="policyCreateDuration">Estimated Duration in minutes</label>
+                                        <input required class="form-control" id="policyCreateDuration" name="duration" type="text" value="" placeholder="Estimated duration in minutes">
+                                        <label for="policyCreateDuration">Estimated duration in minutes</label>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="hrdivider">
+                                <hr size="4" color="#0dcaf0">
+                                <span>Use CRON format</span>
+                            </div>
+
                             <div class="row mb-3">
                                 <div class="col-sm">
                                     <div class="form-floating">
-                                        <input required class="form-control" id="policyCreateMinute" name="minute" type="text" value="" placeholder="Minute">
+                                        <input required class="form-control" id="policyCreateMinute" name="minute" type="text" value="" placeholder="*">
                                         <label for="policyCreateMinute">Minute</label>
                                     </div>
                                 </div>
                                 <div class="col-sm">
                                     <div class="form-floating">
-                                        <input required class="form-control" id="policyCreateHour" name="hour" type="text" value="" placeholder="Hour">
+                                        <input required class="form-control" id="policyCreateHour" name="hour" type="text" value="" placeholder="*">
                                         <label for="policyCreateHour">Hour</label>
                                     </div>
                                 </div>
                                 <div class="col-sm">
                                     <div class="form-floating">				
-                                        <input required class="form-control" id="policyCreateDay" name="day" type="text" value="" placeholder="Day" aria-label="Day">
+                                        <input required class="form-control" id="policyCreateDay" name="day" type="text" value="" placeholder="Day" aria-label="*">
                                         <label for="policyCreateDay">Day</label>
                                     </div>
                                 </div>
                                 <div class="col-sm">
                                     <div class="form-floating">					
-                                        <input required class="form-control" id="policyCreateMonth" name="month" type="text" value="" placeholder="Month">
+                                        <input required class="form-control" id="policyCreateMonth" name="month" type="text" value="" placeholder="*">
                                         <label for="policyCreateMonth">Month</label>
                                     </div>
                                 </div>
                                 <div class="col-sm">
                                     <div class="form-floating">
-                                        <input required class="form-control" id="policyCreateDayWeek" name="day_week" type="text" value="" placeholder="Day Week">
+                                        <input required class="form-control" id="policyCreateDayWeek" name="day_week" type="text" value="" placeholder="*">
                                         <label for="policyCreateDayWeek">Day Week</label>
                                     </div> 
                                 </div> 
                             </div>
+                            
+                            <hr size="4" color="#0dcaf0">
 
                             <div class="row mb-3">
                                 <div class="col">
@@ -171,7 +179,6 @@
                                 </div>
                             </div>
                         </div>
-
 
                             <div class="modal-footer">                                                               
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -356,14 +363,14 @@
                                     <div class="row mb-3">
                                         <div class="col-sm">
                                             <div class="form-floating col">
-                                                <input required class="form-control" id="policyUpdateSizeBackup" class="" name="size_backup" type="text" value="" placeholder="Estimated Backup Size in GB">
-                                                <label for="policyUpdateSizeBackup">Estimated Backup Size in GB</label>
+                                                <input required class="form-control" id="policyUpdateSizeBackup" class="" name="size_backup" type="text" value="" placeholder="Estimated backup size in GB">
+                                                <label for="policyUpdateSizeBackup">Estimated backup size in GB</label>
                                             </div>
                                         </div>
                                         <div class="col-sm">
                                             <div class="form-floating col">
-                                                <input required class="form-control" id="policyUpdateDuration" class="" name="duration" type="text" value="" placeholder="Estimated Duration">
-                                                <label for="policyUpdateDuration">Estimated Duration</label>
+                                                <input required class="form-control" id="policyUpdateDuration" class="" name="duration" type="text" value="" placeholder="Estimated duration in minutes">
+                                                <label for="policyUpdateDuration">Estimated duration in minutes</label>
                                             </div>
                                         </div>
                                     </div>
