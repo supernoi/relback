@@ -1,30 +1,40 @@
+// Bootstrap - Modal
+
+// var myModal = document.getElementById('myModal')
+// var myInput = document.getElementById('myInput')
+
+// myModal.addEventListener('shown.bs.modal', function () {
+//   myInput.focus()
+// })
+
+
 // MaterializeCSS - Tab
 
-$(document).ready(function(){
-    $('.tabs').tabs({
-        // swipeable : true,
-        responsiveThreshold : 1920
-    });
-});
+// $(document).ready(function(){
+//     $('.tabs').tabs({
+//         // swipeable : true,
+//         responsiveThreshold : 1920
+//     });
+// });
 
-// MaterializeCSS - Modal
+// // MaterializeCSS - Modal
 
-    $(document).ready(function(){
-        $('.modal').modal();
-    });
+//     $(document).ready(function(){
+//         $('.modal').modal();
+//     });
 
-// MaterializeCSS - Form - Select
+// // MaterializeCSS - Form - Select
 
-    document.addEventListener('DOMContentLoaded', function() {
-        var elems = document.querySelectorAll('select');
-        var instances = M.FormSelect.init(elems);
-    });
+//     document.addEventListener('DOMContentLoaded', function() {
+//         var elems = document.querySelectorAll('select');
+//         var instances = M.FormSelect.init(elems);
+//     });
 
-// MaterializeCSS - Form - Prefilled Input
+// // MaterializeCSS - Form - Prefilled Input
 
-    $(document).ready(function() {
-        M.updateTextFields();
-    });
+//     $(document).ready(function() {
+//         M.updateTextFields();
+//     });
 
 // Datatables used on Reports
 

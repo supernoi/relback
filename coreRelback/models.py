@@ -172,7 +172,7 @@ class CronYear(models.Model):
 
 
 class VwBackupPolicies(models.Model):
-    id_policy = models.BigIntegerField()
+    id_policy = models.BigIntegerField(primary_key=True)
     schedule_start = models.DateField()
     hostname = models.CharField(max_length=100)
     db_name = models.CharField(max_length=20)

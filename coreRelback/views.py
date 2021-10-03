@@ -49,7 +49,8 @@ class clientCreate(View):
         client = {'id_client':obj.id_client, 'name':obj.name, 'description':obj.description}
 
         data = {
-            'client': client
+            'client': client,
+            'description': description
         }
         # ipdb.set_trace()
 
@@ -519,3 +520,10 @@ def reportReadLogDetail(request, idPolicy, dbKey, sessionKey):
     policyDetail = BackupPolicies.objects.get(id_policy=idPolicy)
 
     return render(request, 'reportsReadLog.html', {'reportLog':reportLog, 'execDetail':execDetail, 'policyDetail':policyDetail})
+
+def reportRefreshSchedule(request):
+
+    with connection.cursor() as cursor:
+        cursor.callproc('SP_CREATE_SCHEDULE')
+
+    return reportRead(request)

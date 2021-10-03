@@ -27,7 +27,7 @@ urlpatterns = [
     path('database/create/', views.databaseCreate.as_view(), name='databaseCreate'),
     path('database/update/', views.databaseUpdate.as_view(), name='databaseUpdate'),
     path('database/delete/', views.databaseDelete.as_view(), name='databaseDelete'),
-    path('database/hostsList/', views.hostsList, name='hostsList'),    
+    path('database/hostsList/', views.hostsList, name='hostsList'),
 
     # Routes - Policies
     path('policy/', views.policyRead.as_view(), name='policy'),
@@ -35,11 +35,12 @@ urlpatterns = [
     path('policy/create/', views.policyCreate.as_view(), name='policyCreate'),
     path('policy/update/', views.policyUpdate.as_view(), name='policyUpdate'),
     path('policy/delete/', views.policyDelete.as_view(), name='policyDelete'),
-    path('policy/hostsList/', views.hostsList, name='hostsList'),  
-    path('policy/databasesList/', views.databasesList, name='databasesList'),  
+    path('policy/hostsList/', views.hostsList, name='hostsList'),
+    path('policy/databasesList/', views.databasesList, name='databasesList'),
 
     # Routes - Reports
     path('reports/', views.reportRead, name='reportRead'),
     path('reports/readLogDetail/<int:idPolicy>/<int:dbKey>/<int:sessionKey>/', views.reportReadLogDetail, name='reportReadLogDetail'),
+    path('reports/refreshSchedule', views.reportRefreshSchedule, name='refreshSchedule'),
 
 ]

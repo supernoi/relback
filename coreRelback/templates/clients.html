@@ -5,71 +5,81 @@
 {% block title %}relBack - Clients{% endblock %}
 
 {% block content %}
-
-    <div class="container"> 
+ 
         <div class="left-align">
-            <h1>Clients</h1>  
-            <a href="#modalAddNew" title="Add" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green" >
-                <i class="material-icons">add</i>
+            <br>
+            <h1>Clients</h1> 
+            <br>
+            <a href="#modalAddNew" title="Add" data-bs-toggle="modal" data-bs-target="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
+                <button type="button" class="btn btn-primary shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>                     
+                    </svg>
+                    Add
+                </button>
             </a>
+
         </div>
-        <br><br>
+        <br>
 
         <!-- Modal of addNew -->
-		<div class="modal" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">
-            <div class="modal-content">
-                <div class="row">
-                    <h2>Add new Client</h2>    
-                    <form class="col s12" id="clientFormCreate">
-                        {% csrf_token %}                              
+		<div class="modal" tabindex="-1" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Add new Client</h2>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                        <form class="" id="clientFormCreate">
+                            {% csrf_token %}
 
-                        <div class="row">
-                            <div class="input-field col s6">									
-                                <input required id="clientCreateName" name="name" type="text" class="validate" value="{{ name }}">
-                                <label for="name">Client name</label>
+                            <div class="row">
+                                <div class="form-floating mb-3">	
+                                    <input required class="form-control" id="clientCreateName" name="name" type="text" value="" placeholder="Client name">
+                                    <label for="clientCreateName">Client Name</label>
+                                </div>
                             </div>
+
+                            <div class="row">
+                                <div class="form-floating">
+                                    <input required class="form-control" id="clientCreateDescription" name="description" type="text" value="" placeholder="Description">
+                                    <label for="clientCreateDescription">Description</label>
+                                </div>
+                            </div>   
                         </div>
-                        <div class="row">
-                            <div class="input-field col s12">					
-                                <input required id="clientCreateDescription" name="description" type="text" class="validate" value="{{ description }}">
-                                <label for="description">Description</label>
+                        </div>
+                            <div class="modal-footer"> 
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" name="action">Save</button>
                             </div>
-                        </div>                                   
-                        <div class="modal-footer">                                                               
-                            <button class="btn waves-effect waves-light green" type="submit" name="action">
-                                Add
-                                <i class="material-icons left">add</i>
-                            </button>
-                            <a class="modal-close btn waves-effect waves-light">
-                                Back
-                                <i class="material-icons left">exit_to_app</i>                                    
-                            </a>							
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        <!-- </div> -->
         <!-- End Modal of addNew -->
         
-            <table id="clientTable" class="table striped highlight centered responsive-table">
-                <thead class="">
+            <table class="table table-striped table-hover shadow" id="clientTable" >
+                <thead class="table-light">
                     <tr>
-                        <th>Client name</th>
-                        <th>Description</th>
-                        <th>Options</th>
+                        <th scope="col">Client</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Options</th>
                     </tr>
                 </thead>
+                <tbody>
                         {% for c in clients %}
                             <tr id="client-{{ c.id_client }}"> 
-                                <td class="name">{{ c.name }}</td>
+                                <td class="name" id="clientName">{{ c.name }}</td>
                                     <input id='clientID' type='hidden' name='clientID' value={{ h.id_client }}>
                                 <td class="clientDescription" name='description'>{{ c.description }}</td>
-                                <td>                        
-                                    <a href="#clientModalUpdate" title="Edit" onClick="clientUpdate({{ c.id_client }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
-                                        <i class="material-icons">edit</i>
+                                <td>
+                                    <a href="#clientModalUpdate" data-bs-toggle="modal" data-bs-target="#clientModalUpdate" title="Edit" onClick="clientUpdate({{ c.id_client }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                                        <i class="bi bi-pencil-fill"></i>
                                     </a>                        
-                                    <a href="#clientModalDelete" title="Delete" onClick="clientModalDelete({{ c.id_client }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
-                                        <i class="material-icons">delete</i>
+                                    <a href="#clientModalDelete" data-bs-toggle="modal" data-bs-target="#clientModalDelete" title="Delete" onClick="clientModalDelete({{ c.id_client }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
+                                        <i class="bi bi-trash-fill"></i>
                                     </a>	
                                 </td>
                             </tr>
@@ -80,70 +90,74 @@
                         {% endfor %}
 
                     <!-- Modal of update -->
-                        <div class="modal" id="clientModalUpdate" role="dialog" aria-labelledby="ModalLabel-clientUpdate">
+                    <div class="modal" tabindex="-1" id="clientModalUpdate" role="dialog" aria-labelledby="ModalLabel-clientUpdate">
+                        <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
-                                <div class="row">
-                                    <h2 id="clientUpdateTitle"></h2>
+                                <div class="modal-header">  
+                                    <h2 class="modal-title" id="clientUpdateTitle"></h2>
                                 </div> 
-                                <form class="col s12" id="clientFormUpdate" action="">
-                                    {% csrf_token %}
-                                    <input id="clientUpdateIdClient" type="hidden" name="formIdClient"/>
+                                <div class="modal-body">
+                                    <div class="container-fluid">
+                                        <form class="" id="clientFormUpdate" action="">
+                                            {% csrf_token %}
+                                            <input id="clientUpdateIdClient" type="hidden" name="formIdClient"/>
 
-                                        <div class="row">
-                                            <div class="input-field col s6">
-                                                <input required id="clientUpdateName" type="text" name="formClientName">
-                                                <label id="clientUpdateNameLabel" for="formName">Name</label>
+                                            <div class="row">
+                                                <div class="input-group mb-3">	
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">Client</span>
+                                                    </div>
+                                                    <input required aria-describedby="clientUpdateName" class="form-control" id="clientUpdateName" name="clientFormUpdate" type="text" >
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="input-field col s12">
-                                                <input required id="clientUpdateDescription" type="text" name="formClientDescription">
-                                                <label id="clientUpdateDescriptionLabel" for="formClientDescription">Description</label>
+
+                                            <div class="row">
+                                                <div class="input-group mb-3">	
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">Description</span>
+                                                    </div>
+                                                    <input required aria-describedby="clientUpdateDescription" class="form-control" id="clientUpdateDescription" type="text" name="clientFormUpdate" type="text">
+                                                </div>
                                             </div>
-                                        </div>
-                                        
-                                        <div class="modal-footer">
-                                            <button class="btn waves-effect waves-light green" type="submit" name="action">
-                                                Update
-                                                <i class="material-icons left">system_update_alt</i>
-                                            </button>
-                                            <a class="modal-close btn waves-effect waves-light">
-                                                Back
-                                                <i class="material-icons left">exit_to_app</i>                                    
-                                            </a> 					
-                                        </div>
+                                    </div>
+                                </div><!-- end modal body -->
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary" name="action">Update</button>                                           
+                                </div>
                                 </form>
-                            </div> <!-- end modal content -->
-                        </div> <!-- end modal -->
+                            </div>
+                        </div> <!-- end modal content -->
+                    </div> <!-- end modal -->
     
                     <!-- End Modal of update -->
 
                     <!-- Modal of Delete -->
-
-                    <div class="modal" id="clientModalDelete">                            
-                        <div class="modal-content">
-                            <div class="row">                             
-                                <h2>Confirmation to delete</h2>
-                            </div>
-                            <div class="row">                          
-                                <p>Deleting the Client, all dependent Hosts, Databases and Backup Policies will also be deleted.</p>
-                                <p>Really want to delete the client: <b>{{ c.name }}</b>?</p>
-                            </div> 
-                            <div class="modal-footer">
-                                <div class="modal-footer">                                    
-                                    <a class="modal-close btn waves-effect waves-light">
-                                        Back
-                                        <i class="material-icons left">exit_to_app</i>                                    
-                                    </a> 
-                                    <a id="clientButtonDelete" class="btn waves-effect waves-light green" type="submit" name="action">                                        Delete
-                                        <i class="material-icons left">delete_forever</i>
-                                    </a>					
+                    <div class="modal" tabindex="-1" id="clientModalDelete" role="dialog" aria-labelledby="ModalLabel-deleteClient">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="container-fluid">
+                                    <div class="modal-header">
+                                        <h2>Confirmation to delete</h2>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Deleting the Client, all dependent Hosts, Databases and Backup Policies will also be deleted.</p>
+                                        <p>Really want to delete the client: <b id='deleteClientName'></b>?</p>
+                                    </div>
+                                
+                                    <div class="modal-footer">
+                                        <form id="clientFormDelete" action="" onsubmit="return false;">
+                                            {% csrf_token %}
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button id="clientButtonDelete" type="submit" class="btn btn-danger" name="action">Delete</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>                            
+                        </div>
                     </div>
                     <!-- End Modal of Delete -->
-
+                </tbody>
             </table>
      </div> <!-- end div container -->
 {% endblock %}
@@ -157,14 +171,15 @@
         $.ajax({
             url: '{% url "coreRelback:clientCreate" %}',
             data: {
-                'name':   $('#clientCreateName').val(),
+                'name':         $('#clientCreateName').val(),
                 'description':  $('#clientCreateDescription').val(),
+                // 'description':  $('#clientCreateDescription').val(),
             },
             dataType: 'json',
             success: function (data) {
                 if (data.client) {
                     clientAppendToTable(data.client);                    
-                    $("#modalAddNew").modal('close');
+                    $("#modalAddNew").modal('dispose');
                     parent.location.reload();                 
                 }
             },
@@ -223,7 +238,7 @@
             alert("All fields must have a valid value.");
         }
 
-        $('#clientModalUpdate').modal('close');
+        $('#clientModalUpdate').modal('dispose');
         return false;
     });
 
@@ -233,7 +248,7 @@
             if (attr == "clientName") {
                 $(this).text(client.name);
             } else if (attr == "clientDescription") {
-                $(this).text(client.description);
+                $(this).text(client.description);    
             } 
         });
     }
@@ -243,7 +258,7 @@
         
         if (id_client) {
 
-            tr_id = "#client-" + id_client;
+            tr_id = "#client-" + id_client;            
             name = $(tr_id).find(".name").text();
             description = $(tr_id).find(".clientDescription").text();
 
@@ -264,9 +279,9 @@
         if(id_client) {
 
             tr_id = "#client-" + id_client;
-            name = $(tr_id).find(".clientName").text();
+            name = $(tr_id).find(".name").text();
 
-            $('#deleteName').text(name);
+            $('#deleteClientName').text(name);
             $('#clientButtonDelete').attr("onclick","clientDelete("+id_client+")");
             
         }
@@ -284,7 +299,7 @@
                 success: function (data) {
                     if (data.deleted) {
                         $("#clientTable #client-" + id_client).remove();
-                        $("#clientModalDelete").modal('close');
+                        $("#clientModalDelete").modal('hide');
                     }
                 }
             });       

@@ -6,82 +6,84 @@
 
 {% block content %}
 
-    <div class="container"> 
         <div class="left-align">
-            <h1>Databases</h1>  
-            <a href="#modalAddNew" title="Add" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
-                <i class="material-icons">add</i>
+            <br>
+            <h1>Databases</h1>
+            <br>
+            <a href="#modalAddNew" title="Add" data-bs-toggle="modal" data-bs-target="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
+                <button type="button" class="btn btn-primary shadow">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>                     
+                    </svg>
+                    Add
+                </button>
             </a>
         </div>
-        <br><br>
+        <br>
 
     <!-- Modal of addNew -->
 
-        <div class="modal" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">            
-            <div class="modal-content">    
-                <div class="row">                
-                    <h2>Add new Database</h2>    
-                
-                    <form class="col s12" id="databaseFormCreate">
-                        {% csrf_token %}                            
-                        
-                        <div class="row">
-                            <div class="input-field col s6">
-                                <select id="databaseCreateIdClient" name="id_client" onchange="reloadHostList('databaseCreateIdHost', this.value)">
-                                    <option value="" disabled selected>Choose your option</option>                                            
-                                    {% for c in clients %}
-                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <label for="id_client">Client name</label>
-                                
+        <div class="modal" tabindex="-1" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-AddNew">            
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Add new Database</h2>
+                    </div>
+                    <div class="modal-body">
+                        <form class="col s12" id="databaseFormCreate">
+                            {% csrf_token %}
+                            
+                            <div class="row">
+                                <div class="input-group mb-3">
+                                    <select class="form-control" id="databaseCreateIdClient" name="id_client" onchange="reloadHostList('databaseCreateIdHost', this.value)">
+                                        <option value="" disabled selected>Choose Client</option>                                            
+                                        {% for c in clients %}
+                                            <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                        {% endfor %}
+                                    </select>                                
+                                </div>
                             </div>
-                        
-                            <div class="input-field col s6">
-                                <select id="databaseCreateIdHost" name="id_host">
-                                    <option value="" disabled selected>Choose client first</option>
-                                </select>
-                                <label for="id_host" >Hostname</label>
+
+                            <div class="row">
+                                <div class="input-group mb-3">
+                                    <select class="form-control" id="databaseCreateIdHost" name="id_host">
+                                        <option value="" disabled selected>Choose Client first</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="input-group mb-3">	
+                                    <input required class="form-control" id="databaseCreateDbName" name="db_name" class="validate" type="text" value="" placeholder="Database Name(DB_NAME)" aria-label="Database Name(DB_NAME)">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="input-group mb-3">	
+                                    <input required class="form-control" id="databaseCreateDbId" name="dbid" class="validate" type="text"  value="" placeholder="DBID" aria-label="DBID">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="input-group mb-3">
+                                    <input required class="form-control" id="databaseCreateDescription" name="description" class="validate" type="text" value="" placeholder="Description" aria-label="Description">
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s6">			
-                                <input required id="databaseCreateDbName" name="db_name" class="validate" type="text" value="">
-                                <label for="db_name">Database Name(DB_NAME)</label>
-                            </div>                        
-                            <div class="input-field col s6">
-                                <input required id="databaseCreateDbId" name="dbid" class="validate" type="text"  value="">
-                                <label for="dbid">DBID</label>
-                            </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="input-field col s12">					
-                                <input required id="databaseCreateDescription" name="description" class="validate" type="text" value="">
-                                <label for="description">Description</label>
-                            </div>
-                        </div>
-                        
                         <div class="modal-footer">                                                               
-                            <button class="btn waves-effect waves-light green" type="submit" name="action">
-                                Add
-                                <i class="material-icons left">add</i>
-                            </button>
-                            <a class="modal-close btn waves-effect waves-light">
-                                Back
-                                <i class="material-icons left">exit_to_app</i>                                    
-                            </a>							
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" name="action">Save</button>							
                         </div>
                     </form>
-                </div>
+                
+            </div>
             </div><!-- end modal content-->
         </div> <!-- end modal -->
     <!-- End Modal of addNew -->
 
         <!-- <div class="panel panel-default"> -->
-            <table id="databaseTable" class="table striped highlight centered responsive-table">
-                <thead class="thead-dark">
+            <table class="table table-striped table-hover shadow" id="databaseTable">
+                <thead class="table-light">
                     <tr>
                         <th scope="col"><b>Client Name</b></th>
                         <th scope="col"><b>Hostname</b></th>
@@ -101,11 +103,11 @@
                     <td id="databaseDbId" class="databaseDbId" name="dbid">{{ d.dbid }}</tdid="databaseDbId" >
                     <td id="databaseDescription" class="databaseDescription" name="description">{{ d.description }}</td>
                     <td>
-                        <a href="#databaseModalUpdate" title="Edit" onClick="databaseUpdate({{ d.id_database }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
-                            <i class="material-icons">edit</i>
+                        <a href="#databaseModalUpdate" data-bs-toggle="modal" title="Edit" onClick="databaseUpdate({{ d.id_database }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
+                            <i class="bi bi-pencil-fill"></i>
                         </a>
-                        <a href="#databaseModalDelete" title="Delete" onClick="databaseModalDelete({{ d.id_database }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
-                            <i class="material-icons">delete</i>
+                        <a href="#databaseModalDelete" data-bs-toggle="modal" title="Delete" onClick="databaseModalDelete({{ d.id_database }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >
+                            <i class="bi bi-trash-fill"></i>
                         </a>	
                     </td>	
                 </tr>
@@ -119,96 +121,109 @@
 
             <!-- Modal of update -->
 
-                <div id="databaseModalUpdate" class="modal" role="dialog" aria-labelledby="ModalLabel-Update">                    
+                <div id="databaseModalUpdate" tabindex="-1" class="modal" role="dialog" aria-labelledby="ModalLabel-Update">                    
+                    <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <div class="row">
+                            <div class="modal-header">
                                 <h2 id="databaseUpdateTitle"></h2>                                                                
                             </div>
-                            <form class="col s12" id="databaseFormUpdate" action="">
-                                {% csrf_token %}
+                            <div class="modal-body">
+                                <div class="container-fluid">
+                                    <form class="col s12" id="databaseFormUpdate" action="">
+                                        {% csrf_token %}
 
-                                <input id="databaseUpdateIdDatabase" name="formIdDatabase" type="hidden"/>
-                                
-                                <div class="row">
-                                    <div class="input-field col s6">				
-                                        <select required id="databaseUpdateClient" name="id_client" onchange="reloadHostList('databaseUpdateHost', this.value)">
-                                            <option value="{{ d.id_client }}" selected>{{ d.id_client.name }}</option>                                            
-                                            {% for c in clients %}
-                                                <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        <label>Client name</label>
+                                        <input id="databaseUpdateIdDatabase" name="formIdDatabase" type="hidden"/>
+
+                                        <div class="row">
+                                            <div class="input-group mb-3">	
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Client Name</span>
+                                                </div>				
+                                                <select required class="form-control" id="databaseUpdateClient" name="id_client" onchange="reloadHostList('databaseUpdateHost', this.value)">
+                                                    <option value="{{ d.id_client }}" selected>{{ d.id_client.name }}</option>                                            
+                                                    {% for c in clients %}
+                                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="input-group mb-3">	
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Hostname</span>
+                                                </div>
+                                                <select required class="form-control" id="databaseUpdateHost" name="id_host">
+                                                    <option value="{{ d.id_host }}" selected>{{ d.id_database.hostname }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="input-group mb-3">	
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Database Name(DB_NAME)</span>
+                                                </div>			
+                                                <input required class="form-control" id="databaseUpdateDbName" name="formDbName" value="{{ d.db_name }}">
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="input-group mb-3">	
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">DBID</span>
+                                                </div>
+                                                <input require class="form-control" id="databaseUpdateDbId" name="formDbId" value="{{ d.dbid }}">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="input-group mb-3">	
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">Description</span>
+                                                </div>
+                                                <input required class="form-control" id="databaseUpdateDescription" name="formDescription" type="text">
+                                            </div>
+                                        </div>
                                     </div>
-                                
-                                    <div class="input-field col s6">
-                                        <select required id="databaseUpdateHost" name="id_host">
-                                            <option value="{{ d.id_host }}" selected>{{ d.id_database.hostname }}</option>
-                                            <!-- {% for h in hosts %}
-                                                <option value="{{ h.id_host }}">{{ h.hostname }}</option>
-                                            {% endfor %} -->
-                                        </select>
-                                        <label>Hostname</label>
-                                    </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary" name="action">Save</button>
+                                        </div>
+                                    </form>
                                 </div>
-                                <div class="row">
-                                    <div class="input-field col s6">			
-                                        <input required id="databaseUpdateDbName" name="formDbName" value="{{ d.db_name }}">
-                                        <label id="databaseUpdateDbNameLabel" for="formDbName">Database Name(DB_NAME)</label>
-                                    </div>                        
-                                    <div class="input-field col s6">
-                                        <input require id="databaseUpdateDbId" name="formDbId" value="{{ d.dbid }}">
-                                        <label id="databaseUpdateDbIdLabel" for="formDbId">DBID</label>
-                                    </div>
-                                </div>
-                                
-                                <div class="row">
-                                    <div class="input-field col s12">					
-                                        <input required id="databaseUpdateDescription" name="formDescription" type="text">
-                                        <label id="databaseUpdateDescriptionLabel" for="formDescription">Description</label>
-                                    </div>
-                                </div>
-                                	
-                                <div class="modal-footer">
-                                    <button class="btn waves-effect waves-light green" type="submit">
-                                        Update
-                                        <i class="material-icons left">system_update_alt</i>
-                                    </button>
-                                    <a class="modal-close btn waves-effect waves-light" data-dismiss="modal">
-                                        Back
-                                        <i class="material-icons left">exit_to_app</i>                                    
-                                    </a>
-                                </div>
-                            </form>
+                            </div>
                     </div> <!--  end modal content -->
                 </div> <!--  end modal -->
 
             <!-- Modal of Delete -->
 
-                <div id="databaseModalDelete" class="modal" role="dialog" aria-labelledby="SmallModalLabel-Delete">                    
+            <div class="modal" tabindex="-1" id="databaseModalDelete" role="dialog" aria-labelledby="SmallModalLabel-Delete">                    
+                <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <div class="row">                             
-                            <h2>Confirmation to delete</h2>
-                        </div>
-                        <div class="row">                          
-                            <p>Deleting the database, all dependents: Backup Policies will also be deleted.</p>
-                            <p>Really want to delete the database <b id='deleteDbName'></b>?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <a class="modal-close btn waves-effect waves-light">
-                                Back
-                                <i class="material-icons left">exit_to_app</i>                                    
-                            </a> 
-                            <a id="databaseButtonDelete" class="btn waves-effect waves-light green" type="submit" name="action">
-                                Delete
-                                <i class="material-icons left">delete_forever</i>
-                            </a>
+                        <div class="container-fluid">
+                            <div class="modal-header">                               
+                                <h2>Confirmation to delete</h2>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">                          
+                                    <p>Deleting the database, all dependents: Backup Policies will also be deleted.</p>
+                                    <p>Really want to delete the database <b id='deleteDbName'></b>?</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <form id="databaseFormDelete" action="" onsubmit="return false;">
+                                    {% csrf_token %}
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button id="databaseButtonDelete" type="submit" class="btn btn-danger" name="action">Delete</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-        </div>
+            </div>
         
-    </div>
+    <!-- </div> -->
 
 {% endblock %}
 
@@ -231,7 +246,7 @@
             success: function (data) {
                 if (data.database) {
                     databaseAppendToTable(data.database);                    
-                    $("#modalAddNew").modal('close');
+                    $("#modalAddNew").modal('hide');
                     parent.location.reload();                 
                 }
             },
@@ -297,7 +312,7 @@
             alert("All fields must have a valid value.");
         }
 
-        $('#databaseModalUpdate').modal('close');
+        $('#databaseModalUpdate').modal('hide');
         return false;
     });
 
@@ -380,7 +395,7 @@
                 success: function (data) {
                     if (data.deleted) {
                         $("#databaseTable #database-" + id_database).remove();
-                        $("#databaseModalDelete").modal('close');
+                        $("#databaseModalDelete").modal('hide');
                     }
                 }
             });       
