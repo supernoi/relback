@@ -32,32 +32,36 @@
                             <div class="container-fluid">
                             <form class="col s12" id="hostFormCreate" >
                                 {% csrf_token %}   
-                                                            
-                                <div class="row">
-                                    <div class="input-group mb-3">
-                                            <select class="form-control" id="hostCreateIdClient" name="id_client">
+
+                                <div class="row-auto">
+                                    <div class="form-floating mb-3">
+                                            <select class="form-select" id="hostCreateIdClient" name="id_client">
                                                 <option value="" disabled selected>Choose Client</option>
                                                 {% for c in clients %}
                                                     <option value="{{ c.id_client }}">{{ c.name }}</option>
                                                 {% endfor %}
                                             </select>
+                                            <label for="hostCreateIdClient">Client Name</label>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="input-group mb-3">
+                                <div class="row-auto">
+                                    <div class="form-floating mb-3">
                                         <input required aria-describedby="hostCreateHostname" id="hostCreateHostname" name="hostCreateHostname" type="text" class="form-control" value="" placeholder="Hostname" aria-label="Hostname">
+                                        <label for="hostCreateHostname">Hostname</label>
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="input-group mb-3">
+                                <div class="row-auto">
+                                    <div class="form-floating mb-3">
                                         <input required aria-describedby="hostCreateIp" id="hostCreateIp" name="ip" type="text" class="form-control" value="" placeholder="IP Address" aria-label="IP Address">
+                                        <label for="hostCreateIp">IP Address</label>
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="input-group mb-3">
+                                <div class="row-auto">
+                                    <div class="form-floating mb-3">
                                         <input required aria-describedby="hostCreateDescription" id="hostCreateDescription" name="description" type="text" class="form-control" value="{{ description }}" placeholder="Description" aria-label="Description">
+                                        <label for="hostCreateDescription">Description</label>
                                     </div>
                                 </div>
 
@@ -117,46 +121,41 @@
                             </div>
                             <div class="modal-body">
                                 <div class="container-fluid">
-                                <form class="col s12" id="hostFormUpdate" action="">
-                                    {% csrf_token %}
-                                    
-                                    <input id="hostUpdateIdHost" type="hidden" name="formIdHost"/>
+                                    <form class="col s12" id="hostFormUpdate" action="">
+                                        {% csrf_token %}
+                                        
+                                        <input id="hostUpdateIdHost" type="hidden" name="formIdHost"/>
 
-                                    <div class="row">
-                                        <div class="input-group mb-3">	
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">Client Name</span>
-                                            </div>
-                                                <select class="form-control" id="hostUpdateClient" name="id_client">
+                                        <div class="row-auto">
+                                            <div class="form-floating mb-3">	
+                                                <select class="form-select" id="hostUpdateClient" name="id_client">
                                                     <option value="" selected disabled></option>                                            
                                                     {% for c in clients %}
                                                         <option value="{{ c.id_client }}">{{ c.name }}</option>
                                                     {% endfor %}
                                                 </select>
-                                        </div>
-                                    </div>
-
-                                        <div class="row">
-                                            <div class="input-group mb-3">	
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Hostname</span>
-                                                </div>
-                                                <input required class="form-control" id="hostUpdateHostname" type="text" name="formHostname">
+                                                <label for="hostCreateIdClient">Client Name</label>
                                             </div>
-                                            <div class="input-group mb-3">	
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">IP Address</span>
-                                                </div>
-                                                <input required class="form-control" id="hostUpdateIp" type="text" name="formIp">
-                                            </div>                                    
                                         </div>
 
-                                        <div class="row">
-                                            <div class="input-group mb-3">	
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Description</span>
-                                                </div>
+                                        <div class="row-auto">
+                                            <div class="form-floating mb-3">
+                                                <input required class="form-control" id="hostUpdateHostname" type="text" name="formHostname">
+                                                <label for="hostCreateHostname">Hostname</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="row-auto">
+                                            <div class="form-floating mb-3">	
+                                                <input required class="form-control" id="hostUpdateIp" type="text" name="formIp">
+                                                <label for="hostCreateHostname">IP Address</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="row-auto">
+                                            <div class="form-floating mb-3">	
                                                 <input required class="form-control" id="hostUpdateDescription" type="text" name="formDescription">
+                                                <label for="hostCreateHostname">Description</label>
                                             </div>
                                         </div>
                                     </div>

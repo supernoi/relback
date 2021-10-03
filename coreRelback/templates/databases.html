@@ -33,40 +33,45 @@
                         <form class="col s12" id="databaseFormCreate">
                             {% csrf_token %}
                             
-                            <div class="row">
-                                <div class="input-group mb-3">
-                                    <select class="form-control" id="databaseCreateIdClient" name="id_client" onchange="reloadHostList('databaseCreateIdHost', this.value)">
+                            <div class="row-auto">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="databaseCreateIdClient" name="id_client" onchange="reloadHostList('databaseCreateIdHost', this.value)">
                                         <option value="" disabled selected>Choose Client</option>                                            
                                         {% for c in clients %}
                                             <option value="{{ c.id_client }}">{{ c.name }}</option>
                                         {% endfor %}
-                                    </select>                                
+                                    </select>
+                                    <label for="databaseCreateIdClient">Client Name</label>
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="input-group mb-3">
-                                    <select class="form-control" id="databaseCreateIdHost" name="id_host">
+                            <div class="row-auto">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="databaseCreateIdHost" name="id_host">
                                         <option value="" disabled selected>Choose Client first</option>
                                     </select>
+                                    <label for="databaseCreateIdHost">Hostname</label>
                                 </div>
                             </div>
                             
-                            <div class="row">
-                                <div class="input-group mb-3">	
+                            <div class="row-auto">
+                                <div class="form-floating mb-3">
                                     <input required class="form-control" id="databaseCreateDbName" name="db_name" class="validate" type="text" value="" placeholder="Database Name(DB_NAME)" aria-label="Database Name(DB_NAME)">
+                                    <label for="databaseCreateDbName">DB_NAME</label>
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="input-group mb-3">	
+                            <div class="row-auto">
+                                <div class="form-floating mb-3">
                                     <input required class="form-control" id="databaseCreateDbId" name="dbid" class="validate" type="text"  value="" placeholder="DBID" aria-label="DBID">
+                                    <label for="databaseCreateDbId">DBID</label>
                                 </div>
                             </div>
                             
-                            <div class="row">
-                                <div class="input-group mb-3">
+                            <div class="row-auto">
+                                <div class="form-floating mb-3">
                                     <input required class="form-control" id="databaseCreateDescription" name="description" class="validate" type="text" value="" placeholder="Description" aria-label="Description">
+                                    <label for="databaseCreateDescription">Description</label>
                                 </div>
                             </div>
                         </div>
@@ -134,55 +139,45 @@
 
                                         <input id="databaseUpdateIdDatabase" name="formIdDatabase" type="hidden"/>
 
-                                        <div class="row">
-                                            <div class="input-group mb-3">	
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Client Name</span>
-                                                </div>				
-                                                <select required class="form-control" id="databaseUpdateClient" name="id_client" onchange="reloadHostList('databaseUpdateHost', this.value)">
+                                        <div class="row-auto">
+                                            <div class="form-floating mb-3">			
+                                                <select required class="form-select" id="databaseUpdateClient" name="id_client" onchange="reloadHostList('databaseUpdateHost', this.value)">
                                                     <option value="{{ d.id_client }}" selected>{{ d.id_client.name }}</option>                                            
                                                     {% for c in clients %}
                                                         <option value="{{ c.id_client }}">{{ c.name }}</option>
                                                     {% endfor %}
                                                 </select>
+                                                <label for="databaseUpdateClient">ClientName</label>
                                             </div>
                                         </div>
                                         
-                                        <div class="row">
-                                            <div class="input-group mb-3">	
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Hostname</span>
-                                                </div>
-                                                <select required class="form-control" id="databaseUpdateHost" name="id_host">
+                                        <div class="row-auto">
+                                            <div class="form-floating mb-3">
+                                                <select required class="form-select" id="databaseUpdateHost" name="id_host">
                                                     <option value="{{ d.id_host }}" selected>{{ d.id_database.hostname }}</option>
                                                 </select>
+                                                <label for="databaseUpdateHost">Hostname</label>
                                             </div>
                                         </div>
 
-                                        <div class="row">
-                                            <div class="input-group mb-3">	
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Database Name(DB_NAME)</span>
-                                                </div>			
+                                        <div class="row-auto">
+                                            <div class="form-floating mb-3">
                                                 <input required class="form-control" id="databaseUpdateDbName" name="formDbName" value="{{ d.db_name }}">
+                                                <label for="databaseUpdateDbName">DB_NAME</label>
                                             </div>
                                         </div>
 
-                                        <div class="row">
-                                            <div class="input-group mb-3">	
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">DBID</span>
-                                                </div>
+                                        <div class="row-auto">
+                                            <div class="form-floating mb-3">
                                                 <input require class="form-control" id="databaseUpdateDbId" name="formDbId" value="{{ d.dbid }}">
+                                                <label for="databaseUpdateDbId">DBID</label>
                                             </div>
                                         </div>
                                         
-                                        <div class="row">
-                                            <div class="input-group mb-3">	
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">Description</span>
-                                                </div>
+                                        <div class="row-auto">
+                                            <div class="form-floating mb-3">
                                                 <input required class="form-control" id="databaseUpdateDescription" name="formDescription" type="text">
+                                                <label for="databaseUpdateDescription">Description</label>
                                             </div>
                                         </div>
                                     </div>
@@ -353,12 +348,10 @@
             $('#databaseUpdateClient option:first').prop('selected', true);
             $('#databaseUpdateClient option:first').val(client_id);
             $('#databaseUpdateClient option:first').text(client_name);
-            $('#databaseUpdateClient').formSelect();
 
             $('#databaseUpdateHost option:first').prop('selected', true);
             $('#databaseUpdateHost option:first').val(host_id);
             $('#databaseUpdateHost option:first').text(hostname);
-            $('#databaseUpdateHost').formSelect();
 
             $('#databaseUpdateDbName').val(db_name);
             $('#databaseUpdateDbNameLabel').addClass(" active");

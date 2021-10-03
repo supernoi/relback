@@ -36,56 +36,64 @@
 
                             <div class="row mb-3">
                                 <div class="col">
-                                    <div class="input-group s2">
+                                    <div class="form-floating s2">
                                         <!-- <div class="form-check form-switch">                                        
                                             <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked />
                                             <label class="form-check-label" for="flexSwitchCheckDefault">Status</label>
                                         </div> -->
-                                        <select class="form-control" id="policyCreateStatus" name="status">
+                                        <select class="form-select" id="policyCreateStatus" name="status">
                                             <option value="ACTIVE" selected>Active</option>
                                             <option value="INACTIVE">Inactive</option>
                                         </select>
+                                        <label for="policyCreateStatus">Status</label>
                                     </div>
                                 </div>
                                 
                                 <div class="col-8">
-                                    <div class="input-group">
-                                        <input required class="form-control" id="policyCreateName" name="policy_name" type="text" value="" placeholder="Policy name" aria-label="Policy name">
+                                    <div class="form-floating">
+                                        <input required class="form-control" id="policyCreateName" name="policy_name" type="text" value="" placeholder="Policy name">
+                                        <label for="policyCreateName">Policy name</label>
                                     </div>
                                 </div>
 
                             </div>
                             <div class="row mb-3"> 
-
-                                <div class="input-field col">
-                                    <select class="form-control" id="policyCreateIdClient" name="id_client" onchange="reloadListHost('policyCreateIdHost', this.value)">
-                                        <option value="" disabled selected>Choose the Client</option>                                            
-                                        {% for c in clients %}
-                                            <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                        {% endfor %}
-                                    </select>
+                                <div class="col-sm">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="policyCreateIdClient" name="id_client" onchange="reloadListHost('policyCreateIdHost', this.value)">
+                                            <option value="" disabled selected>Choose the Client</option>                                            
+                                            {% for c in clients %}
+                                                <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="policyCreateIdClient">Client Name</label>
+                                    </div>
                                 </div>
-                            
-                                <div class="input-field col">
-                                    <select class="form-control" id="policyCreateIdHost" name="id_host" onchange="reloadListDatabase('policyCreateIdDatabase', policyCreateIdClient.value, this.value)">
-                                        <option value="" disabled selected>Choose client first</option>
-                                    </select>
+                                <div class="col-sm">
+                                    <div class="form-floating col">
+                                        <select class="form-select" id="policyCreateIdHost" name="id_host" onchange="reloadListDatabase('policyCreateIdDatabase', policyCreateIdClient.value, this.value)">
+                                            <option value="" disabled selected>Choose client first</option>
+                                        </select>
+                                        <label for="policyCreateIdHost">Hostname</label>
+                                    </div>
                                 </div>
-
-                                <div class="input-field col">
-                                    <select class="form-control" id="policyCreateIdDatabase" name="id_database">
-                                        <option value="" disabled selected>Choose host first</option> 
-                                        <!-- {% for d in databases %}
-                                            <option>{{ d.db_name|add:d.db_name }}</option>
-                                        {% endfor %} -->
-                                    </select>
-                                </div>                          
-
-                            </div>
+                                <div class="col-sm">
+                                    <div class="form-floating col">
+                                        <select class="form-select" id="policyCreateIdDatabase" name="id_database">
+                                            <option value="" disabled selected>Choose host first</option> 
+                                            <!-- {% for d in databases %}
+                                                <option>{{ d.db_name|add:d.db_name }}</option>
+                                            {% endfor %} -->
+                                        </select>
+                                        <label for="policyCreateIdDatabase">Databses</label>
+                                    </div>
+                                </div><!--  end col -->
+                            </div> <!--  end row -->
 
                             <div class="row mb-3">
-                                <div class="input-group col">
-                                        <select class="form-control" id="policyCreateBackupType" name="backup_type">
+                                <div class="col-sm">
+                                    <div class="form-floating col">
+                                        <select class="form-select" id="policyCreateBackupType" name="backup_type">
                                             <option value="" disabled selected>Choose Backup Type</option> 
                                             <option value="ARCHIVELOG">ARCHIVELOG</option>
                                             <option value="DB FULL">DB FULL</option>
@@ -93,58 +101,72 @@
                                             <option value="RECVR AREA">RECVR AREA</option>
                                             <option value="BACKUPSET">BACKUPSET</option>
                                         </select>
-                                </div>
-                                <div class="input-group col">
-                                    <select class="form-control" id="policyCreateDestination" name="destination">
-                                        <option value="" disabled selected>Choose Destination Type</option> 
-                                        <option value="SBT_TAPE">SBT_TAPE</option>
-                                        <option value="DISK">DISK</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="input-field col s3">					
-                                    <input required class="form-control" id="policyCreateSizeBackup" name="size_backup" type="text" value="" placeholder="Estimated Backup Size in GB" aria-label="Estimated Backup Size in GB">
-                                </div>
-                                <div class="input-field col s3">
-                                    <input required class="form-control" id="policyCreateDuration" name="duration" type="text" value="" placeholder="Estimated Duration" aria-label="Estimated Duration">
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-sm">
-                                    <div class="input-field">
-                                        <input required class="form-control" id="policyCreateMinute" name="minute" type="text" value="" placeholder="Minute" aria-label="Minute">
+                                        <label for="policyCreateBackupType">Backup Type</label>
                                     </div>
                                 </div>
                                 <div class="col-sm">
-                                    <div class="input-field">
-                                        <input required class="form-control" id="policyCreateHour" name="hour" type="text" value="" placeholder="Hour" aria-label="Hour">
+                                    <div class="form-floating col">
+                                        <select class="form-select" id="policyCreateDestination" name="destination">
+                                            <option value="" disabled selected>Choose Destination Type</option> 
+                                            <option value="SBT_TAPE">SBT_TAPE</option>
+                                            <option value="DISK">DISK</option>
+                                        </select>
+                                        <label for="policyCreateDestination">Destination</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm">
+                                    <div class="form-floating col s3">					
+                                        <input required class="form-control" id="policyCreateSizeBackup" name="size_backup" type="text" value="" placeholder="Estimated Backup Size in GB">
+                                        <label for="policyCreateSizeBackup">Estimated Backup Size in GB</label>
                                     </div>
                                 </div>
                                 <div class="col-sm">
-                                    <div class="input-field">				
+                                    <div class="form-floating col s3">
+                                        <input required class="form-control" id="policyCreateDuration" name="duration" type="text" value="" placeholder="Estimated Duration in minutes">
+                                        <label for="policyCreateDuration">Estimated Duration in minutes</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-sm">
+                                    <div class="form-floating">
+                                        <input required class="form-control" id="policyCreateMinute" name="minute" type="text" value="" placeholder="Minute">
+                                        <label for="policyCreateMinute">Minute</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="form-floating">
+                                        <input required class="form-control" id="policyCreateHour" name="hour" type="text" value="" placeholder="Hour">
+                                        <label for="policyCreateHour">Hour</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="form-floating">				
                                         <input required class="form-control" id="policyCreateDay" name="day" type="text" value="" placeholder="Day" aria-label="Day">
+                                        <label for="policyCreateDay">Day</label>
                                     </div>
                                 </div>
                                 <div class="col-sm">
-                                    <div class="input-field">					
-                                            <input required class="form-control" id="policyCreateMonth" name="month" type="text" value="" placeholder="Month" aria-label="Month">
+                                    <div class="form-floating">					
+                                        <input required class="form-control" id="policyCreateMonth" name="month" type="text" value="" placeholder="Month">
+                                        <label for="policyCreateMonth">Month</label>
                                     </div>
                                 </div>
                                 <div class="col-sm">
-                                    <div class="input-group">
-                                        <div class="input-field">					
-                                                <input required class="form-control" id="policyCreateDayWeek" name="day_week" type="text" value="" placeholder="Day Week" aria-label="Day Week">
-                                        </div>
+                                    <div class="form-floating">
+                                        <input required class="form-control" id="policyCreateDayWeek" name="day_week" type="text" value="" placeholder="Day Week">
+                                        <label for="policyCreateDayWeek">Day Week</label>
                                     </div> 
                                 </div> 
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col">
-                                    <div class="input-group">
-                                        <input class="form-control" required id="policyCreateDescription" name="description" type="text" type="text" value="{{ h.description }}" placeholder="Description" aria-label="Description">
+                                    <div class="form-floating">
+                                        <input class="form-control" required id="policyCreateDescription" name="description" type="text" type="text" value="{{ h.description }}" placeholder="Description">
+                                        <label for="policyCreateDescription">Description</label>
                                     </div>
                                 </div>
                             </div>
@@ -252,115 +274,139 @@
 
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <div class="input-group s2">
-                                                <select class="form-control" required id="policyUpdateStatus" name="formStatus">
+                                            <div class="form-floating mb-3">
+                                                <select class="form-select" required id="policyUpdateStatus" name="formStatus">
                                                     <option value="{{ p.status }}" selected>{{ p.status }}</option>
                                                     <option value="ACTIVE">Active</option>
                                                     <option value="INACTIVE">Inactive</option>
                                                 </select>
+                                                <label for="policyUpdateStatus">Status</label>
                                             </div>
                                         </div>
                                         <div class="col-8">
-                                            <div class="input-group">
-                                                <input required class="form-control" id="policyUpdateName" name="policy_name" type="text" value="{{ p.policy_name }}" placeholder="Policy name" aria-label="Policy name">
+                                            <div class="form-floating">
+                                                <input required class="form-control" id="policyUpdateName" name="policy_name" type="text" value="{{ p.policy_name }}" placeholder="Policy name">
+                                                <label for="policyUpdateName">Policy name</label>
                                             </div>
                                         </div>
                                     </div>
             
                                     <div class="row mb-3">
-                                        <div class="input-field col">
-                                            <select class="form-control" id="policyUpdateClient" name="id_client">
-                                                <option value="{{ p.id_client }}" disabled selected>Choose your option</option>                                            
-                                                {% for c in clients %}
-                                                    <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                                {% endfor %}
-                                            </select>
+                                        <div class="col-sm">
+                                            <div class="form-floating col">
+                                                <select class="form-control" id="policyUpdateClient" name="id_client">
+                                                    <option value="{{ p.id_client }}" disabled selected>Choose your option</option>                                            
+                                                    {% for c in clients %}
+                                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <label for="hostCreateIdClient">Client Name</label>
+                                            </div>
                                         </div>
-                                    
-                                        <div class="input-field col">
-                                            <select class="form-control" id="policyUpdateHost" name="id_host">
-                                                <option value="{{ p.id_host }}" disabled selected>Choose your option</option>
-                                                {% for h in hosts %}
-                                                    <option value="{{ h.id_host }}">{{ h.hostname }}</option>
-                                                {% endfor %}
-                                            </select>
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <select class="form-select" id="policyUpdateHost" name="id_host">
+                                                    <option value="{{ p.id_host }}" disabled selected>Choose your option</option>
+                                                    {% for h in hosts %}
+                                                        <option value="{{ h.id_host }}">{{ h.hostname }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <label for="policyUpdateHost">Hostname</label>
+                                            </div>
                                         </div>
-            
-                                        <div class="input-field col">
-                                            <select class="form-control" id="policyUpdateDatabase" name="id_database">
-                                                <option value="" disabled selected>Choose your option</option> 
-                                                {% for d in databases %}
-                                                    <option value="{{ d.id_database }}">{{ d.db_name }}</option>
-                                                {% endfor %}
-                                            </select>
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <select class="form-select" id="policyUpdateDatabase" name="id_database">
+                                                    <option value="" disabled selected>Choose your option</option> 
+                                                    {% for d in databases %}
+                                                        <option value="{{ d.id_database }}">{{ d.db_name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <label for="policyUpdateDatabase">DB_NAME</label>
+                                            </div>
                                         </div>
-            
-                                    </div>
+                                    </div> 
             
                                     <div class="row mb-3">
-                                        <div class="input-field col">
-                                            <select class="form-control" id="policyUpdateBackupType" name="backup_type">
-                                                <option disabled selected>Choose your option</option> 
-                                                <option value="ARCHIVELOG">ARCHIVELOG</option>
-                                                <option value="DB FULL">DB FULL</option>
-                                                <option value="DB INCR">DB INCR</option>
-                                                <option value="RECVR AREA">RECVR AREA</option>
-                                                <option value="BACKUPSET">BACKUPSET</option>
-                                            </select>
-                                        </div> 
-                                        <div class="input-field col s3">
-                                            <select class="form-control" id="policyUpdateDestination" name="destination">
-                                                <option disabled selected>Choose your option</option> 
-                                                <option value="SBT_TAPE">SBT_TAPE</option>
-                                                <option value="DISK">DISK</option>
-                                            </select>
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <select class="form-control" id="policyUpdateBackupType" name="backup_type">
+                                                    <option disabled selected>Choose your option</option> 
+                                                    <option value="ARCHIVELOG">ARCHIVELOG</option>
+                                                    <option value="DB FULL">DB FULL</option>
+                                                    <option value="DB INCR">DB INCR</option>
+                                                    <option value="RECVR AREA">RECVR AREA</option>
+                                                    <option value="BACKUPSET">BACKUPSET</option>
+                                                </select>
+                                                <label for="policyUpdateBackupType">Backup Type</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-floating col s3">
+                                                <select class="form-control" id="policyUpdateDestination" name="destination">
+                                                    <option disabled selected>Choose your option</option> 
+                                                    <option value="SBT_TAPE">SBT_TAPE</option>
+                                                    <option value="DISK">DISK</option>
+                                                </select>
+                                                <label for="policyUpdateDestination">Destination</label>
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="row mb-3">
-                                        <div class="input-field col">
-                                            <input required class="form-control" id="policyUpdateSizeBackup" class="" name="size_backup" type="text" value="" placeholder="Estimated Backup Size in GB" aria-label="Estimated Backup Size in GB">
+                                        <div class="col-sm">
+                                            <div class="form-floating col">
+                                                <input required class="form-control" id="policyUpdateSizeBackup" class="" name="size_backup" type="text" value="" placeholder="Estimated Backup Size in GB">
+                                                <label for="policyUpdateSizeBackup">Estimated Backup Size in GB</label>
+                                            </div>
                                         </div>
-                                        <div class="input-field col">
-                                            <input required class="form-control" id="policyUpdateDuration" class="" name="duration" type="text" value="" placeholder="Estimated Duration" aria-label="Estimated Duration">
+                                        <div class="col-sm">
+                                            <div class="form-floating col">
+                                                <input required class="form-control" id="policyUpdateDuration" class="" name="duration" type="text" value="" placeholder="Estimated Duration">
+                                                <label for="policyUpdateDuration">Estimated Duration</label>
+                                            </div>
                                         </div>
                                     </div>
 
 
                                     <div class="row mb-3">
                                         <div class="col-sm">
-                                            <div class="input-field">
-                                                <input required class="form-control" id="policyUpdateMinute" name="minute" type="text" value="" placeholder="Minute" aria-label="Minute">
+                                            <div class="form-floating">
+                                                <input required class="form-control" id="policyUpdateMinute" name="minute" type="text" value="" placeholder="Minute">
+                                                <label for="policyUpdateMinute">Minute</label>
                                             </div>
                                         </div>
                                         <div class="col-sm">
-                                            <div class="input-field">
-                                                <input required class="form-control" id="policyUpdateHour" name="hour" type="text" value="" placeholder="Hour" aria-label="Hour">
+                                            <div class="form-floating">
+                                                <input required class="form-control" id="policyUpdateHour" name="hour" type="text" value="" placeholder="Hour">
+                                                <label for="policyUpdateHour">Hour</label>
                                             </div>
                                         </div>
                                         <div class="col-sm">
-                                            <div class="input-field">				
-                                                <input required class="form-control" id="policyUpdateDay" name="day" type="text" value="" placeholder="Day" aria-label="Day">
+                                            <div class="form-floating">
+                                                <input required class="form-control" id="policyUpdateDay" name="day" type="text" value="" placeholder="Day">
+                                                <label for="policyUpdateDay">Day</label>
                                             </div>
                                         </div>
                                         <div class="col-sm">
-                                            <div class="input-field">					
-                                                    <input required class="form-control" id="policyUpdateMonth" name="month" type="text" value="" placeholder="Month" aria-label="Month">
+                                            <div class="form-floating">
+                                                <input required class="form-control" id="policyUpdateMonth" name="month" type="text" value="" placeholder="Month">
+                                                <label for="policyUpdateMonth">Month</label>
                                             </div>
                                         </div>
                                         <div class="col-sm">
-                                            <div class="input-group">
-                                                <div class="input-field">					
-                                                        <input required class="form-control" id="policyUpdateDayWeek" name="day_week" type="text" value="" placeholder="Day Week" aria-label="Day Week">
-                                                </div>
-                                            </div> 
+                                            <div class="form-floating">
+                                                <input required class="form-control" id="policyUpdateDayWeek" name="day_week" type="text" value="" placeholder="Day Week">
+                                                <label for="">Day Week</label>
+                                            </div>
                                         </div> 
                                     </div>
             
                                     <div class="row mb-3">
                                         <div class="col">
-                                            <div class="input-group">
-                                                <input class="form-control" required id="policyUpdateDescription" name="description" type="text" type="text" value="{{ h.description }}" placeholder="Description" aria-label="Description">
+                                            <div class="form-floating">
+                                                <input class="form-control" required id="policyUpdateDescription" name="description" type="text" type="text" value="{{ h.description }}" placeholder="Description">
+                                                <label for="policyUpdateDescription">Description</label>
                                             </div>
                                         </div>
                                     </div>
