@@ -10,7 +10,7 @@
             <br>
             <h1>Clients</h1> 
             <br>
-            <a href="#modalAddNew" title="Add" data-bs-toggle="modal" data-bs-target="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
+             <a href="#modalAddNew" title="Add" data-bs-toggle="modal" data-bs-target="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
                 <button type="button" class="btn btn-primary shadow">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>                     
@@ -30,24 +30,24 @@
                         <h2>Add new Client</h2>
                     </div>
                     <div class="modal-body">
-                        <div class="container-fluid">
-                        <form class="" id="clientFormCreate">
+                        <!-- <div class="container-fluid"> -->
+                        <form id="clientFormCreate">
                             {% csrf_token %}
 
-                            <div class="row">
+                            <div class="row-auto">
                                 <div class="form-floating mb-3">	
                                     <input required class="form-control" id="clientCreateName" name="name" type="text" value="" placeholder="Client name">
                                     <label for="clientCreateName">Client Name</label>
                                 </div>
                             </div>
 
-                            <div class="row">
-                                <div class="form-floating">
+                            <div class="row-auto">
+                                <div class="form-floating mb-3">
                                     <input required class="form-control" id="clientCreateDescription" name="description" type="text" value="" placeholder="Description">
                                     <label for="clientCreateDescription">Description</label>
                                 </div>
                             </div>   
-                        </div>
+                        <!-- </div> -->
                         </div>
                             <div class="modal-footer"> 
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -93,7 +93,7 @@
                     <div class="modal" tabindex="-1" id="clientModalUpdate" role="dialog" aria-labelledby="ModalLabel-clientUpdate">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
-                                <div class="modal-header">  
+                                <div class="modal-header">
                                     <h2 class="modal-title" id="clientUpdateTitle"></h2>
                                 </div> 
                                 <div class="modal-body">
@@ -102,21 +102,17 @@
                                             {% csrf_token %}
                                             <input id="clientUpdateIdClient" type="hidden" name="formIdClient"/>
 
-                                            <div class="row">
-                                                <div class="input-group mb-3">	
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text">Client</span>
-                                                    </div>
+                                            <div class="row-auto">
+                                                <div class="form-floating mb-3">
                                                     <input required aria-describedby="clientUpdateName" class="form-control" id="clientUpdateName" name="clientFormUpdate" type="text" >
+                                                    <label for="clientCreateDescription">Client Name</label>
                                                 </div>
                                             </div>
 
-                                            <div class="row">
-                                                <div class="input-group mb-3">	
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text">Description</span>
-                                                    </div>
+                                            <div class="row-auto">
+                                                <div class="form-floating mb-3">
                                                     <input required aria-describedby="clientUpdateDescription" class="form-control" id="clientUpdateDescription" type="text" name="clientFormUpdate" type="text">
+                                                    <label for="clientCreateDescription">Description</label>
                                                 </div>
                                             </div>
                                     </div>
@@ -173,7 +169,6 @@
             data: {
                 'name':         $('#clientCreateName').val(),
                 'description':  $('#clientCreateDescription').val(),
-                // 'description':  $('#clientCreateDescription').val(),
             },
             dataType: 'json',
             success: function (data) {
