@@ -55,7 +55,13 @@
                             <tr class="table-danger">
                         {% endif %}
 
-                            <td> {{ r.ID_POLICY }} </td>
+                            <!-- <td> {{ r.ID_POLICY }} </td> -->
+                            <td> 
+                                <a href="#policyModalDetail" class="text-secondary" data-bs-toggle="modal" data-bs-target="#policyModalDetail" title="Policy Detail" onClick="policyDetail({{ r.ID_POLICY }})" >
+                                    {{ r.ID_POLICY }} 
+                                </a> 
+
+                            </td>
                             <td> {{ r.HOSTNAME|lower|capfirst }} </td>
                             <td> {{ r.DB_NAME|lower|capfirst }} </td>
                             <td> {{ r.SCHEDULE_START }} </td>
@@ -79,6 +85,27 @@
                     {% endfor %}
                     </tbody>
                 </table>
+
+                <!-- Modal of ReadDetail -->
+
+                <div class="modal bd-example-modal-lg" tabindex="-1" id="policyModalDetail" role="dialog" aria-labelledby="SmallModalLabel-Details">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 id="policyDetailTitle"></h2>
+                            </div>
+                            <div class="modal-body">
+                                <ul id="policyDetailList">
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>	
+
+                <!-- End Modal of ReadDetail -->
                 
             </div>
         
@@ -89,4 +116,52 @@
 
 {% block javascript %}
 
+<script>
+    function policyDetail(id_policy, callback) {
+
+        if (id_policy) {
+            $.ajax({
+                url: '{% url "coreRelback:policyDetail" %}',
+                data: {
+                    'id_policy': id_policy
+                    // , 'csrfmiddlewaretoken': '{{csrf_token}}'
+                },
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        policyDetailList(data.policy);
+                    }
+                },
+                error : function(xhr,errmsg,err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            }); 
+        }
+    }
+
+    function policyDetailList(policy) {
+
+        $('#policyDetailTitle').text(policy.policy_name);
+
+        $("#policyDetailList").empty();
+
+        $("#policyDetailList").append('<li><b>Id Policy: </b>'+ policy.id_policy +'</a></li>');
+        $("#policyDetailList").append('<li><b>Status: </b>'+ policy.status +'</a></li>');
+        $("#policyDetailList").append('<li><b>Client: </b>' + policy.client_name +'</a></li>');
+        $("#policyDetailList").append('<li><b>Hostname: </b>'+ policy.hostname +'</a></li>');
+        $("#policyDetailList").append('<li><b>DbName: </b>'+ policy.db_name +'</a></li>');
+        $("#policyDetailList").append('<li><b>Backup Type: </b>'+ policy.backup_type +'</a></li>');
+        $("#policyDetailList").append('<li><b>Destination: </b>'+ policy.destination +'</a></li>');
+        $("#policyDetailList").append('<li><b>Duration: </b>'+ policy.duration +'</a></li>');
+        $("#policyDetailList").append('<li><b>Minute: </b>'+ policy.minute +'</a></li>');
+        $("#policyDetailList").append('<li><b>Hour: </b>'+ policy.hour +'</a></li>');
+        $("#policyDetailList").append('<li><b>Day: </b>'+ policy.day +'</a></li>');
+        $("#policyDetailList").append('<li><b>Day Week: </b>'+ policy.day_week +'</a></li>');
+        $("#policyDetailList").append('<li><b>Month: </b>'+ policy.month +'</a></li>');        
+        $("#policyDetailList").append('<li><b>Description: </b>'+ policy.description +'</a></li>');
+
+        }
+
+</script>    
 {% endblock javascript %}
