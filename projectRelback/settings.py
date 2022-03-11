@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'projectRelback.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'databasesServer:1521/orclpdb',
+        'NAME': 'databasesServer:1521/relbackpdb',
         'USER': 'relback',
         'PASSWORD': 'relback',
         'TEST': {

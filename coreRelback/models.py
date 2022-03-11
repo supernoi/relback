@@ -258,3 +258,16 @@ class VwRmanStatus(models.Model):
     class Meta:
         managed = False  # Created from a view. Don't remove.
         db_table = 'vw_rman_status'
+
+class VwRmanResync(models.Model):
+    db_key = models.FloatField()
+    dbinc_key = models.FloatField()
+    dbid = models.FloatField()
+    name = models.CharField(max_length=8)
+    resetlogs_change_field = models.FloatField(db_column='resetlogs_change#')  # Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
+    resetlogs_time = models.DateField()
+
+    class Meta:
+        managed = False  # Created from a view. Don't remove.
+        db_table = 'vw_rman_resync'
+

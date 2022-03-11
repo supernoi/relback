@@ -24,8 +24,8 @@
         
             <div class="table-responsive">
                 <!-- <table class="responsive-table centered highlight display" id="tableReport" style="width:100%"> -->
-                <table class="table table-responsive table-striped table-hover shadow" id="tableReport" style="width:100%">
-                    <thead class="table-light">
+                <table class="table table-responsive table-striped table-hover shadow text-center" id="tableReport" style="width:100%">
+                    <thead class="table-light text-center">
                         <tr>
                             <th scope="col">Policy</th>
                             <th scope="col">Hostname</th>
@@ -44,9 +44,11 @@
                         {% if r.STATUS == 'COMPLETED' %}
                             <tr class="table-success">
                         {% elif r.STATUS == 'SCHEDULED' %}
-                            <tr class="table-info">				
+                            <tr class="table-info">
                         {% elif r.STATUS == 'NOT RUN' %}
-                            <tr class="table-danger">							
+                            <tr class="table-danger">
+                        {% elif r.STATUS == 'NO RESYNC' %}
+                            <tr class="table-warning">
                         {% elif r.STATUS == 'RUNNING' %}
                             <tr class="table-active">
                         {% elif r.STATUS == 'COMPLETED WITH WARNINGS' %}

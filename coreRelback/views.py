@@ -468,22 +468,20 @@ def reportRead(request):
                         to_number(pbv.id_policy) as id_policy,
                         upper(substr(pbv.hostname,1,30)) as hostname,
                         upper(pbv.db_name) as db_name,
-                        db_key as db_key,
+                        rd.db_key as db_key,
                         to_char(pbv.schedule_start, 'dd/mm/yy hh24:mi') as schedule_start,
                         to_char(bjd.start_time, 'dd/mm/yy hh24:mi') as start_r,
                         case 
                         when bjd.status is null and pbv.schedule_start > sysdate then 'SCHEDULED' 
-                        when bjd.status is null and bjd.start_time is null then 'NOT RUN'
+                        when bjd.status is null and bjd.start_time is null and pbv.schedule_start < (select max(r.resync_time) as last_resync from vw_rman_resync r where r.db_key = rd.db_key and upper(r.db_name) = upper(pbv.db_name)) then 'NOT RUN'
+                        when bjd.status is null and bjd.start_time is null and pbv.schedule_start > (select max(r.resync_time) as last_resync from vw_rman_resync r where r.db_key = rd.db_key and upper(r.db_name) = upper(pbv.db_name)) then 'NO RESYNC'
                         when bjd.status is not null then bjd.status
                         end as status,
                         bjd.time_taken_display as duration_r,
                         TO_CHAR(TRUNC(pbv.duration/3600),'FM9900') || ':' ||
                         TO_CHAR(TRUNC(MOD(pbv.duration,3600)/60),'FM00') || ':' ||
                         TO_CHAR(MOD(pbv.duration,60),'FM00') as duration_e,
-                        trunc(decode(substr(bjd.output_bytes_display,-1,1),'M',
-                        to_number(substr(bjd.output_bytes_display,1,    length(bjd.output_bytes_display)-1)/1024),
-                        'G',to_number(substr(bjd.output_bytes_display,1,length(bjd.output_bytes_display)-1)),
-                        'T',to_number(substr(bjd.output_bytes_display,1,length(bjd.output_bytes_display)-1*1024))),2) as size_r_gb,
+                        round(output_bytes/1024/1024/1024, 2) as size_r_gb,
                         trunc(decode(substr(pbv.size_backup,-1,1),'M',
                         to_number(substr(pbv.size_backup,1,    length(pbv.size_backup)-1)/1024),
                         'G',to_number(substr(pbv.size_backup,1,length(pbv.size_backup)-1)),
@@ -501,6 +499,7 @@ def reportRead(request):
                         upper(bjd.input_type)                                                         = upper(pbv.backup_type)      and 
                         bjd.start_time between  pbv.schedule_start - 1/24/4 and
                                     pbv.schedule_start + 1/24/4)
+                        right join relback.vw_rman_database rd on (rd.dbid = pbv.dbid)
                     where
                         trunc(pbv.schedule_start) between trunc(sysdate) - 7 and trunc(sysdate)
                         order by pbv.schedule_start desc""")
