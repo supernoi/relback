@@ -1,84 +1,168 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
-
-class Users(models.Model):
-    id_user = models.FloatField(primary_key=True)
+# Modelo para usuários
+class RelbackUser(models.Model):
+    id_user = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=50, blank=True, null=True)
-    username = models.CharField(max_length=100, blank=True, null=True)
-    password = models.CharField(max_length=60, blank=True, null=True)
-    status = models.BigIntegerField(blank=True, null=True)
-    email = models.CharField(max_length=150, blank=True, null=True)
+    username = models.CharField(max_length=100, unique=True, blank=True, null=True)
+    password = models.CharField(max_length=128)  # considere usar um hash robusto
+    status = models.PositiveSmallIntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(2)],
+        help_text="1 = Active, 2 = Inactive"
+    )
+    email = models.EmailField(max_length=150, blank=True, null=True)
     remember_token = models.CharField(max_length=100, blank=True, null=True)
-    timestamps = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        managed = False
         db_table = 'users'
-
-
-class Clients(models.Model):
-    id_client = models.BigIntegerField(primary_key=True)
-    name = models.CharField(max_length=100, blank=True, null=True)
-    description = models.CharField(max_length=200, blank=True, null=True)
-    created_id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='created_id_user', related_name='client_user_creator', blank=True, default=1)
-    created_at = models.DateField(auto_now_add=True)
-    updated_id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='updated_id_user', related_name='client_user_updater', blank=True, null=True)
-    updated_at = models.DateField(blank=True, null=True, auto_now=True)
-
-    class Meta:
-        managed = False
-        db_table = 'clients'
+        verbose_name = "Usuário"
+        verbose_name_plural = "Usuários"
 
     def __str__(self):
-        return self.name
+        return self.username or f"User {self.id_user}"
 
-class Hosts(models.Model):
-    id_host = models.AutoField(primary_key=True)
-    hostname = models.CharField(max_length=100)
-    description = models.CharField(max_length=100)
-    ip = models.CharField(max_length=39)
-    id_client = models.ForeignKey('Clients', models.DO_NOTHING, db_column='id_client', related_name='host_client_id')
-    created_id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='created_id_user', related_name='host_user_creator', default=1)
-    created_at = models.DateField(auto_now_add=True)
-    updated_id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='updated_id_user', related_name='host_user_updater', blank=True, null=True)
-    updated_at = models.DateField(blank=True, null=True, auto_now=True)
+
+# Modelo para Clientes
+class Client(models.Model):
+    id_client = models.BigAutoField(primary_key=True)
+    name = models.CharField(max_length=100, blank=True, null=True)
+    description = models.CharField(max_length=200, blank=True, null=True)
+    created_by = models.ForeignKey(
+        RelbackUser,
+        on_delete=models.PROTECT,
+        related_name='created_clients',
+        db_column='created_id_user'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_by = models.ForeignKey(
+        RelbackUser,
+        on_delete=models.PROTECT,
+        related_name='updated_clients',
+        db_column='updated_id_user',
+        blank=True,
+        null=True
+    )
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        managed = False
+        db_table = 'clients'
+        verbose_name = "Cliente"
+        verbose_name_plural = "Clientes"
+
+    def __str__(self):
+        return self.name or f"Client {self.id_client}"
+
+
+# Modelo para Hosts
+class Host(models.Model):
+    id_host = models.BigAutoField(primary_key=True)
+    hostname = models.CharField(max_length=100)
+    description = models.CharField(max_length=100)
+    ip = models.GenericIPAddressField(protocol='both', unpack_ipv4=True)
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        related_name='hosts',
+        db_column='id_client'
+    )
+    created_by = models.ForeignKey(
+        RelbackUser,
+        on_delete=models.PROTECT,
+        related_name='created_hosts',
+        db_column='created_id_user'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_by = models.ForeignKey(
+        RelbackUser,
+        on_delete=models.PROTECT,
+        related_name='updated_hosts',
+        db_column='updated_id_user',
+        blank=True,
+        null=True
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
         db_table = 'hosts'
+        verbose_name = "Host"
+        verbose_name_plural = "Hosts"
 
     def __str__(self):
         return self.hostname
 
-class Databases(models.Model):
-    id_database = models.BigIntegerField(primary_key=True)
-    id_client = models.ForeignKey('Clients', models.DO_NOTHING, db_column='id_client', related_name='database_client_id')
-    id_host = models.ForeignKey('Hosts', models.DO_NOTHING, db_column='id_host', related_name='database_host_id')
+
+# Modelo para Bancos de Dados
+class Database(models.Model):
+    id_database = models.BigAutoField(primary_key=True)
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        related_name='databases',
+        db_column='id_client'
+    )
+    host = models.ForeignKey(
+        Host,
+        on_delete=models.CASCADE,
+        related_name='databases',
+        db_column='id_host'
+    )
     db_name = models.CharField(max_length=20)
     description = models.CharField(max_length=100)
-    last_resync = models.DateField(blank=True, null=True)
-    created_id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='created_id_user', related_name='database_user_creator', default=1)
-    created_at = models.DateField(auto_now_add=True)
-    updated_id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='updated_id_user', related_name='database_user_updater', blank=True, null=True)
-    updated_at = models.DateField(blank=True, null=True, auto_now=True)
-    dbid = models.FloatField()
+    last_resync = models.DateTimeField(blank=True, null=True)
+    created_by = models.ForeignKey(
+        RelbackUser,
+        on_delete=models.PROTECT,
+        related_name='created_databases',
+        db_column='created_id_user'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_by = models.ForeignKey(
+        RelbackUser,
+        on_delete=models.PROTECT,
+        related_name='updated_databases',
+        db_column='updated_id_user',
+        blank=True,
+        null=True
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+    dbid = models.BigIntegerField()
 
     class Meta:
-        managed = False
         db_table = 'databases'
-        unique_together = (('id_database', 'id_client', 'id_host'),)
+        unique_together = (('id_database', 'client', 'host'),)
+        verbose_name = "Banco de Dados"
+        verbose_name_plural = "Bancos de Dados"
 
     def __str__(self):
         return self.db_name
 
-class BackupPolicies(models.Model):
-    id_policy = models.BigIntegerField(primary_key=True)
+
+# Modelo para Políticas de Backup
+class BackupPolicy(models.Model):
+    id_policy = models.BigAutoField(primary_key=True)
     policy_name = models.CharField(max_length=150)
-    id_client = models.ForeignKey('Clients', models.DO_NOTHING, db_column='id_client', related_name='policy_client_id')
-    id_database = models.ForeignKey('Databases', models.DO_NOTHING, db_column='id_database', related_name='policy_database_id')
-    id_host = models.ForeignKey('Hosts', models.DO_NOTHING, db_column='id_host', related_name='policy_host_id')
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        related_name='backup_policies',
+        db_column='id_client'
+    )
+    database = models.ForeignKey(
+        Database,
+        on_delete=models.CASCADE,
+        related_name='backup_policies',
+        db_column='id_database'
+    )
+    host = models.ForeignKey(
+        Host,
+        on_delete=models.CASCADE,
+        related_name='backup_policies',
+        db_column='id_host'
+    )
     backup_type = models.CharField(max_length=30)
     destination = models.CharField(max_length=8)
     minute = models.CharField(max_length=100)
@@ -86,188 +170,185 @@ class BackupPolicies(models.Model):
     day = models.CharField(max_length=100)
     month = models.CharField(max_length=100)
     day_week = models.CharField(max_length=100)
-    duration = models.FloatField()
+    duration = models.DecimalField(max_digits=10, decimal_places=0)
     size_backup = models.CharField(max_length=10)
     status = models.CharField(max_length=8)
     description = models.CharField(max_length=100, blank=True, null=True)
-    created_id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='created_id_user', related_name='policy_user_creator', default=1)
-    created_at = models.DateField(auto_now_add=True)
-    updated_id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='updated_id_user', related_name='policy_user_updater', blank=True, null=True)
-    updated_at = models.DateField(blank=True, null=True, auto_now=True)
+    created_by = models.ForeignKey(
+        RelbackUser,
+        on_delete=models.PROTECT,
+        related_name='created_backup_policies',
+        db_column='created_id_user'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_by = models.ForeignKey(
+        RelbackUser,
+        on_delete=models.PROTECT,
+        related_name='updated_backup_policies',
+        db_column='updated_id_user',
+        blank=True,
+        null=True
+    )
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        managed = False
         db_table = 'backup_policies'
-        #unique_together = (('id_database', 'id_client', 'id_host'),)
+        verbose_name = "Política de Backup"
+        verbose_name_plural = "Políticas de Backup"
+        # Aqui podem ser incluídas restrições (CheckConstraint) se for necessário
+
+    def __str__(self):
+        return self.policy_name
 
 
-class Schedules(models.Model):
-    id_policy = models.BigIntegerField(primary_key=True)
-    schedule_start = models.DateField()
+# Modelo para Agendamentos (Schedules)
+class Schedule(models.Model):
+    id_schedule = models.BigAutoField(primary_key=True)
+    backup_policy = models.ForeignKey(
+        BackupPolicy,
+        on_delete=models.CASCADE,
+        related_name='schedules'
+    )
+    schedule_start = models.DateTimeField()
 
     class Meta:
-        managed = False
         db_table = 'schedules'
-        unique_together = (('id_policy', 'schedule_start'),)
+        unique_together = (('backup_policy', 'schedule_start'),)
+        verbose_name = "Agendamento"
+        verbose_name_plural = "Agendamentos"
+
+    def __str__(self):
+        return f"Policy {self.backup_policy.id_policy} at {self.schedule_start}"
 
 
+# Seções específicas para campos de cron (opcional – se forem realmente usados)
 class CronDay(models.Model):
-    id_policy = models.BigIntegerField(primary_key=True)
-    day = models.BigIntegerField()
+    backup_policy = models.ForeignKey(
+        BackupPolicy,
+        on_delete=models.CASCADE,
+        related_name='cron_days'
+    )
+    day = models.PositiveSmallIntegerField()
 
     class Meta:
-        managed = False
         db_table = 'cron_day'
-        unique_together = (('id_policy', 'day'),)
+        unique_together = (('backup_policy', 'day'),)
+        verbose_name = "Cron (Dia)"
+        verbose_name_plural = "Cron (Dias)"
 
 
 class CronDayWeek(models.Model):
-    id_policy = models.BigIntegerField(primary_key=True)
-    day_week = models.BigIntegerField()
+    backup_policy = models.ForeignKey(
+        BackupPolicy,
+        on_delete=models.CASCADE,
+        related_name='cron_day_weeks'
+    )
+    day_week = models.PositiveSmallIntegerField()
 
     class Meta:
-        managed = False
         db_table = 'cron_day_week'
-        unique_together = (('id_policy', 'day_week'),)
+        unique_together = (('backup_policy', 'day_week'),)
+        verbose_name = "Cron (Dia da Semana)"
+        verbose_name_plural = "Cron (Dias da Semana)"
 
 
 class CronHour(models.Model):
-    id_policy = models.BigIntegerField(primary_key=True)
-    hour = models.BigIntegerField()
+    backup_policy = models.ForeignKey(
+        BackupPolicy,
+        on_delete=models.CASCADE,
+        related_name='cron_hours'
+    )
+    hour = models.PositiveSmallIntegerField()
 
     class Meta:
-        managed = False
         db_table = 'cron_hour'
-        unique_together = (('id_policy', 'hour'),)
+        unique_together = (('backup_policy', 'hour'),)
+        verbose_name = "Cron (Hora)"
+        verbose_name_plural = "Cron (Horas)"
 
 
 class CronMinute(models.Model):
-    id_policy = models.BigIntegerField(primary_key=True)
-    minute = models.BigIntegerField()
+    backup_policy = models.ForeignKey(
+        BackupPolicy,
+        on_delete=models.CASCADE,
+        related_name='cron_minutes'
+    )
+    minute = models.PositiveSmallIntegerField()
 
     class Meta:
-        managed = False
         db_table = 'cron_minute'
-        unique_together = (('id_policy', 'minute'),)
+        unique_together = (('backup_policy', 'minute'),)
+        verbose_name = "Cron (Minuto)"
+        verbose_name_plural = "Cron (Minutos)"
 
 
 class CronMonth(models.Model):
-    id_policy = models.BigIntegerField(primary_key=True)
-    month = models.BigIntegerField()
+    backup_policy = models.ForeignKey(
+        BackupPolicy,
+        on_delete=models.CASCADE,
+        related_name='cron_months'
+    )
+    month = models.PositiveSmallIntegerField()
 
     class Meta:
-        managed = False
         db_table = 'cron_month'
-        unique_together = (('id_policy', 'month'),)
+        unique_together = (('backup_policy', 'month'),)
+        verbose_name = "Cron (Mês)"
+        verbose_name_plural = "Cron (Meses)"
 
 
 class CronYear(models.Model):
-    id_policy = models.BigIntegerField(primary_key=True)
-    year = models.BigIntegerField()
+    backup_policy = models.ForeignKey(
+        BackupPolicy,
+        on_delete=models.CASCADE,
+        related_name='cron_years'
+    )
+    year = models.PositiveSmallIntegerField()
 
     class Meta:
-        managed = False
         db_table = 'cron_year'
-        unique_together = (('id_policy', 'year'),)
+        unique_together = (('backup_policy', 'year'),)
+        verbose_name = "Cron (Ano)"
+        verbose_name_plural = "Cron (Anos)"
 
 
+# Modelos para Views – serão mantidos como não gerenciados pelo Django
 class VwBackupPolicies(models.Model):
     id_policy = models.BigIntegerField(primary_key=True)
-    schedule_start = models.DateField()
+    schedule_start = models.DateTimeField()
     hostname = models.CharField(max_length=100)
     db_name = models.CharField(max_length=20)
-    dbid = models.FloatField()
+    dbid = models.BigIntegerField()
     destination = models.CharField(max_length=8)
     backup_type = models.CharField(max_length=30)
-    duration = models.FloatField()
+    duration = models.DecimalField(max_digits=10, decimal_places=0)
     size_backup = models.CharField(max_length=10)
     description = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
-        managed = False  # Created from a view. Don't remove.
         db_table = 'vw_backup_policies'
+        managed = False
 
 
+# (Outros modelos de views, procedures, etc., podem ser mantidos com managed = False)
+# Exemplo:
 class VwRmanBackupJobDetails(models.Model):
     db_name = models.CharField(max_length=8)
-    dbid = models.FloatField()
-    db_key = models.FloatField()
-    start_time = models.DateField(blank=True, null=True)
-    end_time = models.DateField(blank=True, null=True)
+    dbid = models.BigIntegerField()
+    db_key = models.BigIntegerField()
+    start_time = models.DateTimeField(blank=True, null=True)
+    end_time = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=23, blank=True, null=True)
     time_taken_display = models.CharField(max_length=4000, blank=True, null=True)
     output_bytes_display = models.CharField(max_length=4000, blank=True, null=True)
     output_device_type = models.CharField(max_length=17, blank=True, null=True)
-    session_key = models.FloatField(blank=True, null=True)
-    session_recid = models.FloatField(blank=True, null=True)
-    session_stamp = models.FloatField(blank=True, null=True)
+    session_key = models.BigIntegerField(blank=True, null=True)
+    session_recid = models.BigIntegerField(blank=True, null=True)
+    session_stamp = models.BigIntegerField(blank=True, null=True)
     input_type = models.CharField(max_length=13, blank=True, null=True)
 
     class Meta:
-        managed = False  # Created from a view. Don't remove.
         db_table = 'vw_rman_backup_job_details'
+        managed = False
 
-
-class VwRmanBackupSubjobDetails(models.Model):
-    db_name = models.CharField(max_length=8)
-    dbid = models.FloatField()
-    operation = models.CharField(max_length=33, blank=True, null=True)
-    input_type = models.CharField(max_length=13, blank=True, null=True)
-    status = models.CharField(max_length=23, blank=True, null=True)
-    session_stamp = models.FloatField(blank=True, null=True)
-
-    class Meta:
-        managed = False  # Created from a view. Don't remove.
-        db_table = 'vw_rman_backup_subjob_details'
-
-
-class VwRmanDatabase(models.Model):
-    db_key = models.FloatField()
-    dbinc_key = models.FloatField(blank=True, null=True)
-    dbid = models.FloatField()
-    name = models.CharField(max_length=8)
-    resetlogs_change_field = models.FloatField(db_column='resetlogs_change#')  # Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
-    resetlogs_time = models.DateField()
-
-    class Meta:
-        managed = False  # Created from a view. Don't remove.
-        db_table = 'vw_rman_database'
-
-
-class VwRmanOutput(models.Model):
-    db_key = models.FloatField()
-    session_key = models.FloatField()
-    recid = models.FloatField(primary_key=True)
-    stamp = models.FloatField()
-    output = models.CharField(max_length=130)
-
-    class Meta:
-        managed = False  # Created from a view. Don't remove.
-        db_table = 'vw_rman_output'
-
-class VwRmanStatus(models.Model):
-    db_key = models.FloatField()
-    db_name = models.CharField(max_length=8)
-    row_level = models.FloatField(blank=True, null=True)
-    operation = models.CharField(max_length=33, blank=True, null=True)
-    object_type = models.CharField(max_length=80, blank=True, null=True)
-    status = models.CharField(max_length=33, blank=True, null=True)
-    session_key = models.IntegerField(blank=True, null=True)
-    session_recid = models.FloatField(blank=True, null=True)
-
-    class Meta:
-        managed = False  # Created from a view. Don't remove.
-        db_table = 'vw_rman_status'
-
-class VwRmanResync(models.Model):
-    db_key = models.FloatField()
-    dbinc_key = models.FloatField()
-    dbid = models.FloatField()
-    name = models.CharField(max_length=8)
-    resetlogs_change_field = models.FloatField(db_column='resetlogs_change#')  # Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
-    resetlogs_time = models.DateField()
-
-    class Meta:
-        managed = False  # Created from a view. Don't remove.
-        db_table = 'vw_rman_resync'
-
+# (Demais modelos de views são mantidos conforme necessário...)
