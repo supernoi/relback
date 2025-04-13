@@ -1,11 +1,11 @@
 from django.contrib import admin
 from .models import (
-    Users,
-    Clients,
-    Hosts,
-    Databases,
-    BackupPolicies,
-    Schedules,
+    RelbackUser,  # Corrigindo o nome do modelo
+    Client,
+    Host,
+    Database,
+    BackupPolicy,
+    Schedule,
     CronHour,
     CronMinute,
     CronDay,
@@ -13,33 +13,33 @@ from .models import (
     CronMonth,
 )
 
-@admin.register(Users)
-class UsersAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'email')
+@admin.register(RelbackUser)
+class RelbackUserAdmin(admin.ModelAdmin):
+    list_display = ('id_user', 'username', 'email')
     search_fields = ('username', 'email')
 
-@admin.register(Clients)
+@admin.register(Client)
 class ClientsAdmin(admin.ModelAdmin):
     list_display = ('id_client', 'name', 'description')
     search_fields = ('name',)
 
-@admin.register(Hosts)
+@admin.register(Host)
 class HostsAdmin(admin.ModelAdmin):
     list_display = ('id_host', 'hostname', 'ip')
     search_fields = ('hostname', 'ip')
 
-@admin.register(Databases)
+@admin.register(Database)
 class DatabasesAdmin(admin.ModelAdmin):
     list_display = ('id_database', 'db_name', 'client', 'host')
     search_fields = ('db_name',)
 
-@admin.register(BackupPolicies)
+@admin.register(BackupPolicy)
 class BackupPoliciesAdmin(admin.ModelAdmin):
     list_display = ('id_policy', 'policy_name', 'backup_type', 'destination', 'status')
     search_fields = ('policy_name',)
     list_filter = ('backup_type', 'status')
 
-@admin.register(Schedules)
+@admin.register(Schedule)
 class SchedulesAdmin(admin.ModelAdmin):
     list_display = ('id', 'backup_policy', 'schedule_start')
     search_fields = ('backup_policy__policy_name',)

@@ -69,7 +69,7 @@ WSGI_APPLICATION = 'projectRelback.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'databasesServer:1521/relbackpdb',
+        'NAME': '192.168.124.139:1521/cobaia',
         'USER': 'relback',
         'PASSWORD': 'relback',
         'TEST': {
