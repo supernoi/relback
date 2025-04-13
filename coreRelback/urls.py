@@ -1,49 +1,51 @@
 from django.contrib import admin
 from django.urls import path
-from coreRelback import views
+from coreRelback.views import (
+    index, creators,
+    ClientListView, ClientCreateView, ClientUpdateView, ClientDeleteView,
+    HostListView, HostCreateView, HostUpdateView, HostDeleteView,
+    DatabaseListView, DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
+    BackupPolicyListView, BackupPolicyCreateView, BackupPolicyUpdateView, BackupPolicyDeleteView, BackupPolicyDetailView,
+    report_read, report_read_log_detail, report_refresh_schedule,
+    database_hosts_list
+)
 
 app_name = "coreRelback"
 
 urlpatterns = [
     # Página inicial e administração
-    path("", views.index, name="index"),
+    path("", index, name="index"),
     path("admin/", admin.site.urls),
-    path("creators/", views.creators, name="creators"),
+    path("creators/", creators, name="creators"),
 
     # Endpoints para Clientes
-    path("clients/", views.clientRead.as_view(), name="client-list"),
-    path("clients/create/", views.clientCreate.as_view(), name="client-create"),
-    path("clients/<int:pk>/update/", views.clientUpdate.as_view(), name="client-update"),
-    path("clients/<int:pk>/delete/", views.clientDelete.as_view(), name="client-delete"),
+    path("clients/", ClientListView.as_view(), name="client-list"),
+    path("clients/create/", ClientCreateView.as_view(), name="client-create"),
+    path("clients/<int:pk>/update/", ClientUpdateView.as_view(), name="client-update"),
+    path("clients/<int:pk>/delete/", ClientDeleteView.as_view(), name="client-delete"),
 
     # Endpoints para Hosts
-    path("hosts/", views.hostRead.as_view(), name="host-list"),
-    path("hosts/create/", views.hostCreate.as_view(), name="host-create"),
-    path("hosts/<int:pk>/update/", views.hostUpdate.as_view(), name="host-update"),
-    path("hosts/<int:pk>/delete/", views.hostDelete.as_view(), name="host-delete"),
+    path("hosts/", HostListView.as_view(), name="host-list"),
+    path("hosts/create/", HostCreateView.as_view(), name="host-create"),
+    path("hosts/<int:pk>/update/", HostUpdateView.as_view(), name="host-update"),
+    path("hosts/<int:pk>/delete/", HostDeleteView.as_view(), name="host-delete"),
 
     # Endpoints para Bancos de Dados
-    path("databases/", views.databaseRead.as_view(), name="database-list"),
-    path("databases/create/", views.databaseCreate.as_view(), name="database-create"),
-    path("databases/<int:pk>/update/", views.databaseUpdate.as_view(), name="database-update"),
-    path("databases/<int:pk>/delete/", views.databaseDelete.as_view(), name="database-delete"),
-    path("databases/<int:pk>/hosts/", views.hostsList, name="database-hosts-list"),
+    path("databases/", DatabaseListView.as_view(), name="database-list"),
+    path("databases/create/", DatabaseCreateView.as_view(), name="database-create"),
+    path("databases/<int:pk>/update/", DatabaseUpdateView.as_view(), name="database-update"),
+    path("databases/<int:pk>/delete/", DatabaseDeleteView.as_view(), name="database-delete"),
+    path("databases/<int:pk>/hosts/", database_hosts_list, name="database-hosts-list"),
 
     # Endpoints para Políticas de Backup
-    path("policies/", views.policyRead.as_view(), name="policy-list"),
-    path("policies/detail/", views.policyRead.policyDetail, name="policy-detail"),
-    path("policies/create/", views.policyCreate.as_view(), name="policy-create"),
-    path("policies/<int:pk>/update/", views.policyUpdate.as_view(), name="policy-update"),
-    path("policies/<int:pk>/delete/", views.policyDelete.as_view(), name="policy-delete"),
-    path("policies/hosts/", views.hostsList, name="policy-hosts-list"),
-    path("policies/databases/", views.databasesList, name="policy-databases-list"),
+    path("policies/", BackupPolicyListView.as_view(), name="policy-list"),
+    path("policies/detail/", BackupPolicyDetailView.as_view(), name="policy-detail"),
+    path("policies/create/", BackupPolicyCreateView.as_view(), name="policy-create"),
+    path("policies/<int:pk>/update/", BackupPolicyUpdateView.as_view(), name="policy-update"),
+    path("policies/<int:pk>/delete/", BackupPolicyDeleteView.as_view(), name="policy-delete"),
 
     # Endpoints para Relatórios
-    path("reports/", views.reportRead, name="report-read"),
-    path(
-        "reports/read-log-detail/<int:idPolicy>/<int:dbKey>/<int:sessionKey>/",
-        views.reportReadLogDetail,
-        name="report-read-log-detail"
-    ),
-    path("reports/refresh-schedule/", views.reportRefreshSchedule, name="report-refresh-schedule"),
+    path("reports/", report_read, name="report-read"),
+    path("reports/read-log-detail/<int:idPolicy>/<int:dbKey>/<int:sessionKey>/", report_read_log_detail, name="report-read-log-detail"),
+    path("reports/refresh-schedule/", report_refresh_schedule, name="report-refresh-schedule"),
 ]
