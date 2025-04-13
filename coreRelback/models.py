@@ -195,7 +195,6 @@ class BackupPolicy(models.Model):
         db_table = 'backup_policies'
         verbose_name = "Política de Backup"
         verbose_name_plural = "Políticas de Backup"
-        # Aqui podem ser incluídas restrições (CheckConstraint) se for necessário
 
     def __str__(self):
         return self.policy_name
@@ -226,7 +225,9 @@ class CronDay(models.Model):
     backup_policy = models.ForeignKey(
         BackupPolicy,
         on_delete=models.CASCADE,
-        related_name='cron_days'
+        related_name='cron_days',
+        null=True,
+        blank=True
     )
     day = models.PositiveSmallIntegerField()
 
@@ -241,7 +242,9 @@ class CronDayWeek(models.Model):
     backup_policy = models.ForeignKey(
         BackupPolicy,
         on_delete=models.CASCADE,
-        related_name='cron_day_weeks'
+        related_name='cron_day_weeks',
+        null=True,
+        blank=True
     )
     day_week = models.PositiveSmallIntegerField()
 
@@ -256,7 +259,9 @@ class CronHour(models.Model):
     backup_policy = models.ForeignKey(
         BackupPolicy,
         on_delete=models.CASCADE,
-        related_name='cron_hours'
+        related_name='cron_hours',
+        null=True,
+        blank=True
     )
     hour = models.PositiveSmallIntegerField()
 
@@ -271,7 +276,9 @@ class CronMinute(models.Model):
     backup_policy = models.ForeignKey(
         BackupPolicy,
         on_delete=models.CASCADE,
-        related_name='cron_minutes'
+        related_name='cron_minutes',
+        null=True,
+        blank=True
     )
     minute = models.PositiveSmallIntegerField()
 
@@ -286,7 +293,9 @@ class CronMonth(models.Model):
     backup_policy = models.ForeignKey(
         BackupPolicy,
         on_delete=models.CASCADE,
-        related_name='cron_months'
+        related_name='cron_months',
+        null=True,
+        blank=True
     )
     month = models.PositiveSmallIntegerField()
 
@@ -301,7 +310,9 @@ class CronYear(models.Model):
     backup_policy = models.ForeignKey(
         BackupPolicy,
         on_delete=models.CASCADE,
-        related_name='cron_years'
+        related_name='cron_years',
+        null=True,
+        blank=True
     )
     year = models.PositiveSmallIntegerField()
 
@@ -329,26 +340,23 @@ class VwBackupPolicies(models.Model):
         db_table = 'vw_backup_policies'
         managed = False
 
-
 # (Outros modelos de views, procedures, etc., podem ser mantidos com managed = False)
 # Exemplo:
-class VwRmanBackupJobDetails(models.Model):
-    db_name = models.CharField(max_length=8)
-    dbid = models.BigIntegerField()
-    db_key = models.BigIntegerField()
-    start_time = models.DateTimeField(blank=True, null=True)
-    end_time = models.DateTimeField(blank=True, null=True)
-    status = models.CharField(max_length=23, blank=True, null=True)
-    time_taken_display = models.CharField(max_length=4000, blank=True, null=True)
-    output_bytes_display = models.CharField(max_length=4000, blank=True, null=True)
-    output_device_type = models.CharField(max_length=17, blank=True, null=True)
-    session_key = models.BigIntegerField(blank=True, null=True)
-    session_recid = models.BigIntegerField(blank=True, null=True)
-    session_stamp = models.BigIntegerField(blank=True, null=True)
-    input_type = models.CharField(max_length=13, blank=True, null=True)
-
-    class Meta:
-        db_table = 'vw_rman_backup_job_details'
-        managed = False
-
-# (Demais modelos de views são mantidos conforme necessário...)
+# class VwRmanBackupJobDetails(models.Model):
+#     db_name = models.CharField(max_length=8)
+#     dbid = models.BigIntegerField()
+#     db_key = models.BigIntegerField()
+#     start_time = models.DateTimeField(blank=True, null=True)
+#     end_time = models.DateTimeField(blank=True, null=True)
+#     status = models.CharField(max_length=23, blank=True, null=True)
+#     time_taken_display = models.CharField(max_length=4000, blank=True, null=True)
+#     output_bytes_display = models.CharField(max_length=4000, blank=True, null=True)
+#     output_device_type = models.CharField(max_length=17, blank=True, null=True)
+#     session_key = models.BigIntegerField(blank=True, null=True)
+#     session_recid = models.BigIntegerField(blank=True, null=True)
+#     session_stamp = models.BigIntegerField(blank=True, null=True)
+#     input_type = models.CharField(max_length=13, blank=True, null=True)
+#
+#     class Meta:
+#         db_table = 'vw_rman_backup_job_details'
+#         managed = False

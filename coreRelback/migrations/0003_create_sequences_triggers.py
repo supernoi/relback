@@ -4,7 +4,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         # Dependendo do número da migration inicial do seu app.
-        ('coreRelback', '0001_initial'),
+        ('coreRelback', '0001_initial', '0002_backuppolicy_client_database_host_relbackuser_and_more'),
     ]
 
     operations = [
@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
             END;
             /
 
-            -- Semelhantemente, para DATABASES e backup_policy, se necessário:
+            -- Semelhantemente, para DATABASES e BACKUP_POLICIES, se necessário:
             CREATE SEQUENCE databases_seq START WITH 1000 INCREMENT BY 1 NOCACHE;
 
             CREATE OR REPLACE TRIGGER trg_databases_bir
@@ -58,14 +58,14 @@ class Migration(migrations.Migration):
             END;
             /
 
-            CREATE SEQUENCE backup_policy_seq START WITH 1000 INCREMENT BY 1 NOCACHE;
+            CREATE SEQUENCE backup_policies_seq START WITH 1000 INCREMENT BY 1 NOCACHE;
 
-            CREATE OR REPLACE TRIGGER trg_backup_policy_bir
-            BEFORE INSERT ON backup_policy
+            CREATE OR REPLACE TRIGGER trg_backup_policies_bir
+            BEFORE INSERT ON backup_policies
             FOR EACH ROW
             WHEN (new.id_policy IS NULL)
             BEGIN
-              SELECT backup_policy_seq.NEXTVAL INTO :new.id_policy FROM dual;
+              SELECT backup_policies_seq.NEXTVAL INTO :new.id_policy FROM dual;
             END;
             /
             """,
@@ -82,8 +82,8 @@ class Migration(migrations.Migration):
             DROP TRIGGER trg_databases_bir;
             DROP SEQUENCE databases_seq;
 
-            DROP TRIGGER trg_backup_policy_bir;
-            DROP SEQUENCE backup_policy_seq;
+            DROP TRIGGER trg_backup_policies_bir;
+            DROP SEQUENCE backup_policies_seq;
             """
         ),
     ]

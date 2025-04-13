@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('coreRelback', '0002_create_sequences_triggers'),
+        ('coreRelback', '0001_initial'),
     ]
 
     operations = [
