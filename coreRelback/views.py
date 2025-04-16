@@ -6,7 +6,7 @@ from .models import Client, Host, Database, BackupPolicy
 
 # Função para a página inicial
 def index(request):
-    return render(request, "coreRelback/index.html")
+    return render(request, "index.html")
 
 # Função para a página dos criadores
 def creators(request):

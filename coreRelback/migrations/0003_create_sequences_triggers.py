@@ -3,8 +3,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        # Dependendo do número da migration inicial do seu app.
-        ('coreRelback', '0001_initial', '0002_backuppolicy_client_database_host_relbackuser_and_more'),
+        ('coreRelback', '0002_backuppolicy_client_database_host_relbackuser_and_more'),
     ]
 
     operations = [
