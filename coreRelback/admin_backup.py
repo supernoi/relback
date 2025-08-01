@@ -1,6 +1,10 @@
 from django.contrib import admin
 from .models import (
+<<<<<<< HEAD
     RelbackUser,
+=======
+    RelbackUser,  # Nome correto do modelo de usuários
+>>>>>>> 811bf09f982df832f56f799820e3f43d02b7aae7
     Client,
     Host,
     Database,
@@ -15,43 +19,50 @@ from .models import (
 
 @admin.register(RelbackUser)
 class RelbackUserAdmin(admin.ModelAdmin):
-    list_display = ('id_user', 'username', 'name', 'email', 'status', 'theme_preference', 'language_preference')
-    search_fields = ('username', 'name', 'email')
-    list_filter = ('status', 'theme_preference', 'language_preference', 'notifications_enabled')
-    readonly_fields = ('created_at', 'updated_at', 'last_login')
+    list_display = ('id_user', 'username', 'email')
+    search_fields = ('username', 'email')
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 811bf09f982df832f56f799820e3f43d02b7aae7
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('id_client', 'name', 'description', 'created_at')
-    search_fields = ('name', 'description')
-    readonly_fields = ('created_at', 'updated_at')
+    list_display = ('id_client', 'name', 'description')
+    search_fields = ('name',)
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 811bf09f982df832f56f799820e3f43d02b7aae7
 @admin.register(Host)
 class HostAdmin(admin.ModelAdmin):
-    list_display = ('id_host', 'hostname', 'ip', 'client', 'created_at')
-    search_fields = ('hostname', 'ip', 'description')
-    list_filter = ('client',)
-    readonly_fields = ('created_at', 'updated_at')
+    list_display = ('id_host', 'hostname', 'ip')
+    search_fields = ('hostname', 'ip')
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 811bf09f982df832f56f799820e3f43d02b7aae7
 @admin.register(Database)
 class DatabaseAdmin(admin.ModelAdmin):
-    list_display = ('id_database', 'db_name', 'client', 'host', 'dbid', 'created_at')
-    search_fields = ('db_name', 'description')
-    list_filter = ('client', 'host')
-    readonly_fields = ('created_at', 'updated_at')
+    list_display = ('id_database', 'db_name', 'client', 'host')
+    search_fields = ('db_name',)
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 811bf09f982df832f56f799820e3f43d02b7aae7
 @admin.register(BackupPolicy)
 class BackupPolicyAdmin(admin.ModelAdmin):
-    list_display = ('id_policy', 'policy_name', 'backup_type', 'destination', 'status', 'client', 'created_at')
-    search_fields = ('policy_name', 'description')
-    list_filter = ('backup_type', 'destination', 'status', 'client')
-    readonly_fields = ('created_at', 'updated_at')
+    list_display = ('id_policy', 'policy_name', 'backup_type', 'destination', 'status')
+    search_fields = ('policy_name',)
+    list_filter = ('backup_type', 'status')
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 811bf09f982df832f56f799820e3f43d02b7aae7
 @admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
     list_display = ('id_schedule', 'backup_policy', 'schedule_start')
@@ -61,6 +72,7 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 @admin.register(CronHour)
 class CronHourAdmin(admin.ModelAdmin):
+    # Como CronHour não possui campo "id_schedule", usamos o campo padrão "id"
     list_display = ('id', 'backup_policy', 'hour')
     list_filter = ('hour',)
 

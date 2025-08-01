@@ -18,6 +18,19 @@ class RelbackUser(models.Model):
     last_login = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    # User preferences for UI/UX
+    theme_preference = models.CharField(
+        max_length=20, 
+        choices=[('light', 'Light'), ('dark', 'Dark'), ('auto', 'Auto')],
+        default='light'
+    )
+    language_preference = models.CharField(
+        max_length=10,
+        choices=[('en', 'English'), ('pt', 'Portuguese')],
+        default='en'
+    )
+    notifications_enabled = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'users'
@@ -224,10 +237,7 @@ class BackupPolicy(models.Model):
     class Meta:
         db_table = 'backup_policies'
         verbose_name = "Política de Backup"
-        db_table = 'backup_policies'
-        verbose_name = "Política de Backup"
         verbose_name_plural = "Políticas de Backup"
-<<<<<<< HEAD
         constraints = [
             models.CheckConstraint(
                 check=models.Q(backup_type__in=[
@@ -244,8 +254,6 @@ class BackupPolicy(models.Model):
                 name="politica_de_backup_ck1"
             )
         ]
-=======
->>>>>>> 811bf09f982df832f56f799820e3f43d02b7aae7
 
     def __str__(self):
         return self.policy_name

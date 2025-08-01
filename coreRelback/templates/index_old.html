@@ -1,0 +1,539 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}RelBack - Oracle Backup Management System{% endblock %}
+
+{% block content %}
+<<<<<<< HEAD
+<div class="container-fluid">
+    <!-- Hero Section -->
+    <div class="row hero-section">
+        <div class="col-12">
+            <div class="hero-content text-center">
+                <div class="hero-badge">
+                    <i class="bi bi-shield-check"></i>
+                    Enterprise Grade
+                </div>
+                <h1 class="hero-title">RelBack</h1>
+                <h2 class="hero-subtitle">Oracle Backup Management & Monitoring System</h2>
+                <p class="hero-description">
+                    Comprehensive solution for managing Oracle database backups with intelligent monitoring, 
+                    automated policies, and enterprise-grade reporting capabilities.
+                </p>
+                {% if not user.is_authenticated %}
+                <div class="hero-actions">
+                    <a href="{% url 'coreRelback:login' %}" class="btn btn-hero btn-primary">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Get Started
+                    </a>
+                    <a href="{% url 'coreRelback:register' %}" class="btn btn-hero btn-outline-primary">
+                        <i class="bi bi-person-plus me-2"></i>Create Account
+                    </a>
+                </div>
+                {% else %}
+                <div class="hero-actions">
+                    <a href="{% url 'coreRelback:policy' %}" class="btn btn-hero btn-primary">
+                        <i class="bi bi-shield-plus me-2"></i>Manage Policies
+                    </a>
+                    <a href="{% url 'coreRelback:reportRead' %}" class="btn btn-hero btn-outline-primary">
+                        <i class="bi bi-file-text me-2"></i>View Reports
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    {% if user.is_authenticated %}
+    <div class="row stats-section">
+        <div class="col-12">
+            <div class="stats-container">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ clients_count|default:0 }}</div>
+                            <div class="stat-label">Active Clients</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-server"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ hosts_count|default:0 }}</div>
+                            <div class="stat-label">Managed Hosts</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-database"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ databases_count|default:0 }}</div>
+                            <div class="stat-label">Oracle Databases</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">{{ policies_count|default:0 }}</div>
+                            <div class="stat-label">Backup Policies</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Features Section -->
+    <div class="row features-section">
+        <div class="col-12">
+            <div class="section-header text-center">
+                <h3>Why Choose RelBack?</h3>
+                <p>Advanced features for enterprise Oracle backup management</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-lightning-fill"></i>
+                    </div>
+                    <h4>Real-time Monitoring</h4>
+                    <p>Monitor backup jobs in real-time with instant notifications and detailed status tracking.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <h4>Automated Scheduling</h4>
+                    <p>Create sophisticated backup policies with CRON-based scheduling and retention management.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <h4>Analytics & Reports</h4>
+                    <p>Comprehensive reporting with backup success rates, performance metrics, and trend analysis.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h4>Enterprise Security</h4>
+                    <p>Role-based access control, audit trails, and secure connection management.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h4>Multi-tenant</h4>
+                    <p>Manage multiple clients and environments from a single, centralized interface.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-tools"></i>
+                    </div>
+                    <h4>Easy Integration</h4>
+                    <p>Seamless integration with existing Oracle infrastructure and RMAN configurations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How it Works Section -->
+    <div class="row workflow-section">
+        <div class="col-12">
+            <div class="section-header text-center">
+                <h3>How RelBack Works</h3>
+                <p>Simple 4-step process to get your Oracle backups under control</p>
+            </div>
+            <div class="workflow-container">
+                <div class="workflow-step">
+                    <div class="workflow-number">1</div>
+                    <div class="workflow-icon">
+                        <i class="bi bi-building"></i>
+                    </div>
+                    <h4>Register Clients</h4>
+                    <p>Add your clients and organize them by business units or departments.</p>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-number">2</div>
+                    <div class="workflow-icon">
+                        <i class="bi bi-server"></i>
+                    </div>
+                    <h4>Configure Hosts</h4>
+                    <p>Set up your Oracle servers and establish secure connections.</p>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-number">3</div>
+                    <div class="workflow-icon">
+                        <i class="bi bi-database"></i>
+                    </div>
+                    <h4>Add Databases</h4>
+                    <p>Register Oracle databases with their specific configurations and requirements.</p>
+                </div>
+                <div class="workflow-arrow">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+                <div class="workflow-step">
+                    <div class="workflow-number">4</div>
+                    <div class="workflow-icon">
+                        <i class="bi bi-shield-plus"></i>
+                    </div>
+                    <h4>Create Policies</h4>
+                    <p>Define backup strategies with scheduling, retention, and destination settings.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row cta-section">
+        <div class="col-12">
+            <div class="cta-container text-center">
+                {% if not user.is_authenticated %}
+                <h3>Ready to Secure Your Oracle Databases?</h3>
+                <p>Join thousands of DBAs who trust RelBack for their backup management needs.</p>
+                <div class="cta-actions">
+                    <a href="{% url 'coreRelback:register' %}" class="btn btn-cta btn-primary">
+                        <i class="bi bi-rocket-takeoff me-2"></i>Start Free Trial
+                    </a>
+                    <a href="{% url 'coreRelback:login' %}" class="btn btn-cta btn-outline-light">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                    </a>
+                </div>
+                {% else %}
+                <h3>Welcome back, {{ relback_user.name|default:user.username }}!</h3>
+                <p>Continue managing your Oracle backup infrastructure with RelBack.</p>
+                <div class="cta-actions">
+                    <a href="{% url 'coreRelback:policy' %}" class="btn btn-cta btn-primary">
+                        <i class="bi bi-shield-plus me-2"></i>Manage Policies
+                    </a>
+                    <a href="{% url 'coreRelback:reportRead' %}" class="btn btn-cta btn-outline-light">
+                        <i class="bi bi-file-text me-2"></i>View Reports
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 100px 0;
+    margin-top: -24px;
+    margin-bottom: 0;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.8rem;
+    font-weight: 300;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+    opacity: 0.8;
+    line-height: 1.6;
+}
+
+.hero-actions .btn-hero {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    margin: 0 10px;
+    border-radius: 50px;
+    font-weight: 600;
+}
+
+/* Stats Section */
+.stats-section {
+    padding: 60px 0;
+    background: #f8f9fa;
+}
+
+.stats-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Features Section */
+.features-section {
+    padding: 80px 0;
+}
+
+.section-header {
+    margin-bottom: 60px;
+}
+
+.section-header h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.section-header p {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 40px 30px;
+    border-radius: 15px;
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: #667eea;
+    margin-bottom: 20px;
+}
+
+.feature-card h4 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.feature-card p {
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+/* Workflow Section */
+.workflow-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+}
+
+.workflow-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.workflow-step {
+    text-align: center;
+    max-width: 200px;
+    margin: 20px;
+}
+
+.workflow-number {
+    width: 40px;
+    height: 40px;
+    background: #667eea;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin: 0 auto 15px;
+}
+
+.workflow-icon {
+    font-size: 2.5rem;
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.workflow-step h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.workflow-step p {
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.workflow-arrow {
+    font-size: 1.5rem;
+    color: #667eea;
+    margin: 0 20px;
+}
+
+/* CTA Section */
+.cta-section {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 80px 0;
+}
+
+.cta-container h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.cta-container p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-bottom: 40px;
+}
+
+.cta-actions .btn-cta {
+    padding: 15px 35px;
+    font-size: 1.1rem;
+    margin: 0 10px;
+    border-radius: 50px;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.3rem;
+    }
+    
+    .workflow-container {
+        flex-direction: column;
+    }
+    
+    .workflow-arrow {
+        transform: rotate(90deg);
+        margin: 20px 0;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
+=======
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 text-center d-flex align-items-center">
+            <img src="{% static 'images/logo01.png' %}" class="img-fluid" style="max-width: 156px; height: 270px;">
+        </div>
+        <div class="col-md-8">
+            <p>
+                O sistema relBack foi desenvolvido para ajudar a equipe de DBAs a verificar a implementação das políticas de backup existentes para cada banco de dados Oracle atendido pela equipe.
+            </p>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-4 text-end">
+            <p>
+                O relBack consulta informações armazenadas pelo catálogo RMAN para cruzar dados sobre políticas existentes e confirmar que o backup foi concluído com sucesso.
+            </p>
+        </div>
+        <div class="col-md-8 text-center">
+            <img src="{% static 'images/esquema01.png' %}" class="img-fluid" style="max-width: 540px; height: 336px;">
+        </div>
+    </div>
+</div>
+{% endblock %}
+>>>>>>> 811bf09f982df832f56f799820e3f43d02b7aae7
