@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Confirmar Exclusão - Banco de Dados{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-exclamation-triangle"></i> Confirmar Exclusão
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Atenção!</strong> Esta ação não pode ser desfeita. Ao excluir este banco de dados, todas as políticas de backup relacionadas também serão removidas.
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>Você tem certeza que deseja excluir o banco de dados:</h6>
+                        <div class="border p-3 rounded bg-light">
+                            <strong>{{ object.db_name }}</strong><br>
+                            <small class="text-muted">DBID: {{ object.dbid }}</small><br>
+                            <small class="text-muted">Cliente: {{ object.client.name|default:"N/A" }}</small><br>
+                            <small class="text-muted">Host: {{ object.host.hostname|default:"N/A" }}</small><br>
+                            <small class="text-muted">Descrição: {{ object.description }}</small>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'coreRelback:database-list' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Confirmar Exclusão
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

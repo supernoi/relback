@@ -68,13 +68,8 @@ WSGI_APPLICATION = 'projectRelback.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'databasesServer:1521/relbackpdb',
-        'USER': 'relback',
-        'PASSWORD': 'relback',
-        'TEST': {
-            'MIRROR': 'default',
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

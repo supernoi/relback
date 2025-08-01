@@ -14,7 +14,7 @@ from django.views.generic import TemplateView, View, DeleteView
 from .forms import formClient, formHost, formDatabase, formPolicies
 
 # Models from relBack
-from .models import Clients, Hosts, Databases, BackupPolicies, VwRmanOutput, VwRmanBackupJobDetails
+from .models import Client, Host, Database, BackupPolicy, VwRmanBackupJobDetails, RelbackUser
 
 # Debug ipdb
 from django.http import HttpResponse
@@ -33,55 +33,93 @@ class clientRead(TemplateView):
     template_name = 'clients.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['clients'] = Clients.objects.all().order_by('name')
+        context['clients'] = Client.objects.all().order_by('name')
         return context
 
 class clientCreate(View):
-    def get(self, request):
-        clientName = request.GET.get('name', None)
-        description = request.GET.get('description', None)
+    def post(self, request):
+        clientName = request.POST.get('name', None)
+        description = request.POST.get('description', None)
+        
+        # Criar um usuário temporário se não existir
+        try:
+            temp_user, created = RelbackUser.objects.get_or_create(
+                username='temp_user',
+                defaults={
+                    'name': 'Temporary User',
+                    'email': 'temp@example.com',
+                    'password': 'temp_password'
+                }
+            )
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
-        obj = Clients.objects.create(
-            name=clientName,
-            description=description,
-        )
+        if not clientName:
+            return JsonResponse({'error': 'Nome é obrigatório'}, status=400)
 
-        client = {'id_client':obj.id_client, 'name':obj.name, 'description':obj.description}
+        try:
+            obj = Client.objects.create(
+                name=clientName,
+                description=description or '',
+                created_by=temp_user,
+                updated_by=temp_user
+            )
 
-        data = {
-            'client': client,
-            'description': description
-        }
-        # ipdb.set_trace()
+            client = {'id_client': obj.id_client, 'name': obj.name, 'description': obj.description}
 
-        return JsonResponse(data)
+            data = {
+                'client': client,
+                'success': True
+            }
+            return JsonResponse(data)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 class clientUpdate(View):
-    def  get(self, request):
-        idclient = request.GET.get('idClient', None)
-        name = request.GET.get('name', None)
-        description = request.GET.get('description', None)
+    def post(self, request):
+        idclient = request.POST.get('idClient', None)
+        name = request.POST.get('name', None)
+        description = request.POST.get('description', None)
 
-        obj = Clients.objects.get(pk=idclient)
-        obj.name = name
-        obj.description = description
-        obj.save()
+        try:
+            temp_user, created = RelbackUser.objects.get_or_create(
+                username='temp_user',
+                defaults={
+                    'name': 'Temporary User',
+                    'email': 'temp@example.com',
+                    'password': 'temp_password'
+                }
+            )
+            
+            obj = Client.objects.get(pk=idclient)
+            obj.name = name
+            obj.description = description
+            obj.updated_by = temp_user
+            obj.save()
 
-        client = {'id_client':obj.id_client, 'name':obj.name, 'description':obj.description}
+            client = {'id_client': obj.id_client, 'name': obj.name, 'description': obj.description}
 
-        data = {
-            'client': client
-        }
-        return JsonResponse(data)
+            data = {
+                'client': client,
+                'success': True
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 class clientDelete(View):
-    def get(self, request):
-        id_client = request.GET.get('id_client', None)
-        Clients.objects.get(pk=id_client).delete()
-        data = {
-            'deleted': True
-        }
-        return JsonResponse(data)
+    def post(self, request):
+        id_client = request.POST.get('id_client', None)
+        try:
+            Client.objects.get(pk=id_client).delete()
+            data = {
+                'deleted': True,
+                'success': True
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 # CRUD - Clients - End
 
@@ -91,8 +129,8 @@ class hostRead(TemplateView):
     template_name = 'hosts.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['hosts'] = Hosts.objects.all().order_by('id_host')
-        context['clients'] = Clients.objects.all().order_by('name')
+        context['hosts'] = Host.objects.all().order_by('id_host')
+        context['clients'] = Client.objects.all().order_by('name')
         return context
 
 class hostCreate(View):
@@ -102,7 +140,7 @@ class hostCreate(View):
         ip = request.GET.get('ip', None)
         description = request.GET.get('description', None)
 
-        obj = Hosts.objects.create(
+        obj = Host.objects.create(
             id_client_id=idClient,
             hostname=hostname,
             ip=ip,
@@ -117,6 +155,40 @@ class hostCreate(View):
         # ipdb.set_trace()
 
         return JsonResponse(data)
+    
+    def post(self, request):
+        try:
+            name = request.POST.get('name')
+            address = request.POST.get('address')
+            client_id = request.POST.get('client')
+            
+            # Validações básicas
+            if not name or not address or not client_id:
+                return JsonResponse({'success': False, 'error': 'Todos os campos obrigatórios devem ser preenchidos'})
+            
+            # Verificar se o cliente existe
+            try:
+                client = Client.objects.get(id_client=client_id)
+            except Client.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Cliente não encontrado'})
+            
+            # Criar o host (assumindo que temos um usuário padrão para created_by)
+            # Você pode ajustar isso conforme sua lógica de autenticação
+            user = RelbackUser.objects.first()  # ou request.user se tiver autenticação
+            
+            obj = Host.objects.create(
+                hostname=name,
+                ip=address,
+                description='',  # Pode adicionar campo description no form se necessário
+                client=client,
+                created_by=user,
+                updated_by=user
+            )
+            
+            return JsonResponse({'success': True, 'message': 'Host criado com sucesso'})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': f'Erro interno: {str(e)}'})
 
 class hostUpdate(View):
     def  get(self, request):
@@ -126,7 +198,7 @@ class hostUpdate(View):
         ip = request.GET.get('ip', None)
         description = request.GET.get('description', None)
 
-        obj = Hosts.objects.get(pk=idhost)
+        obj = Host.objects.get(pk=idhost)
         obj.id_client_id = idclient
         obj.hostname = hostname
         obj.ip = ip
@@ -142,15 +214,73 @@ class hostUpdate(View):
             'host': host
         }
         return JsonResponse(data)
+    
+    def post(self, request):
+        try:
+            id_host = request.POST.get('id_host')
+            name = request.POST.get('name')
+            address = request.POST.get('address')
+            client_id = request.POST.get('client')
+            
+            # Validações básicas
+            if not id_host or not name or not address or not client_id:
+                return JsonResponse({'success': False, 'error': 'Todos os campos obrigatórios devem ser preenchidos'})
+            
+            # Verificar se o host existe
+            try:
+                host = Host.objects.get(id_host=id_host)
+            except Host.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Host não encontrado'})
+            
+            # Verificar se o cliente existe
+            try:
+                client = Client.objects.get(id_client=client_id)
+            except Client.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Cliente não encontrado'})
+            
+            # Atualizar o host
+            user = RelbackUser.objects.first()  # ou request.user se tiver autenticação
+            
+            host.hostname = name
+            host.ip = address
+            host.client = client
+            host.updated_by = user
+            host.save()
+            
+            return JsonResponse({'success': True, 'message': 'Host atualizado com sucesso'})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': f'Erro interno: {str(e)}'})
 
 class hostDelete(View):
     def get(self, request):
         id_host = request.GET.get('id_host', None)
-        Hosts.objects.get(pk=id_host).delete()
+        Host.objects.get(pk=id_host).delete()
         data = {
             'deleted': True
         }
         return JsonResponse(data)
+    
+    def post(self, request):
+        try:
+            id_host = request.POST.get('id_host')
+            
+            if not id_host:
+                return JsonResponse({'success': False, 'error': 'ID do host é obrigatório'})
+            
+            # Verificar se o host existe
+            try:
+                host = Host.objects.get(id_host=id_host)
+            except Host.DoesNotExist:
+                return JsonResponse({'success': False, 'error': 'Host não encontrado'})
+            
+            # Deletar o host
+            host.delete()
+            
+            return JsonResponse({'success': True, 'message': 'Host excluído com sucesso'})
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': f'Erro interno: {str(e)}'})
 
 # CRUD - Hosts - End
 
@@ -160,9 +290,9 @@ class databaseRead(TemplateView):
     template_name = 'databases.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)        
-        context['hosts'] = Hosts.objects.all().order_by('hostname')
-        context['clients'] = Clients.objects.all().order_by('name')
-        context['databases'] = Databases.objects.all().order_by('id_database')
+        context['hosts'] = Host.objects.all().order_by('hostname')
+        context['clients'] = Client.objects.all().order_by('name')
+        context['databases'] = Database.objects.all().order_by('id_database')
 
         return context
 
@@ -174,7 +304,7 @@ class databaseCreate(View):
         dbId = request.GET.get('db_id', None)
         description = request.GET.get('description', None)
 
-        obj = Databases.objects.create(
+        obj = Database.objects.create(
             id_client_id=idClient,
             id_host_id=idHost,
             db_name=dbName,
@@ -207,7 +337,7 @@ class databaseUpdate(View):
         dbId = request.GET.get('db_id', None)
         description = request.GET.get('description', None)
 
-        obj = Databases.objects.get(pk=idDatabase)
+        obj = Database.objects.get(pk=idDatabase)
         obj.id_database = idDatabase
         obj.id_client_id = idClient
         obj.id_host_id = idHost
@@ -237,7 +367,7 @@ class databaseUpdate(View):
 def hostsList(request):
     id_client = request.GET.get('id_client', None)
     clientHosts = serializers.serialize('json'
-                                        , list(Hosts.objects.filter(id_client_id=id_client).order_by('hostname'))
+                                        , list(Host.objects.filter(id_client_id=id_client).order_by('hostname'))
                                         , fields=('id_host','hostname'))
     return JsonResponse({'hosts': clientHosts})
 
@@ -245,7 +375,7 @@ def databasesList(request):
     id_client = request.GET.get('id_client', None)
     id_host = request.GET.get('id_host', None)
     databases = serializers.serialize('json'
-                                        , list(Databases.objects.filter(id_client_id=id_client, id_host_id=id_host).order_by('db_name'))
+                                        , list(Database.objects.filter(id_client_id=id_client, id_host_id=id_host).order_by('db_name'))
                                         , fields=('id_database','db_name'))
 
     # ipdb.set_trace()
@@ -255,7 +385,7 @@ def databasesList(request):
 class databaseDelete(View):
     def get(self, request):
         id_database = request.GET.get('id_database', None)
-        Databases.objects.get(pk=id_database).delete()
+        Database.objects.get(pk=id_database).delete()
         data = {
             'deleted': True
         }
@@ -269,10 +399,10 @@ class policyRead(TemplateView):
     template_name = 'policies.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)        
-        context['hosts'] = Hosts.objects.all().order_by('hostname')
-        context['clients'] = Clients.objects.all().order_by('name')
-        context['databases'] = Databases.objects.all().order_by('db_name')
-        context['policies'] = BackupPolicies.objects.all().order_by('policy_name')
+        context['hosts'] = Host.objects.all().order_by('hostname')
+        context['clients'] = Client.objects.all().order_by('name')
+        context['databases'] = Database.objects.all().order_by('db_name')
+        context['policies'] = BackupPolicy.objects.all().order_by('policy_name')
 
         return context
 
@@ -280,7 +410,7 @@ class policyRead(TemplateView):
 
         idPolicy = request.GET.get('id_policy', None)
 
-        obj = BackupPolicies.objects.get(pk=idPolicy)
+        obj = BackupPolicy.objects.get(pk=idPolicy)
 
         policy = {
                 'id_policy':obj.id_policy
@@ -329,7 +459,7 @@ class policyCreate(View):
         status = request.GET.get('status', None)               
         description = request.GET.get('description', None)
 
-        obj = BackupPolicies.objects.create(
+        obj = BackupPolicy.objects.create(
             policy_name=policyName,
             id_client_id=idClient,
             id_host_id=idHost,
@@ -394,7 +524,7 @@ class policyUpdate(View):
         status = request.GET.get('status', None)               
         description = request.GET.get('description', None)
 
-        obj = BackupPolicies.objects.get(pk=idPolicy)
+        obj = BackupPolicy.objects.get(pk=idPolicy)
         obj.id_policy = idPolicy
         obj.id_database_id = idDatabase
         obj.id_client_id = idClient
@@ -446,7 +576,7 @@ class policyUpdate(View):
 class policyDelete(View):
     def get(self, request):
         id_policy = request.GET.get('id_policy', None)
-        BackupPolicies.objects.get(pk=id_policy).delete()
+        BackupPolicy.objects.get(pk=id_policy).delete()
         data = {
             'deleted': True
         }
@@ -509,11 +639,12 @@ def reportRead(request):
 
 def reportReadLogDetail(request, idPolicy, dbKey, sessionKey):
 
-    reportLog = VwRmanOutput.objects.filter(db_key=dbKey, session_key=sessionKey)
+    # reportLog = VwRmanOutput.objects.filter(db_key=dbKey, session_key=sessionKey)
+    reportLog = []  # Temporário até a view VwRmanOutput ser criada
 
     execDetail = VwRmanBackupJobDetails.objects.filter(db_key=dbKey, session_key=sessionKey)
 
-    policyDetail = BackupPolicies.objects.get(id_policy=idPolicy)
+    policyDetail = BackupPolicy.objects.get(id_policy=idPolicy)
 
     return render(request, 'reportsReadLog.html', {'reportLog':reportLog, 'execDetail':execDetail, 'policyDetail':policyDetail})
 

@@ -1,374 +1,393 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
-{% block title %} relback - Hosts {% endblock %}
+{% block title %}RelBack - Hosts{% endblock %}
 
 {% block content %}
-
-        <div class="left-align">
-            <br>
-            <h1>Hosts</h1>
-            <br>
-            <a href="#modalAddNew" title="Add" data-bs-toggle="modal" data-bs-target="#modalAddNew" class="btn btn-floating btn-large waves-effect waves-light modal-trigger green">
-                <button type="button" class="btn btn-primary shadow">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>                     
-                    </svg>
-                    Add
-                </button>
-            </a>
+<div class="container-fluid">
+    <h1 class="page-title">Gerenciar Hosts</h1>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ hosts|length }}</div>
+                <div class="stats-label">Total de Hosts</div>
+            </div>
         </div>
-        <br>
-       
-        <!-- Modal of addNew -->
-            <div class="modal" tabindex="-1" id="modalAddNew" role="dialog" aria-labelledby="ModalLabel-hostAddNew">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h2>Add new Host</h2> 
+        <div class="col-md-9">
+            <div class="modern-card">
+                <div class="modern-card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">Sistema de Gestão de Hosts</h5>
+                            <p class="text-muted mb-0">Cadastre e gerencie servidores do sistema RelBack</p>
                         </div>
-                        <div class="modal-body">
-                            <div class="container-fluid">
-                            <form class="col s12" id="hostFormCreate" >
-                                {% csrf_token %}   
-
-                                <div class="row-auto">
-                                    <div class="form-floating mb-3">
-                                            <select class="form-select" id="hostCreateIdClient" name="id_client">
-                                                <option value="" disabled selected>Choose Client</option>
-                                                {% for c in clients %}
-                                                    <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                            <label for="hostCreateIdClient">Client Name</label>
-                                    </div>
-                                </div>
-                                <div class="row-auto">
-                                    <div class="form-floating mb-3">
-                                        <input required aria-describedby="hostCreateHostname" id="hostCreateHostname" name="hostCreateHostname" type="text" class="form-control" value="" placeholder="Hostname" aria-label="Hostname">
-                                        <label for="hostCreateHostname">Hostname</label>
-                                    </div>
-                                </div>
-
-                                <div class="row-auto">
-                                    <div class="form-floating mb-3">
-                                        <input required aria-describedby="hostCreateIp" id="hostCreateIp" name="ip" type="text" class="form-control" value="" placeholder="IP Address" aria-label="IP Address">
-                                        <label for="hostCreateIp">IP Address</label>
-                                    </div>
-                                </div>
-
-                                <div class="row-auto">
-                                    <div class="form-floating mb-3">
-                                        <input required aria-describedby="hostCreateDescription" id="hostCreateDescription" name="description" type="text" class="form-control" value="{{ description }}" placeholder="Description" aria-label="Description">
-                                        <label for="hostCreateDescription">Description</label>
-                                    </div>
-                                </div>
-
-                                <div class="modal-footer"> 
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary" name="action">Save</button>
-                                </div>
-                            </form>
-                        </div>
+                        <button type="button" class="btn btn-modern btn-modern-primary" data-bs-toggle="modal" data-bs-target="#modalAddNew">
+                            <i class="bi bi-plus-circle-fill me-2"></i>Novo Host
+                        </button>
                     </div>
                 </div>
             </div>
-            </div>
-        <!-- End Modal of addNew -->
-    
-            <table class="table table-striped table-hover shadow" id="hostTable">
-                <thead class="table-light">
-                    <tr>
-                        <th>Client Name</th>
-                        <th>Hostname</th>
-                        <th>IP Address</th>
-                        <th>Description</th>
-                        <th>Options</th>
-                    </tr>
-                </thead>
-                    {% for h in hosts %}
-                        <tr id="host-{{ h.id_host }}">
-                            <td class="hostClientName hostData" name="clientName">{{ h.id_client.name }}</td>
-                                <input type="hidden" id="hostClientID" name="clientID" value={{ h.id_client.id_client }}>
-                            <td id="hostHostname" class="hostHostname hostData" name="hostname">{{ h.hostname }}</td>
-                                <input id="hostID" type="hidden" name="hostID" value={{ h.id_host }}>
-                            <td class="hostIp hostData" name="ip">{{ h.ip }}</td>
-                            <td class="hostDescription hostData" name="description">{{ h.description }}</td>
-                            <td>
-                                <a href="#hostModalUpdate" data-bs-toggle="modal" data-bs-target="#hostModalUpdate" title="Edit" onClick="hostUpdate({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
-                                    <i class="bi bi-pencil-fill"></i>
-                                </a>
-                                <a href="#hostModalDelete" data-bs-toggle="modal" data-bs-target="#hostModalDelete" title="Delete" onClick="hostModalDelete({{ h.id_host }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
-                                    <i class="bi bi-trash-fill"></i>
-                                </a>	
-                            </td>	
-                        </tr>
-                    {% empty %}
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div id="messageContainer"></div>
+
+    <!-- Hosts Table -->
+    <div class="modern-card">
+        <div class="modern-card-body">
+            <div class="table-responsive">
+                <table class="table table-modern" id="hostTable">
+                    <thead>
                         <tr>
-                            <td colspan="7" class="text-center bg-warning">No host</td>
+                            <th><i class="bi bi-hash me-2"></i>ID</th>
+                            <th><i class="bi bi-server me-2"></i>Nome</th>
+                            <th><i class="bi bi-diagram-3 me-2"></i>Endereço</th>
+                            <th><i class="bi bi-building me-2"></i>Cliente</th>
+                            <th class="text-center"><i class="bi bi-gear me-2"></i>Ações</th>
                         </tr>
-                    {% endfor %}
+                    </thead>
+                    <tbody>
+                        {% for h in hosts %}
+                        <tr id="host-{{ h.id_host }}">
+                            <td class="hostId fw-bold">{{ h.id_host }}</td>
+                            <td class="hostName">{{ h.hostname }}</td>
+                            <td class="hostAddress">{{ h.ip }}</td>
+                            <td class="hostClient">{{ h.client.name|default:"N/A" }}</td>
+                            <td class="text-center">
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-action-edit" onclick="hostUpdate({{ h.id_host }})" title="Editar">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                    <button class="btn-action btn-action-delete" onclick="hostModalDelete({{ h.id_host }})" title="Excluir">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="bi bi-server"></i>
+                                </div>
+                                <div class="empty-state-title">Nenhum host cadastrado</div>
+                                <div class="empty-state-description">Clique em "Novo Host" para adicionar o primeiro servidor.</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-                <!-- Start Modal of update -->
-                
-                <div class="modal" tabindex="-1" id="hostModalUpdate" role="dialog" aria-labelledby="ModalLabel-hostUpdate">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header"> 
-                                <h2  class="modal-title" id="hostUpdateTitle"></h2>
-                            </div>
-                            <div class="modal-body">
-                                <div class="container-fluid">
-                                    <form class="col s12" id="hostFormUpdate" action="">
-                                        {% csrf_token %}
-                                        
-                                        <input id="hostUpdateIdHost" type="hidden" name="formIdHost"/>
-
-                                        <div class="row-auto">
-                                            <div class="form-floating mb-3">	
-                                                <select class="form-select" id="hostUpdateClient" name="id_client">
-                                                    <option value="" selected disabled></option>                                            
-                                                    {% for c in clients %}
-                                                        <option value="{{ c.id_client }}">{{ c.name }}</option>
-                                                    {% endfor %}
-                                                </select>
-                                                <label for="hostCreateIdClient">Client Name</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="row-auto">
-                                            <div class="form-floating mb-3">
-                                                <input required class="form-control" id="hostUpdateHostname" type="text" name="formHostname">
-                                                <label for="hostCreateHostname">Hostname</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="row-auto">
-                                            <div class="form-floating mb-3">	
-                                                <input required class="form-control" id="hostUpdateIp" type="text" name="formIp">
-                                                <label for="hostCreateHostname">IP Address</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="row-auto">
-                                            <div class="form-floating mb-3">	
-                                                <input required class="form-control" id="hostUpdateDescription" type="text" name="formDescription">
-                                                <label for="hostCreateHostname">Description</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer"> 
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary" name="action">Save</button>
-                                </div>
-                            </form>
-                        </div> <!-- end modal content -->
+<!-- Modal Add New Host -->
+<div class="modal fade" id="modalAddNew" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-modern">
+            <div class="modal-header modern-card-header">
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Novo Host</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="hostFormCreate">
+                <div class="modal-body modern-card-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="hostCreateName" class="form-label">Nome *</label>
+                        <input type="text" class="form-control form-control-modern" id="hostCreateName" name="name" required>
                     </div>
-                </div> <!-- end modal -->
-
-                <!-- Modal of Delete -->
-                <div class="modal" tabindex="-1" id="hostModalDelete">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="container-fluid">
-                                <div class="modal-header">
-                                    <h2>Confirmation to delete</h2>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <p>Deleting the Host, all dependent Databases and Backup Policies will also be deleted.</p>
-                                        <p>Really want to delete the host: <b id='deleteHostname'></b>?</p>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <form id="policyFormDelete" action="" onsubmit="return false;">
-                                        {% csrf_token %}
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                        <button id="policyButtonDelete" type="submit" class="btn btn-danger" name="action">Delete</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label for="hostCreateAddress" class="form-label">Endereço *</label>
+                        <input type="text" class="form-control form-control-modern" id="hostCreateAddress" name="address" required>
+                        <div class="form-text">Ex: 192.168.1.100 ou hostname.domain.com</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="hostCreateClient" class="form-label">Cliente *</label>
+                        <select class="form-select form-control-modern" id="hostCreateClient" name="client" required>
+                            <option value="">Selecione um cliente</option>
+                            {% for client in clients %}
+                            <option value="{{ client.id_client }}">{{ client.name }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </div>
-                <!-- End Modal of Delete -->
-            </table>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-modern btn-modern-outline" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-modern btn-modern-primary">
+                        <i class="bi bi-check-circle me-2"></i>Criar Host
+                    </button>
+                </div>
+            </form>
         </div>
-    
+    </div>
+</div>
 
+<!-- Modal Update Host -->
+<div class="modal fade" id="hostModalUpdate" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-modern">
+            <div class="modal-header modern-card-header">
+                <h5 class="modal-title" id="hostUpdateTitle"><i class="bi bi-pencil me-2"></i>Editar Host</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="hostFormUpdate">
+                <div class="modal-body modern-card-body">
+                    {% csrf_token %}
+                    <input type="hidden" id="hostUpdateIdHost" name="id_host">
+                    <div class="mb-3">
+                        <label for="hostUpdateName" class="form-label">Nome *</label>
+                        <input type="text" class="form-control form-control-modern" id="hostUpdateName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="hostUpdateAddress" class="form-label">Endereço *</label>
+                        <input type="text" class="form-control form-control-modern" id="hostUpdateAddress" name="address" required>
+                        <div class="form-text">Ex: 192.168.1.100 ou hostname.domain.com</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="hostUpdateClient" class="form-label">Cliente *</label>
+                        <select class="form-select form-control-modern" id="hostUpdateClient" name="client" required>
+                            <option value="">Selecione um cliente</option>
+                            {% for client in clients %}
+                            <option value="{{ client.id_client }}">{{ client.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-modern btn-modern-outline" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-modern btn-modern-primary">
+                        <i class="bi bi-check-circle me-2"></i>Atualizar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete Host -->
+<div class="modal fade" id="hostModalDelete" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-modern">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white"><i class="bi bi-exclamation-triangle me-2"></i>Confirmar Exclusão</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body modern-card-body">
+                <div class="alert alert-modern alert-modern-danger text-center">
+                    <i class="bi bi-exclamation-triangle" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Atenção!</h5>
+                    <p class="mb-0">Esta ação não pode ser desfeita. Ao excluir o host, todos os databases e políticas relacionadas também serão removidos.</p>
+                </div>
+                <p class="text-center mt-3">Deseja realmente excluir o host: <strong id="deleteHostName"></strong>?</p>
+            </div>
+            <form id="hostFormDelete">
+                <div class="modal-footer">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-modern btn-modern-outline" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-modern btn-modern-danger">
+                        <i class="bi bi-trash me-2"></i>Confirmar Exclusão
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block javascript %}
-
 <script>
+// Função para mostrar mensagens
+function showMessage(message, type = 'success') {
+    const messageContainer = document.getElementById('messageContainer');
+    const alertClass = type === 'success' ? 'alert-modern-success' : 'alert-modern-danger';
+    
+    messageContainer.innerHTML = `
+        <div class="alert alert-modern ${alertClass} alert-dismissible fade show" role="alert">
+            <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}-fill me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+        const alert = messageContainer.querySelector('.alert');
+        if (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }
+    }, 5000);
+}
 
-    $("#hostFormCreate").submit(function() {
-        
-        $.ajax({
-            url: '{% url "coreRelback:hostCreate" %}',
-            data: {
-                'id_client':    $('#hostCreateIdClient option:selected').val(),
-                'hostname':     $('#hostCreateHostname').val(),
-                'ip':           $('#hostCreateIp').val(),
-                'description':  $('#hostCreateDescription').val(),
-            },
-            dataType: 'json',
-            success: function (data) {
-                if (data.host) {
-                    hostAppendToTable(data.host);                    
-                    $("#modalAddNew").modal('hide');
-                    parent.location.reload();                 
-                }
-            },
-            error : function(xhr,errmsg,err) {
-                console.log(xhr.status + ": " + xhr.responseText);
+// CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
-        });
+        }
+    }
+    return cookieValue;
+}
 
-        $("#hostFormCreate").trigger("reset");
-        return false;
+const csrftoken = getCookie('csrftoken');
+
+// Create Host
+$("#hostFormCreate").submit(function(e) {
+    e.preventDefault();
+    
+    $.ajax({
+        url: '{% url "coreRelback:hostCreate" %}',
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
+        data: {
+            'name': $('#hostCreateName').val(),
+            'address': $('#hostCreateAddress').val(),
+            'client': $('#hostCreateClient').val(),
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+                showMessage('Host criado com sucesso!', 'success');
+                $("#modalAddNew").modal('hide');
+                location.reload();
+            } else {
+                showMessage(data.error || 'Erro ao criar host', 'error');
+            }
+        },
+        error: function(xhr) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                showMessage(response.error || 'Erro interno do servidor', 'error');
+            } catch (e) {
+                showMessage('Erro interno do servidor', 'error');
+            }
+        }
     });
+});
 
-    function hostAppendToTable(host) {
-        $("#hostTable > tbody:last-child").append(`
-            <tr id="host-${ host.id_host }">
-                <td class='hostClientName hostData' name='hostClientName'>${ host.client_name }</td>
-                <td class='hostHostname hostData' name='hostHostname'>${ host.hostname }</td>
-                <td class='hostIp hostData' name='hostIp'>${ host.ip }</td>
-                <td class='hostDescription hostData' name='hostDescription'>${ host.description }</td>
-                <td>
-                    <a href="#clientModalUpdate" data-bs-toggle="modal" data-bs-target="#clientModalUpdate" title="Edit" onClick="clientUpdate({{ c.id_client }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger green" >
-                        <i class="bi bi-pencil-fill"></i>
-                    </a>                        
-                    <a href="#clientModalDelete" data-bs-toggle="modal" data-bs-target="#clientModalDelete" title="Delete" onClick="clientModalDelete({{ c.id_client }})" data-toggle="modal" class="btn btn-floating waves-effect waves-light modal-trigger red" >                      
-                        <i class="bi bi-trash-fill"></i>
-                    </a>	
-                </td>
-                <td>                            
-                    <a onClick="hostUpdate(${ host.id_host })" title="Edit" class="btn btn-floating waves-effect waves-light modal-trigger green" >
-                        <i class="bi bi-pencil-fill"></i>
-                    </a>                        
-                    <a onClick="hostDelete(${ host.id_host })" title="Delete" class="btn btn-floating waves-effect waves-light modal-trigger red" >
-                        <i class="bi bi-trash-fill"></i>
-                    </a>	
-                </td>
-            </tr>
-        `);
-    }
-
-    // Update Django Ajax Call
-    $("form#hostFormUpdate").submit(function() {
-
-        if (hostUpdateIdHost && hostUpdateClient && hostUpdateHostname && hostUpdateIp && hostUpdateDescription) {
-
-            $.ajax({
-                url: '{% url "coreRelback:hostUpdate" %}',
-                data: {                
-                    'idHost':       $('#hostUpdateIdHost').val(),
-                    'idClient':     $('#hostUpdateClient option:selected').val(),
-                    'hostname':     $('#hostUpdateHostname').val(),
-                    'ip':           $('#hostUpdateIp').val(),
-                    'description':  $('#hostUpdateDescription').val(),
-                },
-                dataType: 'json',
-                success: function (data) {
-                    if (data.host) {
-                        updateHostTable(data.host);
-                        parent.location.reload();
-                    }
-                }
-            });
-
-        } else {
-            alert("All fields must have a valid value.");
+// Update Host
+$("#hostFormUpdate").submit(function(e) {
+    e.preventDefault();
+    
+    $.ajax({
+        url: '{% url "coreRelback:hostUpdate" %}',
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
+        data: {
+            'id_host': $('#hostUpdateIdHost').val(),
+            'name': $('#hostUpdateName').val(),
+            'address': $('#hostUpdateAddress').val(),
+            'client': $('#hostUpdateClient').val(),
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+                showMessage('Host atualizado com sucesso!', 'success');
+                $("#hostModalUpdate").modal('hide');
+                location.reload();
+            } else {
+                showMessage(data.error || 'Erro ao atualizar host', 'error');
+            }
+        },
+        error: function(xhr) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                showMessage(response.error || 'Erro interno do servidor', 'error');
+            } catch (e) {
+                showMessage('Erro interno do servidor', 'error');
+            }
         }
-
-        $('#hostModalUpdate').modal('hide');
-        return false;
     });
+});
 
-    function updateHostTable(host){
-        $("#hostTable #host-" + host.id_host).children().each(function() {
-            var attr = $(this).attr("hostHostname");
-            if (attr == "hostClientName") {
-                $(this).text(host.client_name);
-            } else if (attr == "hostHostname") {
-                $(this).text(host.hostname);
-            } else if (attr == "hostIp") {
-                $(this).text(host.ip);
-            } else if (attr == "hostDescription") {
-                $(this).text(host.description);    
-            } 
-        });
-    }
-
-    // Update Django Ajax Call - load data in the Model window
-    function hostUpdate(id_host) {
-        
-        if (id_host) {
-
-            tr_id = "#host-" + id_host;            
-            client_name = $(tr_id).find(".hostClientName").text();
-            client_id = $(tr_id).find("#hostClientID").val();
-            hostname = $(tr_id).find(".hostHostname").text();
-            ip = $(tr_id).find(".hostIp").text();
-            description = $(tr_id).find(".hostDescription").text();
-
-            $('#hostUpdateTitle').text(hostname);
-            $('#hostUpdateIdHost').val(id_host);
-      
-            $('#hostUpdateClient option:first').prop('selected', true);
-            $('#hostUpdateClient option:first').val(client_id);
-            $('#hostUpdateClient option:first').text(client_name);
-
-
-            $('#hostUpdateHostname').val(hostname);
-            $('#hostUpdateHostnameLabel').addClass(" active");
-
-            $('#hostUpdateIp').val(ip);
-            $('#hostUpdateIpLabel').addClass(" active");
-
-            $('#hostUpdateDescription').val(description);
-            $('#hostUpdateDescriptionLabel').addClass(" active");
- 
-        }
-    }
-
-    function hostModalDelete(id_host) {
-
-        if(id_host) {
-
-            tr_id = "#host-" + id_host;
-            hostName = $(tr_id).find(".hostHostname").text();
-
-            $('#deleteHostname').text(hostName);
-            $('#hostButtonDelete').attr("onclick","hostDelete("+id_host+")");
-            
-        }
-    }
-
-    // Delete Django Ajax Call
-    function hostDelete(id_host) {
-        if (id_host) {
-            $.ajax({
-                url: '{% url "coreRelback:hostDelete" %}',
-                data: {
-                    'id_host': id_host,
-                },
-                dataType: 'json',
-                success: function (data) {
-                    if (data.deleted) {
-                        $("#hostTable #host-" + id_host).remove();
-                        $("#hostModalDelete").modal('hide');
-                    }
+// Delete Host
+$("#hostFormDelete").submit(function(e) {
+    e.preventDefault();
+    
+    const hostId = $('#hostUpdateIdHost').val();
+    
+    $.ajax({
+        url: '{% url "coreRelback:hostDelete" %}',
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
+        data: {
+            'id_host': hostId,
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+                showMessage('Host excluído com sucesso!', 'success');
+                $("#hostModalDelete").modal('hide');
+                $("#host-" + hostId).remove();
+                
+                if ($("#hostTable tbody tr").length === 0) {
+                    location.reload();
                 }
-            });       
-        }        
-    }
+            } else {
+                showMessage(data.error || 'Erro ao excluir host', 'error');
+            }
+        },
+        error: function(xhr) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                showMessage(response.error || 'Erro interno do servidor', 'error');
+            } catch (e) {
+                showMessage('Erro interno do servidor', 'error');
+            }
+        }
+    });
+});
 
-    </script>
+function hostUpdate(id_host) {
+    const tr = $("#host-" + id_host);
+    const hostName = tr.find(".hostName").text();
+    const hostAddress = tr.find(".hostAddress").text();
+    const hostClient = tr.find(".hostClient").text();
 
-{% endblock javascript %}
+    $('#hostUpdateTitle').html('<i class="bi bi-pencil me-2"></i>Editar Host: ' + hostName);
+    $('#hostUpdateIdHost').val(id_host);
+    $('#hostUpdateName').val(hostName);
+    $('#hostUpdateAddress').val(hostAddress);
+    
+    // Selecionar o cliente correto
+    $("#hostUpdateClient option").each(function() {
+        if ($(this).text() === hostClient) {
+            $(this).prop('selected', true);
+        }
+    });
+    
+    $('#hostModalUpdate').modal('show');
+}
+
+function hostModalDelete(id_host) {
+    const tr = $("#host-" + id_host);
+    const hostName = tr.find(".hostName").text();
+
+    $('#deleteHostName').text(hostName);
+    $('#hostUpdateIdHost').val(id_host);
+    
+    $('#hostModalDelete').modal('show');
+}
+
+// Reset forms when modals are hidden
+$('.modal').on('hidden.bs.modal', function() {
+    $(this).find('form')[0].reset();
+});
+</script>
+{% endblock %}
