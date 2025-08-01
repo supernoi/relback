@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, var(--oracle-slate-150), var(--oracle-slate-100));">
+            <div class="stats-card stats-card-secondary">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <h2 class="h4 mb-1">{{ hosts_count|default:"0" }}</h2>
@@ -47,7 +47,7 @@
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #2E7D32, #4CAF50);">
+            <div class="stats-card stats-card-success">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <h2 class="h4 mb-1">{{ databases_count|default:"0" }}</h2>
@@ -58,7 +58,7 @@
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, var(--oracle-yellow), #F5C666);">
+            <div class="stats-card stats-card-warning">
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
                         <h2 class="h4 mb-1">{{ policies_count|default:"0" }}</h2>
@@ -212,7 +212,7 @@
         <div class="col-md-4 mb-4">
             <div class="md-card p-4 h-100">
                 <div class="text-center">
-                    <i class="material-icons mb-3" style="font-size: 64px; color: var(--oracle-red);">manage_accounts</i>
+                    <i class="material-icons mb-3 text-oracle-red" style="font-size: 64px;">manage_accounts</i>
                     <h5>Manage Infrastructure</h5>
                     <p class="text-muted">Configure clients, hosts, and databases for backup management.</p>
                     <a href="{% url 'coreRelback:client-list' %}" class="btn btn-md-primary">Get Started</a>
@@ -222,7 +222,7 @@
         <div class="col-md-4 mb-4">
             <div class="md-card p-4 h-100">
                 <div class="text-center">
-                    <i class="material-icons mb-3" style="font-size: 64px; color: var(--oracle-yellow);">shield</i>
+                    <i class="material-icons mb-3 text-oracle-yellow" style="font-size: 64px;">shield</i>
                     <h5>Backup Policies</h5>
                     <p class="text-muted">Create and manage automated backup policies for your databases.</p>
                     <a href="{% url 'coreRelback:policy-list' %}" class="btn btn-md-secondary">Manage Policies</a>
@@ -235,7 +235,7 @@
                     <i class="material-icons mb-3" style="font-size: 64px; color: var(--oracle-slate-150);">analytics</i>
                     <h5>Monitor & Report</h5>
                     <p class="text-muted">Track backup status and generate comprehensive reports.</p>
-                    <a href="{% url 'coreRelback:report-read' %}" class="btn" style="background: var(--oracle-slate-150); color: white;">View Reports</a>
+                    <a href="{% url 'coreRelback:report-read' %}" class="btn btn-outline">View Reports</a>
                 </div>
             </div>
         </div>
