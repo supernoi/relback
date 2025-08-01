@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% extends 'base.html' %}
 {% load static %}
 
@@ -288,3 +289,22 @@ setInterval(function() {
 }, 30000);
 </script>
 {% endblock %}
+=======
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Reports Overview{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Reports Overview</h1>
+    <p>Choose a report from the list below to view details.</p>
+    <div class="list-group">
+        {# Exemplo fixo. Se houver uma lista dinâmica, itere sobre ela aqui. #}
+        <a href="{% url 'coreRelback:report-read-log-detail' idPolicy=1 dbKey=100 sessionKey=200 %}" 
+           class="list-group-item list-group-item-action">
+            Report Log Detail Example
+        </a>
+    </div>
+</div>
+{% endblock %}
+>>>>>>> 811bf09f982df832f56f799820e3f43d02b7aae7

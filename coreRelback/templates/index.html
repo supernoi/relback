@@ -4,6 +4,7 @@
 {% block title %}RelBack - Oracle Backup Management System{% endblock %}
 
 {% block content %}
+<<<<<<< HEAD
 <div class="container-fluid">
     <!-- Hero Section -->
     <div class="row hero-section">
@@ -507,3 +508,32 @@
 }
 </style>
 {% endblock %}
+=======
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 text-center d-flex align-items-center">
+            <img src="{% static 'images/logo01.png' %}" class="img-fluid" style="max-width: 156px; height: 270px;">
+        </div>
+        <div class="col-md-8">
+            <p>
+                O sistema relBack foi desenvolvido para ajudar a equipe de DBAs a verificar a implementação das políticas de backup existentes para cada banco de dados Oracle atendido pela equipe.
+            </p>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-4 text-end">
+            <p>
+                O relBack consulta informações armazenadas pelo catálogo RMAN para cruzar dados sobre políticas existentes e confirmar que o backup foi concluído com sucesso.
+            </p>
+        </div>
+        <div class="col-md-8 text-center">
+            <img src="{% static 'images/esquema01.png' %}" class="img-fluid" style="max-width: 540px; height: 336px;">
+        </div>
+    </div>
+</div>
+{% endblock %}
+>>>>>>> 811bf09f982df832f56f799820e3f43d02b7aae7

@@ -49,7 +49,10 @@ ROOT_URLCONF = 'projectRelback.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  # Adicione diretórios de templates se necessário
+        'DIRS': [
+            BASE_DIR / "templates",           # Templates globais
+            BASE_DIR / "coreRelback/templates" # Templates do app
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
