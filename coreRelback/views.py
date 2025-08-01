@@ -8,7 +8,13 @@ from .models import Client, Host, Database, BackupPolicy, RelbackUser
 
 # Função para a página inicial
 def index(request):
-    return render(request, "index.html")
+    context = {
+        'clients_count': Client.objects.count(),
+        'hosts_count': Host.objects.count(),
+        'databases_count': Database.objects.count(),
+        'policies_count': BackupPolicy.objects.count(),
+    }
+    return render(request, "index.html", context)
 
 
 # Função para a página dos criadores
@@ -62,6 +68,7 @@ class HostListView(ListView):
         context['active_hosts'] = hosts.count()  # Assumindo que todos hosts listados estão ativos
         context['total_clients'] = Client.objects.count()
         context['total_databases'] = Database.objects.filter(host__in=hosts).count()
+        context['clients'] = Client.objects.all()  # Para o filtro
         
         return context
 
@@ -153,6 +160,7 @@ class BackupPolicyListView(ListView):
         context['inactive_policies'] = policies.filter(status=0).count()
         # Simulando políticas agendadas para hoje (você pode implementar a lógica real)
         context['scheduled_policies'] = policies.filter(status=1).count() // 2
+        context['clients'] = Client.objects.all()  # Para o filtro
         
         return context
 

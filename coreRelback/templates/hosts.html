@@ -35,7 +35,7 @@
                         <i class="material-icons text-primary" style="font-size: 24px;">storage</i>
                     </div>
                     <div>
-                        <h3 class="h5 mb-0">{{ hosts.count }}</h3>
+                        <h3 class="h5 mb-0">{{ total_hosts }}</h3>
                         <p class="text-muted mb-0">Total Hosts</p>
                     </div>
                 </div>
@@ -153,12 +153,12 @@
                         </thead>
                         <tbody>
                             {% for host in hosts %}
-                            <tr class="host-row" data-client="{{ host.client.name|default:'Unknown' }}" data-status="{% if host.active %}active{% else %}inactive{% endif %}">
+                            <tr class="host-row" data-client="{{ host.client.name|default:'Unknown' }}" data-status="active">>
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center">
-                                        <div class="status-indicator {% if host.active %}bg-success{% else %}bg-secondary{% endif %} me-3"></div>
+                                        <div class="status-indicator bg-success me-3"></div>
                                         <div>
-                                            <strong>{{ host.name }}</strong>
+                                            <strong>{{ host.hostname }}</strong>
                                             {% if host.description %}
                                             <br><small class="text-muted">{{ host.description }}</small>
                                             {% endif %}
@@ -173,35 +173,19 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <code>{{ host.ip_address|default:'N/A' }}</code>
+                                    <code>{{ host.ip|default:'N/A' }}</code>
                                 </td>
                                 <td>
-                                    {% if host.platform %}
-                                    <i class="material-icons me-1" style="vertical-align: middle; font-size: 16px;">
-                                        {% if 'windows' in host.platform|lower %}computer{% elif 'linux' in host.platform|lower %}laptop{% else %}devices{% endif %}
-                                    </i>
-                                    {{ host.platform }}
-                                    {% else %}
-                                    <span class="text-muted">Unknown</span>
-                                    {% endif %}
+                                    <span class="text-muted">Oracle Server</span>
                                 </td>
                                 <td>
-                                    <span class="badge bg-info">{{ host.database_count|default:0 }}</span>
+                                    <span class="badge bg-info">{{ host.database_set.count }}</span>
                                 </td>
                                 <td>
-                                    {% if host.last_backup %}
-                                    <small>{{ host.last_backup|date:"M d, Y" }}</small>
-                                    {% else %}
                                     <span class="text-muted">Never</span>
-                                    {% endif %}
                                 </td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
-                                        <a href="{% url 'coreRelback:host-detail' host.id_host %}" 
-                                           class="btn btn-sm btn-outline-primary" 
-                                           title="View Details">
-                                            <i class="material-icons" style="font-size: 16px;">visibility</i>
-                                        </a>
                                         <a href="{% url 'coreRelback:host-update' host.id_host %}" 
                                            class="btn btn-sm btn-outline-secondary" 
                                            title="Edit">
