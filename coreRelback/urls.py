@@ -8,10 +8,15 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("admin/", admin.site.urls),
 
+    # Authentication
+    path("login/", views.LoginView.as_view(), name="login"),
+    path("logout/", views.LogoutView.as_view(), name="logout"),
+    path("register/", views.RegisterView.as_view(), name="register"),
+
     path("creators/", views.creators, name="creators"),
 
     # Clients
-    path("client/", views.clientRead.as_view(), name="client"),
+    path("client/", views.clients.as_view(), name="client"),
     path("client/create/", views.clientCreate.as_view(), name="clientCreate"),
     path("client/update/", views.clientUpdate.as_view(), name="clientUpdate"),
     path("client/delete/", views.clientDelete.as_view(), name="clientDelete"),

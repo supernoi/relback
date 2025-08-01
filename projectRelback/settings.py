@@ -57,6 +57,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',  # incluído uma única vez
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'coreRelback.context_processors.relback_user',  # Context processor customizado
             ],
         },
     },
@@ -66,10 +67,24 @@ WSGI_APPLICATION = 'projectRelback.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-DATABASES = {
+""" DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    }
+} """
+
+# Database
+# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': '192.168.124.139:1521/cobaia',
+        'USER': 'relback',
+        'PASSWORD': 'relback',
+        'TEST': {
+            'MIRROR': 'default',
+        }
     }
 }
 
@@ -111,3 +126,14 @@ STATICFILES_DIRS = [
 
 # Use BigAutoField as the default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Backend de autenticação customizado
+AUTHENTICATION_BACKENDS = [
+    'coreRelback.backends.RelbackUserBackend',
+    'django.contrib.auth.backends.ModelBackend',  # fallback
+]
+
+# URLs de redirecionamento após login/logout
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'

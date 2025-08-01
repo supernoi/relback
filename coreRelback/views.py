@@ -1,9 +1,14 @@
 # Imported from Django
-from django.shortcuts import render, redirect
-from django.db  import connection
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db import connection
 from django.core import serializers
 from django.forms.models import model_to_dict
-
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from django.http import JsonResponse
 from django.views.generic import TemplateView, View, DeleteView
@@ -11,7 +16,7 @@ from django.views.generic import TemplateView, View, DeleteView
 # Imported from project relBack
 
 # Forms from relBack
-from .forms import formClient, formHost, formDatabase, formPolicies
+from .forms import formClient, formHost, formDatabase, formPolicies, RelbackLoginForm, RelbackUserCreationForm
 
 # Models from relBack
 from .models import Client, Host, Database, BackupPolicy, VwRmanBackupJobDetails, RelbackUser
@@ -20,23 +25,87 @@ from .models import Client, Host, Database, BackupPolicy, VwRmanBackupJobDetails
 from django.http import HttpResponse
 import ipdb
 
+# Views de Autenticação
+class LoginView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            return redirect('coreRelback:index')
+        form = RelbackLoginForm()
+        return render(request, 'auth/login.html', {'form': form})
+    
+    def post(self, request):
+        form = RelbackLoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.user_cache
+            login(request, user)
+            
+            # Get RelbackUser for the welcome message
+            try:
+                relback_user = RelbackUser.objects.get(username=user.username)
+                welcome_name = relback_user.name or user.username
+            except RelbackUser.DoesNotExist:
+                welcome_name = user.username
+                
+            messages.success(request, f'Welcome, {welcome_name}!')
+            next_url = request.GET.get('next', 'coreRelback:index')
+            return redirect(next_url)
+        return render(request, 'auth/login.html', {'form': form})
+
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        messages.info(request, 'Successfully logged out!')
+        return redirect('coreRelback:login')
+
+class RegisterView(View):
+    def get(self, request):
+        form = RelbackUserCreationForm()
+        return render(request, 'auth/register.html', {'form': form})
+    
+    def post(self, request):
+        form = RelbackUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Account created successfully!')
+            return redirect('coreRelback:index')
+        return render(request, 'auth/register.html', {'form': form})
 
 def index(request):
-    return render(request, 'index.html')
+    context = {}
+    
+    # If user is authenticated, get stats and RelbackUser data
+    if request.user.is_authenticated:
+        # Get RelbackUser instance
+        try:
+            relback_user = RelbackUser.objects.get(username=request.user.username)
+            context['relback_user'] = relback_user
+        except RelbackUser.DoesNotExist:
+            pass
+            
+        context.update({
+            'clients_count': Client.objects.count(),
+            'hosts_count': Host.objects.count(),
+            'databases_count': Database.objects.count(),
+            'policies_count': BackupPolicy.objects.count(),
+        })
+    
+    return render(request, 'index.html', context)
 
 def creators(request):
     return render(request, 'creators.html')
 
 # CRUD - Client - Initial
 
-class clientRead(TemplateView):
+class clients(LoginRequiredMixin, TemplateView):
     template_name = 'clients.html'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['clients'] = Client.objects.all().order_by('name')
         return context
 
-class clientCreate(View):
+class clientCreate(LoginRequiredMixin, View):
     def post(self, request):
         clientName = request.POST.get('name', None)
         description = request.POST.get('description', None)
@@ -110,22 +179,13 @@ class clientUpdate(View):
 
 class clientDelete(View):
     def post(self, request):
-        id_client = request.POST.get('id_client', None)
-        try:
-            Client.objects.get(pk=id_client).delete()
-            data = {
-                'deleted': True,
-                'success': True
-            }
-            return JsonResponse(data)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+        pass
 
 # CRUD - Clients - End
 
 # CRUD - Hosts - Initial
 
-class hostRead(TemplateView):
+class hostRead(LoginRequiredMixin, TemplateView):
     template_name = 'hosts.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -140,14 +200,25 @@ class hostCreate(View):
         ip = request.GET.get('ip', None)
         description = request.GET.get('description', None)
 
+        # Get a user for created_by field
+        user = RelbackUser.objects.first()
+        if not user:
+            user = RelbackUser.objects.create(
+                name="System Admin",
+                username="admin",
+                password="temp_password",
+                email="admin@relback.com"
+            )
+
         obj = Host.objects.create(
-            id_client_id=idClient,
+            client_id=idClient,
             hostname=hostname,
             ip=ip,
             description=description,
+            created_by=user,
         )
 
-        host = {'id_host':obj.id_host, 'id_client':obj.id_client_id, 'client_name':obj.id_client.name, 'hostname':obj.hostname, 'ip':obj.ip, 'description':obj.description}
+        host = {'id_host':obj.id_host, 'id_client':obj.client.id_client, 'client_name':obj.client.name, 'hostname':obj.hostname, 'ip':obj.ip, 'description':obj.description}
 
         data = {
             'host': host
@@ -199,7 +270,7 @@ class hostUpdate(View):
         description = request.GET.get('description', None)
 
         obj = Host.objects.get(pk=idhost)
-        obj.id_client_id = idclient
+        obj.client = Client.objects.get(id_client=idclient)
         obj.hostname = hostname
         obj.ip = ip
         obj.description = description
@@ -208,7 +279,7 @@ class hostUpdate(View):
 
         obj.save()
 
-        host = {'id_host':obj.id_host, 'id_client':obj.id_client_id, 'hostname':obj.hostname, 'ip':obj.ip, 'description':obj.description}
+        host = {'id_host':obj.id_host, 'id_client':obj.client.id_client, 'hostname':obj.hostname, 'ip':obj.ip, 'description':obj.description}
 
         data = {
             'host': host
@@ -286,7 +357,7 @@ class hostDelete(View):
 
 # CRUD - Databases - Initial
 
-class databaseRead(TemplateView):
+class databaseRead(LoginRequiredMixin, TemplateView):
     template_name = 'databases.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)        
@@ -297,36 +368,57 @@ class databaseRead(TemplateView):
         return context
 
 class databaseCreate(View):
-    def get(self, request):
-        idClient = request.GET.get('id_client', None)
-        idHost = request.GET.get('id_host', None)
-        dbName = request.GET.get('db_name', None)
-        dbId = request.GET.get('db_id', None)
-        description = request.GET.get('description', None)
+    def post(self, request):
+        idClient = request.POST.get('id_client', None)
+        idHost = request.POST.get('id_host', None)
+        dbName = request.POST.get('db_name', None)
+        dbId = request.POST.get('dbid', None)
+        description = request.POST.get('description', None)
 
-        obj = Database.objects.create(
-            id_client_id=idClient,
-            id_host_id=idHost,
-            db_name=dbName,
-            dbid=dbId,
-            description=description,
-        )
+        try:
+            temp_user, created = RelbackUser.objects.get_or_create(
+                username='temp_user',
+                defaults={
+                    'name': 'Temporary User',
+                    'email': 'temp@example.com',
+                    'password': 'temp_password'
+                }
+            )
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
-        database = {'id_database':obj.id_database
-                    , 'id_client':obj.id_client_id
-                    , 'client_name':obj.id_client.name
-                    , 'id_host':obj.id_host_id
-                    , 'hostname':obj.id_host.hostname                   
-                    , 'dbname':obj.db_name
-                    , 'dbid':obj.dbid
-                    , 'description':obj.description}
+        if not (idClient and idHost and dbName and dbId):
+            return JsonResponse({'error': 'Todos os campos obrigatórios devem ser preenchidos.'}, status=400)
 
-        data = {
-            'database': database
-        }
-        # ipdb.set_trace()
+        try:
+            obj = Database.objects.create(
+                client_id=idClient,
+                host_id=idHost,
+                db_name=dbName,
+                dbid=dbId,
+                description=description or '',
+                created_by=temp_user,
+                updated_by=temp_user
+            )
 
-        return JsonResponse(data)
+            database = {
+                'id_database': obj.id_database,
+                'id_client': obj.client_id,
+                'client_name': obj.client.name,
+                'id_host': obj.host_id,
+                'hostname': obj.host.hostname,
+                'dbname': obj.db_name,
+                'dbid': obj.dbid,
+                'description': obj.description
+            }
+
+            data = {
+                'database': database,
+                'success': True
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
 
 class databaseUpdate(View):
     def  get(self, request):
@@ -338,9 +430,8 @@ class databaseUpdate(View):
         description = request.GET.get('description', None)
 
         obj = Database.objects.get(pk=idDatabase)
-        obj.id_database = idDatabase
-        obj.id_client_id = idClient
-        obj.id_host_id = idHost
+        obj.client = Client.objects.get(id_client=idClient)
+        obj.host = Host.objects.get(id_host=idHost)
         obj.db_name = dbName
         obj.dbid = dbId
         obj.description = description
@@ -350,10 +441,10 @@ class databaseUpdate(View):
         obj.save()
 
         database = {'id_database':obj.id_database
-                    , 'id_client':obj.id_client_id
-                    , 'client_name':obj.id_client.name
-                    , 'id_host':obj.id_host_id
-                    , 'hostname':obj.id_host.hostname
+                    , 'id_client':obj.client.id_client
+                    , 'client_name':obj.client.name
+                    , 'id_host':obj.host.id_host
+                    , 'hostname':obj.host.hostname
                     , 'db_name':obj.db_name
                     , 'dbid':obj.dbid
                     , 'description':obj.description
@@ -367,18 +458,18 @@ class databaseUpdate(View):
 def hostsList(request):
     id_client = request.GET.get('id_client', None)
     clientHosts = serializers.serialize('json'
-                                        , list(Host.objects.filter(id_client_id=id_client).order_by('hostname'))
+                                        , list(Host.objects.filter(client_id=id_client).order_by('hostname'))
                                         , fields=('id_host','hostname'))
     return JsonResponse({'hosts': clientHosts})
 
 def databasesList(request):
     id_client = request.GET.get('id_client', None)
     id_host = request.GET.get('id_host', None)
-    databases = serializers.serialize('json'
-                                        , list(Database.objects.filter(id_client_id=id_client, id_host_id=id_host).order_by('db_name'))
-                                        , fields=('id_database','db_name'))
-
-    # ipdb.set_trace()
+    databases = serializers.serialize(
+        'json',
+        list(Database.objects.filter(client_id=id_client, host_id=id_host).order_by('db_name')),
+        fields=('id_database', 'db_name')
+    )
     return JsonResponse({'databases': databases})
 
 
@@ -391,11 +482,23 @@ class databaseDelete(View):
         }
         return JsonResponse(data)
 
+    def post(self, request):
+        id_database = request.POST.get('id_database', None)
+        try:
+            Database.objects.get(pk=id_database).delete()
+            data = {
+                'deleted': True,
+                'success': True
+            }
+            return JsonResponse(data)
+        except Exception as e:
+            return JsonResponse({'error': str(e), 'success': False}, status=400)
+
 # CRUD - Databases - End
 
 # CRUD - Policies - Initial
 
-class policyRead(TemplateView):
+class policyRead(LoginRequiredMixin, TemplateView):
     template_name = 'policies.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)        
@@ -415,12 +518,12 @@ class policyRead(TemplateView):
         policy = {
                 'id_policy':obj.id_policy
                 , 'policy_name':obj.policy_name
-                , 'id_client':obj.id_client_id
-                , 'client_name':obj.id_client.name
-                , 'id_host':obj.id_host_id
-                , 'hostname':obj.id_host.hostname  
-                , 'id_database':obj.id_database_id                
-                , 'db_name':obj.id_database.db_name
+                , 'id_client':obj.client.id_client
+                , 'client_name':obj.client.name
+                , 'id_host':obj.host.id_host
+                , 'hostname':obj.host.hostname  
+                , 'id_database':obj.database.id_database                
+                , 'db_name':obj.database.db_name
                 , 'backup_type':obj.backup_type
                 , 'destination':obj.destination
                 , 'minute':obj.minute 
@@ -443,27 +546,50 @@ class policyRead(TemplateView):
 
 class policyCreate(View):
     def get(self, request):
-        idClient = request.GET.get('id_client', None)
-        idHost = request.GET.get('id_host', None)
-        idDatabase = request.GET.get('id_database', None)
-        policyName = request.GET.get('policy_name', None)
-        backupType = request.GET.get('backup_type', None)
-        destination = request.GET.get('destination', None)
-        minute = request.GET.get('minute', None)
-        hour = request.GET.get('hour', None)
-        day = request.GET.get('day', None)
-        month = request.GET.get('month', None)
-        dayWeek = request.GET.get('day_week', None)
-        duration = request.GET.get('duration', None)
-        sizeBackup = request.GET.get('size_backup', None)
-        status = request.GET.get('status', None)               
-        description = request.GET.get('description', None)
+        pass
+
+    def post(self, request):
+        idClient = request.POST.get('id_client', None)
+        idHost = request.POST.get('id_host', None)
+        idDatabase = request.POST.get('id_database', None)
+        policyName = request.POST.get('policy_name', None)
+        backupType = request.POST.get('backup_type', None)
+        destination = request.POST.get('destination', None)
+        minute = request.POST.get('minute', None)
+        hour = request.POST.get('hour', None)
+        day = request.POST.get('day', None)
+        month = request.POST.get('month', None)
+        dayWeek = request.POST.get('day_week', None)
+        duration = request.POST.get('duration', None)
+        sizeBackup = request.POST.get('size_backup', None)
+        status = request.POST.get('status', None)
+        description = request.POST.get('description', None)
+
+        # Get current RelbackUser
+        try:
+            relback_user = RelbackUser.objects.get(username=request.user.username)
+        except RelbackUser.DoesNotExist:
+            # Fallback to first user if association doesn't exist
+            relback_user = RelbackUser.objects.first()
+            if not relback_user:
+                # Create a default user if none exists
+                relback_user = RelbackUser.objects.create(
+                    name="System Admin",
+                    username="admin",
+                    password="temp_password",
+                    email="admin@relback.com"
+                )
+
+        # Get the objects by ID
+        client_obj = Client.objects.get(id_client=idClient)
+        host_obj = Host.objects.get(id_host=idHost)
+        database_obj = Database.objects.get(id_database=idDatabase)
 
         obj = BackupPolicy.objects.create(
             policy_name=policyName,
-            id_client_id=idClient,
-            id_host_id=idHost,
-            id_database_id=idDatabase,
+            client=client_obj,
+            host=host_obj,
+            database=database_obj,
             backup_type=backupType,
             destination=destination,
             minute=minute,
@@ -475,34 +601,34 @@ class policyCreate(View):
             size_backup=sizeBackup,
             status=status,
             description=description,
+            created_by=relback_user,
         )
 
-        policy = {'id_policy':obj.id_policy
-                    , 'policy_name':obj.policy_name
-                    , 'id_client':obj.id_client_id
-                    , 'client_name':obj.id_client.name
-                    , 'id_host':obj.id_host_id
-                    , 'hostname':obj.id_host.hostname  
-                    , 'id_database':obj.id_database_id                
-                    , 'dbname':obj.id_database.db_name
-                    , 'backup_type':obj.backup_type
-                    , 'destination':obj.destination
-                    , 'minute':obj.minute 
-                    , 'hour':obj.hour 
-                    , 'day':obj.day 
-                    , 'month':obj.month 
-                    , 'day_week':obj.day_week 
-                    , 'duration':obj.duration 
-                    , 'size_backup':obj.size_backup
-                    , 'status':status
-                    , 'description':obj.description}
+        policy = {
+            'id_policy': obj.id_policy,
+            'policy_name': obj.policy_name,
+            'id_client': obj.client.id_client,
+            'client_name': obj.client.name,
+            'id_host': obj.host.id_host,
+            'hostname': obj.host.hostname,
+            'id_database': obj.database.id_database,
+            'dbname': obj.database.db_name,
+            'backup_type': obj.backup_type,
+            'destination': obj.destination,
+            'minute': obj.minute,
+            'hour': obj.hour,
+            'day': obj.day,
+            'month': obj.month,
+            'day_week': obj.day_week,
+            'duration': obj.duration,
+            'size_backup': obj.size_backup,
+            'status': status,
+            'description': obj.description
+        }
 
         data = {
             'policy': policy
         }
-
-        # ipdb.set_trace()
-
         return JsonResponse(data)
 
 class policyUpdate(View):
@@ -525,10 +651,9 @@ class policyUpdate(View):
         description = request.GET.get('description', None)
 
         obj = BackupPolicy.objects.get(pk=idPolicy)
-        obj.id_policy = idPolicy
-        obj.id_database_id = idDatabase
-        obj.id_client_id = idClient
-        obj.id_host_id = idHost
+        obj.database = Database.objects.get(id_database=idDatabase)
+        obj.client = Client.objects.get(id_client=idClient)
+        obj.host = Host.objects.get(id_host=idHost)
         obj.policy_name = policyName
         obj.backup_type = backupType
         obj.destination = destination

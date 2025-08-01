@@ -1,12 +1,13 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth.hashers import make_password, check_password
 
-# Modelo para usuários
+# Modelo para usuários - modelo simples sem herança AbstractBaseUser
 class RelbackUser(models.Model):
     id_user = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=50, blank=True, null=True)
-    username = models.CharField(max_length=100, unique=True, blank=True, null=True)
-    password = models.CharField(max_length=128)  # considere usar um hash robusto
+    username = models.CharField(max_length=100, unique=True)
+    password = models.CharField(max_length=128)
     status = models.PositiveSmallIntegerField(
         default=1,
         validators=[MinValueValidator(1), MaxValueValidator(2)],
@@ -14,6 +15,7 @@ class RelbackUser(models.Model):
     )
     email = models.EmailField(max_length=150, blank=True, null=True)
     remember_token = models.CharField(max_length=100, blank=True, null=True)
+    last_login = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -21,9 +23,37 @@ class RelbackUser(models.Model):
         db_table = 'users'
         verbose_name = "Usuário"
         verbose_name_plural = "Usuários"
+        constraints = [
+            models.CheckConstraint(check=models.Q(status__in=[1, 2]), name="ck_users_status")
+        ]
 
     def __str__(self):
         return self.username or f"User {self.id_user}"
+    
+    def set_password(self, raw_password):
+        """Define a senha usando hash do Django"""
+        self.password = make_password(raw_password)
+    
+    def check_password(self, raw_password):
+        """Verifica a senha"""
+        return check_password(raw_password, self.password)
+    
+    # Propriedades necessárias para compatibilidade com sistema de autenticação
+    @property
+    def is_authenticated(self):
+        return True
+    
+    @property
+    def is_anonymous(self):
+        return False
+    
+    @property
+    def is_active(self):
+        return self.status == 1
+    
+    @property
+    def pk(self):
+        return self.id_user
 
 
 # Modelo para Clientes
@@ -62,7 +92,7 @@ class Host(models.Model):
     id_host = models.BigAutoField(primary_key=True)
     hostname = models.CharField(max_length=100)
     description = models.CharField(max_length=100)
-    ip = models.GenericIPAddressField(protocol='both', unpack_ipv4=True)
+    ip = models.CharField(max_length=15)  # compatível com Oracle VARCHAR2(15)
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
@@ -194,8 +224,25 @@ class BackupPolicy(models.Model):
     class Meta:
         db_table = 'backup_policies'
         verbose_name = "Política de Backup"
+        db_table = 'backup_policies'
+        verbose_name = "Política de Backup"
         verbose_name_plural = "Políticas de Backup"
-        # Aqui podem ser incluídas restrições (CheckConstraint) se for necessário
+        constraints = [
+            models.CheckConstraint(
+                check=models.Q(backup_type__in=[
+                    'ARCHIVELOG', 'DB FULL', 'DB INCR', 'RECVR AREA', 'BACKUPSET'
+                ]),
+                name="politica_de_backup_ck2"
+            ),
+            models.CheckConstraint(
+                check=models.Q(destination__in=['DISK', 'SBT_TAPE', '*']),
+                name="politica_de_backup_ck3"
+            ),
+            models.CheckConstraint(
+                check=models.Q(status__in=['ACTIVE', 'INACTIVE']),
+                name="politica_de_backup_ck1"
+            )
+        ]
 
     def __str__(self):
         return self.policy_name
