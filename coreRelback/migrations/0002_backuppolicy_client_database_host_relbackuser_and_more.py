@@ -119,35 +119,35 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.DeleteModel(
-            name='BackupPolicies',
+            name='BackupPolicy',
         ),
         migrations.DeleteModel(
-            name='Clients',
+            name='Client',
         ),
         migrations.DeleteModel(
-            name='Databases',
+            name='Database',
         ),
         migrations.DeleteModel(
-            name='Hosts',
+            name='Host',
         ),
         migrations.DeleteModel(
-            name='Schedules',
+            name='Schedule',
         ),
         migrations.DeleteModel(
-            name='Users',
+            name='RelbackUser',
         ),
-        migrations.DeleteModel(
-            name='VwRmanBackupSubjobDetails',
-        ),
-        migrations.DeleteModel(
-            name='VwRmanDatabase',
-        ),
-        migrations.DeleteModel(
-            name='VwRmanOutput',
-        ),
-        migrations.DeleteModel(
-            name='VwRmanStatus',
-        ),
+        # migrations.DeleteModel(
+        #     name='VwRmanBackupSubjobDetails',
+        # ),
+        # migrations.DeleteModel(
+        #     name='VwRmanDatabase',
+        # ),
+        # migrations.DeleteModel(
+        #     name='VwRmanOutput',
+        # ),
+        # migrations.DeleteModel(
+        #     name='VwRmanStatus',
+        # ),
         migrations.AlterModelOptions(
             name='cronday',
             options={'verbose_name': 'Cron (Dia)', 'verbose_name_plural': 'Cron (Dias)'},

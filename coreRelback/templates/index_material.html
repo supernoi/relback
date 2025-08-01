@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - RelBack{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="md-card p-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="material-icons" style="font-size: 48px; color: var(--md-primary);">dashboard</i>
+                    </div>
+                    <div>
+                        <h1 class="h3 mb-1">Welcome to RelBack</h1>
+                        <p class="text-muted mb-0">Oracle Backup Management System</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stats-card">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="h4 mb-1">{{ clients_count|default:"0" }}</h2>
+                        <p class="mb-0 opacity-75">Clients</p>
+                    </div>
+                    <i class="material-icons">business</i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #00acc1, #26c6da);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="h4 mb-1">{{ hosts_count|default:"0" }}</h2>
+                        <p class="mb-0 opacity-75">Hosts</p>
+                    </div>
+                    <i class="material-icons">dns</i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #43a047, #66bb6a);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="h4 mb-1">{{ databases_count|default:"0" }}</h2>
+                        <p class="mb-0 opacity-75">Databases</p>
+                    </div>
+                    <i class="material-icons">storage</i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #f57c00, #ffb74d);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="h4 mb-1">{{ policies_count|default:"0" }}</h2>
+                        <p class="mb-0 opacity-75">Policies</p>
+                    </div>
+                    <i class="material-icons">security</i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="md-card p-4">
+                <h5 class="mb-3">
+                    <i class="material-icons me-2" style="vertical-align: middle;">flash_on</i>
+                    Quick Actions
+                </h5>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'coreRelback:client-create' %}" class="btn btn-md-outlined w-100 py-3">
+                            <i class="material-icons d-block mb-2">add_business</i>
+                            Add Client
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'coreRelback:host-create' %}" class="btn btn-md-outlined w-100 py-3">
+                            <i class="material-icons d-block mb-2">add_to_queue</i>
+                            Add Host
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'coreRelback:database-create' %}" class="btn btn-md-outlined w-100 py-3">
+                            <i class="material-icons d-block mb-2">database</i>
+                            Add Database
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{% url 'coreRelback:policy-create' %}" class="btn btn-md-outlined w-100 py-3">
+                            <i class="material-icons d-block mb-2">policy</i>
+                            Create Policy
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity & System Status -->
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="md-card p-4">
+                <h5 class="mb-3">
+                    <i class="material-icons me-2" style="vertical-align: middle;">history</i>
+                    Recent Activity
+                </h5>
+                <div class="activity-list">
+                    <!-- Activity items would be populated from backend -->
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="me-3">
+                            <div class="rounded-circle bg-success d-flex align-items-center justify-content-center" 
+                                 style="width: 40px; height: 40px;">
+                                <i class="material-icons text-white" style="font-size: 20px;">check</i>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="mb-1">Backup policy created successfully</p>
+                            <small class="text-muted">2 hours ago</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="me-3">
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" 
+                                 style="width: 40px; height: 40px;">
+                                <i class="material-icons text-white" style="font-size: 20px;">add</i>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="mb-1">New database registered</p>
+                            <small class="text-muted">4 hours ago</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start mb-3">
+                        <div class="me-3">
+                            <div class="rounded-circle bg-info d-flex align-items-center justify-content-center" 
+                                 style="width: 40px; height: 40px;">
+                                <i class="material-icons text-white" style="font-size: 20px;">sync</i>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="mb-1">System synchronization completed</p>
+                            <small class="text-muted">1 day ago</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="#" class="btn btn-md-text">View All Activity</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="md-card p-4">
+                <h5 class="mb-3">
+                    <i class="material-icons me-2" style="vertical-align: middle;">info</i>
+                    System Status
+                </h5>
+                <div class="status-list">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="material-icons text-success me-2">check_circle</i>
+                            <span>Oracle Connection</span>
+                        </div>
+                        <span class="badge bg-success">Online</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="material-icons text-success me-2">check_circle</i>
+                            <span>Backup Service</span>
+                        </div>
+                        <span class="badge bg-success">Running</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="material-icons text-warning me-2">warning</i>
+                            <span>Storage Space</span>
+                        </div>
+                        <span class="badge bg-warning">75% Used</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="material-icons text-success me-2">check_circle</i>
+                            <span>Last Sync</span>
+                        </div>
+                        <span class="badge bg-success">5 min ago</span>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="{% url 'coreRelback:report-read' %}" class="btn btn-md-primary">
+                        <i class="material-icons me-1" style="vertical-align: middle;">assessment</i>
+                        View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="md-card p-4 h-100">
+                <div class="text-center">
+                    <i class="material-icons mb-3" style="font-size: 64px; color: var(--md-primary);">manage_accounts</i>
+                    <h5>Manage Infrastructure</h5>
+                    <p class="text-muted">Configure clients, hosts, and databases for backup management.</p>
+                    <a href="{% url 'coreRelback:client-list' %}" class="btn btn-md-primary">Get Started</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="md-card p-4 h-100">
+                <div class="text-center">
+                    <i class="material-icons mb-3" style="font-size: 64px; color: var(--md-secondary);">shield</i>
+                    <h5>Backup Policies</h5>
+                    <p class="text-muted">Create and manage automated backup policies for your databases.</p>
+                    <a href="{% url 'coreRelback:policy-list' %}" class="btn btn-md-secondary">Manage Policies</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="md-card p-4 h-100">
+                <div class="text-center">
+                    <i class="material-icons mb-3" style="font-size: 64px; color: #43a047;">analytics</i>
+                    <h5>Monitor & Report</h5>
+                    <p class="text-muted">Track backup status and generate comprehensive reports.</p>
+                    <a href="{% url 'coreRelback:report-read' %}" class="btn" style="background: #43a047; color: white;">View Reports</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<button class="fab" title="Quick Add">
+    <i class="material-icons">add</i>
+</button>
+
+<style>
+/* Additional styles for dashboard */
+.activity-list .rounded-circle {
+    flex-shrink: 0;
+}
+
+.status-list .material-icons {
+    font-size: 20px;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.65em;
+}
+
+/* Ripple effect for buttons */
+.btn-md-primary, .btn-md-secondary, .btn-md-outlined, .btn-md-text {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+</style>
+
+<script>
+// FAB click handler
+document.querySelector('.fab').addEventListener('click', function() {
+    // Show a dropdown or modal with quick add options
+    alert('Quick add functionality - could show a dropdown with add options');
+});
+</script>
+{% endblock %}

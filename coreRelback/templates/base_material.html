@@ -1,0 +1,397 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RelBack - Oracle Backup Management{% endblock %}</title>
+    
+    <!-- Material Design CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Design Custom CSS -->
+    <style>
+        :root {
+            --md-primary: #1976d2;
+            --md-primary-dark: #1565c0;
+            --md-primary-light: #42a5f5;
+            --md-secondary: #f57c00;
+            --md-surface: #ffffff;
+            --md-background: #fafafa;
+            --md-on-primary: #ffffff;
+            --md-on-surface: #000000;
+            --md-shadow: rgba(0, 0, 0, 0.14);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--md-background);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Material Design Cards */
+        .md-card {
+            background: var(--md-surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--md-shadow), 0 1px 6px var(--md-shadow);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .md-card:hover {
+            box-shadow: 0 4px 8px var(--md-shadow), 0 2px 12px var(--md-shadow);
+        }
+
+        .md-card-elevated {
+            box-shadow: 0 8px 16px var(--md-shadow), 0 4px 24px var(--md-shadow);
+        }
+
+        /* Material Design Buttons */
+        .btn-md-primary {
+            background-color: var(--md-primary);
+            border: none;
+            color: var(--md-on-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-md-primary:hover {
+            background-color: var(--md-primary-dark);
+            box-shadow: 0 4px 8px var(--md-shadow);
+            color: var(--md-on-primary);
+        }
+
+        .btn-md-secondary {
+            background-color: var(--md-secondary);
+            border: none;
+            color: var(--md-on-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-md-outlined {
+            background-color: transparent;
+            border: 1px solid var(--md-primary);
+            color: var(--md-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-md-text {
+            background-color: transparent;
+            border: none;
+            color: var(--md-primary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Material Design App Bar */
+        .md-app-bar {
+            background-color: var(--md-primary);
+            color: var(--md-on-primary);
+            box-shadow: 0 2px 4px var(--md-shadow);
+            padding: 16px 0;
+        }
+
+        .md-app-bar .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: var(--md-on-primary);
+            text-decoration: none;
+        }
+
+        .md-app-bar .nav-link {
+            color: var(--md-on-primary);
+            font-weight: 400;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .md-app-bar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--md-on-primary);
+        }
+
+        /* Material Design Input Fields */
+        .form-floating > .form-control {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .form-floating > .form-control:focus {
+            border-color: var(--md-primary);
+            box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.25);
+        }
+
+        .form-floating > label {
+            color: #666;
+        }
+
+        /* Material Design Tables */
+        .table-md {
+            background: var(--md-surface);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px var(--md-shadow);
+        }
+
+        .table-md th {
+            background-color: #f5f5f5;
+            font-weight: 500;
+            color: var(--md-on-surface);
+            border: none;
+            padding: 16px;
+        }
+
+        .table-md td {
+            border: none;
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .table-md tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Material Design Stats Cards */
+        .stats-card {
+            background: linear-gradient(135deg, var(--md-primary), var(--md-primary-light));
+            color: var(--md-on-primary);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 8px var(--md-shadow);
+        }
+
+        .stats-card .material-icons {
+            font-size: 48px;
+            opacity: 0.8;
+        }
+
+        /* Material Design Navigation Drawer (for mobile) */
+        .md-drawer {
+            background: var(--md-surface);
+            box-shadow: 2px 0 4px var(--md-shadow);
+        }
+
+        /* Material Design FAB */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background-color: var(--md-secondary);
+            border-radius: 50%;
+            border: none;
+            color: var(--md-on-primary);
+            box-shadow: 0 4px 8px var(--md-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .fab:hover {
+            box-shadow: 0 8px 16px var(--md-shadow);
+            transform: scale(1.1);
+        }
+
+        /* Material Design Alert/Snackbar */
+        .md-snackbar {
+            background-color: #323232;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px var(--md-shadow);
+        }
+
+        /* Content area */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        /* Footer */
+        .md-footer {
+            background-color: #f5f5f5;
+            padding: 16px 0;
+            text-align: center;
+            color: #666;
+            margin-top: auto;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 16px;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Material Design App Bar -->
+    <nav class="navbar navbar-expand-lg md-app-bar">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'coreRelback:index' %}">
+                <i class="material-icons me-2" style="vertical-align: middle;">backup</i>
+                RelBack
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    style="border: 1px solid rgba(255,255,255,0.3);">
+                <span class="material-icons" style="color: white;">menu</span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'coreRelback:index' %}">
+                            <i class="material-icons me-1" style="vertical-align: middle; font-size: 18px;">home</i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'coreRelback:client-list' %}">
+                            <i class="material-icons me-1" style="vertical-align: middle; font-size: 18px;">business</i>
+                            Clients
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'coreRelback:host-list' %}">
+                            <i class="material-icons me-1" style="vertical-align: middle; font-size: 18px;">dns</i>
+                            Hosts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'coreRelback:database-list' %}">
+                            <i class="material-icons me-1" style="vertical-align: middle; font-size: 18px;">storage</i>
+                            Databases
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'coreRelback:policy-list' %}">
+                            <i class="material-icons me-1" style="vertical-align: middle; font-size: 18px;">security</i>
+                            Policies
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'coreRelback:report-read' %}">
+                            <i class="material-icons me-1" style="vertical-align: middle; font-size: 18px;">assessment</i>
+                            Reports
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="material-icons me-1" style="vertical-align: middle; font-size: 18px;">account_circle</i>
+                            User
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'coreRelback:user-settings' %}">
+                                    <i class="material-icons me-2" style="vertical-align: middle; font-size: 18px;">settings</i>
+                                    Settings
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="material-icons me-2" style="vertical-align: middle; font-size: 18px;">logout</i>
+                                    Sign Out
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show md-card mb-3" role="alert">
+                    <i class="material-icons me-2" style="vertical-align: middle;">
+                        {% if message.tags == 'success' %}check_circle
+                        {% elif message.tags == 'error' %}error
+                        {% elif message.tags == 'warning' %}warning
+                        {% else %}info{% endif %}
+                    </i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Material Design Footer -->
+    <footer class="md-footer">
+        <div class="container">
+            <p class="mb-0">
+                <i class="material-icons me-1" style="vertical-align: middle; font-size: 16px;">copyright</i>
+                2025 RelBack - Oracle Backup Management System
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Material Design Components JavaScript -->
+    <script>
+        // Add ripple effect to buttons
+        document.querySelectorAll('.btn-md-primary, .btn-md-secondary, .btn-md-outlined, .btn-md-text').forEach(button => {
+            button.addEventListener('click', function(e) {
+                let ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                this.appendChild(ripple);
+                
+                let x = e.clientX - e.target.offsetLeft;
+                let y = e.clientY - e.target.offsetTop;
+                
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                if (alert.querySelector('.btn-close')) {
+                    alert.querySelector('.btn-close').click();
+                }
+            });
+        }, 5000);
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

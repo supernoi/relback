@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}RelBack - Clientes{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="page-title">Gerenciar Clientes</h1>
+    
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ clients|length }}</div>
+                <div class="stats-label">Total de Clientes</div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="modern-card">
+                <div class="modern-card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">Sistema de Gestão de Clientes</h5>
+                            <p class="text-muted mb-0">Cadastre e gerencie clientes do sistema RelBack</p>
+                        </div>
+                        <button type="button" class="btn btn-modern btn-modern-primary" data-bs-toggle="modal" data-bs-target="#modalAddNew">
+                            <i class="bi bi-plus-circle-fill me-2"></i>Novo Cliente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div id="messageContainer"></div>
+
+    <!-- Clients Table -->
+    <div class="modern-card">
+        <div class="modern-card-body">
+            <div class="table-responsive">
+                <table class="table table-modern" id="clientTable">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-hash me-2"></i>ID</th>
+                            <th><i class="bi bi-building me-2"></i>Nome</th>
+                            <th><i class="bi bi-file-text me-2"></i>Descrição</th>
+                            <th class="text-center"><i class="bi bi-gear me-2"></i>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in clients %}
+                        <tr id="client-{{ c.id_client }}">
+                            <td class="clientId fw-bold">{{ c.id_client }}</td>
+                            <td class="clientName">{{ c.name }}</td>
+                            <td class="clientDescription">{{ c.description|default:"Sem descrição" }}</td>
+                            <td class="text-center">
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-action-edit" onclick="clientUpdate({{ c.id_client }})" title="Editar">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                    <button class="btn-action btn-action-delete" onclick="clientModalDelete({{ c.id_client }})" title="Excluir">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty-state">
+                                <div class="empty-state-icon">
+                                    <i class="bi bi-building"></i>
+                                </div>
+                                <div class="empty-state-title">Nenhum cliente cadastrado</div>
+                                <div class="empty-state-description">Clique em "Novo Cliente" para adicionar o primeiro cliente.</div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Add New Client -->
+<div class="modal fade" id="modalAddNew" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-modern">
+            <div class="modal-header modern-card-header">
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Novo Cliente</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="clientFormCreate">
+                <div class="modal-body modern-card-body">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="clientCreateName" class="form-label">Nome *</label>
+                        <input type="text" class="form-control form-control-modern" id="clientCreateName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clientCreateDescription" class="form-label">Descrição</label>
+                        <textarea class="form-control form-control-modern" id="clientCreateDescription" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-modern btn-modern-outline" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-modern btn-modern-primary">
+                        <i class="bi bi-check-circle me-2"></i>Criar Cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Update Client -->
+<div class="modal fade" id="clientModalUpdate" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-modern">
+            <div class="modal-header modern-card-header">
+                <h5 class="modal-title" id="clientUpdateTitle"><i class="bi bi-pencil me-2"></i>Editar Cliente</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="clientFormUpdate">
+                <div class="modal-body modern-card-body">
+                    {% csrf_token %}
+                    <input type="hidden" id="clientUpdateIdClient" name="id_client">
+                    <div class="mb-3">
+                        <label for="clientUpdateName" class="form-label">Nome *</label>
+                        <input type="text" class="form-control form-control-modern" id="clientUpdateName" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clientUpdateDescription" class="form-label">Descrição</label>
+                        <textarea class="form-control form-control-modern" id="clientUpdateDescription" name="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-modern btn-modern-outline" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-modern btn-modern-primary">
+                        <i class="bi bi-check-circle me-2"></i>Atualizar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Delete Client -->
+<div class="modal fade" id="clientModalDelete" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-modern">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white"><i class="bi bi-exclamation-triangle me-2"></i>Confirmar Exclusão</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body modern-card-body">
+                <div class="alert alert-modern alert-modern-danger text-center">
+                    <i class="bi bi-exclamation-triangle" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Atenção!</h5>
+                    <p class="mb-0">Esta ação não pode ser desfeita. Ao excluir o cliente, todos os hosts, databases e políticas relacionadas também serão removidos.</p>
+                </div>
+                <p class="text-center mt-3">Deseja realmente excluir o cliente: <strong id="deleteClientName"></strong>?</p>
+            </div>
+            <form id="clientFormDelete">
+                <div class="modal-footer">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-modern btn-modern-outline" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-modern btn-modern-danger">
+                        <i class="bi bi-trash me-2"></i>Confirmar Exclusão
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+// Função para mostrar mensagens
+function showMessage(message, type = 'success') {
+    const messageContainer = document.getElementById('messageContainer');
+    const alertClass = type === 'success' ? 'alert-modern-success' : 'alert-modern-danger';
+    
+    messageContainer.innerHTML = `
+        <div class="alert alert-modern ${alertClass} alert-dismissible fade show" role="alert">
+            <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}-fill me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+        const alert = messageContainer.querySelector('.alert');
+        if (alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }
+    }, 5000);
+}
+
+// CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+// Create Client
+$("#clientFormCreate").submit(function(e) {
+    e.preventDefault();
+    
+    $.ajax({
+        url: '{% url "coreRelback:clientCreate" %}',
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
+        data: {
+            'name': $('#clientCreateName').val(),
+            'description': $('#clientCreateDescription').val(),
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+                showMessage('Cliente criado com sucesso!', 'success');
+                $("#modalAddNew").modal('hide');
+                location.reload();
+            } else {
+                showMessage(data.error || 'Erro ao criar cliente', 'error');
+            }
+        },
+        error: function(xhr) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                showMessage(response.error || 'Erro interno do servidor', 'error');
+            } catch (e) {
+                showMessage('Erro interno do servidor', 'error');
+            }
+        }
+    });
+});
+
+// Update Client
+$("#clientFormUpdate").submit(function(e) {
+    e.preventDefault();
+    
+    $.ajax({
+        url: '{% url "coreRelback:clientUpdate" %}',
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
+        data: {
+            'id_client': $('#clientUpdateIdClient').val(),
+            'name': $('#clientUpdateName').val(),
+            'description': $('#clientUpdateDescription').val(),
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+                showMessage('Cliente atualizado com sucesso!', 'success');
+                $("#clientModalUpdate").modal('hide');
+                location.reload();
+            } else {
+                showMessage(data.error || 'Erro ao atualizar cliente', 'error');
+            }
+        },
+        error: function(xhr) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                showMessage(response.error || 'Erro interno do servidor', 'error');
+            } catch (e) {
+                showMessage('Erro interno do servidor', 'error');
+            }
+        }
+    });
+});
+
+// Delete Client
+$("#clientFormDelete").submit(function(e) {
+    e.preventDefault();
+    
+    const clientId = $('#clientUpdateIdClient').val();
+    
+    $.ajax({
+        url: '{% url "coreRelback:clientDelete" %}',
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
+        data: {
+            'id_client': clientId,
+        },
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+                showMessage('Cliente excluído com sucesso!', 'success');
+                $("#clientModalDelete").modal('hide');
+                $("#client-" + clientId).remove();
+                
+                if ($("#clientTable tbody tr").length === 0) {
+                    location.reload();
+                }
+            } else {
+                showMessage(data.error || 'Erro ao excluir cliente', 'error');
+            }
+        },
+        error: function(xhr) {
+            try {
+                const response = JSON.parse(xhr.responseText);
+                showMessage(response.error || 'Erro interno do servidor', 'error');
+            } catch (e) {
+                showMessage('Erro interno do servidor', 'error');
+            }
+        }
+    });
+});
+
+function clientUpdate(id_client) {
+    const tr = $("#client-" + id_client);
+    const clientName = tr.find(".clientName").text();
+    const description = tr.find(".clientDescription").text();
+
+    $('#clientUpdateTitle').html('<i class="bi bi-pencil me-2"></i>Editar Cliente: ' + clientName);
+    $('#clientUpdateIdClient').val(id_client);
+    $('#clientUpdateName').val(clientName);
+    $('#clientUpdateDescription').val(description === 'Sem descrição' ? '' : description);
+    
+    $('#clientModalUpdate').modal('show');
+}
+
+function clientModalDelete(id_client) {
+    const tr = $("#client-" + id_client);
+    const clientName = tr.find(".clientName").text();
+
+    $('#deleteClientName').text(clientName);
+    $('#clientUpdateIdClient').val(id_client);
+    
+    $('#clientModalDelete').modal('show');
+}
+
+// Reset forms when modals are hidden
+$('.modal').on('hidden.bs.modal', function() {
+    $(this).find('form')[0].reset();
+});
+</script>
+{% endblock %}

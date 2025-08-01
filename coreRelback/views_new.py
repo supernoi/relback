@@ -52,18 +52,6 @@ class HostListView(ListView):
     model = Host
     template_name = "hosts.html"
     context_object_name = "hosts"
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        hosts = self.get_queryset().select_related('client')
-        
-        # Estatísticas para os cards (removendo filtro por status que não existe)
-        context['total_hosts'] = hosts.count()
-        context['active_hosts'] = hosts.count()  # Assumindo que todos hosts listados estão ativos
-        context['total_clients'] = Client.objects.count()
-        context['total_databases'] = Database.objects.filter(host__in=hosts).count()
-        
-        return context
 
 
 class HostCreateView(CreateView):
@@ -93,18 +81,6 @@ class DatabaseListView(ListView):
     model = Database
     template_name = "databases.html"
     context_object_name = "databases"
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        databases = self.get_queryset().select_related('client', 'host')
-        
-        # Estatísticas para os cards (removendo filtro por active que não existe)
-        context['total_databases'] = databases.count()
-        context['active_databases'] = databases.count()  # Assumindo que todos databases listados estão ativos
-        context['total_hosts'] = Host.objects.count()
-        context['total_policies'] = BackupPolicy.objects.filter(database__in=databases).count()
-        
-        return context
 
 
 class DatabaseCreateView(CreateView):
@@ -142,19 +118,6 @@ class BackupPolicyListView(ListView):
     model = BackupPolicy
     template_name = "policies.html"
     context_object_name = "policies"
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        policies = self.get_queryset().select_related('client', 'database', 'host')
-        
-        # Estatísticas para os cards
-        context['total_policies'] = policies.count()
-        context['active_policies'] = policies.filter(status=1).count()
-        context['inactive_policies'] = policies.filter(status=0).count()
-        # Simulando políticas agendadas para hoje (você pode implementar a lógica real)
-        context['scheduled_policies'] = policies.filter(status=1).count() // 2
-        
-        return context
 
 
 class BackupPolicyCreateView(CreateView):

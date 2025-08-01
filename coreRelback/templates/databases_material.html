@@ -174,7 +174,7 @@
                                 data-host="{{ database.host.name|default:'Unknown' }}" 
                                 data-type="{{ database.db_type|default:'Unknown' }}"
                                 data-status="{% if database.active %}active{% else %}inactive{% endif %}"
-                                data-backup="{% if database.last_backup_date %}{% with now_timestamp=now|date:'U'|add:'-604800' backup_timestamp=database.last_backup_date|date:'U' %}{% if backup_timestamp > now_timestamp %}recent{% else %}old{% endif %}{% endwith %}{% else %}none{% endif %}">
+                                data-backup="{% if database.last_backup_date %}{% now 'Y-m-d'|date:'U'|add:'-604800' < database.last_backup_date|date:'U' %}recent{% else %}old{% endif %}{% else %}none{% endif %}">
                                 <td class="ps-4">
                                     <div class="d-flex align-items-center">
                                         <div class="database-type-icon me-3">
@@ -227,13 +227,11 @@
                                     <div>
                                         <small>{{ database.last_backup_date|date:"M d, Y" }}</small>
                                         <br>
-                                        {% with now_timestamp=now|date:'U'|add:'-604800' backup_timestamp=database.last_backup_date|date:'U' %}
-                                        {% if backup_timestamp > now_timestamp %}
+                                        {% now 'Y-m-d'|date:'U'|add:'-604800' < database.last_backup_date|date:'U' %}
                                             <span class="badge bg-success">Recent</span>
                                         {% else %}
                                             <span class="badge bg-warning">Outdated</span>
                                         {% endif %}
-                                        {% endwith %}
                                     </div>
                                     {% else %}
                                     <span class="badge bg-danger">Never</span>
@@ -265,9 +263,9 @@
                                             <i class="material-icons" style="font-size: 16px;">edit</i>
                                         </a>
                                         <button class="btn btn-sm btn-outline-info" 
-                                                title="Refresh Data"
-                                                onclick="refreshDatabase('{{ database.id_database }}', '{{ database.db_name }}')">
-                                            <i class="material-icons" style="font-size: 16px;">refresh</i>
+                                                title="Backup Now"
+                                                onclick="triggerBackup('{{ database.id_database }}', '{{ database.name }}')">
+                                            <i class="material-icons" style="font-size: 16px;">backup</i>
                                         </button>
                                         <a href="{% url 'coreRelback:database-delete' database.id_database %}" 
                                            class="btn btn-sm btn-outline-danger" 
@@ -477,44 +475,35 @@ function updateEmptyState() {
     }
 }
 
-// Refresh database data function
-function refreshDatabase(databaseId, databaseName) {
-    // Show loading message
-    const alert = document.createElement('div');
-    alert.className = 'alert alert-info alert-dismissible fade show position-fixed';
-    alert.style.top = '20px';
-    alert.style.right = '20px';
-    alert.style.zIndex = '9999';
-    alert.innerHTML = `
-        <i class="material-icons me-2" style="vertical-align: middle;">refresh</i>
-        Refreshing data for "${databaseName}"...
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
+// Trigger backup function
+function triggerBackup(databaseId, databaseName) {
+    document.getElementById('backupDatabaseName').textContent = databaseName;
     
-    document.body.appendChild(alert);
+    const modal = new bootstrap.Modal(document.getElementById('backupModal'));
+    modal.show();
     
-    // Simulate refresh process (replace with actual AJAX call)
+    // Simulate backup process (replace with actual AJAX call)
     setTimeout(function() {
-        alert.remove();
+        modal.hide();
         
         // Show success message
-        const successAlert = document.createElement('div');
-        successAlert.className = 'alert alert-success alert-dismissible fade show position-fixed';
-        successAlert.style.top = '20px';
-        successAlert.style.right = '20px';
-        successAlert.style.zIndex = '9999';
-        successAlert.innerHTML = `
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-success alert-dismissible fade show position-fixed';
+        alert.style.top = '20px';
+        alert.style.right = '20px';
+        alert.style.zIndex = '9999';
+        alert.innerHTML = `
             <i class="material-icons me-2" style="vertical-align: middle;">check_circle</i>
-            Data for "${databaseName}" refreshed successfully!
+            Backup for "${databaseName}" completed successfully!
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
         
-        document.body.appendChild(successAlert);
+        document.body.appendChild(alert);
         
         setTimeout(function() {
-            successAlert.remove();
-        }, 3000);
-    }, 2000);
+            alert.remove();
+        }, 5000);
+    }, 3000);
 }
 
 // Confirmation for delete actions

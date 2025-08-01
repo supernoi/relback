@@ -26,14 +26,12 @@ urlpatterns = [
 
     # Endpoints para Hosts
     path("hosts/", HostListView.as_view(), name="host-list"),
-    path("hosts/<int:pk>/", HostUpdateView.as_view(), name="host-detail"),
     path("hosts/create/", HostCreateView.as_view(), name="host-create"),
     path("hosts/<int:pk>/update/", HostUpdateView.as_view(), name="host-update"),
     path("hosts/<int:pk>/delete/", HostDeleteView.as_view(), name="host-delete"),
 
     # Endpoints para Bancos de Dados
     path("databases/", DatabaseListView.as_view(), name="database-list"),
-    path("databases/<int:pk>/", DatabaseUpdateView.as_view(), name="database-detail"),
     path("databases/create/", DatabaseCreateView.as_view(), name="database-create"),
     path("databases/<int:pk>/update/", DatabaseUpdateView.as_view(), name="database-update"),
     path("databases/<int:pk>/delete/", DatabaseDeleteView.as_view(), name="database-delete"),
@@ -41,7 +39,7 @@ urlpatterns = [
 
     # Endpoints para Políticas de Backup
     path("policies/", BackupPolicyListView.as_view(), name="policy-list"),
-    path("policies/<int:pk>/detail/", BackupPolicyDetailView.as_view(), name="policy-detail"),
+    path("policies/detail/", BackupPolicyDetailView.as_view(), name="policy-detail"),
     path("policies/create/", BackupPolicyCreateView.as_view(), name="policy-create"),
     path("policies/<int:pk>/update/", BackupPolicyUpdateView.as_view(), name="policy-update"),
     path("policies/<int:pk>/delete/", BackupPolicyDeleteView.as_view(), name="policy-delete"),
