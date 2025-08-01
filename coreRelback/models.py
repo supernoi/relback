@@ -1,6 +1,9 @@
+
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.hashers import make_password, check_password
+
+
 
 # Modelo para usuários - modelo simples sem herança AbstractBaseUser
 class RelbackUser(models.Model):
@@ -18,7 +21,6 @@ class RelbackUser(models.Model):
     last_login = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
     # User preferences for UI/UX
     theme_preference = models.CharField(
         max_length=20, 
@@ -42,28 +44,19 @@ class RelbackUser(models.Model):
 
     def __str__(self):
         return self.username or f"User {self.id_user}"
-    
     def set_password(self, raw_password):
-        """Define a senha usando hash do Django"""
         self.password = make_password(raw_password)
-    
     def check_password(self, raw_password):
-        """Verifica a senha"""
         return check_password(raw_password, self.password)
-    
-    # Propriedades necessárias para compatibilidade com sistema de autenticação
     @property
     def is_authenticated(self):
         return True
-    
     @property
     def is_anonymous(self):
         return False
-    
     @property
     def is_active(self):
         return self.status == 1
-    
     @property
     def pk(self):
         return self.id_user

@@ -3,7 +3,9 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Client, Host, Database, BackupPolicy, RelbackUser
+from .models import Client, Host, Database, BackupPolicy, RelbackUser, Schedule
+from coreRelback.services.schedule_generator import generate_schedules
+from django import forms
 
 
 # Função para a página inicial
@@ -231,9 +233,106 @@ def user_settings(request):
 
 
 # Funções para extras na área de relatórios
+class ScheduleFilterForm(forms.Form):
+    policy_name = forms.CharField(label='Policy', required=False)
+    hostname = forms.CharField(label='Host', required=False)
+    db_name = forms.CharField(label='Database', required=False)
+    backup_type = forms.CharField(label='Type', required=False)
+    days = forms.IntegerField(label='Days', min_value=1, max_value=30, required=False, initial=2)
+    start_date = forms.DateField(label='Start Date', required=False)
+    end_date = forms.DateField(label='End Date', required=False)
+
+
+def report_refresh_schedule(request):
+    days = int(request.GET.get('days', 2))
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    
+    from coreRelback.services.schedule_generator import generate_schedules
+    import datetime
+    
+    if start_date and end_date:
+        # Gerar para faixa específica
+        start = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+        end = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+        current = start
+        while current <= end:
+            generate_schedules(current)
+            current += datetime.timedelta(days=1)
+    else:
+        # Gerar para próximos dias (padrão: hoje + amanhã)
+        reference_date = datetime.date.today()
+        for i in range(days):
+            generate_schedules(reference_date + datetime.timedelta(days=i))
+    
+    return redirect('coreRelback:report-read')
+
+
 def report_read(request):
-    # Implemente sua lógica para relatórios
-    return render(request, "reports.html")
+    form = ScheduleFilterForm(request.GET or None)
+    jobs = Schedule.objects.select_related('backup_policy', 'backup_policy__database', 'backup_policy__host').order_by('schedule_start')
+    
+    # Filtros básicos
+    if form.is_valid():
+        if form.cleaned_data['policy_name']:
+            jobs = jobs.filter(backup_policy__policy_name__icontains=form.cleaned_data['policy_name'])
+        if form.cleaned_data['hostname']:
+            jobs = jobs.filter(backup_policy__host__hostname__icontains=form.cleaned_data['hostname'])
+        if form.cleaned_data['db_name']:
+            jobs = jobs.filter(backup_policy__database__db_name__icontains=form.cleaned_data['db_name'])
+        if form.cleaned_data['backup_type']:
+            jobs = jobs.filter(backup_policy__backup_type__icontains=form.cleaned_data['backup_type'])
+    
+    # Filtro por parâmetros GET diretos (para campos de data)
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    
+    if start_date and end_date:
+        # Filtrar por faixa de datas específica
+        import datetime
+        start = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+        end = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+        jobs = jobs.filter(schedule_start__date__gte=start, schedule_start__date__lte=end)
+    elif not start_date and not end_date:
+        # Padrão: mostrar próximos dias conforme seleção
+        days = int(request.GET.get('days', 2))
+        import datetime
+        today = datetime.date.today()
+        end_date_calc = today + datetime.timedelta(days=days-1)
+        jobs = jobs.filter(schedule_start__date__gte=today, schedule_start__date__lte=end_date_calc)
+    
+    jobs_data = []
+    for job in jobs:
+        jobs_data.append({
+            'policy_name': job.backup_policy.policy_name if job.backup_policy else '-',
+            'hostname': job.backup_policy.host.hostname if job.backup_policy and job.backup_policy.host else '-',
+            'db_name': job.backup_policy.database.db_name if job.backup_policy and job.backup_policy.database else '-',
+            'backup_type': job.backup_policy.backup_type if job.backup_policy else '-',
+            'start_time': job.schedule_start,
+            'end_time': '-',
+            'status': getattr(job.backup_policy, 'status', '-') if job.backup_policy else '-',
+            'elapsed_seconds': '',
+            'input_bytes': '',
+            'session_key': job.id_schedule
+        })
+    # Prepare data for dropdown selects
+    all_policies = BackupPolicy.objects.values_list('policy_name', flat=True).distinct().order_by('policy_name')
+    all_hosts = Host.objects.values_list('hostname', flat=True).distinct().order_by('hostname')
+    all_databases = Database.objects.values_list('db_name', flat=True).distinct().order_by('db_name')
+    all_backup_types = BackupPolicy.objects.values_list('backup_type', flat=True).distinct().order_by('backup_type')
+    
+    context = {
+        'jobs': jobs_data,
+        'form': form,
+        'successful_jobs': [],
+        'failed_jobs': [],
+        'running_jobs': [],
+        'all_policies': all_policies,
+        'all_hosts': all_hosts,
+        'all_databases': all_databases,
+        'all_backup_types': all_backup_types,
+    }
+    return render(request, "reports.html", context)
 
 
 def report_read_log_detail(request, idPolicy, dbKey, sessionKey):
@@ -243,6 +342,10 @@ def report_read_log_detail(request, idPolicy, dbKey, sessionKey):
 
 
 def report_refresh_schedule(request):
-    # Lógica para atualizar agendamentos (exemplo)
-    # Depois redirecione para a página de relatórios
+    days = int(request.GET.get('days', 1))
+    from coreRelback.services.schedule_generator import generate_schedules
+    import datetime
+    reference_date = datetime.date.today()
+    for i in range(days):
+        generate_schedules(reference_date + datetime.timedelta(days=i))
     return redirect('coreRelback:report-read')
