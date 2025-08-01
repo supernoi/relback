@@ -1,0 +1,603 @@
+/* Oracle Brand Colors Implementation */
+:root {
+    /* Oracle Official Colors */
+    --oracle-red: #C74634;
+    --oracle-yellow: #F1B13F;
+    --oracle-slate-150: #3C4545;
+    --oracle-slate-100: #697778;
+    --oracle-slate-50: #C2D4D4;
+    --oracle-neutral-30: #F1EFED;
+
+    /* Primary color scheme using Oracle Red */
+    --md-primary: var(--oracle-red);
+    --md-primary-rgb: 199, 70, 52;
+    --md-primary-dark: #A0372A;
+    --md-primary-light: #E15A48;
+
+    /* Secondary using Oracle Yellow */
+    --md-secondary: var(--oracle-yellow);
+    --md-secondary-rgb: 241, 177, 63;
+    --md-secondary-dark: #D4962F;
+    --md-secondary-light: #F5C666;
+
+    /* Neutral grays using Oracle Slate colors */
+    --md-surface: #FFFFFF;
+    --md-surface-variant: var(--oracle-neutral-30);
+    --md-background: #FAFAFA;
+    --md-on-surface: var(--oracle-slate-150);
+    --md-on-surface-variant: var(--oracle-slate-100);
+    --md-outline: var(--oracle-slate-50);
+    --md-shadow: rgba(60, 69, 69, 0.14);
+
+    /* Status colors adapted to Oracle palette */
+    --md-success: #2E7D32;
+    --md-success-rgb: 46, 125, 50;
+    --md-warning: var(--oracle-yellow);
+    --md-warning-rgb: 241, 177, 63;
+    --md-error: var(--oracle-red);
+    --md-error-rgb: 199, 70, 52;
+    --md-info: #1976D2;
+    --md-info-rgb: 25, 118, 210;
+
+    /* Bootstrap color overrides */
+    --bs-primary: var(--oracle-red);
+    --bs-primary-rgb: 199, 70, 52;
+    --bs-secondary: var(--oracle-slate-100);
+    --bs-secondary-rgb: 105, 119, 120;
+    --bs-success: #2E7D32;
+    --bs-success-rgb: 46, 125, 50;
+    --bs-warning: var(--oracle-yellow);
+    --bs-warning-rgb: 241, 177, 63;
+    --bs-danger: var(--oracle-red);
+    --bs-danger-rgb: 199, 70, 52;
+    --bs-info: #1976D2;
+    --bs-info-rgb: 25, 118, 210;
+    --bs-light: var(--oracle-neutral-30);
+    --bs-light-rgb: 241, 239, 237;
+    --bs-dark: var(--oracle-slate-150);
+    --bs-dark-rgb: 60, 69, 69;
+
+    /* Navigation colors */
+    --nav-bg: var(--oracle-slate-150);
+    --nav-text: #FFFFFF;
+    --nav-hover: rgba(255, 255, 255, 0.1);
+    --nav-active: var(--oracle-red);
+}
+
+/* Base styling */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--md-background);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: var(--md-on-surface);
+}
+
+.main-content {
+    flex: 1;
+    padding: 24px;
+}
+
+/* Oracle Brand Implementation */
+
+/* Main Navigation */
+.navbar {
+    background: linear-gradient(135deg, var(--oracle-slate-150) 0%, var(--oracle-slate-100) 100%) !important;
+    border-bottom: 3px solid var(--oracle-red);
+}
+
+.navbar-brand {
+    color: #FFFFFF !important;
+    font-weight: 600;
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #FFFFFF !important;
+    background-color: var(--nav-hover);
+    border-radius: 8px;
+}
+
+.navbar-nav .nav-link.active {
+    color: #FFFFFF !important;
+    background-color: var(--oracle-red);
+    border-radius: 8px;
+}
+
+/* Cards with Oracle styling */
+.md-card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(60, 69, 69, 0.1);
+    border: 1px solid var(--oracle-slate-50);
+    transition: all 0.3s ease;
+}
+
+.md-card:hover {
+    box-shadow: 0 4px 16px rgba(60, 69, 69, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Statistics Cards */
+.stats-card {
+    background: linear-gradient(135deg, var(--oracle-red) 0%, #E15A48 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(199, 70, 52, 0.3);
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(199, 70, 52, 0.4);
+}
+
+/* Button Styles with Oracle Colors */
+.btn-md-primary {
+    background: linear-gradient(135deg, var(--oracle-red) 0%, #E15A48 100%);
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(199, 70, 52, 0.3);
+}
+
+.btn-md-primary:hover {
+    background: linear-gradient(135deg, #A0372A 0%, var(--oracle-red) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(199, 70, 52, 0.4);
+    color: white;
+}
+
+.btn-md-secondary {
+    background: linear-gradient(135deg, var(--oracle-yellow) 0%, #F5C666 100%);
+    border: none;
+    color: var(--oracle-slate-150);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(241, 177, 63, 0.3);
+}
+
+.btn-md-secondary:hover {
+    background: linear-gradient(135deg, #D4962F 0%, var(--oracle-yellow) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(241, 177, 63, 0.4);
+    color: var(--oracle-slate-150);
+}
+
+.btn-md-outlined {
+    background: transparent;
+    border: 2px solid var(--oracle-red);
+    color: var(--oracle-red);
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-md-outlined:hover {
+    background: var(--oracle-red);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(199, 70, 52, 0.3);
+}
+
+/* Table Styling */
+.table {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background: var(--oracle-slate-150);
+    color: white;
+    border: none;
+    padding: 1rem;
+    font-weight: 500;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid var(--oracle-slate-50);
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(199, 70, 52, 0.05);
+}
+
+/* Status Badges */
+.badge {
+    padding: 0.5em 0.75em;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+.badge.bg-primary {
+    background: var(--oracle-red) !important;
+    color: white;
+}
+
+.badge.bg-secondary {
+    background: var(--oracle-slate-100) !important;
+    color: white;
+}
+
+.badge.bg-success {
+    background: #2E7D32 !important;
+    color: white;
+}
+
+.badge.bg-warning {
+    background: var(--oracle-yellow) !important;
+    color: var(--oracle-slate-150);
+}
+
+.badge.bg-info {
+    background: #1976D2 !important;
+    color: white;
+}
+
+/* Form Controls */
+.form-control {
+    border: 2px solid var(--oracle-slate-50);
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--oracle-red);
+    box-shadow: 0 0 0 0.2rem rgba(199, 70, 52, 0.25);
+}
+
+.form-select {
+    border: 2px solid var(--oracle-slate-50);
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: all 0.3s ease;
+}
+
+.form-select:focus {
+    border-color: var(--oracle-red);
+    box-shadow: 0 0 0 0.2rem rgba(199, 70, 52, 0.25);
+}
+
+/* Floating Action Button */
+.fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--oracle-red) 0%, #E15A48 100%);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(199, 70, 52, 0.4);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    z-index: 1000;
+}
+
+.fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(199, 70, 52, 0.5);
+    color: white;
+}
+
+/* Alert Styling */
+.alert {
+    border: none;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+}
+
+.alert-success {
+    background: rgba(46, 125, 50, 0.1);
+    color: #1B5E20;
+    border-left: 4px solid #2E7D32;
+}
+
+.alert-warning {
+    background: rgba(241, 177, 63, 0.1);
+    color: #E65100;
+    border-left: 4px solid var(--oracle-yellow);
+}
+
+.alert-danger {
+    background: rgba(199, 70, 52, 0.1);
+    color: #B71C1C;
+    border-left: 4px solid var(--oracle-red);
+}
+
+.alert-info {
+    background: rgba(25, 118, 210, 0.1);
+    color: #0D47A1;
+    border-left: 4px solid #1976D2;
+}
+
+/* Modal Styling */
+.modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(60, 69, 69, 0.2);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--oracle-slate-50);
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header.bg-primary {
+    background: var(--oracle-red) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--oracle-slate-50);
+    border-radius: 0 0 12px 12px;
+}
+
+/* Progress Indicators */
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    background-color: var(--oracle-slate-50);
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--oracle-red) 0%, #E15A48 100%);
+    border-radius: 4px;
+}
+
+/* Dropdown Menus */
+.dropdown-menu {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(60, 69, 69, 0.15);
+    padding: 0.5rem 0;
+}
+
+.dropdown-item {
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(199, 70, 52, 0.1);
+    color: var(--oracle-red);
+}
+
+/* Text Colors */
+.text-oracle-red {
+    color: var(--oracle-red) !important;
+}
+
+.text-oracle-yellow {
+    color: var(--oracle-yellow) !important;
+}
+
+.text-oracle-slate {
+    color: var(--oracle-slate-150) !important;
+}
+
+/* Background Colors */
+.bg-oracle-red {
+    background-color: var(--oracle-red) !important;
+}
+
+.bg-oracle-yellow {
+    background-color: var(--oracle-yellow) !important;
+}
+
+.bg-oracle-slate {
+    background-color: var(--oracle-slate-150) !important;
+}
+
+/* Utility Classes */
+.border-oracle-red {
+    border-color: var(--oracle-red) !important;
+}
+
+.border-oracle-yellow {
+    border-color: var(--oracle-yellow) !important;
+}
+
+.border-oracle-slate {
+    border-color: var(--oracle-slate-150) !important;
+}
+
+/* Page Header Styling */
+.page-header {
+    background: linear-gradient(135deg, var(--oracle-slate-150) 0%, var(--oracle-slate-100) 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0 0 16px 16px;
+}
+
+/* Icon Colors with Oracle Theme */
+.material-icons.text-primary {
+    color: var(--oracle-red) !important;
+}
+
+.material-icons.text-secondary {
+    color: var(--oracle-slate-100) !important;
+}
+
+.material-icons.text-warning {
+    color: var(--oracle-yellow) !important;
+}
+
+.material-icons.text-success {
+    color: #2E7D32 !important;
+}
+
+.material-icons.text-info {
+    color: #1976D2 !important;
+}
+
+/* Additional Oracle-specific styling */
+.text-primary {
+    color: var(--oracle-red) !important;
+}
+
+.text-secondary {
+    color: var(--oracle-slate-100) !important;
+}
+
+.bg-primary {
+    background-color: var(--oracle-red) !important;
+}
+
+.bg-secondary {
+    background-color: var(--oracle-slate-100) !important;
+}
+
+/* Oracle brand header styling */
+.page-title {
+    color: var(--oracle-slate-150);
+    font-weight: 500;
+}
+
+/* Enhanced card styling for Oracle theme */
+.md-card-header {
+    background: var(--oracle-neutral-30);
+    border-bottom: 2px solid var(--oracle-slate-50);
+    color: var(--oracle-slate-150);
+    font-weight: 500;
+}
+
+/* Status indicators with Oracle colors */
+.status-indicator.bg-success {
+    background-color: #2E7D32 !important;
+}
+
+.status-indicator.bg-warning {
+    background-color: var(--oracle-yellow) !important;
+}
+
+.status-indicator.bg-danger {
+    background-color: var(--oracle-red) !important;
+}
+
+/* Oracle themed tooltips */
+.tooltip {
+    --bs-tooltip-bg: var(--oracle-slate-150);
+    --bs-tooltip-color: white;
+}
+
+/* Loading states with Oracle colors */
+.spinner-border {
+    color: var(--oracle-red);
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--oracle-red) 0%, #E15A48 100%);
+}
+
+/* Oracle themed focus states */
+*:focus {
+    outline: 2px solid var(--oracle-red);
+    outline-offset: 2px;
+}
+
+/* Search and filter enhancements */
+.form-floating > .form-control:focus ~ label {
+    color: var(--oracle-red);
+}
+
+/* Oracle themed list group items */
+.list-group-item {
+    border-color: var(--oracle-slate-50);
+}
+
+.list-group-item:hover {
+    background-color: rgba(199, 70, 52, 0.05);
+}
+
+/* Enhanced pagination with Oracle colors */
+.pagination .page-link {
+    color: var(--oracle-red);
+    border-color: var(--oracle-slate-50);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--oracle-red);
+    border-color: var(--oracle-red);
+    color: white;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--oracle-red);
+    border-color: var(--oracle-red);
+}
+
+/* Oracle branded empty states */
+.empty-state {
+    color: var(--oracle-slate-100);
+}
+
+.empty-state .material-icons {
+    color: var(--oracle-slate-50);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .fab {
+        bottom: 1rem;
+        right: 1rem;
+        width: 48px;
+        height: 48px;
+    }
+    
+    .stats-card {
+        margin-bottom: 1rem;
+    }
+    
+    .md-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --md-surface: var(--oracle-slate-150);
+        --md-background: #1A1A1A;
+        --md-on-surface: #FFFFFF;
+        --md-surface-variant: var(--oracle-slate-100);
+    }
+    
+    .md-card {
+        background: var(--oracle-slate-150);
+        color: white;
+        border-color: var(--oracle-slate-100);
+    }
+    
+    .table {
+        background: var(--oracle-slate-150);
+        color: white;
+    }
+    
+    .form-control, .form-select {
+        background: var(--oracle-slate-150);
+        color: white;
+        border-color: var(--oracle-slate-100);
+    }
+}
