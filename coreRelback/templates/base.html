@@ -15,14 +15,73 @@
     <link href="{% static 'css/oracle-modern-theme.css' %}" rel="stylesheet">
     
     {% block extra_css %}{% endblock %}
+    
+    <style>
+        .btn-md-primary,
+        .btn-md-success,
+        .btn-md-outline,
+        .btn-md-secondary,
+        .btn-md-text,
+        .btn-sm {
+            background-color: #F1EFED !important;
+            border-color: #F1EFED !important;
+            color: #222 !important;
+        }
+        .btn-md-primary:hover,
+        .btn-md-success:hover,
+        .btn-md-outline:hover,
+        .btn-md-secondary:hover,
+        .btn-md-text:hover,
+        .btn-sm:hover {
+            background-color: #e5e1de !important;
+            border-color: #e5e1de !important;
+            color: #222 !important;
+        }
+        .navbar .nav-link {
+            background-color: transparent !important;
+            border: 1px solid rgba(194, 212, 212, 0.3) !important;
+            border-radius: 6px !important;
+            color: #C2D4D4 !important;
+            padding: 8px 12px !important;
+            margin: 2px !important;
+            transition: all 0.3s ease !important;
+        }
+        .navbar .nav-link:hover {
+            background-color: rgba(194, 212, 212, 0.15) !important;
+            border-color: #C2D4D4 !important;
+            color: #FFFFFF !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+        .navbar .dropdown-item {
+            background-color: #FFFFFF !important;
+            border-color: #e9ecef !important;
+            color: #333 !important;
+            padding: 8px 16px !important;
+        }
+        .navbar .dropdown-item:hover {
+            background-color: #C74634 !important;
+            color: #FFFFFF !important;
+        }
+        .navbar .btn {
+            background-color: rgba(241, 239, 237, 0.1) !important;
+            border: 1px solid rgba(241, 239, 237, 0.3) !important;
+            border-radius: 6px !important;
+            color: #F1EFED !important;
+        }
+        .navbar .btn:hover {
+            background-color: rgba(241, 239, 237, 0.2) !important;
+            border-color: #F1EFED !important;
+            color: #FFFFFF !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Oracle Navigation Bar -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'coreRelback:index' %}">
-                <i class="material-icons me-2" style="vertical-align: middle;">backup</i>
-                relBack
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'coreRelback:index' %}">
+                    <span style="font-family: 'Oracle Sans', Arial, sans-serif; font-weight: 900; letter-spacing: 1px; font-size: 1.7rem; color: var(--md-primary, #F1EFED);">relBack</span>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 

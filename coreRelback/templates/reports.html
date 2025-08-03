@@ -146,13 +146,13 @@
                 <div class="row g-3 mt-2">
                     <div class="col-md-6">
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-md-primary flex-fill">
-                                <i class="material-icons me-1" style="vertical-align: middle;">search</i>
-                                Apply Filters
+                            <button type="submit" class="btn btn-md-primary btn-sm d-flex align-items-center gap-1 btn-animate px-3 py-2" title="Apply Filters">
+                                <i class="material-icons" style="font-size:16px;">search</i>
+                                <span>Apply</span>
                             </button>
-                            <a href="{% url 'coreRelback:report-read' %}" class="btn btn-md-outline">
-                                <i class="material-icons me-1" style="vertical-align: middle;">clear</i>
-                                Clear
+                            <a href="{% url 'coreRelback:report-read' %}" class="btn btn-md-outline btn-sm d-flex align-items-center gap-1 btn-animate px-3 py-2" title="Clear Filters">
+                                <i class="material-icons" style="font-size:16px;">clear</i>
+                                <span>Clear</span>
                             </a>
                         </div>
                     </div>
@@ -187,11 +187,11 @@
                     <label class="form-label">Date Range</label>
                     <div class="date-range-picker">
                         <div class="input-group">
-                            <input type="text" class="form-control" id="dateRange" name="date_range" 
-                                   placeholder="Select dates" readonly 
+                            <input type="text" class="form-control form-control-sm" id="dateRange" name="date_range" 
+                                   placeholder="Select date range..." readonly 
                                    value="{% if request.GET.start_date and request.GET.end_date %}{{ request.GET.start_date }} - {{ request.GET.end_date }}{% endif %}">
-                            <button class="btn btn-outline-secondary" type="button" id="clearDates">
-                                <i class="material-icons" style="font-size: 18px;">clear</i>
+                            <button class="btn btn-md-outline btn-sm d-flex align-items-center gap-1 btn-animate px-2" type="button" id="clearDates" title="Clear Dates">
+                                <i class="material-icons" style="font-size:16px;">clear</i>
                             </button>
                         </div>
                         <input type="hidden" name="start_date" id="start_date" value="{{ request.GET.start_date }}">
@@ -201,9 +201,9 @@
                 
                 <!-- Botão de geração -->
                 <div class="col-md-3">
-                    <button type="button" class="btn btn-md-success w-100" onclick="generateSchedules()">
-                        <i class="material-icons me-1" style="vertical-align: middle;">event</i>
-                        Generate Schedules
+                    <button type="button" class="btn btn-md-success btn-sm w-100 d-flex align-items-center justify-content-center gap-1 btn-animate py-2" onclick="generateSchedules()" title="Generate Schedules">
+                        <i class="material-icons" style="font-size:18px;">event</i>
+                        <span>Generate</span>
                     </button>
                 </div>
             </div>
@@ -233,8 +233,14 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="applyDates">Apply</button>
+                    <button type="button" class="btn btn-md-outline btn-sm d-flex align-items-center gap-1" data-bs-dismiss="modal">
+                        <i class="material-icons" style="font-size:16px;">close</i>
+                        <span>Cancel</span>
+                    </button>
+                    <button type="button" class="btn btn-md-primary btn-sm d-flex align-items-center gap-1" id="applyDates">
+                        <i class="material-icons" style="font-size:16px;">done</i>
+                        <span>Apply</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -395,11 +401,31 @@
 </div>
 {% endblock %}
 
-{% block javascript %}
+{% block extra_js %}
 <style>
+/* Botão animado moderno */
+.btn-animate {
+    transition: all 0.2s ease;
+    border-radius: 6px;
+}
+.btn-animate:hover, .btn-animate:focus {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.btn-sm {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+    line-height: 1.5;
+}
+
+.input-group .btn-sm {
+    padding: 0.375rem 0.5rem;
+}
 /* Searchable Select Styles */
 .searchable-select-container {
     position: relative;
+    width: 100%;
 }
 
 .searchable-select {
@@ -413,6 +439,14 @@
     border-radius: 0.375rem;
     font-size: 1rem;
     line-height: 1.5;
+    background-color: #fff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.searchable-select .search-input:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 .searchable-select .dropdown-options {
@@ -426,18 +460,22 @@
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
     max-height: 200px;
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 1050;
     display: none;
+    margin-top: 2px;
 }
 
 .searchable-select .dropdown-option {
     padding: 8px 12px;
     cursor: pointer;
     border-bottom: 1px solid #f8f9fa;
+    transition: background-color 0.15s ease-in-out;
 }
 
-.searchable-select .dropdown-option:hover {
+.searchable-select .dropdown-option:hover,
+.searchable-select .dropdown-option.selected {
     background-color: var(--md-primary-light, #e3f2fd);
+    color: var(--md-primary, #1976d2);
 }
 
 .searchable-select .dropdown-option.selected {
@@ -447,6 +485,11 @@
 
 .searchable-select .dropdown-option:last-child {
     border-bottom: none;
+}
+
+.searchable-select .dropdown-option[data-value=""] {
+    font-style: italic;
+    color: #6c757d;
 }
 
 /* Calendar Styles */
@@ -538,7 +581,12 @@ function showMessage(message, type = 'success') {
 function initSearchableSelects() {
     const selects = document.querySelectorAll('select[data-placeholder]');
     
+    console.log('Initializing searchable selects:', selects.length);
+    
     selects.forEach(select => {
+        // Skip if already processed
+        if (select.style.display === 'none') return;
+        
         const container = document.createElement('div');
         container.className = 'searchable-select-container';
         
@@ -546,7 +594,15 @@ function initSearchableSelects() {
         input.type = 'text';
         input.className = 'form-control search-input';
         input.placeholder = select.getAttribute('data-placeholder');
-        input.value = select.selectedOptions[0] ? select.selectedOptions[0].text : '';
+        
+        // Set initial value from selected option or current value
+        const currentValue = select.value;
+        const selectedOption = select.querySelector(`option[value="${currentValue}"]`);
+        if (selectedOption && currentValue) {
+            input.value = selectedOption.textContent.trim();
+        } else {
+            input.value = '';
+        }
         
         const dropdown = document.createElement('div');
         dropdown.className = 'dropdown-options';
@@ -557,17 +613,28 @@ function initSearchableSelects() {
         function populateDropdown(filter = '') {
             dropdown.innerHTML = '';
             const filteredOptions = options.filter(option => 
-                option.text.toLowerCase().includes(filter.toLowerCase())
+                option.textContent.toLowerCase().includes(filter.toLowerCase())
             );
             
             filteredOptions.forEach(option => {
                 const div = document.createElement('div');
                 div.className = 'dropdown-option';
-                div.textContent = option.text;
+                div.textContent = option.textContent.trim();
+                div.setAttribute('data-value', option.value);
+                
+                // Mark as selected if this is the current value
+                if (option.value === select.value) {
+                    div.classList.add('selected');
+                }
+                
                 div.addEventListener('click', () => {
                     select.value = option.value;
-                    input.value = option.text;
+                    input.value = option.textContent.trim();
                     dropdown.style.display = 'none';
+                    
+                    // Trigger change event
+                    const changeEvent = new Event('change', { bubbles: true });
+                    select.dispatchEvent(changeEvent);
                 });
                 dropdown.appendChild(div);
             });
@@ -579,8 +646,48 @@ function initSearchableSelects() {
         });
         
         input.addEventListener('input', () => {
-            populateDropdown(input.value);
+            const inputValue = input.value.toLowerCase();
+            populateDropdown(inputValue);
             dropdown.style.display = 'block';
+            
+            // Clear select value if input doesn't exactly match any option
+            const exactMatch = options.find(opt => 
+                opt.textContent.trim().toLowerCase() === inputValue
+            );
+            
+            select.value = exactMatch ? exactMatch.value : '';
+            
+            // Trigger change event for dependent filtering
+            const changeEvent = new Event('change', { bubbles: true });
+            select.dispatchEvent(changeEvent);
+        });
+        
+        // Handle keyboard navigation
+        input.addEventListener('keydown', (e) => {
+            const visibleOptions = dropdown.querySelectorAll('.dropdown-option');
+            const selectedIndex = Array.from(visibleOptions).findIndex(opt => opt.classList.contains('selected'));
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                const nextIndex = Math.min(selectedIndex + 1, visibleOptions.length - 1);
+                if (visibleOptions[nextIndex]) {
+                    visibleOptions.forEach(opt => opt.classList.remove('selected'));
+                    visibleOptions[nextIndex].classList.add('selected');
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                const prevIndex = Math.max(selectedIndex - 1, 0);
+                if (visibleOptions[prevIndex]) {
+                    visibleOptions.forEach(opt => opt.classList.remove('selected'));
+                    visibleOptions[prevIndex].classList.add('selected');
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                const selectedOption = dropdown.querySelector('.dropdown-option.selected');
+                if (selectedOption) {
+                    selectedOption.click();
+                }
+            }
         });
         
         document.addEventListener('click', (e) => {
@@ -597,52 +704,98 @@ function initSearchableSelects() {
         container.appendChild(select);
         
         populateDropdown();
+        
+        console.log('Initialized select:', select.name, 'with', options.length, 'options');
     });
 }
 
 // Calendário moderno estilo Skyscanner
 function initCalendar() {
     const dateRangeInput = document.getElementById('dateRange');
-    const modal = new bootstrap.Modal(document.getElementById('datePickerModal'));
+    
+    console.log('Initializing calendar...', dateRangeInput);
+    
+    if (!dateRangeInput) {
+        console.error('dateRange input not found!');
+        return;
+    }
+    
+    // Check if Bootstrap Modal is available
+    if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+        console.error('Bootstrap Modal not available!');
+        return;
+    }
+    
+    const modalElement = document.getElementById('datePickerModal');
+    if (!modalElement) {
+        console.error('datePickerModal not found!');
+        return;
+    }
+    
+    const modal = new bootstrap.Modal(modalElement);
     
     dateRangeInput.addEventListener('click', () => {
+        console.log('Date range input clicked');
         renderCalendar();
         modal.show();
     });
     
-    document.getElementById('clearDates').addEventListener('click', () => {
-        selectedStartDate = null;
-        selectedEndDate = null;
-        dateRangeInput.value = '';
-        document.getElementById('start_date').value = '';
-        document.getElementById('end_date').value = '';
-    });
+    const clearDatesBtn = document.getElementById('clearDates');
+    if (clearDatesBtn) {
+        clearDatesBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            selectedStartDate = null;
+            selectedEndDate = null;
+            dateRangeInput.value = '';
+            document.getElementById('start_date').value = '';
+            document.getElementById('end_date').value = '';
+            console.log('Dates cleared');
+        });
+    }
     
-    document.getElementById('prevMonth').addEventListener('click', () => {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
-        renderCalendar();
-    });
+    const prevMonthBtn = document.getElementById('prevMonth');
+    if (prevMonthBtn) {
+        prevMonthBtn.addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendar();
+        });
+    }
     
-    document.getElementById('nextMonth').addEventListener('click', () => {
-        currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
-        renderCalendar();
-    });
+    const nextMonthBtn = document.getElementById('nextMonth');
+    if (nextMonthBtn) {
+        nextMonthBtn.addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendar();
+        });
+    }
     
-    document.getElementById('applyDates').addEventListener('click', () => {
-        if (selectedStartDate && selectedEndDate) {
-            const start = formatDate(selectedStartDate);
-            const end = formatDate(selectedEndDate);
-            dateRangeInput.value = `${start} - ${end}`;
-            document.getElementById('start_date').value = formatDateForInput(selectedStartDate);
-            document.getElementById('end_date').value = formatDateForInput(selectedEndDate);
-        }
-        modal.hide();
-    });
+    const applyDatesBtn = document.getElementById('applyDates');
+    if (applyDatesBtn) {
+        applyDatesBtn.addEventListener('click', () => {
+            if (selectedStartDate && selectedEndDate) {
+                const start = formatDate(selectedStartDate);
+                const end = formatDate(selectedEndDate);
+                dateRangeInput.value = `${start} - ${end}`;
+                document.getElementById('start_date').value = formatDateForInput(selectedStartDate);
+                document.getElementById('end_date').value = formatDateForInput(selectedEndDate);
+                console.log('Dates applied:', start, end);
+            }
+            modal.hide();
+        });
+    }
+    
+    console.log('Calendar initialized successfully');
 }
 
 function renderCalendar() {
     const grid = document.getElementById('calendarGrid');
     const monthDisplay = document.getElementById('currentMonth');
+    
+    if (!grid || !monthDisplay) {
+        console.error('Calendar elements not found!');
+        return;
+    }
     
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
@@ -687,7 +840,11 @@ function renderCalendar() {
         const currentDate = new Date(year, month, day);
         
         // Disable past dates
-        if (currentDate < new Date().setHours(0, 0, 0, 0)) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        currentDate.setHours(0, 0, 0, 0);
+        
+        if (currentDate < today) {
             dayElement.classList.add('disabled');
             dayElement.disabled = true;
         } else {
@@ -706,6 +863,8 @@ function renderCalendar() {
         
         grid.appendChild(dayElement);
     }
+    
+    console.log('Calendar rendered for', monthDisplay.textContent);
 }
 
 function selectDate(date, element) {
@@ -818,8 +977,69 @@ function downloadLogs() {
 
 // Initialize components when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    initSearchableSelects();
-    initCalendar();
+    console.log('DOM loaded, initializing components...');
+    
+    // Check if Bootstrap is loaded
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap is not loaded!');
+        return;
+    }
+    
+    // Initialize components with error handling
+    try {
+        initSearchableSelects();
+        console.log('Searchable selects initialized');
+    } catch (error) {
+        console.error('Error initializing searchable selects:', error);
+    }
+    
+    try {
+        initCalendar();
+        console.log('Calendar initialized');
+    } catch (error) {
+        console.error('Error initializing calendar:', error);
+    }
+    
+    // Initialize date range values if they exist
+    const startDateValue = document.getElementById('start_date')?.value;
+    const endDateValue = document.getElementById('end_date')?.value;
+    
+    if (startDateValue && endDateValue) {
+        selectedStartDate = new Date(startDateValue);
+        selectedEndDate = new Date(endDateValue);
+        console.log('Initialized with existing dates:', selectedStartDate, selectedEndDate);
+    }
+    
+    console.log('Components initialized successfully');
+    
+    // Test filters functionality
+    setTimeout(() => {
+        const filterInputs = document.querySelectorAll('.search-input');
+        console.log('Found filter inputs:', filterInputs.length);
+        
+        filterInputs.forEach((input, index) => {
+            console.log(`Filter ${index + 1}:`, input.placeholder, 'Value:', input.value);
+        });
+        
+        // Check if select options are being populated
+        const selects = document.querySelectorAll('select[data-placeholder]');
+        console.log('Found selects with data-placeholder:', selects.length);
+        
+        selects.forEach((select, index) => {
+            console.log(`Select ${index + 1} (${select.name}):`, select.options.length, 'options');
+            console.log(`  Current value: "${select.value}"`);
+            for (let i = 0; i < Math.min(select.options.length, 5); i++) {
+                console.log(`  Option ${i}: "${select.options[i].textContent.trim()}" = "${select.options[i].value}"`);
+            }
+        });
+        
+        // Also check the searchable inputs that were created
+        const searchInputs = document.querySelectorAll('.search-input');
+        console.log('Found search inputs:', searchInputs.length);
+        searchInputs.forEach((input, index) => {
+            console.log(`Search input ${index + 1}:`, input.placeholder, '| Value:', `"${input.value}"`);
+        });
+    }, 2000);
 });
 
 // Auto-refresh every 30 seconds
