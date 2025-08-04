@@ -29,56 +29,49 @@
     </div>
     
     <!-- Stats Cards -->
+        <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-primary" style="font-size: 24px;">assignment</i>
-                    </div>
+            <div class="stats-card">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ jobs|length }}</h3>
-                        <p class="text-muted mb-0">Total Jobs</p>
+                        <h2 class="h4 mb-1">{{ jobs|length }}</h2>
+                        <p class="mb-0 opacity-75">Total Jobs</p>
                     </div>
+                    <i class="material-icons">assignment</i>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-success bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-success" style="font-size: 24px;">check_circle</i>
-                    </div>
+            <div class="stats-card" style="background: linear-gradient(135deg, #4caf50, #66bb6a);">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ successful_jobs|length }}</h3>
-                        <p class="text-muted mb-0">Successful</p>
+                        <h2 class="h4 mb-1">{{ successful_jobs|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Successful</p>
                     </div>
+                    <i class="material-icons">check_circle</i>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-danger bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-danger" style="font-size: 24px;">error</i>
-                    </div>
+            <div class="stats-card" style="background: linear-gradient(135deg, #f44336, #ef5350);">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ failed_jobs|length }}</h3>
-                        <p class="text-muted mb-0">Failed</p>
+                        <h2 class="h4 mb-1">{{ failed_jobs|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Failed</p>
                     </div>
+                    <i class="material-icons">error</i>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-warning bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-warning" style="font-size: 24px;">hourglass_empty</i>
-                    </div>
+            <div class="stats-card" style="background: linear-gradient(135deg, #ff9800, #ffb74d);">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ running_jobs|length }}</h3>
-                        <p class="text-muted mb-0">Running</p>
+                        <h2 class="h4 mb-1">{{ running_jobs|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Running</p>
                     </div>
+                    <i class="material-icons">sync</i>
                 </div>
             </div>
         </div>
