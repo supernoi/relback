@@ -29,87 +29,73 @@
     <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-primary" style="font-size: 24px;">storage</i>
-                    </div>
+            <div class="stats-card">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ total_hosts }}</h3>
-                        <p class="text-muted mb-0">Total Hosts</p>
+                        <h2 class="h4 mb-1">{{ total_hosts }}</h2>
+                        <p class="mb-0 opacity-75">Total Hosts</p>
                     </div>
+                    <i class="material-icons">storage</i>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-success bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-success" style="font-size: 24px;">check_circle</i>
-                    </div>
+            <div class="stats-card" style="background: linear-gradient(135deg, #4caf50, #66bb6a);">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ active_hosts|default:0 }}</h3>
-                        <p class="text-muted mb-0">Active</p>
+                        <h2 class="h4 mb-1">{{ active_hosts|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Active Hosts</p>
                     </div>
+                    <i class="material-icons">check_circle</i>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-info bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-info" style="font-size: 24px;">business</i>
-                    </div>
+            <div class="stats-card" style="background: linear-gradient(135deg, #2196f3, #42a5f5);">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ total_clients|default:0 }}</h3>
-                        <p class="text-muted mb-0">Clients</p>
+                        <h2 class="h4 mb-1">{{ total_clients|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Clients</p>
                     </div>
+                    <i class="material-icons">business</i>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-warning bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-warning" style="font-size: 24px;">database</i>
-                    </div>
+            <div class="stats-card" style="background: linear-gradient(135deg, #ff9800, #ffb74d);">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ total_databases|default:0 }}</h3>
-                        <p class="text-muted mb-0">Databases</p>
+                        <h2 class="h4 mb-1">{{ total_databases|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Databases</p>
                     </div>
+                    <i class="material-icons">database</i>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Search and Filters -->
-    <div class="row mb-3">
+    <div class="row mb-4">
         <div class="col-12">
             <div class="md-card p-3">
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" class="form-control" id="searchHost" placeholder="Search hosts...">
-                            <label for="searchHost">
-                                <i class="material-icons me-1" style="font-size: 16px; vertical-align: middle;">search</i>
-                                Search hosts...
-                            </label>
+                            <label for="searchHost">Search hosts...</label>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <select class="form-select" id="filterClient">
-                            <option value="">All Clients</option>
-                            {% for client in clients %}
-                            <option value="{{ client.name }}">{{ client.name }}</option>
-                            {% endfor %}
-                        </select>
+                        <button class="btn btn-md-outlined w-100">
+                            <i class="material-icons me-1" style="vertical-align: middle;">filter_list</i>
+                            Filters
+                        </button>
                     </div>
                     <div class="col-md-3">
-                        <select class="form-select" id="filterStatus">
-                            <option value="">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
+                        <button class="btn btn-md-text w-100">
+                            <i class="material-icons me-1" style="vertical-align: middle;">refresh</i>
+                            Refresh
+                        </button>
                     </div>
                 </div>
             </div>
@@ -121,47 +107,51 @@
         <div class="col-12">
             <div class="md-card">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" id="hostsTable">
-                        <thead class="bg-light">
+                    <table class="table table-md mb-0">
+                        <thead>
                             <tr>
-                                <th class="border-0 ps-4">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">storage</i>
                                     Host
                                 </th>
-                                <th class="border-0">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">business</i>
                                     Client
                                 </th>
-                                <th class="border-0">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">language</i>
                                     IP Address
                                 </th>
-                                <th class="border-0">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">computer</i>
                                     Platform
                                 </th>
-                                <th class="border-0">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">database</i>
                                     Databases
                                 </th>
-                                <th class="border-0">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">schedule</i>
                                     Last Backup
                                 </th>
-                                <th class="border-0 text-center">Actions</th>
+                                <th class="text-center">
+                                    <i class="material-icons me-2" style="vertical-align: middle;">settings</i>
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for host in hosts %}
-                            <tr class="host-row" data-client="{{ host.client.name|default:'Unknown' }}" data-status="active">>
-                                <td class="ps-4">
+                            <tr class="host-row" data-client="{{ host.client.name|default:'Unknown' }}" data-status="active">
+                                <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="status-indicator bg-success me-3"></div>
+                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
+                                             style="width: 40px; height: 40px;">
+                                            <i class="material-icons text-white" style="font-size: 20px;">storage</i>
+                                        </div>
                                         <div>
-                                            <strong>{{ host.hostname }}</strong>
-                                            {% if host.description %}
-                                            <br><small class="text-muted">{{ host.description }}</small>
-                                            {% endif %}
+                                            <h6 class="mb-0">{{ host.hostname|default:"Unnamed Host" }}</h6>
+                                            <small class="text-muted">ID: {{ host.id_host }}</small>
                                         </div>
                                     </div>
                                 </td>
@@ -187,13 +177,11 @@
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
                                         <a href="{% url 'coreRelback:host-update' host.id_host %}" 
-                                           class="btn btn-sm btn-outline-secondary" 
-                                           title="Edit">
+                                           class="btn btn-sm btn-md-outlined" title="Edit">
                                             <i class="material-icons" style="font-size: 16px;">edit</i>
                                         </a>
                                         <a href="{% url 'coreRelback:host-delete' host.id_host %}" 
-                                           class="btn btn-sm btn-outline-danger" 
-                                           title="Delete">
+                                           class="btn btn-sm btn-outline-danger" title="Delete">
                                             <i class="material-icons" style="font-size: 16px;">delete</i>
                                         </a>
                                     </div>
@@ -203,9 +191,9 @@
                             <tr>
                                 <td colspan="7" class="text-center py-5">
                                     <div class="text-muted">
-                                        <i class="material-icons mb-3" style="font-size: 64px;">storage</i>
-                                        <h5>No hosts found</h5>
-                                        <p>Start by adding your first backup host.</p>
+                                        <i class="material-icons mb-3" style="font-size: 64px; color: #ccc;">storage</i>
+                                        <h5 class="text-muted">No hosts found</h5>
+                                        <p class="text-muted mb-4">Get started by adding your first host</p>
                                         <a href="{% url 'coreRelback:host-create' %}" class="btn btn-md-primary">
                                             <i class="material-icons me-1" style="vertical-align: middle;">add</i>
                                             Add First Host
@@ -223,11 +211,9 @@
 </div>
 
 <!-- Floating Action Button -->
-<div class="fab-container">
-    <a href="{% url 'coreRelback:host-create' %}" class="fab" title="Add New Host">
-        <i class="material-icons">add</i>
-    </a>
-</div>
+<button class="fab" id="addHostFab" title="Add Host">
+    <i class="material-icons">add</i>
+</button>
 
 <style>
 /* Status indicator */
@@ -291,105 +277,37 @@ code {
 </style>
 
 <script>
+// FAB click handler
+document.getElementById('addHostFab').addEventListener('click', function() {
+    window.location.href = '{% url "coreRelback:host-create" %}';
+});
+
 // Search functionality
 document.getElementById('searchHost').addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase();
-    const rows = document.querySelectorAll('.host-row');
+    const tableRows = document.querySelectorAll('tbody tr');
     
-    rows.forEach(row => {
-        const hostName = row.cells[0].textContent.toLowerCase();
-        const description = row.cells[0].textContent.toLowerCase();
+    tableRows.forEach(row => {
+        const hostName = row.querySelector('h6').textContent.toLowerCase();
         const ipAddress = row.cells[2].textContent.toLowerCase();
         
-        if (hostName.includes(searchTerm) || description.includes(searchTerm) || ipAddress.includes(searchTerm)) {
+        if (hostName.includes(searchTerm) || ipAddress.includes(searchTerm)) {
             row.style.display = '';
         } else {
             row.style.display = 'none';
         }
     });
-    
-    updateEmptyState();
 });
 
-// Client filter
-document.getElementById('filterClient').addEventListener('change', function() {
-    const selectedClient = this.value;
-    const rows = document.querySelectorAll('.host-row');
-    
-    rows.forEach(row => {
-        const clientName = row.dataset.client;
-        
-        if (!selectedClient || clientName === selectedClient) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
+// Add row hover effects
+document.querySelectorAll('tbody tr').forEach(row => {
+    row.addEventListener('mouseenter', function() {
+        this.style.backgroundColor = '#f5f5f5';
     });
     
-    updateEmptyState();
-});
-
-// Status filter
-document.getElementById('filterStatus').addEventListener('change', function() {
-    const selectedStatus = this.value;
-    const rows = document.querySelectorAll('.host-row');
-    
-    rows.forEach(row => {
-        const status = row.dataset.status;
-        
-        if (!selectedStatus || status === selectedStatus) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
-    
-    updateEmptyState();
-});
-
-// Update empty state based on visible rows
-function updateEmptyState() {
-    const visibleRows = document.querySelectorAll('.host-row:not([style*="display: none"])');
-    const emptyRow = document.querySelector('tbody tr td[colspan="7"]');
-    
-    if (visibleRows.length === 0 && !emptyRow) {
-        const tbody = document.querySelector('#hostsTable tbody');
-        const emptyMessage = `
-            <tr class="empty-state-row">
-                <td colspan="7" class="text-center py-5">
-                    <div class="text-muted">
-                        <i class="material-icons mb-3" style="font-size: 64px;">search_off</i>
-                        <h5>No hosts match your criteria</h5>
-                        <p>Try adjusting your search or filters.</p>
-                    </div>
-                </td>
-            </tr>
-        `;
-        tbody.insertAdjacentHTML('beforeend', emptyMessage);
-    } else if (visibleRows.length > 0) {
-        const emptyStateRow = document.querySelector('.empty-state-row');
-        if (emptyStateRow) {
-            emptyStateRow.remove();
-        }
-    }
-}
-
-// Confirmation for delete actions
-document.querySelectorAll('a[href*="delete"]').forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const hostName = this.closest('tr').cells[0].textContent.trim();
-        
-        if (confirm(`Are you sure you want to delete the host "${hostName}"?`)) {
-            window.location.href = this.href;
-        }
+    row.addEventListener('mouseleave', function() {
+        this.style.backgroundColor = '';
     });
 });
-
-// Auto-refresh data every 30 seconds
-setInterval(function() {
-    // In a real application, you would fetch updated data via AJAX
-    console.log('Auto-refresh: Checking for host updates...');
-}, 30000);
 </script>
 {% endblock %}

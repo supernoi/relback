@@ -29,130 +29,107 @@
     <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-primary" style="font-size: 24px;">policy</i>
-                    </div>
+            <div class="stats-card">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ total_policies }}</h3>
-                        <p class="text-muted mb-0">Total Policies</p>
+                        <h2 class="h4 mb-1">{{ total_policies }}</h2>
+                        <p class="mb-0 opacity-75">Total Policies</p>
                     </div>
+                    <i class="material-icons">policy</i>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-success bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-success" style="font-size: 24px;">play_circle</i>
-                    </div>
+            <div class="stats-card" style="background: linear-gradient(135deg, #4caf50, #66bb6a);">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ active_policies|default:0 }}</h3>
-                        <p class="text-muted mb-0">Active Policies</p>
+                        <h2 class="h4 mb-1">{{ active_policies|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Active Policies</p>
                     </div>
+                    <i class="material-icons">play_circle</i>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-warning bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-warning" style="font-size: 24px;">pause_circle</i>
-                    </div>
+            <div class="stats-card" style="background: linear-gradient(135deg, #ff9800, #ffb74d);">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ inactive_policies|default:0 }}</h3>
-                        <p class="text-muted mb-0">Inactive Policies</p>
+                        <h2 class="h4 mb-1">{{ inactive_policies|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Inactive Policies</p>
                     </div>
+                    <i class="material-icons">pause_circle</i>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-info bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-info" style="font-size: 24px;">schedule</i>
-                    </div>
+            <div class="stats-card" style="background: linear-gradient(135deg, #2196f3, #42a5f5);">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ scheduled_policies|default:0 }}</h3>
-                        <p class="text-muted mb-0">Scheduled Today</p>
+                        <h2 class="h4 mb-1">{{ scheduled_policies|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Scheduled Today</p>
                     </div>
+                    <i class="material-icons">schedule</i>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Search and Filters -->
-    <div class="row mb-3">
+    <!-- Search and Filters -->
+    <div class="row mb-4">
         <div class="col-12">
             <div class="md-card p-3">
                 <div class="row align-items-center">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" class="form-control" id="searchPolicy" placeholder="Search policies...">
-                            <label for="searchPolicy">
-                                <i class="material-icons me-1" style="font-size: 16px; vertical-align: middle;">search</i>
-                                Search policies...
-                            </label>
+                            <label for="searchPolicy">Search policies...</label>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <select class="form-select" id="filterStatus">
-                            <option value="">All Status</option>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
+                        <button class="btn btn-md-outlined w-100">
+                            <i class="material-icons me-1" style="vertical-align: middle;">filter_list</i>
+                            Filters
+                        </button>
                     </div>
                     <div class="col-md-3">
-                        <select class="form-select" id="filterType">
-                            <option value="">All Types</option>
-                            <option value="FULL">Full Backup</option>
-                            <option value="INCREMENTAL">Incremental</option>
-                            <option value="ARCHIVELOG">Archive Log</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <select class="form-select" id="filterClient">
-                            <option value="">All Clients</option>
-                            {% for client in clients %}
-                            <option value="{{ client.name }}">{{ client.name }}</option>
-                            {% endfor %}
-                        </select>
+                        <button class="btn btn-md-text w-100">
+                            <i class="material-icons me-1" style="vertical-align: middle;">refresh</i>
+                            Refresh
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <!-- Policies Table -->
+    </div>    <!-- Policies Table -->
     <div class="row">
         <div class="col-12">
             <div class="md-card">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" id="policiesTable">
-                        <thead class="bg-light">
+                    <table class="table table-md mb-0" id="policiesTable">
+                        <thead>
                             <tr>
-                                <th class="border-0 ps-4">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">policy</i>
                                     Policy Name
                                 </th>
-                                <th class="border-0">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">business</i>
                                     Client
                                 </th>
-                                <th class="border-0">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">storage</i>
                                     Host
                                 </th>
-                                <th class="border-0">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">database</i>
                                     Database
                                 </th>
-                                <th class="border-0">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">backup</i>
                                     Type
                                 </th>
-                                <th class="border-0">
+                                <th>
                                     <i class="material-icons me-2" style="vertical-align: middle;">schedule</i>
                                     Schedule
                                 </th>
@@ -317,11 +294,9 @@
 </div>
 
 <!-- Floating Action Button -->
-<div class="fab-container">
-    <a href="{% url 'coreRelback:policy-create' %}" class="fab" title="Create New Policy">
-        <i class="material-icons">add</i>
-    </a>
-</div>
+<button class="fab" id="addPolicyFab" title="Create Policy">
+    <i class="material-icons">add</i>
+</button>
 
 <style>
 /* Status indicator */

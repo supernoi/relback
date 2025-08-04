@@ -29,26 +29,50 @@
     <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-primary bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-primary" style="font-size: 24px;">database</i>
-                    </div>
+            <div class="stats-card">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ databases.count }}</h3>
-                        <p class="text-muted mb-0">Total Databases</p>
+                        <h2 class="h4 mb-1">{{ databases.count }}</h2>
+                        <p class="mb-0 opacity-75">Total Databases</p>
                     </div>
+                    <i class="material-icons">database</i>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="md-card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="bg-success bg-opacity-10 p-3 rounded me-3">
-                        <i class="material-icons text-success" style="font-size: 24px;">check_circle</i>
-                    </div>
+            <div class="stats-card" style="background: linear-gradient(135deg, #4caf50, #66bb6a);">
+                <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <h3 class="h5 mb-0">{{ active_databases|default:0 }}</h3>
+                        <h2 class="h4 mb-1">{{ active_databases|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Active Databases</p>
+                    </div>
+                    <i class="material-icons">check_circle</i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #ff9800, #ffb74d);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="h4 mb-1">{{ oracle_databases|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Oracle Databases</p>
+                    </div>
+                    <i class="material-icons">account_tree</i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card" style="background: linear-gradient(135deg, #2196f3, #42a5f5);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h2 class="h4 mb-1">{{ backed_up_today|default:0 }}</h2>
+                        <p class="mb-0 opacity-75">Backed Up Today</p>
+                    </div>
+                    <i class="material-icons">backup</i>
+                </div>
+            </div>
+        </div>
+    </div>
                         <p class="text-muted mb-0">Active</p>
                     </div>
                 </div>
