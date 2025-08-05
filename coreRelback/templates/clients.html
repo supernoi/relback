@@ -32,7 +32,7 @@
                     <h2 class="h3 md-mb-1">{{ clients.count }}</h2>
                     <p class="md-mb-0 md-opacity-75 h6">Total Clients</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">business</i>
+                <i class="material-icons-round" style="font-size: 3rem; opacity: 0.8; color: #5A8FA8;">business</i>
             </div>
         </div>
         <div class="md-card oracle-info-gradient" style="padding: var(--spacing-xl); min-height: 140px;">
@@ -41,37 +41,47 @@
                     <h2 class="h3 md-mb-1">{{ clients|length }}</h2>
                     <p class="md-mb-0 md-opacity-75 h6">Active Clients</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">verified</i>
+                <i class="material-icons-round" style="font-size: 3rem; opacity: 0.8; color: #5A8FA8;">verified</i>
             </div>
         </div>
     </div>
 
-    <!-- Search and Filters -->
-    <div class="md-grid md-grid-cols-1 md-mb-5">
-        <div class="md-card md-p-4">
+    <!-- Search and Actions -->
+    <div class="md-grid md-grid-cols-1 md-mb-5 allow-autocomplete-overflow">
+        <div class="md-card md-p-4 allow-autocomplete-overflow">
             <div class="md-grid md-grid-cols-3 md-gap-4 md-items-center">
-                <div class="md-input-floating">
-                    <input type="text" class="md-input" id="searchClients" placeholder=" ">
-                    <label class="md-label">
-                        <i class="material-icons" style="font-size: 16px;">search</i>
-                        Search clients...
-                    </label>
+                <div class="autocomplete-container">
+                    <input type="text" class="md-input" id="searchClients" placeholder="Search clients..." autocomplete="off">
+                    <div class="autocomplete-list" id="autocompleteList" style="z-index:2147483647 !important;"></div>
                 </div>
-                <button class="md-btn md-btn-outlined md-w-full" style="padding: 0.75rem 1.2rem; font-size: 1rem;">
-                    <i class="material-icons md-me-1">filter_list</i>
-                    Filters
+                <button class="md-btn md-w-full" style="
+                    background: rgba(90, 143, 168, 0.15); 
+                    color: #5A8FA8; 
+                    padding: 0.75rem 1.2rem; 
+                    font-size: 1rem; 
+                    border: 1px solid rgba(90, 143, 168, 0.3); 
+                    border-radius: 8px;
+                    transition: all 0.3s ease;
+                ">
+                    <i class="material-icons md-me-1">search</i>
+                    Search
                 </button>
-                <button class="md-btn md-btn-text md-w-full" style="padding: 0.75rem 1.2rem; font-size: 1rem;">
-                    <i class="material-icons md-me-1">refresh</i>
-                    Refresh
+                <button class="md-btn md-btn-text md-w-full" style="
+                    padding: 0.75rem 1.2rem; 
+                    font-size: 1rem;
+                    color: #697778;
+                    transition: all 0.3s ease;
+                " id="cleanBtn">
+                    <i class="material-icons md-me-1">clear</i>
+                    Clean
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Clients Table -->
-    <div class="md-grid md-grid-cols-1">
-        <div class="md-card">
+    <div class="md-grid md-grid-cols-1 allow-autocomplete-overflow">
+        <div class="md-card allow-autocomplete-overflow">
             {% if clients %}
                 <div class="md-table-responsive">
                     <table class="md-table">
@@ -105,34 +115,60 @@
                         </thead>
                         <tbody>
                             {% for client in clients %}
-                            <tr>
-                                <td>
+                            <tr style="height: 60px;">
+                                <td style="padding: var(--spacing-md) var(--spacing-lg);">
                                     <div class="md-flex md-items-center">
                                         <div class="md-rounded-circle md-flex md-items-center md-justify-center md-me-3"
-                                             style="width: 48px; height: 48px; background: #3C4545; box-shadow: 2px 2px 4px #23292b33, -2px -2px 4px #697778cc, inset 2px 2px 4px #23292b22, inset -2px -2px 4px #ffffff22; border: 1px solid #697778;">
-                                            <i class="material-icons" style="color: white; font-size: 24px;">business</i>
+                                             style="width: 42px; height: 42px; background: #5A8FA8; border-radius: 50%; box-shadow: 0 3px 10px rgba(90, 143, 168, 0.25); border: 2px solid rgba(90, 143, 168, 0.3);">
+                                            <i class="material-icons-round" style="color: white; font-size: 20px;">business</i>
                                         </div>
                                         <div>
-                                            <h5 class="md-mb-0">{{ client.name|default:"Unnamed Client" }}</h5>
-                                            <small class="md-text-muted">ID: {{ client.id_client }}</small>
+                                            <h5 class="md-mb-0" style="font-size: 1rem; font-weight: 600;">{{ client.name|default:"Unnamed Client" }}</h5>
+                                            <small class="md-text-muted" style="font-size: 0.8rem;">ID: {{ client.id_client }}</small>
                                         </div>
                                     </div>
                                 </td>
-                                <td>
-                                    <span>{{ client.description|default:"No description" }}</span>
+                                <td style="padding: var(--spacing-md) var(--spacing-lg);">
+                                    <span style="font-size: 0.95rem;">{{ client.description|default:"No description" }}</span>
                                 </td>
-                                <td>
-                                    <span>{{ client.created_at|date:"M d, Y" }}</span>
+                                <td style="padding: var(--spacing-md) var(--spacing-lg);">
+                                    <span style="font-size: 0.95rem;">{{ client.created_at|date:"M d, Y" }}</span>
                                 </td>
-                                <td class="md-text-center">
+                                <td class="md-text-center" style="padding: var(--spacing-md) var(--spacing-lg);">
                                     <div class="md-flex md-gap-2 md-justify-center">
                                         <a href="{% url 'coreRelback:client-update' client.id_client %}" 
-                                           class="md-btn md-btn-sm md-btn-outlined" title="Edit">
-                                            <i class="material-icons" style="color: #00688C;">edit</i>
+                                           class="btn-action btn-edit" title="Edit Client"
+                                           style="
+                                               display: inline-flex;
+                                               align-items: center;
+                                               justify-content: center;
+                                               width: 36px;
+                                               height: 36px;
+                                               background: rgba(90, 143, 168, 0.1);
+                                               border: 1px solid rgba(90, 143, 168, 0.3);
+                                               border-radius: 8px;
+                                               color: #5A8FA8;
+                                               text-decoration: none;
+                                               transition: all 0.3s ease;
+                                           ">
+                                            <i class="material-icons-round" style="font-size: 18px;">edit</i>
                                         </a>
                                         <a href="{% url 'coreRelback:client-delete' client.id_client %}" 
-                                           class="md-btn md-btn-sm md-btn-danger" title="Delete">
-                                            <i class="material-icons" style="color: white;">delete</i>
+                                           class="btn-action btn-delete" title="Delete Client"
+                                           style="
+                                               display: inline-flex;
+                                               align-items: center;
+                                               justify-content: center;
+                                               width: 36px;
+                                               height: 36px;
+                                               background: rgba(199, 70, 52, 0.1);
+                                               border: 1px solid rgba(199, 70, 52, 0.3);
+                                               border-radius: 8px;
+                                               color: #C74634;
+                                               text-decoration: none;
+                                               transition: all 0.3s ease;
+                                           ">
+                                            <i class="material-icons-round" style="font-size: 18px;">delete</i>
                                         </a>
                                     </div>
                                 </td>
@@ -163,37 +199,198 @@
 </button>
 
 <script>
+// Dados dos clientes para auto-completar
+const clientsData = [
+    {% for client in clients %}
+    {
+        id: {{ client.id_client }},
+        name: "{{ client.name|default:'Unnamed Client'|escapejs }}",
+        description: "{{ client.description|default:'No description'|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
 // FAB click handler
 document.getElementById('addClientFab').addEventListener('click', function() {
     window.location.href = '{% url "coreRelback:client-create" %}';
 });
 
-// Search functionality
-document.getElementById('searchClients').addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
+// Auto-complete functionality
+const searchInput = document.getElementById('searchClients');
+const autocompleteList = document.getElementById('autocompleteList');
+let currentFocus = -1;
+
+searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase().trim();
+    
+    // Limpar lista anterior
+    autocompleteList.innerHTML = '';
+    currentFocus = -1;
+    
+    if (searchTerm.length === 0) {
+        autocompleteList.style.display = 'none';
+        showAllRows();
+        return;
+    }
+    
+    // Filtrar clientes
+    const filteredClients = clientsData.filter(client => 
+        client.name.toLowerCase().includes(searchTerm) || 
+        client.description.toLowerCase().includes(searchTerm)
+    );
+    
+    // Mostrar sugestões
+    if (filteredClients.length > 0) {
+        autocompleteList.style.display = 'block';
+        
+        filteredClients.slice(0, 5).forEach((client, index) => {
+            const item = document.createElement('div');
+            item.className = 'autocomplete-item';
+            item.innerHTML = `
+                <div style="font-weight: 600; color: #3C4545; margin-bottom: 4px;">${client.name}</div>
+                <div style="font-size: 0.85rem; color: #697778;">${client.description}</div>
+            `;
+            item.addEventListener('click', function() {
+                searchInput.value = client.name;
+                autocompleteList.style.display = 'none';
+                filterTable(client.name.toLowerCase());
+            });
+            autocompleteList.appendChild(item);
+        });
+    } else {
+        autocompleteList.style.display = 'none';
+    }
+    
+    // Filtrar tabela em tempo real
+    filterTable(searchTerm);
+});
+
+// Navegação por teclado no auto-complete
+searchInput.addEventListener('keydown', function(e) {
+    const items = autocompleteList.querySelectorAll('.autocomplete-item');
+    
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentFocus++;
+        if (currentFocus >= items.length) currentFocus = 0;
+        setActive(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentFocus--;
+        if (currentFocus < 0) currentFocus = items.length - 1;
+        setActive(items);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (currentFocus > -1 && items[currentFocus]) {
+            items[currentFocus].click();
+        }
+    } else if (e.key === 'Escape') {
+        autocompleteList.style.display = 'none';
+        currentFocus = -1;
+    }
+});
+
+function setActive(items) {
+    items.forEach((item, index) => {
+        item.classList.toggle('active', index === currentFocus);
+    });
+}
+
+// Fechar auto-complete ao clicar fora
+document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !autocompleteList.contains(e.target)) {
+        autocompleteList.style.display = 'none';
+    }
+});
+
+// Função para filtrar tabela
+function filterTable(searchTerm) {
     const tableRows = document.querySelectorAll('tbody tr');
     
     tableRows.forEach(row => {
-        const clientName = row.querySelector('h6').textContent.toLowerCase();
+        const clientName = row.querySelector('h5').textContent.toLowerCase();
         const description = row.querySelector('td:nth-child(2) span').textContent.toLowerCase();
         
         if (clientName.includes(searchTerm) || description.includes(searchTerm)) {
             row.style.display = '';
+            row.style.animation = 'fadeIn 0.3s ease';
         } else {
             row.style.display = 'none';
         }
+    });
+}
+
+function showAllRows() {
+    const tableRows = document.querySelectorAll('tbody tr');
+    tableRows.forEach(row => {
+        row.style.display = '';
+        row.style.animation = 'fadeIn 0.3s ease';
+    });
+}
+
+// Botão Clean
+document.getElementById('cleanBtn').addEventListener('click', function() {
+    searchInput.value = '';
+    autocompleteList.style.display = 'none';
+    showAllRows();
+    searchInput.focus();
+    
+    // Adicionar efeito visual ao botão
+    this.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        this.style.transform = 'scale(1)';
+    }, 150);
+});
+
+// Adicionar efeito hover aos botões
+document.querySelectorAll('.md-btn').forEach(btn => {
+    btn.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-2px)';
+    });
+    
+    btn.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
     });
 });
 
 // Add row hover effects
 document.querySelectorAll('tbody tr').forEach(row => {
     row.addEventListener('mouseenter', function() {
-        this.style.backgroundColor = 'var(--hover-overlay)';
+        this.style.backgroundColor = 'rgba(90, 143, 168, 0.05)';
+        this.style.transform = 'scale(1.01)';
+        this.style.transition = 'all 0.3s ease';
     });
     
     row.addEventListener('mouseleave', function() {
         this.style.backgroundColor = '';
+        this.style.transform = 'scale(1)';
     });
+});
+
+// Adicionar efeitos aos botões de ação
+document.querySelectorAll('.btn-action').forEach(btn => {
+    btn.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-2px)';
+        this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+    });
+    
+    btn.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+        this.style.boxShadow = '';
+    });
+    
+    btn.addEventListener('mousedown', function() {
+        this.style.transform = 'translateY(0) scale(0.95)';
+    });
+    
+    btn.addEventListener('mouseup', function() {
+        this.style.transform = 'translateY(-2px) scale(1)';
+    });
+});
+
+// Focus automático no campo de busca
+document.addEventListener('DOMContentLoaded', function() {
+    searchInput.focus();
 });
 </script>
 {% endblock %}

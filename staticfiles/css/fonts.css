@@ -1,0 +1,63 @@
+/* Oracle Sans font for offline use */
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../fonts/oracle-sans/OracleSans-Regular.woff2') format('woff2'),
+         url('../fonts/oracle-sans/OracleSans-Regular.woff') format('woff'),
+         url('../fonts/oracle-sans/OracleSans-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../fonts/oracle-sans/OracleSans-Bold.woff2') format('woff2'),
+         url('../fonts/oracle-sans/OracleSans-Bold.woff') format('woff'),
+         url('../fonts/oracle-sans/OracleSans-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../fonts/oracle-sans/OracleSans-Light.woff2') format('woff2'),
+         url('../fonts/oracle-sans/OracleSans-Light.woff') format('woff'),
+         url('../fonts/oracle-sans/OracleSans-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../fonts/oracle-sans/OracleSans-SemiBold.woff2') format('woff2'),
+         url('../fonts/oracle-sans/OracleSans-SemiBold.woff') format('woff'),
+         url('../fonts/oracle-sans/OracleSans-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Oracle Sans';
+    src: url('../fonts/oracle-sans/OracleSans-ExtraBold.woff2') format('woff2'),
+         url('../fonts/oracle-sans/OracleSans-ExtraBold.woff') format('woff'),
+         url('../fonts/oracle-sans/OracleSans-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+body, html {
+    font-family: 'Oracle Sans', 'Roboto', Arial, sans-serif;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular')
+		, url(../fonts/Roboto-Regular.woff2) format('woff2')
+		, url(../fonts/Roboto-Regular.ttf) format('truetype');
+}
