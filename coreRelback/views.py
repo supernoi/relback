@@ -34,10 +34,22 @@ class ClientListView(ListView):
 
 
 class ClientCreateView(CreateView):
+
     model = Client
     template_name = "client_form.html"
-    fields = ['name', 'description']  # ajuste os campos conforme o seu modelo
+    fields = ['name', 'description']
     success_url = reverse_lazy('coreRelback:client-list')
+
+    def form_valid(self, form):
+        # Busca o RelbackUser relacionado ao usuário logado
+        from .models import RelbackUser
+        try:
+            relback_user = RelbackUser.objects.get(username=self.request.user.username)
+            form.instance.created_by = relback_user
+        except RelbackUser.DoesNotExist:
+            form.add_error(None, "Usuário não possui perfil RelbackUser cadastrado.")
+            return self.form_invalid(form)
+        return super().form_valid(form)
 
 
 class ClientUpdateView(UpdateView):

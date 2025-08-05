@@ -4,166 +4,161 @@
 {% block title %}Clients - RelBack{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="md-container-fluid">
     <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="md-card p-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <i class="material-icons me-3" style="font-size: 48px; color: var(--md-primary);">business</i>
-                        <div>
-                            <h1 class="h3 mb-1">Clients Management</h1>
-                            <p class="text-muted mb-0">Manage your backup clients and organizations</p>
-                        </div>
+    <div class="md-grid md-grid-cols-1 md-mb-5">
+        <div class="md-card md-p-5">
+            <div class="md-flex md-justify-between md-items-center">
+                <div class="md-flex md-items-center">
+                    <i class="material-icons md-me-3" style="font-size: 56px; color: var(--oracle-red);">business</i>
+                    <div>
+                        <h1 class="h2 md-mb-1">Clients Management</h1>
+                        <p class="md-text-muted md-mb-0" style="font-size: 1.1rem;">Manage your backup clients and organizations</p>
                     </div>
-                    <a href="{% url 'coreRelback:client-create' %}" class="btn btn-md-primary">
-                        <i class="material-icons me-1" style="vertical-align: middle;">add</i>
-                        Add Client
-                    </a>
                 </div>
+                <a href="{% url 'coreRelback:client-create' %}" class="md-btn md-btn-primary" style="padding: 0.8rem 1.5rem; font-size: 1rem;">
+                    <i class="material-icons md-me-1">add</i>
+                    Add Client
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Stats Card -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="stats-card">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="h4 mb-1">{{ clients.count }}</h2>
-                        <p class="mb-0 opacity-75">Total Clients</p>
-                    </div>
-                    <i class="material-icons">business</i>
+    <!-- Stats Cards -->
+    <div class="md-grid md-grid-cols-4 md-mb-5">
+        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #3C4545, #697778) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+            <div class="md-flex md-items-center md-justify-between">
+                <div>
+                    <h2 class="h3 md-mb-1">{{ clients.count }}</h2>
+                    <p class="md-mb-0 md-opacity-75 h6">Total Clients</p>
                 </div>
+                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">business</i>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #00acc1, #26c6da);">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="h4 mb-1">{{ clients|length }}</h2>
-                        <p class="mb-0 opacity-75">Active Clients</p>
-                    </div>
-                    <i class="material-icons">verified</i>
+        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #3C4545, #697778) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+            <div class="md-flex md-items-center md-justify-between">
+                <div>
+                    <h2 class="h3 md-mb-1">{{ clients|length }}</h2>
+                    <p class="md-mb-0 md-opacity-75 h6">Active Clients</p>
                 </div>
+                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">verified</i>
             </div>
         </div>
     </div>
 
     <!-- Search and Filters -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="md-card p-3">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" class="form-control" id="searchClients" placeholder="Search clients...">
-                            <label for="searchClients">Search clients...</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-md-outlined w-100">
-                            <i class="material-icons me-1" style="vertical-align: middle;">filter_list</i>
-                            Filters
-                        </button>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-md-text w-100">
-                            <i class="material-icons me-1" style="vertical-align: middle;">refresh</i>
-                            Refresh
-                        </button>
-                    </div>
+    <div class="md-grid md-grid-cols-1 md-mb-5">
+        <div class="md-card md-p-4">
+            <div class="md-grid md-grid-cols-3 md-gap-4 md-items-center">
+                <div class="md-input-floating">
+                    <input type="text" class="md-input" id="searchClients" placeholder=" ">
+                    <label class="md-label">
+                        <i class="material-icons" style="font-size: 16px;">search</i>
+                        Search clients...
+                    </label>
                 </div>
+                <button class="md-btn md-btn-outlined md-w-full" style="padding: 0.75rem 1.2rem; font-size: 1rem;">
+                    <i class="material-icons md-me-1">filter_list</i>
+                    Filters
+                </button>
+                <button class="md-btn md-btn-text md-w-full" style="padding: 0.75rem 1.2rem; font-size: 1rem;">
+                    <i class="material-icons md-me-1">refresh</i>
+                    Refresh
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Clients Table -->
-    <div class="row">
-        <div class="col-12">
-            <div class="md-card">
-                {% if clients %}
-                    <div class="table-responsive">
-                        <table class="table table-md mb-0">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        <i class="material-icons me-2" style="vertical-align: middle;">business</i>
+    <div class="md-grid md-grid-cols-1">
+        <div class="md-card">
+            {% if clients %}
+                <div class="md-table-responsive">
+                    <table class="md-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="md-flex md-items-center md-gap-2">
+                                        <i class="material-icons">business</i>
                                         Client Name
-                                    </th>
-                                    <th>
-                                        <i class="material-icons me-2" style="vertical-align: middle;">description</i>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="md-flex md-items-center md-gap-2">
+                                        <i class="material-icons">description</i>
                                         Description
-                                    </th>
-                                    <th>
-                                        <i class="material-icons me-2" style="vertical-align: middle;">schedule</i>
+                                    </div>
+                                </th>
+                                <th>
+                                    <div class="md-flex md-items-center md-gap-2">
+                                        <i class="material-icons">schedule</i>
                                         Created
-                                    </th>
-                                    <th class="text-center">
-                                        <i class="material-icons me-2" style="vertical-align: middle;">settings</i>
+                                    </div>
+                                </th>
+                                <th class="md-text-center">
+                                    <div class="md-flex md-items-center md-justify-center md-gap-2">
+                                        <i class="material-icons">settings</i>
                                         Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for client in clients %}
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
-                                                 style="width: 40px; height: 40px;">
-                                                <i class="material-icons text-white" style="font-size: 20px;">business</i>
-                                            </div>
-                                            <div>
-                                                <h6 class="mb-0">{{ client.name|default:"Unnamed Client" }}</h6>
-                                                <small class="text-muted">ID: {{ client.id_client }}</small>
-                                            </div>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for client in clients %}
+                            <tr>
+                                <td>
+                                    <div class="md-flex md-items-center">
+                                        <div class="md-rounded-circle md-flex md-items-center md-justify-center md-me-3"
+                                             style="width: 48px; height: 48px; background: #3C4545; box-shadow: 2px 2px 4px #23292b33, -2px -2px 4px #697778cc, inset 2px 2px 4px #23292b22, inset -2px -2px 4px #ffffff22; border: 1px solid #697778;">
+                                            <i class="material-icons" style="color: white; font-size: 24px;">business</i>
                                         </div>
-                                    </td>
-                                    <td>
-                                        <span class="text-muted">{{ client.description|default:"No description" }}</span>
-                                    </td>
-                                    <td>
-                                        <span class="text-muted">{{ client.created_at|date:"M d, Y" }}</span>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="btn-group" role="group">
-                                            <a href="{% url 'coreRelback:client-update' client.id_client %}" 
-                                               class="btn btn-sm btn-md-outlined" title="Edit">
-                                                <i class="material-icons" style="font-size: 16px;">edit</i>
-                                            </a>
-                                            <a href="{% url 'coreRelback:client-delete' client.id_client %}" 
-                                               class="btn btn-sm btn-outline-danger" title="Delete">
-                                                <i class="material-icons" style="font-size: 16px;">delete</i>
-                                            </a>
+                                        <div>
+                                            <h5 class="md-mb-0">{{ client.name|default:"Unnamed Client" }}</h5>
+                                            <small class="md-text-muted">ID: {{ client.id_client }}</small>
                                         </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <!-- Empty State -->
-                    <div class="text-center py-5">
-                        <i class="material-icons mb-3" style="font-size: 64px; color: #ccc;">business</i>
-                        <h5 class="text-muted">No clients found</h5>
-                        <p class="text-muted mb-4">Get started by adding your first client</p>
-                        <a href="{% url 'coreRelback:client-create' %}" class="btn btn-md-primary">
-                            <i class="material-icons me-1" style="vertical-align: middle;">add</i>
-                            Add First Client
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span>{{ client.description|default:"No description" }}</span>
+                                </td>
+                                <td>
+                                    <span>{{ client.created_at|date:"M d, Y" }}</span>
+                                </td>
+                                <td class="md-text-center">
+                                    <div class="md-flex md-gap-2 md-justify-center">
+                                        <a href="{% url 'coreRelback:client-update' client.id_client %}" 
+                                           class="md-btn md-btn-sm md-btn-outlined" title="Edit">
+                                            <i class="material-icons" style="color: #00688C;">edit</i>
+                                        </a>
+                                        <a href="{% url 'coreRelback:client-delete' client.id_client %}" 
+                                           class="md-btn md-btn-sm md-btn-danger" title="Delete">
+                                            <i class="material-icons" style="color: white;">delete</i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <!-- Empty State -->
+                <div class="md-text-center md-py-5" style="padding: 4rem 2rem;">
+                    <i class="material-icons md-mb-4" style="font-size: 80px; color: #ccc;">business</i>
+                    <h4 class="md-text-muted md-mb-3">No clients found</h4>
+                    <p class="md-text-muted md-mb-5" style="font-size: 1.1rem;">Get started by adding your first client</p>
+                    <a href="{% url 'coreRelback:client-create' %}" class="md-btn md-btn-primary" style="padding: 0.8rem 1.5rem; font-size: 1rem;">
+                        <i class="material-icons md-me-1">add</i>
+                        Add First Client
+                    </a>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <!-- Floating Action Button -->
-<button class="fab" id="addClientFab" title="Add Client">
+<button class="md-fab" id="addClientFab" title="Add Client">
     <i class="material-icons">add</i>
 </button>
 
@@ -180,7 +175,7 @@ document.getElementById('searchClients').addEventListener('input', function() {
     
     tableRows.forEach(row => {
         const clientName = row.querySelector('h6').textContent.toLowerCase();
-        const description = row.querySelector('.text-muted').textContent.toLowerCase();
+        const description = row.querySelector('td:nth-child(2) span').textContent.toLowerCase();
         
         if (clientName.includes(searchTerm) || description.includes(searchTerm)) {
             row.style.display = '';
@@ -193,7 +188,7 @@ document.getElementById('searchClients').addEventListener('input', function() {
 // Add row hover effects
 document.querySelectorAll('tbody tr').forEach(row => {
     row.addEventListener('mouseenter', function() {
-        this.style.backgroundColor = '#f5f5f5';
+        this.style.backgroundColor = 'var(--hover-overlay)';
     });
     
     row.addEventListener('mouseleave', function() {

@@ -4,23 +4,21 @@
 {% block title %}{% if object %}Edit Client{% else %}Add Client{% endif %} - RelBack{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="md-container-fluid">
     <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="md-card p-4">
-                <div class="d-flex align-items-center">
-                    <a href="{% url 'coreRelback:client-list' %}" class="btn btn-md-text me-3">
-                        <i class="material-icons" style="vertical-align: middle;">arrow_back</i>
-                    </a>
-                    <div class="d-flex align-items-center">
-                        <i class="material-icons me-3" style="font-size: 48px; color: var(--md-primary);">
-                            {% if object %}edit{% else %}add_business{% endif %}
-                        </i>
-                        <div>
-                            <h1 class="h3 mb-1">{% if object %}Edit Client{% else %}Add New Client{% endif %}</h1>
-                            <p class="text-muted mb-0">{% if object %}Update client information{% else %}Create a new backup client{% endif %}</p>
-                        </div>
+    <div class="md-grid md-grid-cols-1 md-mb-5">
+        <div class="md-card md-p-5">
+            <div class="md-flex md-items-center">
+                <a href="{% url 'coreRelback:client-list' %}" class="md-btn md-btn-text md-me-4" style="padding: 0.75rem;">
+                    <i class="material-icons" style="font-size: 1.5rem;">arrow_back</i>
+                </a>
+                <div class="md-flex md-items-center">
+                    <i class="material-icons md-me-3" style="font-size: 56px; color: var(--oracle-red);">
+                        {% if object %}edit{% else %}add_business{% endif %}
+                    </i>
+                    <div>
+                        <h1 class="h2 md-mb-1">{% if object %}Edit Client{% else %}Add New Client{% endif %}</h1>
+                        <p class="md-text-muted md-mb-0" style="font-size: 1.1rem;">{% if object %}Update client information{% else %}Create a new backup client{% endif %}</p>
                     </div>
                 </div>
             </div>
@@ -28,55 +26,55 @@
     </div>
 
     <!-- Form -->
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <div class="md-grid md-grid-cols-1 md-justify-center">
+        <div style="max-width: 900px; margin: 0 auto; width: 100%;">
             <div class="md-card">
-                <div class="p-4">
+                <div class="md-p-5">
                     <form method="post">
                         {% csrf_token %}
                         
                         <!-- Client Information Section -->
-                        <div class="mb-4">
-                            <h5 class="text-primary mb-3">
-                                <i class="material-icons me-2" style="vertical-align: middle;">info</i>
+                        <div class="md-mb-5">
+                            <h4 style="color: var(--text-primary);" class="md-mb-4">
+                                <i class="material-icons md-me-2" style="vertical-align: middle; font-size: 1.5rem;">info</i>
                                 Client Information
-                            </h5>
+                            </h4>
                             
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
+                            <div class="md-grid md-grid-cols-2 md-gap-4">
+                                <div class="md-input-group">
+                                    <div class="md-input-floating">
                                         <input type="text" 
-                                               class="form-control{% if form.name.errors %} is-invalid{% endif %}" 
+                                               class="md-input{% if form.name.errors %} is-invalid{% endif %}" 
                                                id="id_name" 
                                                name="name" 
                                                value="{{ form.name.value|default:'' }}"
-                                               placeholder="Client Name"
+                                               placeholder=" "
                                                required>
-                                        <label for="id_name">
-                                            <i class="material-icons me-1" style="font-size: 16px; vertical-align: middle;">business</i>
+                                        <label class="md-label" for="id_name">
+                                            <i class="material-icons md-me-1" style="font-size: 16px;">business</i>
                                             Client Name *
                                         </label>
                                         {% if form.name.errors %}
-                                            <div class="invalid-feedback">
+                                            <div class="md-invalid-feedback">
                                                 {{ form.name.errors.0 }}
                                             </div>
                                         {% endif %}
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
+                                <div class="md-input-group">
+                                    <div class="md-input-floating">
                                         <input type="text" 
-                                               class="form-control{% if form.description.errors %} is-invalid{% endif %}" 
+                                               class="md-input{% if form.description.errors %} is-invalid{% endif %}" 
                                                id="id_description" 
                                                name="description" 
                                                value="{{ form.description.value|default:'' }}"
-                                               placeholder="Description">
-                                        <label for="id_description">
-                                            <i class="material-icons me-1" style="font-size: 16px; vertical-align: middle;">description</i>
+                                               placeholder=" ">
+                                        <label class="md-label" for="id_description">
+                                            <i class="material-icons md-me-1" style="font-size: 16px;">description</i>
                                             Description
                                         </label>
                                         {% if form.description.errors %}
-                                            <div class="invalid-feedback">
+                                            <div class="md-invalid-feedback">
                                                 {{ form.description.errors.0 }}
                                             </div>
                                         {% endif %}
@@ -87,34 +85,28 @@
 
                         <!-- Additional Information (if editing) -->
                         {% if object %}
-                        <div class="mb-4">
-                            <h5 class="text-primary mb-3">
-                                <i class="material-icons me-2" style="vertical-align: middle;">history</i>
+                        <div class="md-mb-4">
+                            <h5 style="color: var(--text-primary);" class="md-mb-3">
+                                <i class="material-icons md-me-2" style="vertical-align: middle;">history</i>
                                 Additional Information
                             </h5>
                             
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label text-muted">Client ID</label>
-                                        <p class="form-control-plaintext">{{ object.id_client }}</p>
-                                    </div>
+                            <div class="md-grid md-grid-cols-2 md-gap-3">
+                                <div class="md-input-group">
+                                    <label class="md-label md-text-muted">Client ID</label>
+                                    <p class="md-p-3" style="background-color: var(--background-secondary); border-radius: var(--radius-md); margin: 0;">{{ object.id_client }}</p>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label text-muted">Created</label>
-                                        <p class="form-control-plaintext">{{ object.created_at|date:"F d, Y G:i" }}</p>
-                                    </div>
+                                <div class="md-input-group">
+                                    <label class="md-label md-text-muted">Created</label>
+                                    <p class="md-p-3" style="background-color: var(--background-secondary); border-radius: var(--radius-md); margin: 0;">{{ object.created_at|date:"F d, Y G:i" }}</p>
                                 </div>
                             </div>
                             
                             {% if object.updated_at %}
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label text-muted">Last Updated</label>
-                                        <p class="form-control-plaintext">{{ object.updated_at|date:"F d, Y G:i" }}</p>
-                                    </div>
+                            <div class="md-grid md-grid-cols-2 md-gap-3 md-mt-3">
+                                <div class="md-input-group">
+                                    <label class="md-label md-text-muted">Last Updated</label>
+                                    <p class="md-p-3" style="background-color: var(--background-secondary); border-radius: var(--radius-md); margin: 0;">{{ object.updated_at|date:"F d, Y G:i" }}</p>
                                 </div>
                             </div>
                             {% endif %}
@@ -122,19 +114,19 @@
                         {% endif %}
 
                         <!-- Form Actions -->
-                        <div class="d-flex gap-2 pt-3 border-top">
-                            <button type="submit" class="btn btn-md-primary">
-                                <i class="material-icons me-1" style="vertical-align: middle;">save</i>
+                        <div class="md-flex md-gap-2 md-pt-3 md-border-top">
+                            <button type="submit" class="md-btn md-btn-primary">
+                                <i class="material-icons md-me-1">save</i>
                                 {% if object %}Update Client{% else %}Create Client{% endif %}
                             </button>
-                            <a href="{% url 'coreRelback:client-list' %}" class="btn btn-md-outlined">
-                                <i class="material-icons me-1" style="vertical-align: middle;">cancel</i>
+                            <a href="{% url 'coreRelback:client-list' %}" class="md-btn md-btn-outlined">
+                                <i class="material-icons md-me-1">cancel</i>
                                 Cancel
                             </a>
                             {% if object %}
                             <a href="{% url 'coreRelback:client-delete' object.id_client %}" 
-                               class="btn btn-outline-danger ms-auto">
-                                <i class="material-icons me-1" style="vertical-align: middle;">delete</i>
+                               class="md-btn md-btn-danger md-ms-auto">
+                                <i class="material-icons md-me-1">delete</i>
                                 Delete Client
                             </a>
                             {% endif %}
@@ -144,15 +136,15 @@
             </div>
 
             <!-- Help Card -->
-            <div class="md-card mt-4">
-                <div class="bg-light p-3 rounded-top">
-                    <h6 class="mb-0">
-                        <i class="material-icons me-2" style="vertical-align: middle;">help</i>
+            <div class="md-card md-mt-4">
+                <div style="background-color: var(--background-secondary); padding: var(--spacing-md);" class="md-rounded-top">
+                    <h6 class="md-mb-0">
+                        <i class="material-icons md-me-2" style="vertical-align: middle;">help</i>
                         Help & Guidelines
                     </h6>
                 </div>
-                <div class="p-4">
-                    <ul class="mb-0">
+                <div class="md-p-4">
+                    <ul class="md-mb-0">
                         <li><strong>Client Name:</strong> A unique identifier for your organization or department.</li>
                         <li><strong>Description:</strong> Optional details about the client's purpose or location.</li>
                         <li>After creating a client, you can add hosts and databases associated with it.</li>
@@ -164,35 +156,6 @@
     </div>
 </div>
 
-<style>
-/* Form validation styles */
-.form-control.is-invalid {
-    border-color: #dc3545;
-}
-
-.form-control.is-invalid:focus {
-    border-color: #dc3545;
-    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-}
-
-.invalid-feedback {
-    display: block;
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-/* Required field indicator */
-.form-floating > label::after {
-    content: '';
-}
-
-.form-floating > input[required] + label::after {
-    content: ' *';
-    color: #dc3545;
-}
-</style>
-
 <script>
 // Form validation
 document.querySelector('form').addEventListener('submit', function(e) {
@@ -203,10 +166,10 @@ document.querySelector('form').addEventListener('submit', function(e) {
         nameField.classList.add('is-invalid');
         
         // Create or update error message
-        let feedback = nameField.parentNode.querySelector('.invalid-feedback');
+        let feedback = nameField.parentNode.querySelector('.md-invalid-feedback');
         if (!feedback) {
             feedback = document.createElement('div');
-            feedback.className = 'invalid-feedback';
+            feedback.className = 'md-invalid-feedback';
             nameField.parentNode.appendChild(feedback);
         }
         feedback.textContent = 'Client name is required.';
@@ -217,10 +180,28 @@ document.querySelector('form').addEventListener('submit', function(e) {
 document.getElementById('id_name').addEventListener('input', function() {
     if (this.value.trim()) {
         this.classList.remove('is-invalid');
-        const feedback = this.parentNode.querySelector('.invalid-feedback');
+        const feedback = this.parentNode.querySelector('.md-invalid-feedback');
         if (feedback) {
             feedback.remove();
         }
+    }
+});
+
+// Add focus/blur animations to floating labels
+document.querySelectorAll('.md-input-floating .md-input').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentNode.classList.add('md-input-focused');
+    });
+    
+    input.addEventListener('blur', function() {
+        if (!this.value) {
+            this.parentNode.classList.remove('md-input-focused');
+        }
+    });
+    
+    // Check if input has value on load
+    if (input.value) {
+        input.parentNode.classList.add('md-input-focused');
     }
 });
 </script>

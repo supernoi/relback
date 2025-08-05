@@ -4,290 +4,232 @@
 {% block title %}Dashboard - RelBack{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="md-container-fluid">
     <!-- Welcome Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="md-card p-4">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <i class="material-icons" style="font-size: 48px; color: var(--md-primary);">dashboard</i>
+    <div class="md-grid md-grid-cols-1 md-mb-5">
+        <div class="md-card md-p-5 animate-fade-in-up glass-effect">
+            <div class="md-flex md-items-center md-justify-start">
+                <div class="md-me-3">
+                    <div style="background: var(--oracle-accent-gradient); padding: var(--spacing-lg); border-radius: var(--radius-2xl); display: inline-flex;">
+                        <i class="material-icons" style="font-size: 48px; color: white;">dashboard</i>
                     </div>
-                    <div>
-                        <h1 class="h3 mb-1">Welcome to RelBack</h1>
-                        <p class="text-muted mb-0">Oracle Backup Management System</p>
-                    </div>
+                </div>
+                <div>
+                    <h1 class="h3 md-mb-1" style="background: var(--oracle-primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">Welcome to RelBack</h1>
+                    <p class="md-text-muted md-mb-0" style="font-size: 1.1rem;">Oracle Backup Management System</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="stats-card">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="h4 mb-1">{{ clients_count|default:"0" }}</h2>
-                        <p class="mb-0 opacity-75">Clients</p>
-                    </div>
-                    <i class="material-icons">business</i>
+    <!-- Stats Cards - TAMANHO REDUZIDO -->
+        <!-- Stats Cards - 🎯 TAMANHO REDUZIDO (100px min-height, padding md) -->
+    <div class="md-grid md-grid-cols-4 md-gap-5 md-mb-5">
+        <div class="md-card oracle-card-gradient animate-fade-in-up" style="animation-delay: 0.1s;">
+            <div class="md-flex md-items-center md-justify-start">
+                <div>
+                    <h2 class="h2 md-mb-1" style="font-weight: 700; font-size: 1.8rem;">{{ clients_count|default:"0" }}</h2>
+                    <p class="md-mb-0 md-opacity-75 h6" style="font-size: 0.85rem; font-weight: 500;">Clients</p>
                 </div>
+                <i class="material-icons md-ms-auto" style="font-size: 2.5rem; opacity: 0.8;">business</i>
             </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="stats-card stats-card-secondary">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="h4 mb-1">{{ hosts_count|default:"0" }}</h2>
-                        <p class="mb-0 opacity-75">Hosts</p>
-                    </div>
-                    <i class="material-icons">dns</i>
+        <div class="md-card oracle-success-gradient animate-fade-in-up" style="color: white; animation-delay: 0.2s;">
+            <div class="md-flex md-items-center md-justify-start">
+                <div>
+                    <h2 class="h2 md-mb-1" style="font-weight: 700; font-size: 1.8rem;">{{ hosts_count|default:"0" }}</h2>
+                    <p class="md-mb-0 md-opacity-75 h6" style="font-size: 0.85rem; font-weight: 500;">Hosts</p>
                 </div>
+                <i class="material-icons md-ms-auto" style="font-size: 2.5rem; opacity: 0.8;">dns</i>
             </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="stats-card stats-card-success">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="h4 mb-1">{{ databases_count|default:"0" }}</h2>
-                        <p class="mb-0 opacity-75">Databases</p>
-                    </div>
-                    <i class="material-icons">storage</i>
+        <div class="md-card oracle-info-gradient animate-fade-in-up" style="color: white; animation-delay: 0.3s;">
+            <div class="md-flex md-items-center md-justify-start">
+                <div>
+                    <h2 class="h2 md-mb-1" style="font-weight: 700; font-size: 1.8rem;">{{ databases_count|default:"0" }}</h2>
+                    <p class="md-mb-0 md-opacity-75 h6" style="font-size: 0.85rem; font-weight: 500;">Databases</p>
                 </div>
+                <i class="material-icons md-ms-auto" style="font-size: 2.5rem; opacity: 0.8;">storage</i>
             </div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="stats-card stats-card-warning">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="h4 mb-1">{{ policies_count|default:"0" }}</h2>
-                        <p class="mb-0 opacity-75">Policies</p>
-                    </div>
-                    <i class="material-icons">security</i>
+        <div class="md-card oracle-warning-gradient animate-fade-in-up" style="color: white; animation-delay: 0.4s;">
+            <div class="md-flex md-items-center md-justify-start">
+                <div>
+                    <h2 class="h2 md-mb-1" style="font-weight: 700; font-size: 1.8rem;">{{ policies_count|default:"0" }}</h2>
+                    <p class="md-mb-0 md-opacity-75 h6" style="font-size: 0.85rem; font-weight: 500;">Policies</p>
                 </div>
+                <i class="material-icons md-ms-auto" style="font-size: 2.5rem; opacity: 0.8;">security</i>
             </div>
         </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="md-card p-4">
-                <h5 class="mb-3">
-                    <i class="material-icons me-2" style="vertical-align: middle;">flash_on</i>
-                    Quick Actions
-                </h5>
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <a href="{% url 'coreRelback:client-create' %}" class="btn btn-md-outlined w-100 py-3">
-                            <i class="material-icons d-block mb-2">add_business</i>
-                            Add Client
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{% url 'coreRelback:host-create' %}" class="btn btn-md-outlined w-100 py-3">
-                            <i class="material-icons d-block mb-2">add_to_queue</i>
-                            Add Host
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{% url 'coreRelback:database-create' %}" class="btn btn-md-outlined w-100 py-3">
-                            <i class="material-icons d-block mb-2">database</i>
-                            Add Database
-                        </a>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <a href="{% url 'coreRelback:policy-create' %}" class="btn btn-md-outlined w-100 py-3">
-                            <i class="material-icons d-block mb-2">policy</i>
-                            Create Policy
-                        </a>
-                    </div>
-                </div>
+    <div class="md-grid md-grid-cols-1 md-mb-5">
+        <div class="md-card md-p-5 glass-effect animate-slide-in-right">
+            <h4 class="md-mb-4" style="color: var(--oracle-slate-150); font-weight: 600;">
+                <i class="material-icons md-me-2" style="vertical-align: middle; color: var(--oracle-red);">flash_on</i>
+                Quick Actions
+            </h4>
+            <div class="md-grid md-grid-cols-4 md-gap-4">
+                <a href="{% url 'coreRelback:client-create' %}" class="md-btn md-btn-outlined md-w-full animate-fade-in-up" style="min-height: 140px; display: flex; align-items: center; justify-content: center; flex-direction: column; animation-delay: 0.1s;">
+                    <i class="material-icons md-mb-3" style="font-size: 3rem; color: var(--oracle-red);">add_business</i>
+                    <span style="font-size: 1.1rem; font-weight: 600;">Add Client</span>
+                </a>
+                <a href="{% url 'coreRelback:host-create' %}" class="md-btn md-btn-outlined md-w-full animate-fade-in-up" style="min-height: 140px; display: flex; align-items: center; justify-content: center; flex-direction: column; animation-delay: 0.2s;">
+                    <i class="material-icons md-mb-3" style="font-size: 3rem; color: var(--pine-100);">add_to_queue</i>
+                    <span style="font-size: 1.1rem; font-weight: 600;">Add Host</span>
+                </a>
+                <a href="{% url 'coreRelback:database-create' %}" class="md-btn md-btn-outlined md-w-full animate-fade-in-up" style="min-height: 140px; display: flex; align-items: center; justify-content: center; flex-direction: column; animation-delay: 0.3s;">
+                    <i class="material-icons md-mb-3" style="font-size: 3rem; color: var(--ocean-120);">storage</i>
+                    <span style="font-size: 1.1rem; font-weight: 600;">Add Database</span>
+                </a>
+                <a href="{% url 'coreRelback:policy-create' %}" class="md-btn md-btn-outlined md-w-full animate-fade-in-up" style="min-height: 140px; display: flex; align-items: center; justify-content: center; flex-direction: column; animation-delay: 0.4s;">
+                    <i class="material-icons md-mb-3" style="font-size: 3rem; color: var(--brand-yellow);">security</i>
+                    <span style="font-size: 1.1rem; font-weight: 600;">Create Policy</span>
+                </a>
             </div>
         </div>
     </div>
 
     <!-- Recent Activity & System Status -->
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="md-card p-4">
-                <h5 class="mb-3">
-                    <i class="material-icons me-2" style="vertical-align: middle;">history</i>
+    <div class="md-grid md-grid-cols-2 md-gap-5 md-mb-5">
+        <div class="md-card md-p-5 glass-effect animate-fade-in-up" style="animation-delay: 0.4s;">
+            <div class="card-header-modern md-mb-5">
+                <h4 style="color: var(--oracle-red); font-weight: 700; margin: 0; display: flex; align-items: center; gap: var(--spacing-md);">
+                    <div style="background: var(--oracle-red-gradient); padding: var(--spacing-sm); border-radius: var(--radius-xl); color: white;">
+                        <i class="material-icons" style="font-size: 1.5rem;">schedule</i>
+                    </div>
                     Recent Activity
-                </h5>
-                <div class="activity-list">
-                    <!-- Activity items would be populated from backend -->
-                    <div class="d-flex align-items-start mb-3">
-                        <div class="me-3">
-                            <div class="rounded-circle bg-success d-flex align-items-center justify-content-center" 
-                                 style="width: 40px; height: 40px;">
-                                <i class="material-icons text-white" style="font-size: 20px;">check</i>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="mb-1">Backup policy created successfully</p>
-                            <small class="text-muted">2 hours ago</small>
-                        </div>
+                </h4>
+            </div>
+            <div class="activity-list">
+                <div class="activity-item animate-slide-in" style="animation-delay: 0.6s;">
+                    <div class="activity-icon oracle-success-gradient">
+                        <i class="material-icons">check</i>
                     </div>
-                    <div class="d-flex align-items-start mb-3">
-                        <div class="me-3">
-                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" 
-                                 style="width: 40px; height: 40px;">
-                                <i class="material-icons text-white" style="font-size: 20px;">add</i>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="mb-1">New database registered</p>
-                            <small class="text-muted">4 hours ago</small>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start mb-3">
-                        <div class="me-3">
-                            <div class="rounded-circle bg-info d-flex align-items-center justify-content-center" 
-                                 style="width: 40px; height: 40px;">
-                                <i class="material-icons text-white" style="font-size: 20px;">sync</i>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="mb-1">System synchronization completed</p>
-                            <small class="text-muted">1 day ago</small>
-                        </div>
+                    <div class="activity-content">
+                        <p style="font-weight: 600; margin: 0; color: var(--oracle-neutral-150);">Backup policy created successfully</p>
+                        <small style="color: var(--oracle-slate-120); font-size: 0.9rem;">2 hours ago</small>
                     </div>
                 </div>
-                <div class="text-center mt-3">
-                    <a href="#" class="btn btn-md-text">View All Activity</a>
+                <div class="activity-item animate-slide-in" style="animation-delay: 0.7s;">
+                    <div class="activity-icon oracle-info-gradient">
+                        <i class="material-icons">add</i>
+                    </div>
+                    <div class="activity-content">
+                        <p style="font-weight: 600; margin: 0; color: var(--oracle-neutral-150);">New database registered</p>
+                        <small style="color: var(--oracle-slate-120); font-size: 0.9rem;">4 hours ago</small>
+                    </div>
                 </div>
+                <div class="activity-item animate-slide-in" style="animation-delay: 0.8s;">
+                    <div class="activity-icon oracle-accent-gradient">
+                        <i class="material-icons">sync</i>
+                    </div>
+                    <div class="activity-content">
+                        <p style="font-weight: 600; margin: 0; color: var(--oracle-neutral-150);">System synchronization completed</p>
+                        <small style="color: var(--oracle-slate-120); font-size: 0.9rem;">1 day ago</small>
+                    </div>
+                </div>
+            </div>
+            <div class="md-text-left md-mt-4">
+                <a href="#" class="modern-btn" style="color: var(--oracle-red);">
+                    <i class="material-icons md-me-1">visibility</i>
+                    View All Activity
+                </a>
             </div>
         </div>
 
-        <div class="col-md-6 mb-4">
-            <div class="md-card p-4">
-                <h5 class="mb-3">
-                    <i class="material-icons me-2" style="vertical-align: middle;">info</i>
+        <div class="md-card md-p-5 glass-effect animate-fade-in-up" style="animation-delay: 0.5s;">
+            <div class="card-header-modern md-mb-5">
+                <h4 style="color: var(--oracle-red); font-weight: 700; margin: 0; display: flex; align-items: center; gap: var(--spacing-md);">
+                    <div style="background: var(--oracle-red-gradient); padding: var(--spacing-sm); border-radius: var(--radius-xl); color: white;">
+                        <i class="material-icons" style="font-size: 1.5rem;">monitor_heart</i>
+                    </div>
                     System Status
-                </h5>
-                <div class="status-list">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="d-flex align-items-center">
-                            <i class="material-icons text-success me-2">check_circle</i>
-                            <span>Oracle Connection</span>
-                        </div>
-                        <span class="badge bg-success">Online</span>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="d-flex align-items-center">
-                            <i class="material-icons text-success me-2">check_circle</i>
-                            <span>Backup Service</span>
-                        </div>
-                        <span class="badge bg-success">Running</span>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="d-flex align-items-center">
-                            <i class="material-icons text-warning me-2">warning</i>
-                            <span>Storage Space</span>
-                        </div>
-                        <span class="badge bg-warning">75% Used</span>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="d-flex align-items-center">
-                            <i class="material-icons text-success me-2">check_circle</i>
-                            <span>Last Sync</span>
-                        </div>
-                        <span class="badge bg-success">5 min ago</span>
+                </h4>
+            </div>
+            <div class="status-grid">
+                <div class="status-item animate-fade-in" style="animation-delay: 0.9s;">
+                    <div class="status-indicator success"></div>
+                    <div>
+                        <span style="font-weight: 600; color: var(--oracle-neutral-150);">Oracle Connection</span>
+                        <small style="display: block; color: var(--oracle-pine-120); font-size: 0.85rem;">Online</small>
                     </div>
                 </div>
-                <div class="text-center mt-3">
-                    <a href="{% url 'coreRelback:report-read' %}" class="btn btn-md-primary">
-                        <i class="material-icons me-1" style="vertical-align: middle;">assessment</i>
-                        View Reports
-                    </a>
+                <div class="status-item animate-fade-in" style="animation-delay: 1.0s;">
+                    <div class="status-indicator success"></div>
+                    <div>
+                        <span style="font-weight: 600; color: var(--oracle-neutral-150);">Backup Service</span>
+                        <small style="display: block; color: var(--oracle-pine-120); font-size: 0.85rem;">Running</small>
+                    </div>
                 </div>
+                <div class="status-item animate-fade-in" style="animation-delay: 1.1s;">
+                    <div class="status-indicator warning"></div>
+                    <div>
+                        <span style="font-weight: 600; color: var(--oracle-neutral-150);">Storage Space</span>
+                        <small style="display: block; color: var(--oracle-sienna-orange-120); font-size: 0.85rem;">75% Used</small>
+                    </div>
+                </div>
+                <div class="status-item animate-fade-in" style="animation-delay: 1.2s;">
+                    <div class="status-indicator success"></div>
+                    <div>
+                        <span style="font-weight: 600; color: var(--oracle-neutral-150);">Last Sync</span>
+                        <small style="display: block; color: var(--oracle-pine-120); font-size: 0.85rem;">5 min ago</small>
+                    </div>
+                </div>
+            </div>
+            <div class="md-text-left md-mt-4">
+                <a href="{% url 'coreRelback:report-read' %}" class="modern-btn-primary" style="padding: 1rem 2rem;">
+                    <i class="material-icons md-me-1">assessment</i>
+                    View Reports
+                </a>
             </div>
         </div>
     </div>
 
     <!-- Navigation Cards -->
-    <div class="row">
-        <div class="col-md-4 mb-4">
-            <div class="md-card p-4 h-100">
-                <div class="text-center">
-                    <i class="material-icons mb-3 text-oracle-red" style="font-size: 64px;">manage_accounts</i>
-                    <h5>Manage Infrastructure</h5>
-                    <p class="text-muted">Configure clients, hosts, and databases for backup management.</p>
-                    <a href="{% url 'coreRelback:client-list' %}" class="btn btn-md-primary">Get Started</a>
+    <div class="md-grid md-grid-cols-3 md-gap-5">
+        <div class="md-card md-p-5 oracle-accent-gradient animate-fade-in-up" style="color: white; min-height: 300px; animation-delay: 0.1s;">
+            <div class="md-text-left">
+                <div style="background: rgba(255, 255, 255, 0.2); display: inline-flex; padding: var(--spacing-lg); border-radius: var(--radius-2xl); margin-bottom: var(--spacing-lg);">
+                    <i class="material-icons" style="font-size: 80px; color: white;">manage_accounts</i>
                 </div>
+                <h4 class="md-mb-3" style="font-weight: 700; font-size: 1.5rem;">Manage Infrastructure</h4>
+                <p class="md-mb-5 md-opacity-75" style="font-size: 1rem; line-height: 1.6;">Configure clients, hosts, and databases for backup management.</p>
+                <a href="{% url 'coreRelback:client-list' %}" class="md-btn md-btn-outlined" style="border-color: white; color: white; padding: 1rem 2rem; font-size: 1rem; font-weight: 600;">Get Started</a>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="md-card p-4 h-100">
-                <div class="text-center">
-                    <i class="material-icons mb-3 text-oracle-yellow" style="font-size: 64px;">shield</i>
-                    <h5>Backup Policies</h5>
-                    <p class="text-muted">Create and manage automated backup policies for your databases.</p>
-                    <a href="{% url 'coreRelback:policy-list' %}" class="btn btn-md-secondary">Manage Policies</a>
+        <div class="md-card md-p-5 oracle-warning-gradient animate-fade-in-up" style="color: white; min-height: 300px; animation-delay: 0.2s;">
+            <div class="md-text-left">
+                <div style="background: rgba(255, 255, 255, 0.2); display: inline-flex; padding: var(--spacing-lg); border-radius: var(--radius-2xl); margin-bottom: var(--spacing-lg);">
+                    <i class="material-icons" style="font-size: 80px; color: white;">shield</i>
                 </div>
+                <h4 class="md-mb-3" style="font-weight: 700; font-size: 1.5rem;">Backup Policies</h4>
+                <p class="md-mb-5 md-opacity-75" style="font-size: 1rem; line-height: 1.6;">Create and manage automated backup policies for your databases.</p>
+                <a href="{% url 'coreRelback:policy-list' %}" class="md-btn md-btn-outlined" style="border-color: white; color: white; padding: 1rem 2rem; font-size: 1rem; font-weight: 600;">Manage Policies</a>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="md-card p-4 h-100">
-                <div class="text-center">
-                    <i class="material-icons mb-3" style="font-size: 64px; color: var(--oracle-slate-150);">analytics</i>
-                    <h5>Monitor & Report</h5>
-                    <p class="text-muted">Track backup status and generate comprehensive reports.</p>
-                    <a href="{% url 'coreRelback:report-read' %}" class="btn btn-outline">View Reports</a>
+        <div class="md-card md-p-5 oracle-info-gradient animate-fade-in-up" style="color: white; min-height: 300px; animation-delay: 0.3s;">
+            <div class="md-text-left">
+                <div style="background: rgba(255, 255, 255, 0.2); display: inline-flex; padding: var(--spacing-lg); border-radius: var(--radius-2xl); margin-bottom: var(--spacing-lg);">
+                    <i class="material-icons" style="font-size: 80px; color: white;">analytics</i>
                 </div>
+                <h4 class="md-mb-3" style="font-weight: 700; font-size: 1.5rem;">Monitor & Report</h4>
+                <p class="md-mb-5 md-opacity-75" style="font-size: 1rem; line-height: 1.6;">Track backup status and generate comprehensive reports.</p>
+                <a href="{% url 'coreRelback:report-read' %}" class="md-btn md-btn-outlined" style="border-color: white; color: white; padding: 1rem 2rem; font-size: 1rem; font-weight: 600;">View Reports</a>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Floating Action Button -->
-<button class="fab" title="Quick Add">
+<button class="md-fab" title="Quick Add">
     <i class="material-icons">add</i>
 </button>
 
-<style>
-/* Additional styles for dashboard */
-.activity-list .rounded-circle {
-    flex-shrink: 0;
-}
-
-.status-list .material-icons {
-    font-size: 20px;
-}
-
-.badge {
-    font-size: 0.75rem;
-    padding: 0.35em 0.65em;
-}
-
-/* Ripple effect for buttons */
-.btn-md-primary, .btn-md-secondary, .btn-md-outlined, .btn-md-text {
-    position: relative;
-    overflow: hidden;
-}
-
-.ripple {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    transform: scale(0);
-    animation: ripple-animation 0.6s linear;
-    pointer-events: none;
-}
-
-@keyframes ripple-animation {
-    to {
-        transform: scale(4);
-        opacity: 0;
-    }
-}
-</style>
-
 <script>
 // FAB click handler
-document.querySelector('.fab').addEventListener('click', function() {
+document.querySelector('.md-fab').addEventListener('click', function() {
     // Show a dropdown or modal with quick add options
     alert('Quick add functionality - could show a dropdown with add options');
 });

@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}RelBack - Oracle Backup Management{% endblock %}</title>
+    <title>{% block title %}RelBack - Oracle Report Backup{% endblock %}</title>
     
     <!-- Material Design CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     
@@ -15,163 +14,94 @@
     <link href="{% static 'css/oracle-modern-theme.css' %}" rel="stylesheet">
     
     {% block extra_css %}{% endblock %}
-    
-    <style>
-        .btn-md-primary,
-        .btn-md-success,
-        .btn-md-outline,
-        .btn-md-secondary,
-        .btn-md-text,
-        .btn-sm {
-            background-color: #F1EFED !important;
-            border-color: #F1EFED !important;
-            color: #222 !important;
-        }
-        .btn-md-primary:hover,
-        .btn-md-success:hover,
-        .btn-md-outline:hover,
-        .btn-md-secondary:hover,
-        .btn-md-text:hover,
-        .btn-sm:hover {
-            background-color: #e5e1de !important;
-            border-color: #e5e1de !important;
-            color: #222 !important;
-        }
-        .navbar .nav-link {
-            background-color: transparent !important;
-            border: 1px solid rgba(194, 212, 212, 0.3) !important;
-            border-radius: 6px !important;
-            color: #C2D4D4 !important;
-            padding: 8px 12px !important;
-            margin: 2px !important;
-            transition: all 0.3s ease !important;
-        }
-        .navbar .nav-link:hover {
-            background-color: rgba(194, 212, 212, 0.15) !important;
-            border-color: #C2D4D4 !important;
-            color: #FFFFFF !important;
-            transform: translateY(-1px) !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
-        }
-        .navbar .dropdown-item {
-            background-color: #FFFFFF !important;
-            border-color: #e9ecef !important;
-            color: #333 !important;
-            padding: 8px 16px !important;
-        }
-        .navbar .dropdown-item:hover {
-            background-color: #C74634 !important;
-            color: #FFFFFF !important;
-        }
-        .navbar .btn {
-            background-color: rgba(241, 239, 237, 0.1) !important;
-            border: 1px solid rgba(241, 239, 237, 0.3) !important;
-            border-radius: 6px !important;
-            color: #F1EFED !important;
-        }
-        .navbar .btn:hover {
-            background-color: rgba(241, 239, 237, 0.2) !important;
-            border-color: #F1EFED !important;
-            color: #FFFFFF !important;
-        }
-    </style>
+
 </head>
 <body>
     <!-- Oracle Navigation Bar -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'coreRelback:index' %}">
-                    <span style="font-family: 'Oracle Sans', Arial, sans-serif; font-weight: 900; letter-spacing: 1px; font-size: 1.7rem; color: var(--md-primary, #F1EFED);">relBack</span>
+    <nav class="md-navbar">
+        <div class="md-container">
+            <a class="md-navbar-brand animate-pulse" href="{% url 'coreRelback:index' %}">
+                <i class="material-icons" style="font-size: 2rem; color: var(--oracle-red);">storage</i>
+                <span class="md-navbar-logo">relBack</span>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    style="border: 1px solid rgba(255,255,255,0.3);">
-                <span class="material-icons" style="color: white;">menu</span>
+            <button class="md-navbar-toggle" type="button" id="navbarToggle">
+                <span class="material-icons">menu</span>
             </button>
             
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <!-- Modernized Menu: Spacing, Responsive, Visual Improvements -->
-                    <li class="nav-item mx-2">
-                        <a class="nav-link d-flex align-items-center gap-2" href="{% url 'coreRelback:index' %}">
-                            <i class="material-icons" style="font-size: 20px;">home</i>
-                            <span class="d-none d-md-inline">Home</span>
-                        </a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link d-flex align-items-center gap-2" href="{% url 'coreRelback:client-list' %}">
-                            <i class="material-icons" style="font-size: 20px;">business</i>
-                            <span class="d-none d-md-inline">Clients</span>
-                        </a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link d-flex align-items-center gap-2" href="{% url 'coreRelback:host-list' %}">
-                            <i class="material-icons" style="font-size: 20px;">dns</i>
-                            <span class="d-none d-md-inline">Hosts</span>
-                        </a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link d-flex align-items-center gap-2" href="{% url 'coreRelback:database-list' %}">
-                            <i class="material-icons" style="font-size: 20px;">storage</i>
-                            <span class="d-none d-md-inline">Databases</span>
-                        </a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link d-flex align-items-center gap-2" href="{% url 'coreRelback:policy-list' %}">
-                            <i class="material-icons" style="font-size: 20px;">security</i>
-                            <span class="d-none d-md-inline">Policies</span>
-                        </a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link d-flex align-items-center gap-2" href="{% url 'coreRelback:report-read' %}">
-                            <i class="material-icons" style="font-size: 20px;">assessment</i>
-                            <span class="d-none d-md-inline">Reports</span>
-                        </a>
-                    </li>
-                    <li class="nav-item mx-2 d-flex align-items-center">
-                        <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode" style="margin-left: 8px;">
-                            <i class="material-icons" id="themeIcon">dark_mode</i>
+            <div class="md-navbar-nav" id="navbarNav">
+                <div class="md-nav-items">
+                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:index' %}" style="animation-delay: 0.1s;">
+                        <i class="material-icons">home</i>
+                        <span class="md-nav-text">Home</span>
+                    </a>
+                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:client-list' %}" style="animation-delay: 0.2s;">
+                        <i class="material-icons">business</i>
+                        <span class="md-nav-text">Clients</span>
+                    </a>
+                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:host-list' %}" style="animation-delay: 0.3s;">
+                        <i class="material-icons">dns</i>
+                        <span class="md-nav-text">Hosts</span>
+                    </a>
+                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:database-list' %}" style="animation-delay: 0.4s;">
+                        <i class="material-icons">storage</i>
+                        <span class="md-nav-text">Databases</span>
+                    </a>
+                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:policy-list' %}" style="animation-delay: 0.5s;">
+                        <i class="material-icons">security</i>
+                        <span class="md-nav-text">Policies</span>
+                    </a>
+                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:report-read' %}" style="animation-delay: 0.6s;">
+                        <i class="material-icons">assessment</i>
+                        <span class="md-nav-text">Reports</span>
+                    </a>
+                </div>
+                
+                <div class="md-nav-actions">
+                    <button class="md-theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+                        <i class="material-icons" id="themeIcon">dark_mode</i>
+                    </button>
+                    
+                    <div class="md-dropdown">
+                        <button class="md-dropdown-trigger" id="userDropdown">
+                            <i class="material-icons">account_circle</i>
+                            <span class="md-nav-text">User</span>
+                            <i class="material-icons md-dropdown-arrow">keyboard_arrow_down</i>
                         </button>
-                    </li>
-                    <li class="nav-item dropdown mx-2">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="material-icons" style="font-size: 20px;">account_circle</i>
-                            <span class="d-none d-md-inline">User</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'coreRelback:user-settings' %}">
-                                    <i class="material-icons" style="font-size: 18px;">settings</i>
-                                    Settings
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center gap-2" href="#">
-                                    <i class="material-icons" style="font-size: 18px;">logout</i>
-                                    Sign Out
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                        <div class="md-dropdown-menu" id="userMenu">
+                            <a class="md-dropdown-item" href="{% url 'coreRelback:user-settings' %}">
+                                <i class="material-icons">settings</i>
+                                <span>Settings</span>
+                            </a>
+                            <div class="md-dropdown-divider"></div>
+                            <a class="md-dropdown-item" href="#">
+                                <i class="material-icons">logout</i>
+                                <span>Sign Out</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="md-main-content">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show md-card mb-3" role="alert">
-                    <i class="material-icons me-2" style="vertical-align: middle;">
-                        {% if message.tags == 'success' %}check_circle
-                        {% elif message.tags == 'error' %}error
-                        {% elif message.tags == 'warning' %}warning
-                        {% else %}info{% endif %}
-                    </i>
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="md-snackbar md-snackbar-{{ message.tags }}" role="alert">
+                    <div class="md-snackbar-content">
+                        <i class="material-icons md-snackbar-icon">
+                            {% if message.tags == 'success' %}check_circle
+                            {% elif message.tags == 'error' %}error
+                            {% elif message.tags == 'warning' %}warning
+                            {% else %}info{% endif %}
+                        </i>
+                        <span class="md-snackbar-message">{{ message }}</span>
+                    </div>
+                    <button type="button" class="md-snackbar-close">
+                        <i class="material-icons">close</i>
+                    </button>
                 </div>
             {% endfor %}
         {% endif %}
@@ -182,62 +112,86 @@
 
     <!-- Material Design Footer -->
     <footer class="md-footer">
-        <div class="container">
-            <p class="mb-0">
-                <i class="material-icons me-1" style="vertical-align: middle; font-size: 16px;">copyright</i>
-                2025 RelBack - Oracle Backup Management System
+        <div class="md-container">
+            <p class="md-mb-0">
+                <i class="material-icons md-me-1" style="vertical-align: middle; font-size: 16px;">copyright</i>
+                2025 RelBack - Oracle Report Backup
             </p>
         </div>
     </footer>
 
-    <!-- Bootstrap JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Oracle Modern Theme JavaScript -->
-    <script src="{% static 'js/oracle-modern-theme.js' %}"></script>
-    
-    <!-- Material Design Components JavaScript -->
+    <!-- Material Design JavaScript -->
     <script>
         // Theme Toggle Functionality
         const themeToggle = document.getElementById('themeToggle');
         const themeIcon = document.getElementById('themeIcon');
         const body = document.body;
         
-        // Check for saved theme preference or default to light mode
-        const currentTheme = localStorage.getItem('theme') || 'light';
-        body.setAttribute('data-theme', currentTheme);
-        updateThemeIcon(currentTheme);
-        
-        function updateThemeIcon(theme) {
-            if (theme === 'dark') {
-                themeIcon.textContent = 'light_mode';
-                themeToggle.title = 'Switch to Light Mode';
-            } else {
-                themeIcon.textContent = 'dark_mode';
-                themeToggle.title = 'Switch to Dark Mode';
+        if (themeToggle && themeIcon) {
+            // Check for saved theme preference or default to light mode
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            body.setAttribute('data-theme', currentTheme);
+            updateThemeIcon(currentTheme);
+            
+            function updateThemeIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.textContent = 'light_mode';
+                    themeToggle.title = 'Switch to Light Mode';
+                } else {
+                    themeIcon.textContent = 'dark_mode';
+                    themeToggle.title = 'Switch to Dark Mode';
+                }
             }
+            
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+                
+                // Add smooth transition effect
+                body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+                setTimeout(() => {
+                    body.style.transition = '';
+                }, 300);
+            });
         }
+
+        // Mobile Navigation Toggle
+        const navbarToggle = document.getElementById('navbarToggle');
+        const navbarNav = document.getElementById('navbarNav');
         
-        themeToggle.addEventListener('click', function() {
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
-            
-            // Add smooth transition effect
-            body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-            setTimeout(() => {
-                body.style.transition = '';
-            }, 300);
-        });
+        if (navbarToggle && navbarNav) {
+            navbarToggle.addEventListener('click', function() {
+                navbarNav.classList.toggle('md-navbar-nav-open');
+            });
+        }
+
+        // User Dropdown Toggle
+        const userDropdown = document.getElementById('userDropdown');
+        const userMenu = document.getElementById('userMenu');
+        
+        if (userDropdown && userMenu) {
+            userDropdown.addEventListener('click', function(e) {
+                e.preventDefault();
+                userMenu.classList.toggle('md-dropdown-menu-open');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!userDropdown.contains(e.target)) {
+                    userMenu.classList.remove('md-dropdown-menu-open');
+                }
+            });
+        }
 
         // Add ripple effect to buttons
-        document.querySelectorAll('.btn-md-primary, .btn-md-secondary, .btn-md-outlined, .btn-md-text').forEach(button => {
+        document.querySelectorAll('.md-btn, .md-nav-link').forEach(button => {
             button.addEventListener('click', function(e) {
                 let ripple = document.createElement('span');
-                ripple.classList.add('ripple');
+                ripple.classList.add('md-ripple');
                 this.appendChild(ripple);
                 
                 let x = e.clientX - e.target.offsetLeft;
@@ -252,18 +206,26 @@
             });
         });
 
-        // Auto-dismiss alerts after 5 seconds
+        // Auto-dismiss snackbars after 5 seconds
         setTimeout(() => {
-            document.querySelectorAll('.alert').forEach(alert => {
-                if (alert.querySelector('.btn-close')) {
-                    alert.querySelector('.btn-close').click();
+            document.querySelectorAll('.md-snackbar').forEach(snackbar => {
+                const closeBtn = snackbar.querySelector('.md-snackbar-close');
+                if (closeBtn) {
+                    closeBtn.click();
                 }
             });
         }, 5000);
 
+        // Snackbar close functionality
+        document.querySelectorAll('.md-snackbar-close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                this.closest('.md-snackbar').remove();
+            });
+        });
+
         // Add fade-in animation to cards
         document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.card, .md-card');
+            const cards = document.querySelectorAll('.md-card');
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';

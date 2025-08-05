@@ -4,277 +4,195 @@
 {% block title %}Hosts - RelBack{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="md-container-fluid">
     <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="md-card p-4">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <i class="material-icons me-3" style="font-size: 48px; color: var(--md-primary);">storage</i>
-                        <div>
-                            <h1 class="h3 mb-1">Hosts Management</h1>
-                            <p class="text-muted mb-0">Manage your backup host servers</p>
-                        </div>
+    <div class="md-grid md-grid-cols-1 md-mb-5">
+        <div class="md-card md-p-5">
+            <div class="md-flex md-items-center md-justify-between">
+                <div class="md-flex md-items-center">
+                    <i class="material-icons md-me-3" style="font-size: 56px; color: var(--md-primary);">dns</i>
+                    <div>
+                        <h1 class="h2 md-mb-1">Hosts Management</h1>
+                        <p class="md-text-muted md-mb-0" style="font-size: 1.1rem;">Manage your backup host servers</p>
                     </div>
-                    <a href="{% url 'coreRelback:host-create' %}" class="btn btn-md-primary">
-                        <i class="material-icons me-1" style="vertical-align: middle;">add</i>
-                        Add Host
-                    </a>
                 </div>
+                <a href="{% url 'coreRelback:host-create' %}" class="md-btn md-btn-primary" style="padding: 0.8rem 1.5rem; font-size: 1rem;">
+                    <i class="material-icons md-me-1">add</i>
+                    Add Host
+                </a>
             </div>
         </div>
     </div>
 
     <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="stats-card">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="h4 mb-1">{{ total_hosts }}</h2>
-                        <p class="mb-0 opacity-75">Total Hosts</p>
-                    </div>
-                    <i class="material-icons">storage</i>
+    <div class="md-grid md-grid-cols-4 md-mb-5">
+        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #3C4545, #697778) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+            <div class="md-flex md-items-center md-justify-between">
+                <div>
+                    <h2 class="h3 md-mb-1">{{ total_hosts }}</h2>
+                    <p class="md-mb-0 h6" style="opacity: 0.75;">Total Hosts</p>
                 </div>
+                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">dns</i>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #4caf50, #66bb6a);">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="h4 mb-1">{{ active_hosts|default:0 }}</h2>
-                        <p class="mb-0 opacity-75">Active Hosts</p>
-                    </div>
-                    <i class="material-icons">check_circle</i>
+        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #3C4545, #697778) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+            <div class="md-flex md-items-center md-justify-between">
+                <div>
+                    <h2 class="h3 md-mb-1">{{ active_hosts|default:0 }}</h2>
+                    <p class="md-mb-0 h6" style="opacity: 0.75;">Active Hosts</p>
                 </div>
+                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">check_circle</i>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #2196f3, #42a5f5);">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="h4 mb-1">{{ total_clients|default:0 }}</h2>
-                        <p class="mb-0 opacity-75">Clients</p>
-                    </div>
-                    <i class="material-icons">business</i>
+        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #3C4545, #697778) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+            <div class="md-flex md-items-center md-justify-between">
+                <div>
+                    <h2 class="h3 md-mb-1">{{ total_clients|default:0 }}</h2>
+                    <p class="md-mb-0 h6" style="opacity: 0.75;">Clients</p>
                 </div>
+                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">business</i>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #ff9800, #ffb74d);">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="h4 mb-1">{{ total_databases|default:0 }}</h2>
-                        <p class="mb-0 opacity-75">Databases</p>
-                    </div>
-                    <i class="material-icons">database</i>
+        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #3C4545, #697778) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+            <div class="md-flex md-items-center md-justify-between">
+                <div>
+                    <h2 class="h3 md-mb-1">{{ total_databases|default:0 }}</h2>
+                    <p class="md-mb-0 h6" style="opacity: 0.75;">Databases</p>
                 </div>
+                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">storage</i>
             </div>
         </div>
     </div>
 
     <!-- Search and Filters -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="md-card p-3">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" class="form-control" id="searchHost" placeholder="Search hosts...">
-                            <label for="searchHost">Search hosts...</label>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-md-outlined w-100">
-                            <i class="material-icons me-1" style="vertical-align: middle;">filter_list</i>
-                            Filters
-                        </button>
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-md-text w-100">
-                            <i class="material-icons me-1" style="vertical-align: middle;">refresh</i>
-                            Refresh
-                        </button>
-                    </div>
+    <div class="md-grid md-grid-cols-1 md-mb-5">
+        <div class="md-card md-p-4">
+            <div class="md-grid md-grid-cols-3 md-gap-4 md-items-center">
+                <div class="md-input-group">
+                    <input type="text" class="md-input" id="searchHost" placeholder="Search hosts...">
+                    <label class="md-label">Search hosts...</label>
                 </div>
+                <button class="md-btn md-btn-outlined md-w-full" style="padding: 0.75rem 1.2rem; font-size: 1rem;">
+                    <i class="material-icons md-me-1">filter_list</i>
+                    Filters
+                </button>
+                <button class="md-btn md-btn-text md-w-full" style="padding: 0.75rem 1.2rem; font-size: 1rem;">
+                    <i class="material-icons md-me-1">refresh</i>
+                    Refresh
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Hosts Table -->
-    <div class="row">
-        <div class="col-12">
-            <div class="md-card">
-                <div class="table-responsive">
-                    <table class="table table-md mb-0">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <i class="material-icons me-2" style="vertical-align: middle;">storage</i>
-                                    Host
-                                </th>
-                                <th>
-                                    <i class="material-icons me-2" style="vertical-align: middle;">business</i>
-                                    Client
-                                </th>
-                                <th>
-                                    <i class="material-icons me-2" style="vertical-align: middle;">language</i>
-                                    IP Address
-                                </th>
-                                <th>
-                                    <i class="material-icons me-2" style="vertical-align: middle;">computer</i>
-                                    Platform
-                                </th>
-                                <th>
-                                    <i class="material-icons me-2" style="vertical-align: middle;">database</i>
-                                    Databases
-                                </th>
-                                <th>
-                                    <i class="material-icons me-2" style="vertical-align: middle;">schedule</i>
-                                    Last Backup
-                                </th>
-                                <th class="text-center">
-                                    <i class="material-icons me-2" style="vertical-align: middle;">settings</i>
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for host in hosts %}
-                            <tr class="host-row" data-client="{{ host.client.name|default:'Unknown' }}" data-status="active">
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" 
-                                             style="width: 40px; height: 40px;">
-                                            <i class="material-icons text-white" style="font-size: 20px;">storage</i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0">{{ host.hostname|default:"Unnamed Host" }}</h6>
-                                            <small class="text-muted">ID: {{ host.id_host }}</small>
-                                        </div>
+    <div class="md-grid md-grid-cols-1">
+        <div class="md-card">
+            <div class="md-table-responsive">
+                <table class="md-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="material-icons md-me-2">dns</i>
+                                Host
+                            </th>
+                            <th>
+                                <i class="material-icons md-me-2">business</i>
+                                Client
+                            </th>
+                            <th>
+                                <i class="material-icons md-me-2">language</i>
+                                IP Address
+                            </th>
+                            <th>
+                                <i class="material-icons md-me-2">computer</i>
+                                Platform
+                            </th>
+                            <th>
+                                <i class="material-icons md-me-2">storage</i>
+                                Databases
+                            </th>
+                            <th>
+                                <i class="material-icons md-me-2">schedule</i>
+                                Last Backup
+                            </th>
+                            <th class="md-text-center">
+                                <i class="material-icons md-me-2">settings</i>
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for host in hosts %}
+                        <tr class="host-row" data-client="{{ host.client.name|default:'Unknown' }}" data-status="active">
+                            <td>
+                                <div class="md-flex md-items-center">
+                                    <div class="md-avatar md-avatar-md md-me-3" style="background-color: var(--md-primary);">
+                                        <i class="material-icons" style="color: white;">dns</i>
                                     </div>
-                                </td>
-                                <td>
-                                    {% if host.client %}
-                                    <span class="badge bg-primary">{{ host.client.name }}</span>
-                                    {% else %}
-                                    <span class="text-muted">No Client</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <code>{{ host.ip|default:'N/A' }}</code>
-                                </td>
-                                <td>
-                                    <span class="text-muted">Oracle Server</span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info">{{ host.database_set.count }}</span>
-                                </td>
-                                <td>
-                                    <span class="text-muted">Never</span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <a href="{% url 'coreRelback:host-update' host.id_host %}" 
-                                           class="btn btn-sm btn-md-outlined" title="Edit">
-                                            <i class="material-icons" style="font-size: 16px;">edit</i>
-                                        </a>
-                                        <a href="{% url 'coreRelback:host-delete' host.id_host %}" 
-                                           class="btn btn-sm btn-outline-danger" title="Delete">
-                                            <i class="material-icons" style="font-size: 16px;">delete</i>
-                                        </a>
+                                    <div>
+                                        <h6 class="md-mb-0">{{ host.hostname|default:"Unnamed Host" }}</h6>
+                                        <small class="md-text-muted">ID: {{ host.id_host }}</small>
                                     </div>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="7" class="text-center py-5">
-                                    <div class="text-muted">
-                                        <i class="material-icons mb-3" style="font-size: 64px; color: #ccc;">storage</i>
-                                        <h5 class="text-muted">No hosts found</h5>
-                                        <p class="text-muted mb-4">Get started by adding your first host</p>
-                                        <a href="{% url 'coreRelback:host-create' %}" class="btn btn-md-primary">
-                                            <i class="material-icons me-1" style="vertical-align: middle;">add</i>
-                                            Add First Host
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if host.client %}
+                                <span class="md-chip md-chip-primary">{{ host.client.name }}</span>
+                                {% else %}
+                                <span class="md-text-muted">No Client</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <code class="md-code">{{ host.ip|default:'N/A' }}</code>
+                            </td>
+                            <td>
+                                <span class="md-text-muted">Oracle Server</span>
+                            </td>
+                            <td>
+                                <span class="md-chip md-chip-info">{{ host.database_set.count }}</span>
+                            </td>
+                            <td>
+                                <span class="md-text-muted">Never</span>
+                            </td>
+                            <td class="md-text-center">
+                                <div class="md-btn-group">
+                                    <a href="{% url 'coreRelback:host-update' host.id_host %}" 
+                                       class="md-btn md-btn-sm md-btn-outlined" title="Edit">
+                                        <i class="material-icons">edit</i>
+                                    </a>
+                                    <a href="{% url 'coreRelback:host-delete' host.id_host %}" 
+                                       class="md-btn md-btn-sm md-btn-danger" title="Delete">
+                                        <i class="material-icons">delete</i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="md-text-center md-py-5">
+                                <div class="md-empty-state">
+                                    <i class="material-icons md-mb-3" style="font-size: 64px; color: #ccc;">dns</i>
+                                    <h5 class="md-text-muted">No hosts found</h5>
+                                    <p class="md-text-muted md-mb-4">Get started by adding your first host</p>
+                                    <a href="{% url 'coreRelback:host-create' %}" class="md-btn md-btn-primary">
+                                        <i class="material-icons md-me-1">add</i>
+                                        Add First Host
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Floating Action Button -->
-<button class="fab" id="addHostFab" title="Add Host">
+<button class="md-fab" id="addHostFab" title="Add Host">
     <i class="material-icons">add</i>
 </button>
-
-<style>
-/* Status indicator */
-.status-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-/* Table hover effects */
-.table-hover tbody tr:hover {
-    background-color: rgba(var(--md-primary-rgb), 0.05);
-}
-
-/* Button group improvements */
-.btn-group .btn {
-    border-radius: 4px !important;
-    margin-right: 2px;
-}
-
-.btn-group .btn:last-child {
-    margin-right: 0;
-}
-
-/* Badge styles */
-.badge {
-    font-size: 0.75rem;
-    padding: 0.375rem 0.75rem;
-}
-
-/* Code styling */
-code {
-    background-color: var(--md-surface-variant);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-}
-
-/* Empty state styling */
-.text-muted h5 {
-    color: var(--md-on-surface-variant) !important;
-}
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-    .btn-group {
-        flex-direction: column;
-    }
-    
-    .btn-group .btn {
-        margin-right: 0;
-        margin-bottom: 2px;
-    }
-    
-    .table th, .table td {
-        padding: 0.5rem;
-        font-size: 0.875rem;
-    }
-}
-</style>
 
 <script>
 // FAB click handler
@@ -285,13 +203,14 @@ document.getElementById('addHostFab').addEventListener('click', function() {
 // Search functionality
 document.getElementById('searchHost').addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase();
-    const tableRows = document.querySelectorAll('tbody tr');
+    const tableRows = document.querySelectorAll('tbody tr.host-row');
     
     tableRows.forEach(row => {
         const hostName = row.querySelector('h6').textContent.toLowerCase();
         const ipAddress = row.cells[2].textContent.toLowerCase();
+        const clientName = row.dataset.client.toLowerCase();
         
-        if (hostName.includes(searchTerm) || ipAddress.includes(searchTerm)) {
+        if (hostName.includes(searchTerm) || ipAddress.includes(searchTerm) || clientName.includes(searchTerm)) {
             row.style.display = '';
         } else {
             row.style.display = 'none';
@@ -299,14 +218,30 @@ document.getElementById('searchHost').addEventListener('input', function() {
     });
 });
 
-// Add row hover effects
-document.querySelectorAll('tbody tr').forEach(row => {
-    row.addEventListener('mouseenter', function() {
-        this.style.backgroundColor = '#f5f5f5';
+// Add Material Design interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate cards on load
+    const cards = document.querySelectorAll('.md-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
     });
     
-    row.addEventListener('mouseleave', function() {
-        this.style.backgroundColor = '';
+    // Add hover effects to table rows
+    const tableRows = document.querySelectorAll('tbody tr.host-row');
+    tableRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'rgba(66, 133, 244, 0.08)';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
     });
 });
 </script>
