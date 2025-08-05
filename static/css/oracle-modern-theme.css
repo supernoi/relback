@@ -39,8 +39,9 @@
   --oracle-success-gradient: linear-gradient(to bottom, var(--pine-170) 0%, var(--pine-100) 100%);
   --oracle-info-gradient: linear-gradient(to bottom, var(--ocean-180) 0%, var(--ocean-120) 100%);
   --oracle-warning-gradient: linear-gradient(to bottom, var(--brand-yellow) 0%, var(--brand-yellow-170) 100%);
-  --oracle-card-gradient: linear-gradient(to bottom, var(--oracle-slate-150) 0%, var(--oracle-slate-100) 100%);
-  --oracle-navbar-gradient: linear-gradient(to bottom, var(--oracle-slate-150) 0%, var(--teal-170) 50%, var(--ocean-180) 100%);
+  --oracle-card-gradient: linear-gradient(to bottom, var(--ocean-180) 0%, var(--ocean-120) 100%);
+  --oracle-grid-title-gradient: linear-gradient(to bottom, var(--ocean-180) 0%, var(--ocean-120) 100%);
+  --oracle-navbar-gradient: linear-gradient(to bottom, var(--ocean-180) 0%, var(--ocean-120) 100%);
   
   /* Glass Morphism Effects */
   --glass-bg: rgba(255, 255, 255, 0.1);
@@ -452,7 +453,7 @@ body {
 
 /* 🎯 ALTERE AQUI O TAMANHO DAS STATS CARDS */
 .stats-card {
-  background: var(--oracle-accent-gradient);
+  background: var(--oracle-info-gradient);
   color: white;
   padding: var(--spacing-lg); /* Tamanho adequado */
   min-height: 120px; /* Altura mínima adequada */
@@ -666,7 +667,7 @@ body {
 }
 
 .md-table thead th {
-  background: var(--oracle-primary-gradient);
+  background: var(--oracle-info-gradient);
   color: white;
   font-weight: 600;
   padding: var(--spacing-lg) var(--spacing-xl);
@@ -709,7 +710,7 @@ body {
 
 /* ===== ENHANCED FOOTER ===== */
 .md-footer {
-  background: var(--oracle-primary-gradient);
+  background: var(--oracle-navbar-gradient);
   color: white;
   padding: var(--spacing-2xl) 0;
   margin-top: auto;
