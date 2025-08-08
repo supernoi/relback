@@ -117,10 +117,12 @@
                                 </td>
                                 <td>
                                     <div class="btn-actions-group" style="display: inline-flex; width: auto; min-width: 0; margin-right:2px;">
-                                        <a href="{% url 'coreRelback:client-update' client.id_client %}" 
-                                           class="btn-action btn-edit" title="Edit Client">
+                                        <button type="button" 
+                                                class="btn-action btn-edit" 
+                                                title="Edit Client"
+                                                onclick="openEditModal('{{ client.id_client }}', '{{ client.name|escapejs }}', '{{ client.description|default:""|escapejs }}')">
                                             <i class="material-icons-round" style="font-size: 24px;">edit</i>
-                                        </a>
+                                        </button>
                                         <button type="button" 
                                                 class="btn-action btn-delete" 
                                                 title="Delete Client"
@@ -253,6 +255,104 @@
     </div>
 </div>
 
+<!-- Edit Client Modal -->
+<div class="custom-modal" id="editClientModal">
+    <div class="custom-modal-backdrop"></div>
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-content">
+            <!-- Modal Header -->
+            <div class="custom-modal-header edit-modal-header">
+                <h5 class="custom-modal-title">
+                    <i class="material-icons" style="color: #C74634;">edit</i>
+                    <span style="color: #E7F2F5;">Edit Client</span>
+                </h5>
+                <button type="button" class="custom-modal-close" onclick="closeEditModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="custom-modal-body">
+                <!-- Info Message -->
+                <div class="alert-info">
+                    <i class="material-icons">info</i>
+                    <div>
+                        <strong>Update Information:</strong> Modify the client details below. Changes will be saved immediately upon submission.
+                    </div>
+                </div>
+                
+                <!-- Edit Form -->
+                <form method="post" id="editClientForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <h6 class="form-section-title">
+                            <i class="material-icons">business</i>
+                            Client Information
+                        </h6>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="edit-client-name">
+                                    <i class="material-icons">business</i>
+                                    Client Name *
+                                </label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       id="edit-client-name" 
+                                       name="name" 
+                                       required
+                                       placeholder="Enter client name">
+                                <div class="form-error" id="edit-name-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="edit-client-description">
+                                    <i class="material-icons">description</i>
+                                    Description
+                                </label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       id="edit-client-description" 
+                                       name="description" 
+                                       placeholder="Enter description (optional)">
+                                <div class="form-error" id="edit-description-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Client ID Display -->
+                    <div class="form-section">
+                        <h6 class="form-section-title">
+                            <i class="material-icons">info</i>
+                            Additional Information
+                        </h6>
+                        
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Client ID:</span>
+                                <span class="info-value" id="edit-client-id-display"></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeEditModal()">
+                    <i class="material-icons">cancel</i>
+                    Cancel
+                </button>
+                <button type="submit" form="editClientForm" class="btn-save-confirm" onclick="submitEditForm()">
+                    <i class="material-icons">save</i>
+                    Update Client
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 .autocomplete-container {
     position: relative;
@@ -340,6 +440,10 @@
     align-items: center;
 }
 
+.edit-modal-header {
+    background: linear-gradient(to bottom, #36293C, #594564);
+}
+
 .custom-modal-title {
     margin: 0;
     font-size: 1.25rem;
@@ -388,6 +492,23 @@
     margin-top: 2px;
 }
 
+.alert-info {
+    background: rgba(199, 70, 52, 0.1);
+    border: 1px solid rgba(199, 70, 52, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.alert-info i {
+    color: #C74634;
+    font-size: 20px;
+    margin-top: 2px;
+}
+
 .delete-question {
     font-size: 1.1rem;
     color: #495057;
@@ -416,20 +537,131 @@
     min-width: 120px;
 }
 
+/* Edit Modal Form Styles */
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-section:last-child {
+    margin-bottom: 0;
+}
+
+.form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: #495057;
+    font-size: 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 0.5rem;
+}
+
+.form-section-title i {
+    font-size: 18px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: #495057;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-label i {
+    font-size: 16px;
+    color: #6c757d;
+}
+
+.form-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #fff;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #C74634;
+    box-shadow: 0 0 0 3px rgba(199, 70, 52, 0.1);
+}
+
+.form-input.error {
+    border-color: #F1B13F;
+    box-shadow: 0 0 0 3px rgba(241, 177, 63, 0.1);
+}
+
+.form-error {
+    color: #F1B13F;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+.form-error.show {
+    display: block;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+.info-value {
+    color: #6c757d;
+    font-family: 'Courier New', monospace;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
 .what-deleted-section {
-    border: 1px solid rgba(0, 123, 255, 0.2);
+    border: 1px solid rgba(199, 70, 52, 0.2);
     border-radius: 8px;
     overflow: hidden;
 }
 
 .what-deleted-header {
-    background: rgba(0, 123, 255, 0.1);
+    background: rgba(199, 70, 52, 0.1);
     padding: 1rem 1.5rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
     font-weight: 600;
-    color: #0066cc;
+    color: #C74634;
 }
 
 .what-deleted-content {
@@ -506,6 +738,31 @@
     transform: translateY(-1px);
 }
 
+.btn-save-confirm {
+    background: #00688C;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-save-confirm:hover {
+    background: #06485F;
+    transform: translateY(-1px);
+}
+
+.btn-save-confirm:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .alert {
     border: none;
     border-radius: 8px;
@@ -535,6 +792,14 @@
     .detail-row {
         flex-direction: column;
         gap: 0.25rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
     }
 }
 </style>
@@ -742,6 +1007,111 @@ function closeDeleteModal() {
     document.body.style.overflow = '';
 }
 
+// Modal functions for edit client
+function openEditModal(clientId, clientName, clientDescription) {
+    const modal = document.getElementById('editClientModal');
+    const nameInput = document.getElementById('edit-client-name');
+    const descInput = document.getElementById('edit-client-description');
+    const clientIdSpan = document.getElementById('edit-client-id-display');
+    
+    // Populate form fields
+    nameInput.value = clientName;
+    descInput.value = clientDescription || '';
+    clientIdSpan.textContent = clientId;
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on name input for immediate editing
+    nameInput.focus();
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editClientModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    
+    // Clear any error states
+    clearFormErrors();
+}
+
+function clearFormErrors() {
+    const errorElements = document.querySelectorAll('.form-error');
+    const inputElements = document.querySelectorAll('.form-input');
+    
+    errorElements.forEach(el => el.classList.remove('show'));
+    inputElements.forEach(el => el.classList.remove('error'));
+}
+
+function validateEditForm() {
+    const nameInput = document.getElementById('edit-client-name');
+    const nameError = document.getElementById('edit-name-error');
+    let isValid = true;
+    
+    // Clear previous errors
+    clearFormErrors();
+    
+    // Validate name field
+    if (!nameInput.value.trim()) {
+        nameInput.classList.add('error');
+        nameError.textContent = 'Client name is required';
+        nameError.classList.add('show');
+        isValid = false;
+    } else if (nameInput.value.trim().length < 2) {
+        nameInput.classList.add('error');
+        nameError.textContent = 'Client name must be at least 2 characters';
+        nameError.classList.add('show');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+function submitEditForm() {
+    if (!validateEditForm()) {
+        return;
+    }
+    
+    const nameInput = document.getElementById('edit-client-name');
+    const descInput = document.getElementById('edit-client-description');
+    const clientIdSpan = document.getElementById('edit-client-id-display');
+    const saveButton = document.querySelector('.btn-save-confirm');
+    
+    // Disable save button during submission
+    saveButton.disabled = true;
+    saveButton.innerHTML = '<i class="material-icons">hourglass_empty</i>Saving...';
+    
+    // Create a form and submit it traditionally
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `{% url 'coreRelback:client-update' 0 %}`.replace('0', clientIdSpan.textContent);
+    
+    // Add CSRF token
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    form.appendChild(csrfInput);
+    
+    // Add name field
+    const nameField = document.createElement('input');
+    nameField.type = 'hidden';
+    nameField.name = 'name';
+    nameField.value = nameInput.value.trim();
+    form.appendChild(nameField);
+    
+    // Add description field
+    const descField = document.createElement('input');
+    descField.type = 'hidden';
+    descField.name = 'description';
+    descField.value = descInput.value.trim();
+    form.appendChild(descField);
+    
+    // Append form to body and submit
+    document.body.appendChild(form);
+    form.submit();
+}
+
 // Close modal when clicking on backdrop
 document.getElementById('deleteClientModal').addEventListener('click', function(e) {
     if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
@@ -749,13 +1119,41 @@ document.getElementById('deleteClientModal').addEventListener('click', function(
     }
 });
 
+// Close edit modal when clicking on backdrop
+document.addEventListener('DOMContentLoaded', function() {
+    const editModal = document.getElementById('editClientModal');
+    if (editModal) {
+        editModal.addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
+                closeEditModal();
+            }
+        });
+    }
+});
+
 // Close modal with ESC key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        const modal = document.getElementById('deleteClientModal');
-        if (modal.classList.contains('show')) {
+        const deleteModal = document.getElementById('deleteClientModal');
+        const editModal = document.getElementById('editClientModal');
+        
+        if (deleteModal && deleteModal.classList.contains('show')) {
             closeDeleteModal();
+        } else if (editModal && editModal.classList.contains('show')) {
+            closeEditModal();
         }
+    }
+});
+
+// Real-time validation for edit form
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.getElementById('edit-client-name');
+    if (nameInput) {
+        nameInput.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                validateEditForm();
+            }
+        });
     }
 });
 
