@@ -35,7 +35,7 @@ body {
   
   /* Extended Oracle Palette for Rich UI */
   --pine-170: #1E3324;
-  --pine-140: #355330;
+  --pine-140: #355530;
   --pine-100: #4C634C;
   --pine-90: #5C765C;
   --pine-120: #4C634C;
@@ -47,7 +47,8 @@ body {
   --ocean-60: #9ABFD0;
   --sky-150: #1E3556;
   --sky-120: #4C7AA5;
-  --sky-60: #91CFDD;
+  --sky-60: #8FBFD0;
+  --sky-30: #E4F1F7;
   --sienna-60: #DEA068;
   --sienna-orange-120: #CC7A00;
   --brand-yellow-170: #F6CC72;
@@ -427,7 +428,13 @@ body {
   backdrop-filter: var(--glass-backdrop);
 }
 
-.md-card::before {
+.md-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-8px) scale(1.02);
+}
+
+/* Decorative top border for specific cards */
+.md-card-decorated::before {
   content: '';
   position: absolute;
   top: 0;
@@ -439,13 +446,11 @@ body {
   transition: opacity 0.3s var(--ease-out-cubic);
 }
 
-.md-card:hover::before {
+.md-card-decorated:hover::before {
   opacity: 1;
 }
 
-.md-card:hover {
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-8px) scale(1.02);
+.md-card-decorated:hover {
   border-color: var(--oracle-red);
 }
 
@@ -691,7 +696,7 @@ body {
 
 .md-table thead th {
   background: var(--oracle-info-gradient);
-  color: white;
+  color: var(--sky-30);
   font-weight: 600;
   padding: var(--spacing-lg) var(--spacing-xl);
   text-align: left;
@@ -700,15 +705,22 @@ body {
 }
 
 .md-table tbody td {
-  padding: var(--spacing-lg) var(--spacing-xl);
+  padding: var(--spacing-xs) var(--spacing-lg);
   border-bottom: 1px solid var(--border-light);
   color: var(--text-primary);
   transition: all 0.3s var(--ease-out-cubic);
 }
 
 .md-table tbody tr:hover {
-  background: var(--hover-overlay);
+  background: var(--sky-30);
   transform: scale(1.005);
+}
+
+.md-table tbody td {
+  padding: var(--spacing-xs) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+  transition: all 0.3s var(--ease-out-cubic);
 }
 
 /* ===== ENHANCED FORMS ===== */
@@ -729,6 +741,95 @@ body {
   border-color: var(--oracle-red);
   box-shadow: 0 0 0 4px rgba(199, 70, 52, 0.1);
   transform: translateY(-2px);
+}
+
+/* ===== ENHANCED ACTION BUTTONS ===== */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-action:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-action.btn-edit {
+  background: rgba(90, 143, 168, 0.1);
+  border: 1px solid rgba(90, 143, 168, 0.3);
+  color: #5A8FA8;
+}
+
+.btn-action.btn-edit:hover {
+  background: rgba(90, 143, 168, 0.2);
+  border-color: rgba(90, 143, 168, 0.5);
+  color: #4A7F98;
+}
+
+.btn-action.btn-delete {
+  background: rgba(199, 70, 52, 0.1);
+  border: 1px solid rgba(199, 70, 52, 0.3);
+  color: #33553C;
+}
+
+.btn-action.btn-delete:hover {
+  background: rgba(199, 70, 52, 0.2);
+  border-color: rgba(199, 70, 52, 0.5);
+  color: #33553C;
+}
+
+.btn-action.btn-delete:hover {
+  background: rgba(199, 70, 52, 0.2) !important;
+  border-color: #33553C !important;
+}
+
+.btn-action:active {
+  transform: translateY(0) scale(0.95);
+}
+
+/* ===== TABLE ACTION BUTTONS GROUPED ===== */
+.btn-actions-group {
+  display: flex;
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-actions-group .btn-action {
+  width: 48px;
+  height: 42px;
+  border-radius: 0;
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-right: none;
+}
+
+.btn-actions-group .btn-action:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.btn-actions-group .btn-action:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-actions-group .btn-action:hover {
+  transform: none;
+  z-index: 2;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* ===== AUTOCOMPLETE STYLES ===== */
@@ -843,11 +944,6 @@ body {
 .btn-action.btn-edit:hover {
   background: rgba(90, 143, 168, 0.2) !important;
   border-color: rgba(90, 143, 168, 0.5) !important;
-}
-
-.btn-action.btn-delete:hover {
-  background: rgba(199, 70, 52, 0.2) !important;
-  border-color: rgba(199, 70, 52, 0.5) !important;
 }
 
 .btn-action:active {
@@ -1009,7 +1105,7 @@ body {
 .animate-slide-in-right { animation: slideInRight 0.6s var(--ease-out-cubic); }
 .animate-slide-in { animation: slideIn 0.5s var(--ease-out-cubic); }
 .animate-fade-in { animation: fadeIn 0.5s var(--ease-out-cubic); }
-.animate-pulse { animation: pulse 2s infinite; }
+.animate-pulse { animation: pulse 7s infinite; }
 
 /* ===== FLOATING ACTION BUTTON ===== */
 .md-fab {

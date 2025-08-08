@@ -11,18 +11,18 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Oracle Modern Theme CSS -->
+    <!-- Modern Theme CSS -->
     <link href="{% static 'css/oracle-modern-theme.css' %}" rel="stylesheet">
     
     {% block extra_css %}{% endblock %}
 
 </head>
 <body>
-    <!-- Oracle Navigation Bar -->
+    <!-- Navigation Bar -->
     <nav class="md-navbar">
         <div class="md-container">
-            <a class="md-navbar-brand animate-pulse" href="{% url 'coreRelback:index' %}">
-                <i class="material-icons" style="font-size: 2rem; color: var(--oracle-red);">storage</i>
+            <a class="md-navbar-brand" href="{% url 'coreRelback:index' %}">
+                <i class="material-icons animate-pulse" style="font-size: 2rem; color: var(--oracle-red);">storage</i>
                 <span class="md-navbar-logo">relBack</span>
             </a>
             

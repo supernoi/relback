@@ -32,7 +32,7 @@
                     <h2 class="h3 md-mb-1">{{ clients.count }}</h2>
                     <p class="md-mb-0 md-opacity-75 h6">Total Clients</p>
                 </div>
-                <i class="material-icons-round" style="font-size: 3rem; opacity: 0.8; color: #5A8FA8;">business</i>
+                <i class="material-icons-round" style="font-size: 3rem; opacity: 0.8; color: #C74634;">business</i>
             </div>
         </div>
         <div class="md-card oracle-info-gradient" style="padding: var(--spacing-xl); min-height: 140px;">
@@ -41,31 +41,19 @@
                     <h2 class="h3 md-mb-1">{{ clients|length }}</h2>
                     <p class="md-mb-0 md-opacity-75 h6">Active Clients</p>
                 </div>
-                <i class="material-icons-round" style="font-size: 3rem; opacity: 0.8; color: #5A8FA8;">verified</i>
+                <i class="material-icons-round" style="font-size: 3rem; opacity: 0.8; color: #C74634;">verified</i>
             </div>
         </div>
     </div>
 
     <!-- Search and Actions -->
-    <div class="md-grid md-grid-cols-1 md-mb-5 allow-autocomplete-overflow">
-        <div class="md-card md-p-4 allow-autocomplete-overflow">
+    <div class="md-grid md-grid-cols-1 md-mb-5" style="position: relative; z-index: 20;">
+        <div class="md-card md-p-4">
             <div class="md-grid md-grid-cols-3 md-gap-4 md-items-center">
                 <div class="autocomplete-container">
                     <input type="text" class="md-input" id="searchClients" placeholder="Search clients..." autocomplete="off">
-                    <div class="autocomplete-list" id="autocompleteList" style="z-index:2147483647 !important;"></div>
+                    <div class="autocomplete-list" id="autocompleteList"></div>
                 </div>
-                <button class="md-btn md-w-full" style="
-                    background: rgba(90, 143, 168, 0.15); 
-                    color: #5A8FA8; 
-                    padding: 0.75rem 1.2rem; 
-                    font-size: 1rem; 
-                    border: 1px solid rgba(90, 143, 168, 0.3); 
-                    border-radius: 8px;
-                    transition: all 0.3s ease;
-                ">
-                    <i class="material-icons md-me-1">search</i>
-                    Search
-                </button>
                 <button class="md-btn md-btn-text md-w-full" style="
                     padding: 0.75rem 1.2rem; 
                     font-size: 1rem;
@@ -80,47 +68,40 @@
     </div>
 
     <!-- Clients Table -->
-    <div class="md-grid md-grid-cols-1 allow-autocomplete-overflow">
-        <div class="md-card allow-autocomplete-overflow">
+    <div class="md-grid md-grid-cols-1">
+        <div class="md-card md-card-decorated">
             {% if clients %}
                 <div class="md-table-responsive">
                     <table class="md-table">
                         <thead>
                             <tr>
                                 <th class="oracle-info-gradient">
-                                    <div class="md-flex md-items-center md-gap-2">
-                                        <i class="material-icons">business</i>
-                                        Client Name
+                                    <div class="md-flex md-items-center md-gap-2" style="gap: 4px;">
+                                        <i class="material-icons" style="color: #C74634;">business</i>
+                                        <span style="color: #E7F2F5;">Client Name</span>
                                     </div>
                                 </th>
                                 <th class="oracle-info-gradient">
-                                    <div class="md-flex md-items-center md-gap-2">
-                                        <i class="material-icons">description</i>
-                                        Description
-                                    </div>
+                                    <i class="material-icons" style="color: #C74634; vertical-align: middle; margin-right: 4px;">description</i>
+                                    <span style="color: #E7F2F5;">Description</span>
                                 </th>
                                 <th class="oracle-info-gradient">
-                                    <div class="md-flex md-items-center md-gap-2">
-                                        <i class="material-icons">schedule</i>
-                                        Created
-                                    </div>
+                                    <i class="material-icons" style="color: #C74634; vertical-align: middle; margin-right: 4px;">schedule</i>
+                                    <span style="color: #E7F2F5;">Created</span>
                                 </th>
-                                <th class="md-text-center oracle-info-gradient">
-                                    <div class="md-flex md-items-center md-justify-center md-gap-2">
-                                        <i class="material-icons">settings</i>
-                                        Actions
-                                    </div>
+                                <th class="oracle-info-gradient">
+                                    <i class="material-icons" style="color: #C74634; vertical-align: middle; margin-right: 4px;">settings</i>
+                                    <span style="color: #E7F2F5;">Actions</span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for client in clients %}
-                            <tr style="height: 60px;">
-                                <td style="padding: var(--spacing-md) var(--spacing-lg);">
+                            <tr>
+                                <td>
                                     <div class="md-flex md-items-center">
-                                        <div class="md-rounded-circle md-flex md-items-center md-justify-center md-me-3"
-                                             style="width: 42px; height: 42px; background: #5A8FA8; border-radius: 50%; box-shadow: 0 3px 10px rgba(90, 143, 168, 0.25); border: 2px solid rgba(90, 143, 168, 0.3);">
-                                            <i class="material-icons-round" style="color: white; font-size: 20px;">business</i>
+                                        <div style="margin-right:8px;display:flex;align-items:center;">
+                                            <i class="material-icons-round" style="color: #C74634; font-size: 32px;">business</i>
                                         </div>
                                         <div>
                                             <h5 class="md-mb-0" style="font-size: 1rem; font-weight: 600;">{{ client.name|default:"Unnamed Client" }}</h5>
@@ -128,48 +109,24 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td style="padding: var(--spacing-md) var(--spacing-lg);">
+                                <td>
                                     <span style="font-size: 0.95rem;">{{ client.description|default:"No description" }}</span>
                                 </td>
-                                <td style="padding: var(--spacing-md) var(--spacing-lg);">
+                                <td>
                                     <span style="font-size: 0.95rem;">{{ client.created_at|date:"M d, Y" }}</span>
                                 </td>
-                                <td class="md-text-center" style="padding: var(--spacing-md) var(--spacing-lg);">
-                                    <div class="md-flex md-gap-2 md-justify-center">
+                                <td>
+                                    <div class="btn-actions-group" style="display: inline-flex; width: auto; min-width: 0; margin-right:2px;">
                                         <a href="{% url 'coreRelback:client-update' client.id_client %}" 
-                                           class="btn-action btn-edit" title="Edit Client"
-                                           style="
-                                               display: inline-flex;
-                                               align-items: center;
-                                               justify-content: center;
-                                               width: 36px;
-                                               height: 36px;
-                                               background: rgba(90, 143, 168, 0.1);
-                                               border: 1px solid rgba(90, 143, 168, 0.3);
-                                               border-radius: 8px;
-                                               color: #5A8FA8;
-                                               text-decoration: none;
-                                               transition: all 0.3s ease;
-                                           ">
-                                            <i class="material-icons-round" style="font-size: 18px;">edit</i>
+                                           class="btn-action btn-edit" title="Edit Client">
+                                            <i class="material-icons-round" style="font-size: 24px;">edit</i>
                                         </a>
-                                        <a href="{% url 'coreRelback:client-delete' client.id_client %}" 
-                                           class="btn-action btn-delete" title="Delete Client"
-                                           style="
-                                               display: inline-flex;
-                                               align-items: center;
-                                               justify-content: center;
-                                               width: 36px;
-                                               height: 36px;
-                                               background: rgba(199, 70, 52, 0.1);
-                                               border: 1px solid rgba(199, 70, 52, 0.3);
-                                               border-radius: 8px;
-                                               color: #C74634;
-                                               text-decoration: none;
-                                               transition: all 0.3s ease;
-                                           ">
-                                            <i class="material-icons-round" style="font-size: 18px;">delete</i>
-                                        </a>
+                                        <button type="button" 
+                                                class="btn-action btn-delete" 
+                                                title="Delete Client"
+                                                onclick="openDeleteModal('{{ client.id_client }}', '{{ client.name|escapejs }}', '{{ client.description|default:"No description"|escapejs }}', '{{ client.created_at|date:"F d, Y G:i" }}')">
+                                            <i class="material-icons-round" style="font-size: 24px;">delete</i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -180,7 +137,7 @@
             {% else %}
                 <!-- Empty State -->
                 <div class="md-text-center md-py-5" style="padding: 4rem 2rem;">
-                    <i class="material-icons md-mb-4" style="font-size: 80px; color: #ccc;">business</i>
+                    <i class="material-icons md-mb-4" style="font-size: 80px; color: #C74634; opacity: 0.6;">business</i>
                     <h4 class="md-text-muted md-mb-3">No clients found</h4>
                     <p class="md-text-muted md-mb-5" style="font-size: 1.1rem;">Get started by adding your first client</p>
                     <a href="{% url 'coreRelback:client-create' %}" class="md-btn md-btn-primary" style="padding: 0.8rem 1.5rem; font-size: 1rem;">
@@ -197,6 +154,390 @@
 <button class="md-fab" id="addClientFab" title="Add Client">
     <i class="material-icons">add</i>
 </button>
+
+<!-- Delete Confirmation Modal -->
+<div class="custom-modal" id="deleteClientModal">
+    <div class="custom-modal-backdrop"></div>
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-content">
+            <!-- Modal Header -->
+            <div class="custom-modal-header">
+                <h5 class="custom-modal-title">
+                    <i class="material-icons">warning</i>
+                    Delete Client
+                </h5>
+                <button type="button" class="custom-modal-close" onclick="closeDeleteModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="custom-modal-body">
+                <!-- Warning Message -->
+                <div class="alert-danger">
+                    <i class="material-icons">dangerous</i>
+                    <div>
+                        <strong>Warning:</strong> This action cannot be undone. Deleting this client will also remove all associated hosts, databases, and backup policies.
+                    </div>
+                </div>
+                
+                <!-- Client Details -->
+                <p class="delete-question">Are you sure you want to delete the following client?</p>
+                
+                <div class="client-details">
+                    <div class="detail-row">
+                        <strong>Client Name:</strong>
+                        <span id="modal-client-name"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Description:</strong>
+                        <span id="modal-client-description"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Client ID:</strong>
+                        <span id="modal-client-id"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Created:</strong>
+                        <span id="modal-client-created"></span>
+                    </div>
+                </div>
+
+                <!-- What will be deleted info -->
+                <div class="what-deleted-section">
+                    <div class="what-deleted-header">
+                        <i class="material-icons">info</i>
+                        What will be deleted?
+                    </div>
+                    <div class="what-deleted-content">
+                        <div class="deleted-item">
+                            <i class="material-icons">dns</i>
+                            <div>
+                                <strong>Hosts</strong>
+                                <small>All associated hosts</small>
+                            </div>
+                        </div>
+                        <div class="deleted-item">
+                            <i class="material-icons">storage</i>
+                            <div>
+                                <strong>Databases</strong>
+                                <small>All associated databases</small>
+                            </div>
+                        </div>
+                        <div class="deleted-item">
+                            <i class="material-icons">security</i>
+                            <div>
+                                <strong>Policies</strong>
+                                <small>All backup policies</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
+                    <i class="material-icons">cancel</i>
+                    Cancel
+                </button>
+                <form method="post" id="deleteClientForm" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-delete-confirm">
+                        <i class="material-icons">delete_forever</i>
+                        Yes, Delete Client
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.autocomplete-container {
+    position: relative;
+}
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid var(--border-light);
+    border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 100; /* Garante que a lista fique sobre os outros elementos */
+    display: none; /* Escondido por padrão */
+}
+.autocomplete-item.active {
+    background-color: var(--hover-overlay);
+}
+
+/* Modal styles */
+.custom-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1050;
+}
+
+.custom-modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+}
+
+.custom-modal-dialog {
+    position: relative;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 1;
+}
+
+.custom-modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.custom-modal-header {
+    background: linear-gradient(to bottom, #F1B13F, #E2C06B);
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.custom-modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.custom-modal-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-modal-close:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-modal-body {
+    padding: 2rem;
+}
+
+.alert-danger {
+    background: rgba(241, 177, 63, 0.1);
+    border: 1px solid rgba(241, 177, 63, 0.2);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.alert-danger i {
+    color: #F1B13F;
+    font-size: 20px;
+    margin-top: 2px;
+}
+
+.delete-question {
+    font-size: 1.1rem;
+    color: #495057;
+    margin-bottom: 1.5rem;
+}
+
+.client-details {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.detail-row:last-child {
+    margin-bottom: 0;
+}
+
+.detail-row strong {
+    color: #495057;
+    min-width: 120px;
+}
+
+.what-deleted-section {
+    border: 1px solid rgba(0, 123, 255, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.what-deleted-header {
+    background: rgba(0, 123, 255, 0.1);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #0066cc;
+}
+
+.what-deleted-content {
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.deleted-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.deleted-item i {
+    font-size: 32px;
+    color: #6c757d;
+}
+
+.deleted-item strong {
+    display: block;
+    margin-bottom: 2px;
+}
+
+.deleted-item small {
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.custom-modal-footer {
+    padding: 1.5rem 2rem;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+.btn-delete-confirm {
+    background: #F1B13F;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-delete-confirm:hover {
+    background: #E2C06B;
+    transform: translateY(-1px);
+}
+
+.alert {
+    border: none;
+    border-radius: 8px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .custom-modal-dialog {
+        width: 95%;
+        margin: 1rem;
+    }
+    
+    .custom-modal-header,
+    .custom-modal-body,
+    .custom-modal-footer {
+        padding: 1rem 1.5rem;
+    }
+    
+    .what-deleted-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .custom-modal-footer {
+        flex-direction: column;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}
+</style>
 
 <script>
 // Dados dos clientes para auto-completar
@@ -356,8 +697,8 @@ document.querySelectorAll('.md-btn').forEach(btn => {
 // Add row hover effects
 document.querySelectorAll('tbody tr').forEach(row => {
     row.addEventListener('mouseenter', function() {
-        this.style.backgroundColor = 'rgba(90, 143, 168, 0.05)';
-        this.style.transform = 'scale(1.01)';
+        this.style.backgroundColor = 'var(--sky-30)';
+        this.style.transform = 'scale(1.005)';
         this.style.transition = 'all 0.3s ease';
     });
     
@@ -367,30 +708,69 @@ document.querySelectorAll('tbody tr').forEach(row => {
     });
 });
 
-// Adicionar efeitos aos botões de ação
+// Adicionar efeitos aos botões de ação (agora usando apenas CSS)
 document.querySelectorAll('.btn-action').forEach(btn => {
-    btn.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-2px)';
-        this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-    });
-    
-    btn.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
-        this.style.boxShadow = '';
-    });
-    
-    btn.addEventListener('mousedown', function() {
-        this.style.transform = 'translateY(0) scale(0.95)';
-    });
-    
-    btn.addEventListener('mouseup', function() {
-        this.style.transform = 'translateY(-2px) scale(1)';
-    });
+    // Os efeitos agora são controlados pelo CSS
 });
 
 // Focus automático no campo de busca
 document.addEventListener('DOMContentLoaded', function() {
     searchInput.focus();
 });
+
+// Modal functions for delete confirmation
+function openDeleteModal(clientId, clientName, clientDescription, clientCreated) {
+    // Populate modal with client data
+    document.getElementById('modal-client-name').textContent = clientName;
+    document.getElementById('modal-client-description').textContent = clientDescription;
+    document.getElementById('modal-client-id').textContent = clientId;
+    document.getElementById('modal-client-created').textContent = clientCreated;
+    
+    // Set form action to delete URL
+    const deleteForm = document.getElementById('deleteClientForm');
+    deleteForm.action = `{% url 'coreRelback:client-delete' 0 %}`.replace('0', clientId);
+    
+    // Show modal
+    const modal = document.getElementById('deleteClientModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteClientModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// Close modal when clicking on backdrop
+document.getElementById('deleteClientModal').addEventListener('click', function(e) {
+    if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
+        closeDeleteModal();
+    }
+});
+
+// Close modal with ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modal = document.getElementById('deleteClientModal');
+        if (modal.classList.contains('show')) {
+            closeDeleteModal();
+        }
+    }
+});
+
+// Removido o confirm extra do submit do formulário de exclusão
+
+// Add visual feedback on delete button hover
+const deleteBtn = document.querySelector('.btn-delete-confirm');
+if (deleteBtn) {
+    deleteBtn.addEventListener('mouseenter', function() {
+        this.innerHTML = '<i class="material-icons">delete_forever</i>Confirm Delete';
+    });
+
+    deleteBtn.addEventListener('mouseleave', function() {
+        this.innerHTML = '<i class="material-icons">delete_forever</i>Yes, Delete Client';
+    });
+}
 </script>
 {% endblock %}
