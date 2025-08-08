@@ -16,10 +16,10 @@
                         <p class="page-subtitle">Manage your backup host servers</p>
                     </div>
                 </div>
-                <a href="{% url 'coreRelback:host-create' %}" class="md-btn md-btn-primary page-actions">
+                <button type="button" class="md-btn md-btn-primary page-actions" data-modal-target="#addHostModal">
                     <i class="material-icons md-me-1">add</i>
                     Add Host
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -401,7 +401,7 @@ const hostsData = [
 
 // FAB click handler
 document.getElementById('addHostFab').addEventListener('click', function() {
-    window.location.href = '{% url "coreRelback:host-create" %}';
+    openAddHostModal();
 });
 
 // Auto-complete functionality
@@ -773,5 +773,437 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+</script>
+
+<!-- Add Host Modal -->
+<div id="addHostModal" class="custom-modal">
+    <div class="custom-modal-backdrop"></div>
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header add-modal-header">
+                <h5 class="custom-modal-title">
+                    <i class="material-icons">add_business</i>
+                    <span>Add New Host</span>
+                </h5>
+                <button type="button" class="custom-modal-close" onclick="closeAddHostModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            
+            <div class="custom-modal-body">
+                <form id="addHostForm" method="post" action="{% url 'coreRelback:host-create' %}">
+                    {% csrf_token %}
+                <!-- Basic Information Section -->
+                <div class="form-section">
+                    <h5 class="form-section-title">
+                        <i class="material-icons md-me-2">info</i>
+                        Basic Information
+                    </h5>
+                    
+                    <div class="md-grid md-grid-cols-2 md-gap-4">
+                        <div class="md-input-group">
+                            <div class="md-input-floating">
+                                <input type="text" 
+                                       class="md-input" 
+                                       id="add-host-name" 
+                                       name="name" 
+                                       placeholder=" "
+                                       required>
+                                <label class="md-label" for="add-host-name">
+                                    <i class="material-icons md-me-1">storage</i>
+                                    Host Name *
+                                </label>
+                            </div>
+                        </div>
+                        <div class="md-input-group">
+                            <div class="md-input-floating">
+                                <select class="md-input" 
+                                        id="add-host-client" 
+                                        name="client" 
+                                        required>
+                                    <option value="" disabled selected>Select Client</option>
+                                    {% for client in clients %}
+                                    <option value="{{ client.id_client }}">{{ client.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <label class="md-label" for="add-host-client">
+                                    <i class="material-icons md-me-1">business</i>
+                                    Client *
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="md-input-group">
+                        <div class="md-input-floating">
+                            <textarea class="md-input" 
+                                      id="add-host-description" 
+                                      name="description" 
+                                      placeholder=" "
+                                      rows="3"></textarea>
+                            <label class="md-label" for="add-host-description">
+                                <i class="material-icons md-me-1">description</i>
+                                Description
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Network Configuration Section -->
+                <div class="form-section">
+                    <h5 class="form-section-title">
+                        <i class="material-icons md-me-2">language</i>
+                        Network Configuration
+                    </h5>
+                    
+                    <div class="md-grid md-grid-cols-2 md-gap-4">
+                        <div class="md-input-group">
+                            <div class="md-input-floating">
+                                <input type="text" 
+                                       class="md-input" 
+                                       id="add-host-ip" 
+                                       name="ip_address" 
+                                       placeholder=" "
+                                       pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
+                                <label class="md-label" for="add-host-ip">
+                                    <i class="material-icons md-me-1">router</i>
+                                    IP Address
+                                </label>
+                            </div>
+                            <div class="field-hint">Format: 192.168.1.100</div>
+                        </div>
+                        <div class="md-input-group">
+                            <div class="md-input-floating">
+                                <input type="number" 
+                                       class="md-input" 
+                                       id="add-host-port" 
+                                       name="port" 
+                                       placeholder=" "
+                                       value="22"
+                                       min="1" 
+                                       max="65535">
+                                <label class="md-label" for="add-host-port">
+                                    <i class="material-icons md-me-1">settings_ethernet</i>
+                                    Port
+                                </label>
+                            </div>
+                            <div class="field-hint">Default: 22 (SSH)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Information Section -->
+                <div class="form-section">
+                    <h5 class="form-section-title">
+                        <i class="material-icons md-me-2">computer</i>
+                        System Information
+                    </h5>
+                    
+                    <div class="md-grid md-grid-cols-2 md-gap-4">
+                        <div class="md-input-group">
+                            <div class="md-input-floating">
+                                <select class="md-input" 
+                                        id="add-host-platform" 
+                                        name="platform">
+                                    <option value="" disabled selected>Select Platform</option>
+                                    <option value="Linux">Linux</option>
+                                    <option value="Windows">Windows</option>
+                                    <option value="AIX">AIX</option>
+                                    <option value="Solaris">Solaris</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <label class="md-label" for="add-host-platform">
+                                    <i class="material-icons md-me-1">laptop</i>
+                                    Operating System
+                                </label>
+                            </div>
+                        </div>
+                        <div class="md-input-group">
+                            <div class="md-input-floating">
+                                <input type="text" 
+                                       class="md-input" 
+                                       id="add-host-version" 
+                                       name="version" 
+                                       placeholder=" ">
+                                <label class="md-label" for="add-host-version">
+                                    <i class="material-icons md-me-1">info</i>
+                                    OS Version
+                                </label>
+                            </div>
+                            <div class="field-hint">e.g., Ubuntu 22.04, Windows Server 2019</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Section -->
+                <div class="form-section">
+                    <h5 class="form-section-title">
+                        <i class="material-icons md-me-2">settings</i>
+                        Status & Configuration
+                    </h5>
+                    
+                    <div class="md-checkbox-group">
+                        <label class="md-checkbox-label">
+                            <input type="checkbox" 
+                                   class="md-checkbox" 
+                                   id="add-host-active" 
+                                   name="active" 
+                                   checked>
+                            <span class="md-checkbox-checkmark"></span>
+                            <i class="material-icons md-me-1">power_settings_new</i>
+                            Host is Active
+                        </label>
+                        <div class="field-hint">Enable this host for backup operations</div>
+                    </div>
+                </div>
+                
+                <!-- Guidelines Section -->
+                <div class="form-section">
+                    <div class="md-info-card">
+                        <div class="md-info-header">
+                            <i class="material-icons">help</i>
+                            <h6>Host Configuration Guidelines</h6>
+                        </div>
+                        <div class="md-grid md-grid-cols-2 md-gap-4">
+                            <div>
+                                <h6 class="info-subtitle">Required Information:</h6>
+                                <ul class="md-info-list">
+                                    <li><strong>Host Name:</strong> Unique identifier for the server</li>
+                                    <li><strong>Client:</strong> Associated backup client</li>
+                                </ul>
+                                
+                                <h6 class="info-subtitle">Network Settings:</h6>
+                                <ul class="md-info-list">
+                                    <li><strong>IP Address:</strong> Server's network address</li>
+                                    <li><strong>Port:</strong> Connection port (default: 22 for SSH)</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h6 class="info-subtitle">System Information:</h6>
+                                <ul class="md-info-list">
+                                    <li><strong>Platform:</strong> Operating system type</li>
+                                    <li><strong>Version:</strong> Specific OS version/build</li>
+                                </ul>
+                                
+                                <h6 class="info-subtitle">Best Practices:</h6>
+                                <ul class="md-info-list">
+                                    <li>Use descriptive host names</li>
+                                    <li>Keep system information up to date</li>
+                                    <li>Test connections after configuration</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+            
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeAddHostModal()">
+                    <i class="material-icons">cancel</i>
+                    Cancel
+                </button>
+                <button type="submit" form="addHostForm" class="btn-add-confirm">
+                    <i class="material-icons">add</i>
+                    Create Host
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add Host Modal Functions
+function openAddHostModal() {
+    const modal = document.getElementById('addHostModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on first input
+    setTimeout(() => {
+        document.getElementById('add-host-name').focus();
+    }, 100);
+}
+
+function closeAddHostModal() {
+    const modal = document.getElementById('addHostModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    
+    // Reset form
+    const form = document.getElementById('addHostForm');
+    form.reset();
+    
+    // Reset default values
+    document.getElementById('add-host-port').value = '22';
+    document.getElementById('add-host-active').checked = true;
+    
+    // Clear any validation errors
+    form.querySelectorAll('.md-input').forEach(input => {
+        input.classList.remove('error');
+    });
+    form.querySelectorAll('.error-message').forEach(error => {
+        error.remove();
+    });
+}
+
+// Add Host Form Validation
+function validateAddHostForm() {
+    const nameInput = document.getElementById('add-host-name');
+    const clientInput = document.getElementById('add-host-client');
+    const ipInput = document.getElementById('add-host-ip');
+    let isValid = true;
+    
+    // Clear previous errors
+    [nameInput, clientInput, ipInput].forEach(input => {
+        input.classList.remove('error');
+        const existingError = input.parentNode.querySelector('.error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+    });
+    
+    // Validate name
+    if (!nameInput.value.trim()) {
+        showAddHostFormError(nameInput, 'Host name is required');
+        isValid = false;
+    }
+    
+    // Validate client
+    if (!clientInput.value) {
+        showAddHostFormError(clientInput, 'Please select a client');
+        isValid = false;
+    }
+    
+    // Validate IP address if provided
+    if (ipInput.value.trim()) {
+        const ipPattern = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
+        if (!ipPattern.test(ipInput.value.trim())) {
+            showAddHostFormError(ipInput, 'Please enter a valid IP address');
+            isValid = false;
+        }
+    }
+    
+    return isValid;
+}
+
+function showAddHostFormError(input, message) {
+    input.classList.add('error');
+    
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+    input.parentNode.appendChild(errorDiv);
+}
+
+// Add Host Form Submit Handler
+document.getElementById('addHostForm').addEventListener('submit', function(e) {
+    if (!validateAddHostForm()) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// Real-time validation for add host form
+document.getElementById('add-host-name').addEventListener('input', function() {
+    if (this.classList.contains('error')) {
+        validateAddHostForm();
+    }
+});
+
+document.getElementById('add-host-client').addEventListener('change', function() {
+    if (this.classList.contains('error')) {
+        validateAddHostForm();
+    }
+});
+
+document.getElementById('add-host-ip').addEventListener('input', function() {
+    if (this.classList.contains('error')) {
+        validateAddHostForm();
+    }
+});
+
+// Floating label animation for add host form
+document.querySelectorAll('#addHostModal .md-input-floating .md-input').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentNode.classList.add('md-input-focused');
+    });
+    
+    input.addEventListener('blur', function() {
+        if (!this.value && input.type !== 'number') {
+            this.parentNode.classList.remove('md-input-focused');
+        }
+    });
+    
+    // Check if input has value on load
+    if (input.value || input.type === 'number') {
+        input.parentNode.classList.add('md-input-focused');
+    }
+});
+
+// Update DOMContentLoaded to include Add Host button
+document.addEventListener('DOMContentLoaded', function() {
+    // Add Host button
+    const addHostButton = document.querySelector('[data-modal-target="#addHostModal"]');
+    if (addHostButton) {
+        addHostButton.addEventListener('click', openAddHostModal);
+    }
+
+    // Add host modal click outside to close
+    const addHostModal = document.getElementById('addHostModal');
+    if (addHostModal) {
+        addHostModal.addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
+                closeAddHostModal();
+            }
+        });
+    }
+    
+    // Existing code for edit/delete modals...
+    const editButtons = document.querySelectorAll('.btn-edit');
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const hostId = this.getAttribute('data-host-id');
+            const hostName = this.getAttribute('data-host-name');
+            const hostDescription = this.getAttribute('data-host-description') || '';
+            const hostClient = this.getAttribute('data-host-client');
+            const hostIp = this.getAttribute('data-host-ip') || '';
+            const hostPort = this.getAttribute('data-host-port') || '';
+            const hostPlatform = this.getAttribute('data-host-platform') || '';
+            const hostVersion = this.getAttribute('data-host-version') || '';
+            const hostActive = this.getAttribute('data-host-active') === 'True';
+            
+            openEditModal(hostId, hostName, hostDescription, hostClient, hostIp, hostPort, hostPlatform, hostVersion, hostActive);
+        });
+    });
+
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const hostId = this.getAttribute('data-host-id');
+            const hostName = this.getAttribute('data-host-name');
+            openDeleteModal(hostId, hostName);
+        });
+    });
+});
+
+// Update ESC key handler to include Add Host modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const deleteModal = document.getElementById('deleteHostModal');
+        const editModal = document.getElementById('editHostModal');
+        const addHostModal = document.getElementById('addHostModal');
+        
+        if (deleteModal && deleteModal.classList.contains('show')) {
+            closeDeleteModal();
+        } else if (editModal && editModal.classList.contains('show')) {
+            closeEditModal();
+        } else if (addHostModal && addHostModal.classList.contains('show')) {
+            closeAddHostModal();
+        }
+    }
+});
+
 </script>
 {% endblock %}

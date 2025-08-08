@@ -998,7 +998,11 @@ body {
 }
 
 .edit-modal-header {
-  background: var(--oracle-accent-gradient);
+  background: linear-gradient(to bottom, #36293C, #594564);
+}
+
+.add-modal-header {
+  background: linear-gradient(to bottom, #1E3324, #4C634C);
 }
 
 .custom-modal-title {
@@ -1262,6 +1266,23 @@ body {
   font-size: var(--font-size-sm);
 }
 
+/* ===== MODAL ICON AND TEXT STYLING ===== */
+.edit-modal-header .custom-modal-title i {
+  color: #C74634;
+}
+
+.edit-modal-header .custom-modal-title span {
+  color: #E7F2F5;
+}
+
+.add-modal-header .custom-modal-title i {
+  color: #C74634;
+}
+
+.add-modal-header .custom-modal-title span {
+  color: #E7F2F5;
+}
+
 /* ===== MODAL ACTION BUTTONS ===== */
 .btn-cancel {
   background: var(--text-muted);
@@ -1302,7 +1323,7 @@ body {
 }
 
 .btn-save-confirm {
-  background: var(--oracle-red);
+  background: #00688C;
   color: white;
   border: none;
   padding: var(--spacing-sm) var(--spacing-lg);
@@ -1316,7 +1337,26 @@ body {
 }
 
 .btn-save-confirm:hover {
-  background: #B03C2A;
+  background: #06485F;
+  transform: translateY(-1px);
+}
+
+.btn-add-confirm {
+  background: var(--pine-100);
+  color: white;
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  transition: all 0.3s var(--ease-out-cubic);
+}
+
+.btn-add-confirm:hover {
+  background: var(--pine-140);
   transform: translateY(-1px);
 }
 
@@ -1944,4 +1984,168 @@ body {
   .md-main-content { padding: var(--spacing-md) 0; }
   .md-grid { gap: var(--spacing-sm); }
   .md-p-5 { padding: var(--spacing-md); }
+}
+
+/* ===== ENHANCED FORM COMPONENTS FOR ADD MODALS ===== */
+
+/* Form Sections */
+.form-section {
+    margin-bottom: var(--spacing-lg);
+}
+
+.form-section-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    align-items: center;
+}
+
+.form-section-title .material-icons {
+    font-size: 1.3rem;
+}
+
+/* Field Hints */
+.field-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Info Subtitle for Help Cards */
+.info-subtitle {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    margin-top: 1rem;
+}
+
+.info-subtitle:first-child {
+    margin-top: 0;
+}
+
+/* Checkbox Component */
+.md-checkbox-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.md-checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-primary);
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.md-checkbox {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.md-checkbox-checkmark {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 1.2rem;
+    width: 1.2rem;
+    background-color: var(--background-primary);
+    border: 2px solid var(--pine-100);
+    border-radius: var(--radius-sm);
+    transition: all 0.3s ease;
+}
+
+.md-checkbox:checked + .md-checkbox-checkmark {
+    background-color: var(--pine-100);
+    border-color: var(--pine-100);
+}
+
+.md-checkbox-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 0.3rem;
+    height: 0.6rem;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: translate(-50%, -65%) rotate(45deg);
+}
+
+.md-checkbox:checked + .md-checkbox-checkmark:after {
+    display: block;
+}
+
+.md-checkbox-label:hover .md-checkbox-checkmark {
+    border-color: var(--pine-140);
+    background-color: var(--pine-30);
+}
+
+.md-checkbox:checked + .md-checkbox-checkmark:hover {
+    background-color: var(--pine-140);
+}
+
+/* Select Component Enhancement */
+.md-input-floating select.md-input {
+    background-color: var(--background-primary);
+    border: 2px solid var(--oracle-red-30);
+    padding: 1rem 1rem 1rem 1rem;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.7rem center;
+    background-size: 1rem;
+    cursor: pointer;
+}
+
+.md-input-floating select.md-input:focus {
+    border-color: var(--oracle-red);
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C74634' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+.md-input-floating.md-input-focused select.md-input {
+    border-color: var(--oracle-red);
+}
+
+/* Textarea Component Enhancement */
+.md-input-floating textarea.md-input {
+    resize: vertical;
+    min-height: 4rem;
+    line-height: 1.5;
+}
+
+/* Modal Content Max Height for Scrollable Areas */
+.custom-modal-content .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+/* Scrollbar Styling for Modal Body */
+.modal-body::-webkit-scrollbar {
+    width: 0.5rem;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: var(--background-secondary);
+    border-radius: var(--radius-sm);
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: var(--oracle-red-30);
+    border-radius: var(--radius-sm);
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--oracle-red);
 }

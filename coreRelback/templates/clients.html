@@ -16,10 +16,10 @@
                         <p class="page-subtitle">Manage your backup clients and organizations</p>
                     </div>
                 </div>
-                <a href="{% url 'coreRelback:client-create' %}" class="md-btn md-btn-primary page-actions">
+                <button type="button" class="md-btn md-btn-primary page-actions" data-modal-target="#addClientModal">
                     <i class="material-icons md-me-1">add</i>
                     Add Client
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -349,6 +349,224 @@
 </div>
 
 
+
+<!-- Add Client Modal -->
+<div id="addClientModal" class="custom-modal">
+    <div class="custom-modal-backdrop"></div>
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header add-modal-header">
+                <h5 class="custom-modal-title">
+                    <i class="material-icons">add_business</i>
+                    <span>Add New Client</span>
+                </h5>
+                <button type="button" class="custom-modal-close" onclick="closeAddModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            
+            <div class="custom-modal-body">
+                <form id="addClientForm" method="post" action="{% url 'coreRelback:client-create' %}">
+                    {% csrf_token %}
+                <div class="modal-section">
+                    <div class="form-section">
+                        <h5 class="form-section-title">
+                            <i class="material-icons md-me-2">info</i>
+                            Client Information
+                        </h5>
+                        
+                        <div class="md-grid md-grid-cols-2 md-gap-4">
+                            <div class="md-input-group">
+                                <div class="md-input-floating">
+                                    <input type="text" 
+                                           class="md-input" 
+                                           id="add-client-name" 
+                                           name="name" 
+                                           placeholder=" "
+                                           required>
+                                    <label class="md-label" for="add-client-name">
+                                        <i class="material-icons md-me-1">business</i>
+                                        Client Name *
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="md-input-group">
+                                <div class="md-input-floating">
+                                    <input type="text" 
+                                           class="md-input" 
+                                           id="add-client-description" 
+                                           name="description" 
+                                           placeholder=" ">
+                                    <label class="md-label" for="add-client-description">
+                                        <i class="material-icons md-me-1">description</i>
+                                        Description
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="md-info-card">
+                            <div class="md-info-header">
+                                <i class="material-icons">help</i>
+                                <h6>Guidelines</h6>
+                            </div>
+                            <ul class="md-info-list">
+                                <li><strong>Client Name:</strong> A unique identifier for your organization or department</li>
+                                <li><strong>Description:</strong> Optional details about the client's purpose or location</li>
+                                <li>After creating a client, you can add hosts and databases associated with it</li>
+                            </ul>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeAddModal()">
+                    <i class="material-icons">cancel</i>
+                    Cancel
+                </button>
+                <button type="submit" form="addClientForm" class="btn-add-confirm">
+                    <i class="material-icons">add</i>
+                    Create Client
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+// Add Modal Functions
+function openAddModal() {
+    const modal = document.getElementById('addClientModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on first input
+    setTimeout(() => {
+        document.getElementById('add-client-name').focus();
+    }, 100);
+}
+
+function closeAddModal() {
+    const modal = document.getElementById('addClientModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    
+    // Reset form
+    const form = document.getElementById('addClientForm');
+    form.reset();
+    
+    // Clear any validation errors
+    form.querySelectorAll('.md-input').forEach(input => {
+        input.classList.remove('error');
+    });
+    form.querySelectorAll('.error-message').forEach(error => {
+        error.remove();
+    });
+}
+
+// Add Client Form Validation
+function validateAddForm() {
+    const nameInput = document.getElementById('add-client-name');
+    let isValid = true;
+    
+    // Clear previous errors
+    nameInput.classList.remove('error');
+    const existingError = nameInput.parentNode.querySelector('.error-message');
+    if (existingError) {
+        existingError.remove();
+    }
+    
+    // Validate name
+    if (!nameInput.value.trim()) {
+        showAddFormError(nameInput, 'Client name is required');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+function showAddFormError(input, message) {
+    input.classList.add('error');
+    
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = message;
+    input.parentNode.appendChild(errorDiv);
+}
+
+// Add Client Form Submit Handler
+document.getElementById('addClientForm').addEventListener('submit', function(e) {
+    if (!validateAddForm()) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+// Real-time validation for add form
+document.getElementById('add-client-name').addEventListener('input', function() {
+    if (this.classList.contains('error')) {
+        validateAddForm();
+    }
+});
+
+// Update the Add button event listener in the existing DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Add Client button
+    const addButton = document.querySelector('[data-modal-target="#addClientModal"]');
+    if (addButton) {
+        addButton.addEventListener('click', openAddModal);
+    }
+
+    // Add modal click outside to close
+    const addModal = document.getElementById('addClientModal');
+    if (addModal) {
+        addModal.addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
+                closeAddModal();
+            }
+        });
+    }
+});
+
+// Update ESC key handler to include Add modal
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const deleteModal = document.getElementById('deleteClientModal');
+        const editModal = document.getElementById('editClientModal');
+        const addModal = document.getElementById('addClientModal');
+        
+        if (deleteModal && deleteModal.classList.contains('show')) {
+            closeDeleteModal();
+        } else if (editModal && editModal.classList.contains('show')) {
+            closeEditModal();
+        } else if (addModal && addModal.classList.contains('show')) {
+            closeAddModal();
+        }
+    }
+});
+
+// Floating label animation for add form
+document.querySelectorAll('#addClientModal .md-input-floating .md-input').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentNode.classList.add('md-input-focused');
+    });
+    
+    input.addEventListener('blur', function() {
+        if (!this.value) {
+            this.parentNode.classList.remove('md-input-focused');
+        }
+    });
+    
+    // Check if input has value on load
+    if (input.value) {
+        input.parentNode.classList.add('md-input-focused');
+    }
+});
+
+</script>
 
 <script>
 // Dados dos clientes para auto-completar
