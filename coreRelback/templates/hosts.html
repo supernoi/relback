@@ -7,16 +7,16 @@
 <div class="md-container-fluid">
     <!-- Page Header -->
     <div class="md-grid md-grid-cols-1 md-mb-5">
-        <div class="md-card md-p-5">
-            <div class="md-flex md-items-center md-justify-between">
+        <div class="md-card page-header">
+            <div class="md-flex md-justify-between md-items-center">
                 <div class="md-flex md-items-center">
-                    <i class="material-icons md-me-3" style="font-size: 56px; color: #C74634;">dns</i>
+                    <i class="material-icons page-header-icon">dns</i>
                     <div>
-                        <h1 class="h2 md-mb-1">Hosts Management</h1>
-                        <p class="md-text-muted md-mb-0" style="font-size: 1.1rem;">Manage your backup host servers</p>
+                        <h1 class="page-title">Hosts Management</h1>
+                        <p class="page-subtitle">Manage your backup host servers</p>
                     </div>
                 </div>
-                <a href="{% url 'coreRelback:host-create' %}" class="md-btn md-btn-primary" style="padding: 0.8rem 1.5rem; font-size: 1rem;">
+                <a href="{% url 'coreRelback:host-create' %}" class="md-btn md-btn-primary page-actions">
                     <i class="material-icons md-me-1">add</i>
                     Add Host
                 </a>
@@ -26,59 +26,55 @@
 
     <!-- Stats Cards -->
     <div class="md-grid md-grid-cols-4 md-mb-5">
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ total_hosts }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Total Hosts</p>
+                    <h2 class="stats-title">{{ total_hosts }}</h2>
+                    <p class="stats-subtitle">Total Hosts</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">dns</i>
+                <i class="material-icons stats-card-icon">dns</i>
             </div>
         </div>
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ active_hosts|default:0 }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Active Hosts</p>
+                    <h2 class="stats-title">{{ active_hosts|default:0 }}</h2>
+                    <p class="stats-subtitle">Active Hosts</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">check_circle</i>
+                <i class="material-icons stats-card-icon">check_circle</i>
             </div>
         </div>
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ total_clients|default:0 }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Clients</p>
+                    <h2 class="stats-title">{{ total_clients|default:0 }}</h2>
+                    <p class="stats-subtitle">Clients</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">business</i>
+                <i class="material-icons stats-card-icon">business</i>
             </div>
         </div>
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ total_databases|default:0 }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Databases</p>
+                    <h2 class="stats-title">{{ total_databases|default:0 }}</h2>
+                    <p class="stats-subtitle">Databases</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">storage</i>
+                <i class="material-icons stats-card-icon">storage</i>
             </div>
         </div>
     </div>
 
-    <!-- Search and Filters -->
-    <div class="md-grid md-grid-cols-1 md-mb-5">
-        <div class="md-card md-p-4">
-            <div class="md-grid md-grid-cols-3 md-gap-4 md-items-center">
-                <div class="md-input-group">
-                    <input type="text" class="md-input" id="searchHost" placeholder="Search hosts...">
-                    <label class="md-label">Search hosts...</label>
+    <!-- Search and Actions -->
+    <div class="md-grid md-grid-cols-1 md-mb-5 search-section">
+        <div class="md-card search-container">
+            <div class="search-grid">
+                <div class="autocomplete-container">
+                    <input type="text" class="md-input" id="searchHosts" placeholder="Search hosts..." autocomplete="off">
+                    <div class="autocomplete-list" id="autocompleteList"></div>
                 </div>
-                <button class="md-btn md-btn-outlined md-w-full" style="padding: 0.75rem 1.2rem; font-size: 1rem;">
-                    <i class="material-icons md-me-1">filter_list</i>
-                    Filters
-                </button>
-                <button class="md-btn md-btn-text md-w-full" style="padding: 0.75rem 1.2rem; font-size: 1rem;">
-                    <i class="material-icons md-me-1">refresh</i>
-                    Refresh
+                <button class="md-btn md-btn-text clean-btn" id="cleanBtn">
+                    <i class="material-icons md-me-1">clear</i>
+                    Clean
                 </button>
             </div>
         </div>
@@ -86,105 +82,103 @@
 
     <!-- Hosts Table -->
     <div class="md-grid md-grid-cols-1">
-        <div class="md-card">
-            <div class="md-table-responsive">
-                <table class="md-table">
-                    <thead>
-                        <tr>
-                            <th>
-                                <i class="material-icons md-me-2">dns</i>
-                                Host
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2">business</i>
-                                Client
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2">language</i>
-                                IP Address
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2">computer</i>
-                                Platform
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2">storage</i>
-                                Databases
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2">schedule</i>
-                                Last Backup
-                            </th>
-                            <th class="md-text-center">
-                                <i class="material-icons md-me-2">settings</i>
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for host in hosts %}
-                        <tr class="host-row" data-client="{{ host.client.name|default:'Unknown' }}" data-status="active">
-                            <td>
-                                <div class="md-flex md-items-center">
-                                    <div class="md-avatar md-avatar-md md-me-3" style="background-color: var(--md-primary);">
-                                        <i class="material-icons" style="color: white;">dns</i>
+        <div class="md-card md-card-decorated">
+            {% if hosts %}
+                <div class="md-table-responsive">
+                    <table class="md-table">
+                        <thead>
+                            <tr>
+                                <th class="oracle-info-gradient">
+                                    <div class="table-header-content">
+                                        <i class="material-icons table-header-icon">dns</i>
+                                        <span class="table-header-text">Host</span>
                                     </div>
-                                    <div>
-                                        <h6 class="md-mb-0">{{ host.hostname|default:"Unnamed Host" }}</h6>
-                                        <small class="md-text-muted">ID: {{ host.id_host }}</small>
+                                </th>
+                                <th class="oracle-info-gradient">
+                                    <i class="material-icons table-header-icon">business</i>
+                                    <span class="table-header-text">Client</span>
+                                </th>
+                                <th class="oracle-info-gradient">
+                                    <i class="material-icons table-header-icon">language</i>
+                                    <span class="table-header-text">IP Address</span>
+                                </th>
+                                <th class="oracle-info-gradient">
+                                    <i class="material-icons table-header-icon">computer</i>
+                                    <span class="table-header-text">Platform</span>
+                                </th>
+                                <th class="oracle-info-gradient">
+                                    <i class="material-icons table-header-icon">storage</i>
+                                    <span class="table-header-text">Databases</span>
+                                </th>
+                                <th class="oracle-info-gradient">
+                                    <i class="material-icons table-header-icon">settings</i>
+                                    <span class="table-header-text">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for host in hosts %}
+                            <tr class="host-row" data-client="{{ host.client.name|default:'Unknown' }}" data-status="active">
+                                <td>
+                                    <div class="table-cell-content">
+                                        <div class="table-cell-icon">
+                                            <i class="material-icons-round">dns</i>
+                                        </div>
+                                        <div>
+                                            <h5 class="table-cell-title">{{ host.hostname|default:"Unnamed Host" }}</h5>
+                                            <small class="table-cell-subtitle">ID: {{ host.id_host }}</small>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td>
-                                {% if host.client %}
-                                <span class="md-chip md-chip-primary">{{ host.client.name }}</span>
-                                {% else %}
-                                <span class="md-text-muted">No Client</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <code class="md-code">{{ host.ip|default:'N/A' }}</code>
-                            </td>
-                            <td>
-                                <span class="md-text-muted">Oracle Server</span>
-                            </td>
-                            <td>
-                                <span class="md-chip md-chip-info">{{ host.database_set.count }}</span>
-                            </td>
-                            <td>
-                                <span class="md-text-muted">Never</span>
-                            </td>
-                            <td class="md-text-center">
-                                <div class="md-btn-group">
-                                    <a href="{% url 'coreRelback:host-update' host.id_host %}" 
-                                       class="md-btn md-btn-sm md-btn-outlined" title="Edit">
-                                        <i class="material-icons">edit</i>
-                                    </a>
-                                    <a href="{% url 'coreRelback:host-delete' host.id_host %}" 
-                                       class="md-btn md-btn-sm md-btn-danger" title="Delete">
-                                        <i class="material-icons">delete</i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="md-text-center md-py-5">
-                                <div class="md-empty-state">
-                                    <i class="material-icons md-mb-3" style="font-size: 64px; color: #C74634; opacity: 0.6;">dns</i>
-                                    <h5 class="md-text-muted">No hosts found</h5>
-                                    <p class="md-text-muted md-mb-4">Get started by adding your first host</p>
-                                    <a href="{% url 'coreRelback:host-create' %}" class="md-btn md-btn-primary">
-                                        <i class="material-icons md-me-1">add</i>
-                                        Add First Host
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                                </td>
+                                <td>
+                                    {% if host.client %}
+                                    <span class="md-chip md-chip-primary">{{ host.client.name }}</span>
+                                    {% else %}
+                                    <span class="table-cell-text">No Client</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <code class="md-code">{{ host.ip|default:'N/A' }}</code>
+                                </td>
+                                <td>
+                                    <span class="table-cell-text">Oracle Server</span>
+                                </td>
+                                <td>
+                                    <span class="md-chip md-chip-info">{{ host.database_set.count }}</span>
+                                </td>
+                                <td>
+                                    <div class="btn-actions-group">
+                                        <button type="button" 
+                                                class="btn-action btn-edit" 
+                                                title="Edit Host"
+                                                onclick="openEditModal('{{ host.id_host }}', '{{ host.hostname|escapejs }}', '{{ host.ip|default:""|escapejs }}', '{{ host.client.id_client|default:"" }}', '{{ host.client.name|default:""|escapejs }}')">
+                                            <i class="material-icons-round">edit</i>
+                                        </button>
+                                        <button type="button" 
+                                                class="btn-action btn-delete" 
+                                                title="Delete Host"
+                                                onclick="openDeleteModal('{{ host.id_host }}', '{{ host.hostname|escapejs }}', '{{ host.ip|default:"No IP"|escapejs }}', '{{ host.client.name|default:"No Client"|escapejs }}', '{{ host.database_set.count }}')">
+                                            <i class="material-icons-round">delete</i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <!-- Empty State -->
+                <div class="empty-state">
+                    <i class="material-icons empty-state-icon">dns</i>
+                    <h4 class="empty-state-title">No hosts found</h4>
+                    <p class="empty-state-description">Get started by adding your first host</p>
+                    <a href="{% url 'coreRelback:host-create' %}" class="md-btn md-btn-primary empty-state-action">
+                        <i class="material-icons md-me-1">add</i>
+                        Add First Host
+                    </a>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -194,28 +188,560 @@
     <i class="material-icons">add</i>
 </button>
 
+<!-- Delete Confirmation Modal -->
+<div class="custom-modal" id="deleteHostModal">
+    <div class="custom-modal-backdrop"></div>
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-content">
+            <!-- Modal Header -->
+            <div class="custom-modal-header">
+                <h5 class="custom-modal-title">
+                    <i class="material-icons">warning</i>
+                    Delete Host
+                </h5>
+                <button type="button" class="custom-modal-close" onclick="closeDeleteModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="custom-modal-body">
+                <!-- Warning Message -->
+                <div class="alert-danger">
+                    <i class="material-icons">dangerous</i>
+                    <div>
+                        <strong>Warning:</strong> This action cannot be undone. Deleting this host will also remove all associated databases and backup configurations.
+                    </div>
+                </div>
+                
+                <!-- Host Details -->
+                <p class="delete-question">Are you sure you want to delete the following host?</p>
+                
+                <div class="detail-container">
+                    <div class="detail-row">
+                        <strong>Host Name:</strong>
+                        <span id="modal-host-name"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>IP Address:</strong>
+                        <span id="modal-host-ip"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Client:</strong>
+                        <span id="modal-host-client"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Host ID:</strong>
+                        <span id="modal-host-id"></span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Databases:</strong>
+                        <span id="modal-host-databases"></span>
+                    </div>
+                </div>
+
+                <!-- What will be deleted info -->
+                <div class="what-deleted-section">
+                    <div class="what-deleted-header">
+                        <i class="material-icons">info</i>
+                        What will be deleted?
+                    </div>
+                    <div class="what-deleted-content">
+                        <div class="deleted-item">
+                            <i class="material-icons">storage</i>
+                            <div>
+                                <strong>Databases</strong>
+                                <small>All associated databases</small>
+                            </div>
+                        </div>
+                        <div class="deleted-item">
+                            <i class="material-icons">security</i>
+                            <div>
+                                <strong>Policies</strong>
+                                <small>All backup policies</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
+                    <i class="material-icons">cancel</i>
+                    Cancel
+                </button>
+                <form method="post" id="deleteHostForm" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-delete-confirm">
+                        <i class="material-icons">delete_forever</i>
+                        Yes, Delete Host
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Host Modal -->
+<div class="custom-modal" id="editHostModal">
+    <div class="custom-modal-backdrop"></div>
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-content">
+            <!-- Modal Header -->
+            <div class="custom-modal-header edit-modal-header">
+                <h5 class="custom-modal-title">
+                    <i class="material-icons">edit</i>
+                    <span>Edit Host</span>
+                </h5>
+                <button type="button" class="custom-modal-close" onclick="closeEditModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="custom-modal-body">
+                <!-- Info Message -->
+                <div class="alert-info">
+                    <i class="material-icons">info</i>
+                    <div>
+                        <strong>Update Information:</strong> Modify the host details below. Changes will be saved immediately upon submission.
+                    </div>
+                </div>
+                
+                <!-- Edit Form -->
+                <form method="post" id="editHostForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <h6 class="form-section-title">
+                            <i class="material-icons">dns</i>
+                            Host Information
+                        </h6>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label" for="edit-host-name">
+                                    <i class="material-icons">dns</i>
+                                    Host Name *
+                                </label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       id="edit-host-name" 
+                                       name="hostname" 
+                                       required
+                                       placeholder="Enter host name">
+                                <div class="form-error" id="edit-hostname-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="edit-host-ip">
+                                    <i class="material-icons">language</i>
+                                    IP Address *
+                                </label>
+                                <input type="text" 
+                                       class="form-input" 
+                                       id="edit-host-ip" 
+                                       name="ip" 
+                                       required
+                                       placeholder="Enter IP address">
+                                <div class="form-error" id="edit-ip-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Host ID Display -->
+                    <div class="form-section">
+                        <h6 class="form-section-title">
+                            <i class="material-icons">info</i>
+                            Additional Information
+                        </h6>
+                        
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Host ID:</span>
+                                <span class="info-value" id="edit-host-id-display"></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Client:</span>
+                                <span class="info-value" id="edit-host-client-display"></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeEditModal()">
+                    <i class="material-icons">cancel</i>
+                    Cancel
+                </button>
+                <button type="submit" form="editHostForm" class="btn-save-confirm" onclick="submitEditForm()">
+                    <i class="material-icons">save</i>
+                    Update Host
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+// Dados dos hosts para auto-completar
+const hostsData = [
+    {% for host in hosts %}
+    {
+        id: {{ host.id_host }},
+        hostname: "{{ host.hostname|default:'Unnamed Host'|escapejs }}",
+        ip: "{{ host.ip|default:'N/A'|escapejs }}",
+        client: "{{ host.client.name|default:'No Client'|escapejs }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
 // FAB click handler
 document.getElementById('addHostFab').addEventListener('click', function() {
     window.location.href = '{% url "coreRelback:host-create" %}';
 });
 
-// Search functionality
-document.getElementById('searchHost').addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
+// Auto-complete functionality
+const searchInput = document.getElementById('searchHosts');
+const autocompleteList = document.getElementById('autocompleteList');
+let currentFocus = -1;
+
+searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase().trim();
+    
+    // Limpar lista anterior
+    autocompleteList.innerHTML = '';
+    currentFocus = -1;
+    
+    if (searchTerm.length === 0) {
+        autocompleteList.style.display = 'none';
+        showAllRows();
+        return;
+    }
+    
+    // Filtrar hosts
+    const filteredHosts = hostsData.filter(host => 
+        host.hostname.toLowerCase().includes(searchTerm) || 
+        host.ip.toLowerCase().includes(searchTerm) ||
+        host.client.toLowerCase().includes(searchTerm)
+    );
+    
+    // Mostrar sugestões
+    if (filteredHosts.length > 0) {
+        autocompleteList.style.display = 'block';
+        
+        filteredHosts.slice(0, 5).forEach((host, index) => {
+            const item = document.createElement('div');
+            item.className = 'autocomplete-item';
+            item.innerHTML = `
+                <div style="font-weight: 600; color: #3C4545; margin-bottom: 4px;">${host.hostname}</div>
+                <div style="font-size: 0.85rem; color: #697778;">${host.ip} - ${host.client}</div>
+            `;
+            item.addEventListener('click', function() {
+                searchInput.value = host.hostname;
+                autocompleteList.style.display = 'none';
+                filterTable(host.hostname.toLowerCase());
+            });
+            autocompleteList.appendChild(item);
+        });
+    } else {
+        autocompleteList.style.display = 'none';
+    }
+    
+    // Filtrar tabela em tempo real
+    filterTable(searchTerm);
+});
+
+// Navegação por teclado no auto-complete
+searchInput.addEventListener('keydown', function(e) {
+    const items = autocompleteList.querySelectorAll('.autocomplete-item');
+    
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentFocus++;
+        if (currentFocus >= items.length) currentFocus = 0;
+        setActive(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentFocus--;
+        if (currentFocus < 0) currentFocus = items.length - 1;
+        setActive(items);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (currentFocus > -1 && items[currentFocus]) {
+            items[currentFocus].click();
+        }
+    } else if (e.key === 'Escape') {
+        autocompleteList.style.display = 'none';
+        currentFocus = -1;
+    }
+});
+
+function setActive(items) {
+    items.forEach((item, index) => {
+        item.classList.toggle('active', index === currentFocus);
+    });
+}
+
+// Fechar auto-complete ao clicar fora
+document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !autocompleteList.contains(e.target)) {
+        autocompleteList.style.display = 'none';
+    }
+});
+
+// Função para filtrar tabela
+function filterTable(searchTerm) {
     const tableRows = document.querySelectorAll('tbody tr.host-row');
     
     tableRows.forEach(row => {
-        const hostName = row.querySelector('h6').textContent.toLowerCase();
-        const ipAddress = row.cells[2].textContent.toLowerCase();
+        const hostName = row.querySelector('h5').textContent.toLowerCase();
+        const ipAddress = row.querySelector('code').textContent.toLowerCase();
         const clientName = row.dataset.client.toLowerCase();
         
         if (hostName.includes(searchTerm) || ipAddress.includes(searchTerm) || clientName.includes(searchTerm)) {
             row.style.display = '';
+            row.style.animation = 'fadeIn 0.3s ease';
         } else {
             row.style.display = 'none';
         }
     });
+}
+
+function showAllRows() {
+    const tableRows = document.querySelectorAll('tbody tr.host-row');
+    tableRows.forEach(row => {
+        row.style.display = '';
+        row.style.animation = 'fadeIn 0.3s ease';
+    });
+}
+
+// Botão Clean
+document.getElementById('cleanBtn').addEventListener('click', function() {
+    searchInput.value = '';
+    autocompleteList.style.display = 'none';
+    showAllRows();
+    searchInput.focus();
+    
+    // Adicionar efeito visual ao botão
+    this.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        this.style.transform = 'scale(1)';
+    }, 150);
+});
+
+// Modal functions for delete confirmation
+function openDeleteModal(hostId, hostName, hostIp, hostClient, hostDatabases) {
+    // Populate modal with host data
+    document.getElementById('modal-host-name').textContent = hostName;
+    document.getElementById('modal-host-ip').textContent = hostIp;
+    document.getElementById('modal-host-client').textContent = hostClient;
+    document.getElementById('modal-host-id').textContent = hostId;
+    document.getElementById('modal-host-databases').textContent = hostDatabases + ' databases';
+    
+    // Set form action to delete URL
+    const deleteForm = document.getElementById('deleteHostForm');
+    deleteForm.action = `{% url 'coreRelback:host-delete' 0 %}`.replace('0', hostId);
+    
+    // Show modal
+    const modal = document.getElementById('deleteHostModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteHostModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// Modal functions for edit host
+function openEditModal(hostId, hostName, hostIp, clientId, clientName) {
+    const modal = document.getElementById('editHostModal');
+    const nameInput = document.getElementById('edit-host-name');
+    const ipInput = document.getElementById('edit-host-ip');
+    const hostIdSpan = document.getElementById('edit-host-id-display');
+    const clientSpan = document.getElementById('edit-host-client-display');
+    
+    // Populate form fields
+    nameInput.value = hostName;
+    ipInput.value = hostIp || '';
+    hostIdSpan.textContent = hostId;
+    clientSpan.textContent = clientName || 'No Client';
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on name input for immediate editing
+    nameInput.focus();
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editHostModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    
+    // Clear any error states
+    clearFormErrors();
+}
+
+function clearFormErrors() {
+    const errorElements = document.querySelectorAll('.form-error');
+    const inputElements = document.querySelectorAll('.form-input');
+    
+    errorElements.forEach(el => el.classList.remove('show'));
+    inputElements.forEach(el => el.classList.remove('error'));
+}
+
+function validateEditForm() {
+    const nameInput = document.getElementById('edit-host-name');
+    const ipInput = document.getElementById('edit-host-ip');
+    const nameError = document.getElementById('edit-hostname-error');
+    const ipError = document.getElementById('edit-ip-error');
+    let isValid = true;
+    
+    // Clear previous errors
+    clearFormErrors();
+    
+    // Validate name field
+    if (!nameInput.value.trim()) {
+        nameInput.classList.add('error');
+        nameError.textContent = 'Host name is required';
+        nameError.classList.add('show');
+        isValid = false;
+    } else if (nameInput.value.trim().length < 2) {
+        nameInput.classList.add('error');
+        nameError.textContent = 'Host name must be at least 2 characters';
+        nameError.classList.add('show');
+        isValid = false;
+    }
+    
+    // Validate IP field
+    if (!ipInput.value.trim()) {
+        ipInput.classList.add('error');
+        ipError.textContent = 'IP address is required';
+        ipError.classList.add('show');
+        isValid = false;
+    } else {
+        // Simple IP validation
+        const ipPattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        if (!ipPattern.test(ipInput.value.trim())) {
+            ipInput.classList.add('error');
+            ipError.textContent = 'Please enter a valid IP address';
+            ipError.classList.add('show');
+            isValid = false;
+        }
+    }
+    
+    return isValid;
+}
+
+function submitEditForm() {
+    if (!validateEditForm()) {
+        return;
+    }
+    
+    const nameInput = document.getElementById('edit-host-name');
+    const ipInput = document.getElementById('edit-host-ip');
+    const hostIdSpan = document.getElementById('edit-host-id-display');
+    const saveButton = document.querySelector('.btn-save-confirm');
+    
+    // Disable save button during submission
+    saveButton.disabled = true;
+    saveButton.innerHTML = '<i class="material-icons">hourglass_empty</i>Saving...';
+    
+    // Create a form and submit it traditionally
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `{% url 'coreRelback:host-update' 0 %}`.replace('0', hostIdSpan.textContent);
+    
+    // Add CSRF token
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    form.appendChild(csrfInput);
+    
+    // Add hostname field
+    const nameField = document.createElement('input');
+    nameField.type = 'hidden';
+    nameField.name = 'hostname';
+    nameField.value = nameInput.value.trim();
+    form.appendChild(nameField);
+    
+    // Add ip field
+    const ipField = document.createElement('input');
+    ipField.type = 'hidden';
+    ipField.name = 'ip';
+    ipField.value = ipInput.value.trim();
+    form.appendChild(ipField);
+    
+    // Append form to body and submit
+    document.body.appendChild(form);
+    form.submit();
+}
+
+// Close modal when clicking on backdrop
+document.getElementById('deleteHostModal').addEventListener('click', function(e) {
+    if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
+        closeDeleteModal();
+    }
+});
+
+// Close edit modal when clicking on backdrop
+document.addEventListener('DOMContentLoaded', function() {
+    const editModal = document.getElementById('editHostModal');
+    if (editModal) {
+        editModal.addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
+                closeEditModal();
+            }
+        });
+    }
+});
+
+// Close modal with ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const deleteModal = document.getElementById('deleteHostModal');
+        const editModal = document.getElementById('editHostModal');
+        
+        if (deleteModal && deleteModal.classList.contains('show')) {
+            closeDeleteModal();
+        } else if (editModal && editModal.classList.contains('show')) {
+            closeEditModal();
+        }
+    }
+});
+
+// Real-time validation for edit form
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.getElementById('edit-host-name');
+    const ipInput = document.getElementById('edit-host-ip');
+    
+    if (nameInput) {
+        nameInput.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                validateEditForm();
+            }
+        });
+    }
+    
+    if (ipInput) {
+        ipInput.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                validateEditForm();
+            }
+        });
+    }
+});
+
+// Focus automático no campo de busca
+document.addEventListener('DOMContentLoaded', function() {
+    searchInput.focus();
 });
 
 // Add Material Design interactions
@@ -236,11 +762,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const tableRows = document.querySelectorAll('tbody tr.host-row');
     tableRows.forEach(row => {
         row.addEventListener('mouseenter', function() {
-            this.style.backgroundColor = 'rgba(66, 133, 244, 0.08)';
+            this.style.backgroundColor = 'var(--sky-30)';
+            this.style.transform = 'scale(1.005)';
+            this.style.transition = 'all 0.3s ease';
         });
         
         row.addEventListener('mouseleave', function() {
             this.style.backgroundColor = '';
+            this.style.transform = 'scale(1)';
         });
     });
 });
