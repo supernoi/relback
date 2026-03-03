@@ -3,7 +3,7 @@
  *
  * Design System:
  *   - relback_light: Light dashboard theme (Oracle Red primary, white base)
- *   - relback_dark:  Dark dashboard theme  (Oracle Red primary, slate base)
+ *   - relback_dark:  Dark dashboard theme  (Indigo primary + Cyan accent, slate base)
  *   - dracula:       High-contrast dark mode
  *
  * Backup Status Tokens (maps to BackupStatusValue enum in domain/entities.py):
@@ -87,11 +87,11 @@ module.exports = {
           "error-content":    "#FFFFFF",
         },
         relback_dark: {
-          "primary":          "#C74634",   // Oracle Red
+          "primary":          "#6366f1",   // indigo-500 — modern corporate
           "primary-content":  "#FFFFFF",
-          "secondary":        "#e2e8f0",
-          "secondary-content":"#1e293b",
-          "accent":           "#60a5fa",   // blue-400
+          "secondary":        "#94a3b8",   // slate-400 — muted label text
+          "secondary-content":"#0f172a",
+          "accent":           "#06b6d4",   // cyan-500 — tech/monitoring accent
           "accent-content":   "#0f172a",
           "neutral":          "#334155",
           "neutral-content":  "#e2e8f0",
