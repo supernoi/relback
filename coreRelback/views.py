@@ -17,6 +17,7 @@ from coreRelback.gateways.repositories import (
     DjangoBackupPolicyRepository,
     DjangoScheduleRepository,
     OracleRmanRepository,
+    DemoRmanRepository,
 )
 from coreRelback.services.use_cases import (
     AuditBackupUseCase,
@@ -37,6 +38,20 @@ from coreRelback.services.use_cases import (
     DeleteBackupPolicyUseCase,
     GetBackupDetailUseCase,
 )
+
+
+def _get_rman_repo():
+    """Return the appropriate RMAN repository based on settings.
+
+    When ``DEMO_MODE = True``, returns ``DemoRmanRepository`` so the UI
+    renders with realistic fixture data even without an Oracle connection.
+    Otherwise uses ``OracleRmanRepository`` (which also gracefully returns
+    empty lists when ``ORACLE_CATALOG`` is None).
+    """
+    from django.conf import settings
+    if getattr(settings, "DEMO_MODE", False):
+        return DemoRmanRepository()
+    return OracleRmanRepository()
 
 
 def _get_relback_user(request):
@@ -558,7 +573,7 @@ def report_read(request):
     to_dt = (datetime.datetime.combine(to_date, datetime.time.max)
              if to_date else None)
 
-    backup_jobs = AuditBackupUseCase(OracleRmanRepository()).execute(
+    backup_jobs = AuditBackupUseCase(_get_rman_repo()).execute(
         from_date=from_dt, to_date=to_dt,
     )
     oracle_available = bool(backup_jobs)
@@ -694,7 +709,7 @@ def report_read_log_detail(request, idPolicy, dbKey, sessionKey):
     except BackupPolicy.DoesNotExist:
         policy = None
 
-    detail_result = GetBackupDetailUseCase(OracleRmanRepository()).execute(
+    detail_result = GetBackupDetailUseCase(_get_rman_repo()).execute(
         db_key=dbKey, session_key=sessionKey
     )
 
