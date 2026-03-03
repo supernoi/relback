@@ -6,7 +6,7 @@
 {% block content %}
 <div class="md-container-fluid">
     <!-- Page Header -->
-    <div class="md-grid md-grid-cols-1 md-mb-5">
+    <div class="mb-5">
         <div class="md-card page-header">
             <div class="md-flex md-justify-between md-items-center">
                 <div class="md-flex md-items-center">
@@ -57,11 +57,11 @@
     </div>
 
     <!-- Search and Actions -->
-    <div class="md-grid md-grid-cols-1 md-mb-5 search-section">
+    <div class="mb-5 search-section">
         <div class="md-card search-container">
             <div class="search-grid">
                 <div class="autocomplete-container">
-                    <input type="text" class="md-input" id="searchPolicies" placeholder="Search policies by name, client, host, or type..." autocomplete="off">
+                    <input type="text" class="input input-bordered w-full" id="searchPolicies" placeholder="Search policies by name, client, host, or type..." autocomplete="off">
                     <i class="material-icons search-icon">search</i>
                     <div class="autocomplete-list" id="autocompleteList"></div>
                 </div>
@@ -72,7 +72,7 @@
             </div>
         </div>
     </div>    <!-- Policies Table -->
-    <div class="md-grid md-grid-cols-1">
+    <div>
         <div class="md-card md-card-decorated">
             {% if policies %}
                 <div class="overflow-x-auto">
@@ -479,30 +479,27 @@
                             Policy Information
                         </div>
                         
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="material-icons">badge</i>
-                                    Policy ID
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label pb-1">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">badge</i> Policy ID</span>
                                 </label>
                                 <div class="md-code">#<span id="edit-policy-id-display">---</span></div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="edit-policy-name" class="form-label">
-                                    <i class="material-icons">policy</i>
-                                    Policy Name *
+                            <div class="form-control">
+                                <label for="edit-policy-name" class="label pb-1">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">policy</i> Policy Name *</span>
                                 </label>
-                                <input type="text" id="edit-policy-name" name="policy_name" class="form-input" required>
+                                <input type="text" id="edit-policy-name" name="policy_name" class="input input-bordered w-full" required>
                                 <div class="form-error" id="edit-policy-name-error"></div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="edit-policy-description" class="form-label">
-                                    <i class="material-icons">description</i>
-                                    Description
+                            <div class="form-control">
+                                <label for="edit-policy-description" class="label pb-1">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">description</i> Description</span>
                                 </label>
-                                <textarea id="edit-policy-description" name="description" class="form-input" rows="3"></textarea>
+                                <textarea id="edit-policy-description" name="description" class="textarea textarea-bordered w-full" rows="3"></textarea>
                                 <div class="form-error" id="edit-policy-description-error"></div>
                             </div>
                         </div>
@@ -559,22 +556,20 @@
                             Basic Information
                         </div>
                         
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="add-policy-name" class="form-label">
-                                    <i class="material-icons">policy</i>
-                                    Policy Name *
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label for="add-policy-name" class="label pb-1">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">policy</i> Policy Name *</span>
                                 </label>
-                                <input type="text" id="add-policy-name" name="policy_name" class="form-input" required placeholder="Enter policy name">
+                                <input type="text" id="add-policy-name" name="policy_name" class="input input-bordered w-full" required placeholder="Enter policy name">
                                 <div class="field-hint">Choose a descriptive name for this backup policy</div>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="add-policy-description" class="form-label">
-                                    <i class="material-icons">description</i>
-                                    Description
+                            <div class="form-control">
+                                <label for="add-policy-description" class="label pb-1">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">description</i> Description</span>
                                 </label>
-                                <textarea id="add-policy-description" name="description" class="form-input" rows="3" placeholder="Describe this backup policy (optional)"></textarea>
+                                <textarea id="add-policy-description" name="description" class="textarea textarea-bordered w-full" rows="3" placeholder="Describe this backup policy (optional)"></textarea>
                                 <div class="field-hint">Provide additional details about this policy's purpose</div>
                             </div>
                         </div>
@@ -879,7 +874,7 @@ function closeAddModal() {
     form.reset();
     
     // Clear any validation errors
-    form.querySelectorAll('.form-input').forEach(input => {
+    form.querySelectorAll('.input-bordered').forEach(input => {
         input.classList.remove('error');
     });
     form.querySelectorAll('.error-message').forEach(error => {
@@ -889,7 +884,7 @@ function closeAddModal() {
 
 function clearFormErrors() {
     const errorElements = document.querySelectorAll('.form-error');
-    const inputElements = document.querySelectorAll('.form-input');
+    const inputElements = document.querySelectorAll('.input-bordered');
     
     errorElements.forEach(el => el.classList.remove('show'));
     inputElements.forEach(el => el.classList.remove('error'));
