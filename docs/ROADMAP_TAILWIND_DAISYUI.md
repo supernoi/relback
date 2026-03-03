@@ -31,7 +31,7 @@ nvm install --lts
 | 7     | Oracle Reports — UI Enhancements          | ✅ Done        | #36                   |
 | 8     | Report Log Detail View                    | ✅ Done        | #38                   |
 | 9     | CI — Hardening & Quality Gates            | ✅ Done        | #42 / #44             |
-| 10    | Demo Mode — Seed data for local preview   | 🚧 In Progress | —                     |
+| 10    | Demo Mode — Seed data for local preview   | ✅ Done        | #46                   |
 | 11    | Production Deployment (Docker + Gunicorn) | 🔲 Pending     | —                     |
 
 ---
