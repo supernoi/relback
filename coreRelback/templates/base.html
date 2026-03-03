@@ -1,252 +1,308 @@
-{% load static %}
-{% load tailwind_tags %}
-<!DOCTYPE html>
+{% load static %} {% load tailwind_tags %} {% load backup_tags %}
+<!doctype html>
 <html lang="en" data-theme="relback_dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}RelBack - Oracle Report Backup{% endblock %}</title>
-    
+    {# FOUC prevention: restore saved DaisyUI theme BEFORE first CSS paint #}
+    <script>
+      (function () {
+        var t = localStorage.getItem('relback-theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+
     <!-- Tailwind CSS + DaisyUI (compiled via django-tailwind) -->
     {% tailwind_css %}
 
     <!-- Legacy CSS: kept during migration — remove per-phase as components are migrated -->
     <!-- Material Design CSS -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Modern Theme CSS -->
-    <link href="{% static 'css/oracle-modern-theme.css' %}" rel="stylesheet">
-    
-    {% block extra_css %}{% endblock %}
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
 
-</head>
-<body>
+    <!-- Modern Theme CSS -->
+    <link href="{% static 'css/oracle-modern-theme.css' %}" rel="stylesheet" />
+
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
     <!-- Navigation Bar -->
     <nav class="md-navbar">
-        <div class="md-container">
-            <a class="md-navbar-brand" href="{% url 'coreRelback:index' %}">
-                <i class="material-icons animate-pulse" style="font-size: 2rem; color: var(--oracle-red);">storage</i>
-                <span class="md-navbar-logo">relBack</span>
+      <div class="md-container">
+        <a class="md-navbar-brand" href="{% url 'coreRelback:index' %}">
+          <i
+            class="material-icons animate-pulse"
+            style="font-size: 2rem; color: var(--oracle-red)"
+            >storage</i
+          >
+          <span class="md-navbar-logo">relBack</span>
+        </a>
+
+        <button class="md-navbar-toggle" type="button" id="navbarToggle">
+          <span class="material-icons">menu</span>
+        </button>
+
+        <div class="md-navbar-nav" id="navbarNav">
+          <div class="md-nav-items">
+            <a
+              class="md-nav-link animate-fade-in-up"
+              href="{% url 'coreRelback:index' %}"
+              style="animation-delay: 0.1s"
+            >
+              <i class="material-icons">home</i>
+              <span class="md-nav-text">Home</span>
             </a>
-            
-            <button class="md-navbar-toggle" type="button" id="navbarToggle">
-                <span class="material-icons">menu</span>
+            <a
+              class="md-nav-link animate-fade-in-up"
+              href="{% url 'coreRelback:client-list' %}"
+              style="animation-delay: 0.2s"
+            >
+              <i class="material-icons">business</i>
+              <span class="md-nav-text">Clients</span>
+            </a>
+            <a
+              class="md-nav-link animate-fade-in-up"
+              href="{% url 'coreRelback:host-list' %}"
+              style="animation-delay: 0.3s"
+            >
+              <i class="material-icons">dns</i>
+              <span class="md-nav-text">Hosts</span>
+            </a>
+            <a
+              class="md-nav-link animate-fade-in-up"
+              href="{% url 'coreRelback:database-list' %}"
+              style="animation-delay: 0.4s"
+            >
+              <i class="material-icons">storage</i>
+              <span class="md-nav-text">Databases</span>
+            </a>
+            <a
+              class="md-nav-link animate-fade-in-up"
+              href="{% url 'coreRelback:policy-list' %}"
+              style="animation-delay: 0.5s"
+            >
+              <i class="material-icons">security</i>
+              <span class="md-nav-text">Policies</span>
+            </a>
+            <a
+              class="md-nav-link animate-fade-in-up"
+              href="{% url 'coreRelback:report-read' %}"
+              style="animation-delay: 0.6s"
+            >
+              <i class="material-icons">assessment</i>
+              <span class="md-nav-text">Reports</span>
+            </a>
+          </div>
+
+          <div class="md-nav-actions">
+            <button
+              class="md-theme-toggle"
+              id="themeToggle"
+              title="Toggle Dark/Light Mode"
+            >
+              <i class="material-icons" id="themeIcon">dark_mode</i>
             </button>
-            
-            <div class="md-navbar-nav" id="navbarNav">
-                <div class="md-nav-items">
-                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:index' %}" style="animation-delay: 0.1s;">
-                        <i class="material-icons">home</i>
-                        <span class="md-nav-text">Home</span>
-                    </a>
-                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:client-list' %}" style="animation-delay: 0.2s;">
-                        <i class="material-icons">business</i>
-                        <span class="md-nav-text">Clients</span>
-                    </a>
-                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:host-list' %}" style="animation-delay: 0.3s;">
-                        <i class="material-icons">dns</i>
-                        <span class="md-nav-text">Hosts</span>
-                    </a>
-                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:database-list' %}" style="animation-delay: 0.4s;">
-                        <i class="material-icons">storage</i>
-                        <span class="md-nav-text">Databases</span>
-                    </a>
-                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:policy-list' %}" style="animation-delay: 0.5s;">
-                        <i class="material-icons">security</i>
-                        <span class="md-nav-text">Policies</span>
-                    </a>
-                    <a class="md-nav-link animate-fade-in-up" href="{% url 'coreRelback:report-read' %}" style="animation-delay: 0.6s;">
-                        <i class="material-icons">assessment</i>
-                        <span class="md-nav-text">Reports</span>
-                    </a>
-                </div>
-                
-                <div class="md-nav-actions">
-                    <button class="md-theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
-                        <i class="material-icons" id="themeIcon">dark_mode</i>
-                    </button>
-                    
-                    <div class="md-dropdown">
-                        <button class="md-dropdown-trigger" id="userDropdown">
-                            <i class="material-icons">account_circle</i>
-                            <span class="md-nav-text">{{ request.user.username }}</span>
-                            <i class="material-icons md-dropdown-arrow">keyboard_arrow_down</i>
-                        </button>
-                        <div class="md-dropdown-menu" id="userMenu">
-                            <a class="md-dropdown-item" href="{% url 'coreRelback:user-settings' %}">
-                                <i class="material-icons">settings</i>
-                                <span>Settings</span>
-                            </a>
-                            <div class="md-dropdown-divider"></div>
-                            <form method="post" action="{% url 'coreRelback:logout' %}" style="margin:0">
-                                {% csrf_token %}
-                                <button type="submit" class="md-dropdown-item" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;">
-                                    <i class="material-icons">logout</i>
-                                    <span>Sign Out</span>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+
+            <div class="md-dropdown">
+              <button class="md-dropdown-trigger" id="userDropdown">
+                <i class="material-icons">account_circle</i>
+                <span class="md-nav-text">{{ request.user.username }}</span>
+                <i class="material-icons md-dropdown-arrow"
+                  >keyboard_arrow_down</i
+                >
+              </button>
+              <div class="md-dropdown-menu" id="userMenu">
+                <a
+                  class="md-dropdown-item"
+                  href="{% url 'coreRelback:user-settings' %}"
+                >
+                  <i class="material-icons">settings</i>
+                  <span>Settings</span>
+                </a>
+                <div class="md-dropdown-divider"></div>
+                <form
+                  method="post"
+                  action="{% url 'coreRelback:logout' %}"
+                  style="margin: 0"
+                >
+                  {% csrf_token %}
+                  <button
+                    type="submit"
+                    class="md-dropdown-item"
+                    style="
+                      background: none;
+                      border: none;
+                      width: 100%;
+                      text-align: left;
+                      cursor: pointer;
+                    "
+                  >
+                    <i class="material-icons">logout</i>
+                    <span>Sign Out</span>
+                  </button>
+                </form>
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <main class="md-main-content">
-        {% if messages %}
-            {% for message in messages %}
-                <div class="md-snackbar md-snackbar-{{ message.tags }}" role="alert">
-                    <div class="md-snackbar-content">
-                        <i class="material-icons md-snackbar-icon">
-                            {% if message.tags == 'success' %}check_circle
-                            {% elif message.tags == 'error' %}error
-                            {% elif message.tags == 'warning' %}warning
-                            {% else %}info{% endif %}
-                        </i>
-                        <span class="md-snackbar-message">{{ message }}</span>
-                    </div>
-                    <button type="button" class="md-snackbar-close">
-                        <i class="material-icons">close</i>
-                    </button>
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        {% block content %}
-        {% endblock %}
+      {% if messages %} {% for message in messages %}
+      <div class="md-snackbar md-snackbar-{{ message.tags }}" role="alert">
+        <div class="md-snackbar-content">
+          <i class="material-icons md-snackbar-icon">
+            {% if message.tags == 'success' %}check_circle {% elif message.tags
+            == 'error' %}error {% elif message.tags == 'warning' %}warning {%
+            else %}info{% endif %}
+          </i>
+          <span class="md-snackbar-message">{{ message }}</span>
+        </div>
+        <button type="button" class="md-snackbar-close">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
+      {% endfor %} {% endif %} {% block content %} {% endblock %}
     </main>
 
     <!-- Material Design Footer -->
     <footer class="md-footer">
-        <div class="md-container">
-            <p class="md-mb-0">
-                <i class="material-icons md-me-1" style="vertical-align: middle; font-size: 16px;">copyright</i>
-                2025 RelBack - Oracle Report Backup
-            </p>
-        </div>
+      <div class="md-container">
+        <p class="md-mb-0">
+          <i
+            class="material-icons md-me-1"
+            style="vertical-align: middle; font-size: 16px"
+            >copyright</i
+          >
+          2025 RelBack - Oracle Report Backup
+        </p>
+      </div>
     </footer>
 
     <!-- Material Design JavaScript -->
     <script>
-        // Theme Toggle Functionality
-        const themeToggle = document.getElementById('themeToggle');
-        const themeIcon = document.getElementById('themeIcon');
-        const body = document.body;
-        
-        if (themeToggle && themeIcon) {
-            // Check for saved theme preference or default to light mode
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            body.setAttribute('data-theme', currentTheme);
-            updateThemeIcon(currentTheme);
-            
-            function updateThemeIcon(theme) {
-                if (theme === 'dark') {
-                    themeIcon.textContent = 'light_mode';
-                    themeToggle.title = 'Switch to Light Mode';
-                } else {
-                    themeIcon.textContent = 'dark_mode';
-                    themeToggle.title = 'Switch to Dark Mode';
-                }
-            }
-            
-            themeToggle.addEventListener('click', function() {
-                const currentTheme = body.getAttribute('data-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                
-                body.setAttribute('data-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                updateThemeIcon(newTheme);
-                
-                // Add smooth transition effect
-                body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-                setTimeout(() => {
-                    body.style.transition = '';
-                }, 300);
-            });
-        }
+      // ---------------------------------------------------------------
+      // DaisyUI Theme Cycle: relback_dark → relback_light → dracula → …
+      // Operates on <html data-theme="…"> (DaisyUI standard).
+      // localStorage key: 'relback-theme' (namespaced).
+      // ---------------------------------------------------------------
+      const RELBACK_THEMES = ['relback_dark', 'relback_light', 'dracula'];
+      const THEME_ICONS   = { relback_dark: 'dark_mode', relback_light: 'light_mode', dracula: 'nightlight' };
+      const THEME_TITLES  = { relback_dark: 'Dark (Oracle)', relback_light: 'Light', dracula: 'Dracula' };
 
-        // Mobile Navigation Toggle
-        const navbarToggle = document.getElementById('navbarToggle');
-        const navbarNav = document.getElementById('navbarNav');
-        
-        if (navbarToggle && navbarNav) {
-            navbarToggle.addEventListener('click', function() {
-                navbarNav.classList.toggle('md-navbar-nav-open');
-            });
-        }
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon   = document.getElementById('themeIcon');
 
-        // User Dropdown Toggle
-        const userDropdown = document.getElementById('userDropdown');
-        const userMenu = document.getElementById('userMenu');
-        
-        if (userDropdown && userMenu) {
-            userDropdown.addEventListener('click', function(e) {
-                e.preventDefault();
-                userMenu.classList.toggle('md-dropdown-menu-open');
-            });
+      function applyTheme(t) {
+        document.documentElement.setAttribute('data-theme', t);
+        localStorage.setItem('relback-theme', t);
+        if (themeIcon)   themeIcon.textContent = THEME_ICONS[t] || 'palette';
+        if (themeToggle) themeToggle.title = 'Theme: ' + (THEME_TITLES[t] || t) + ' — click to cycle';
+      }
 
-            // Close dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!userDropdown.contains(e.target)) {
-                    userMenu.classList.remove('md-dropdown-menu-open');
-                }
-            });
-        }
+      if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+          const curr = document.documentElement.getAttribute('data-theme') || 'relback_dark';
+          const idx  = RELBACK_THEMES.indexOf(curr);
+          const next = RELBACK_THEMES[(idx + 1) % RELBACK_THEMES.length];
+          applyTheme(next);
+        });
+        // Sync icon to theme applied by the FOUC script or HTML default
+        applyTheme(document.documentElement.getAttribute('data-theme') || 'relback_dark');
+      }
 
-        // Add ripple effect to buttons
-        document.querySelectorAll('.md-btn, .md-nav-link').forEach(button => {
-            button.addEventListener('click', function(e) {
-                let ripple = document.createElement('span');
-                ripple.classList.add('md-ripple');
-                this.appendChild(ripple);
-                
-                let x = e.clientX - e.target.offsetLeft;
-                let y = e.clientY - e.target.offsetTop;
-                
-                ripple.style.left = x + 'px';
-                ripple.style.top = y + 'px';
-                
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
-            });
+      // Mobile Navigation Toggle
+      const navbarToggle = document.getElementById("navbarToggle");
+      const navbarNav = document.getElementById("navbarNav");
+
+      if (navbarToggle && navbarNav) {
+        navbarToggle.addEventListener("click", function () {
+          navbarNav.classList.toggle("md-navbar-nav-open");
+        });
+      }
+
+      // User Dropdown Toggle
+      const userDropdown = document.getElementById("userDropdown");
+      const userMenu = document.getElementById("userMenu");
+
+      if (userDropdown && userMenu) {
+        userDropdown.addEventListener("click", function (e) {
+          e.preventDefault();
+          userMenu.classList.toggle("md-dropdown-menu-open");
         });
 
-        // Auto-dismiss snackbars after 5 seconds
-        setTimeout(() => {
-            document.querySelectorAll('.md-snackbar').forEach(snackbar => {
-                const closeBtn = snackbar.querySelector('.md-snackbar-close');
-                if (closeBtn) {
-                    closeBtn.click();
-                }
-            });
-        }, 5000);
-
-        // Snackbar close functionality
-        document.querySelectorAll('.md-snackbar-close').forEach(closeBtn => {
-            closeBtn.addEventListener('click', function() {
-                this.closest('.md-snackbar').remove();
-            });
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function (e) {
+          if (!userDropdown.contains(e.target)) {
+            userMenu.classList.remove("md-dropdown-menu-open");
+          }
         });
+      }
 
-        // Add fade-in animation to cards
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.md-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                setTimeout(() => {
-                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
+      // Add ripple effect to buttons
+      document.querySelectorAll(".md-btn, .md-nav-link").forEach((button) => {
+        button.addEventListener("click", function (e) {
+          let ripple = document.createElement("span");
+          ripple.classList.add("md-ripple");
+          this.appendChild(ripple);
+
+          let x = e.clientX - e.target.offsetLeft;
+          let y = e.clientY - e.target.offsetTop;
+
+          ripple.style.left = x + "px";
+          ripple.style.top = y + "px";
+
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
         });
+      });
+
+      // Auto-dismiss snackbars after 5 seconds
+      setTimeout(() => {
+        document.querySelectorAll(".md-snackbar").forEach((snackbar) => {
+          const closeBtn = snackbar.querySelector(".md-snackbar-close");
+          if (closeBtn) {
+            closeBtn.click();
+          }
+        });
+      }, 5000);
+
+      // Snackbar close functionality
+      document.querySelectorAll(".md-snackbar-close").forEach((closeBtn) => {
+        closeBtn.addEventListener("click", function () {
+          this.closest(".md-snackbar").remove();
+        });
+      });
+
+      // Add fade-in animation to cards
+      document.addEventListener("DOMContentLoaded", function () {
+        const cards = document.querySelectorAll(".md-card");
+        cards.forEach((card, index) => {
+          card.style.opacity = "0";
+          card.style.transform = "translateY(20px)";
+          setTimeout(() => {
+            card.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+            card.style.opacity = "1";
+            card.style.transform = "translateY(0)";
+          }, index * 100);
+        });
+      });
     </script>
-    
+
     {% block extra_js %}{% endblock %}
-</body>
+  </body>
 </html>
