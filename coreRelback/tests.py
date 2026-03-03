@@ -110,3 +110,71 @@ class AuthenticatedTemplateTests(TestCase):
         response = self.client.get(reverse("coreRelback:creators"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "creators.html")
+
+
+class LoginViewTests(TestCase):
+    """Tests for the /login/ endpoint wired to Django's built-in LoginView."""
+
+    def setUp(self):
+        from coreRelback.models import RelbackUser
+        ru = RelbackUser(username="logintest", status=1, email="login@test.com")
+        ru.set_password("pass1234!")
+        ru.save()
+
+    def test_login_page_renders(self):
+        response = self.client.get(reverse("coreRelback:login"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "auth/login.html")
+
+    def test_valid_credentials_redirect_to_home(self):
+        response = self.client.post(
+            reverse("coreRelback:login"),
+            {"username": "logintest", "password": "pass1234!"},
+        )
+        # Should redirect to LOGIN_REDIRECT_URL = '/'
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response["Location"], "/")
+
+    def test_invalid_credentials_show_form_again(self):
+        response = self.client.post(
+            reverse("coreRelback:login"),
+            {"username": "logintest", "password": "wrongpassword"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "auth/login.html")
+
+
+class LogoutRegisterTests(TestCase):
+    """Tests for logout and register endpoints."""
+
+    def setUp(self):
+        self.django_user = User.objects.create_user(
+            username="logouttest", password="pass1234!"
+        )
+
+    def test_logout_redirects_to_login(self):
+        self.client.force_login(self.django_user)
+        response = self.client.post(reverse("coreRelback:logout"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response["Location"])
+
+    def test_register_page_renders(self):
+        response = self.client.get(reverse("coreRelback:register"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "auth/register.html")
+
+    def test_register_creates_account_and_redirects(self):
+        response = self.client.post(
+            reverse("coreRelback:register"),
+            {
+                "username": "newuser",
+                "name": "New User",
+                "email": "new@test.com",
+                "password1": "securepass99!",
+                "password2": "securepass99!",
+            },
+        )
+        from coreRelback.models import RelbackUser
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("/login/", response["Location"])
+        self.assertTrue(RelbackUser.objects.filter(username="newuser").exists())

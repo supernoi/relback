@@ -66,7 +66,7 @@
                     <div class="md-dropdown">
                         <button class="md-dropdown-trigger" id="userDropdown">
                             <i class="material-icons">account_circle</i>
-                            <span class="md-nav-text">User</span>
+                            <span class="md-nav-text">{{ request.user.username }}</span>
                             <i class="material-icons md-dropdown-arrow">keyboard_arrow_down</i>
                         </button>
                         <div class="md-dropdown-menu" id="userMenu">
@@ -75,10 +75,13 @@
                                 <span>Settings</span>
                             </a>
                             <div class="md-dropdown-divider"></div>
-                            <a class="md-dropdown-item" href="#">
-                                <i class="material-icons">logout</i>
-                                <span>Sign Out</span>
-                            </a>
+                            <form method="post" action="{% url 'coreRelback:logout' %}" style="margin:0">
+                                {% csrf_token %}
+                                <button type="submit" class="md-dropdown-item" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;">
+                                    <i class="material-icons">logout</i>
+                                    <span>Sign Out</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
