@@ -500,3 +500,121 @@ ORDER BY RECID"""
         except Exception as exc:
             _logger.error("RMAN log query failed: %s", exc)
             return []
+
+
+# ---------------------------------------------------------------------------
+# Demo Repository — returns in-memory fixture data when DEMO_MODE = True
+# ---------------------------------------------------------------------------
+
+class DemoRmanRepository(IOracleRmanRepository):
+    """
+    In-memory implementation of IOracleRmanRepository.
+
+    Returns realistic fake RMAN backup data so the web interface can be
+    previewed without an Oracle Catalog connection.
+    Activated automatically when settings.DEMO_MODE is True.
+    """
+
+    _JOBS: List[BackupJobResult] = None  # populated lazily on first call
+
+    def _load_jobs(self) -> List[BackupJobResult]:
+        from datetime import datetime, timedelta
+        import random
+
+        databases = [
+            ("ORCL",  3951648617,  10001),
+            ("PROD",  1234567890,  10002),
+            ("DEV",   9876543210,  10003),
+            ("DW",    1122334455,  10004),
+            ("TEST",  5544332211,  10005),
+        ]
+        statuses = [
+            BackupStatusValue.COMPLETED,
+            BackupStatusValue.COMPLETED,
+            BackupStatusValue.COMPLETED,
+            BackupStatusValue.FAILED,
+            BackupStatusValue.WARNING,
+            BackupStatusValue.COMPLETED,
+            BackupStatusValue.RUNNING,
+        ]
+        types = ["DB FULL", "ARCHIVELOG", "DB INCR", "DB FULL", "ARCHIVELOG"]
+        devices = ["DISK", "DISK", "SBT_TAPE"]
+
+        now = datetime.now()
+        jobs = []
+        key = 1
+        random.seed(42)
+        for i in range(30):
+            db_name, dbid, db_key = databases[i % len(databases)]
+            status = statuses[i % len(statuses)]
+            start = now - timedelta(hours=random.randint(1, 168))
+            duration_min = random.randint(5, 480)
+            end = start + timedelta(minutes=duration_min)
+            size_gb = round(random.uniform(0.5, 120.0), 2)
+            jobs.append(BackupJobResult(
+                db_name=db_name,
+                dbid=dbid,
+                db_key=db_key,
+                session_key=key,
+                session_recid=key,
+                session_stamp=100000 + key,
+                start_time=start,
+                end_time=end if status != BackupStatusValue.RUNNING else None,
+                status=status,
+                input_type=types[i % len(types)],
+                output_bytes_display=f"{size_gb} GB",
+                output_device_type=devices[i % len(devices)],
+                time_taken_display=f"{duration_min // 60}h {duration_min % 60}m",
+            ))
+            key += 1
+        return sorted(jobs, key=lambda j: j.start_time or now, reverse=True)
+
+    def get_backup_jobs(self, days: int = 7) -> List[BackupJobResult]:
+        if DemoRmanRepository._JOBS is None:
+            DemoRmanRepository._JOBS = self._load_jobs()
+        return DemoRmanRepository._JOBS
+
+    def get_running_jobs_count(self) -> int:
+        return sum(
+            1 for j in self.get_backup_jobs()
+            if j.status == BackupStatusValue.RUNNING
+        )
+
+    def get_backup_job_detail(self, db_key: int, session_key: int) -> Optional[BackupJobResult]:
+        for job in self.get_backup_jobs():
+            if job.db_key == db_key and job.session_key == session_key:
+                return job
+        return None
+
+    def get_backup_log(self, db_key: int, session_key: int) -> List[BackupLogEntry]:
+        from datetime import datetime
+        sample_log = [
+            "RMAN> run {",
+            "  backup incremental level 0 database;",
+            "}",
+            "",
+            "Starting backup at {ts}",
+            "allocated channel: ORA_DISK_1",
+            "channel ORA_DISK_1: SID=42 device type=DISK",
+            "channel ORA_DISK_1: starting full datafile backup set",
+            "channel ORA_DISK_1: specifying datafile(s) in backup set",
+            "input datafile file number=00001 name=/oradata/system01.dbf",
+            "input datafile file number=00002 name=/oradata/sysaux01.dbf",
+            "input datafile file number=00003 name=/oradata/undotbs01.dbf",
+            "input datafile file number=00004 name=/oradata/users01.dbf",
+            "channel ORA_DISK_1: starting piece 1 at {ts}",
+            "channel ORA_DISK_1: finished piece 1 at {ts}",
+            "piece handle=/backup/orcl/bkp_20260303_001.bkp tag=TAG20260303T020001 comment=NONE",
+            "channel ORA_DISK_1: backup set complete, elapsed time: 00:14:22",
+            "Finished backup at {ts}",
+            "",
+            "Starting Control File and SPFILE Autobackup at {ts}",
+            "piece handle=/backup/orcl/c-3951648617-20260303-00 comment=NONE",
+            "Finished Control File and SPFILE Autobackup at {ts}",
+            "Recovery Manager complete.",
+        ]
+        ts = datetime.now().strftime("%d-%b-%Y %H:%M:%S")
+        return [
+            BackupLogEntry(recid=i + 1, output=line.replace("{ts}", ts), stamp=None)
+            for i, line in enumerate(sample_log)
+        ]
