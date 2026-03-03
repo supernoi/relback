@@ -32,14 +32,18 @@ from coreRelback.gateways.interfaces import (
 )
 from coreRelback.services.use_cases import (
     AuditBackupUseCase,
+    CreateBackupPolicyUseCase,
     CreateClientUseCase,
     CreateDatabaseUseCase,
     CreateHostUseCase,
+    DeleteBackupPolicyUseCase,
     DeleteClientUseCase,
+    DeleteDatabaseUseCase,
     DeleteHostUseCase,
     GenerateScheduleUseCase,
     GetDashboardStatsUseCase,
     GetScheduleReportUseCase,
+    UpdateBackupPolicyUseCase,
     UpdateClientUseCase,
     UpdateDatabaseUseCase,
     UpdateHostUseCase,
@@ -515,6 +519,93 @@ class UpdateDatabaseUseCaseTest(TestCase):
             client_id=1, host_id=1, dbid=2, updated_by_id=1,
         )
         self.assertEqual(updated.db_name, "NEW_DB")
+
+
+class DeleteDatabaseUseCaseTest(TestCase):
+    def test_delete_database_removes_it(self):
+        repo = StubDatabaseRepo()
+        created = repo.create("TO_DELETE", "", 1, 1, 42, 1)
+        self.assertEqual(repo.count(), 1)
+        DeleteDatabaseUseCase(repo).execute(created.id_database)
+        self.assertEqual(repo.count(), 0)
+
+
+# ---------------------------------------------------------------------------
+# BackupPolicy CRUD Use Cases
+# ---------------------------------------------------------------------------
+
+class CreateBackupPolicyUseCaseTest(TestCase):
+    def test_create_policy_stores_entity(self):
+        repo = StubPolicyRepo()
+        initial = repo.count()
+        entity = CreateBackupPolicyUseCase(repo).execute(
+            policy_name="DAILY_FULL",
+            client_id=1,
+            database_id=1,
+            host_id=1,
+            backup_type="DB_FULL",
+            destination="DISK",
+            minute="0",
+            hour="2",
+            day="*",
+            month="*",
+            day_week="*",
+            duration=120,
+            size_backup="10G",
+            status="ACTIVE",
+            description="Daily full backup",
+            created_by_id=1,
+        )
+        self.assertIsNotNone(entity)
+        self.assertEqual(repo.count(), initial + 1)
+
+    def test_create_policy_increments_count(self):
+        repo = StubPolicyRepo()
+        initial = repo.count()
+        for i in range(3):
+            CreateBackupPolicyUseCase(repo).execute(
+                policy_name=f"POLICY_{i}", client_id=1, database_id=1,
+                host_id=1, backup_type="DB_FULL", destination="DISK",
+                minute="0", hour="2", day="*", month="*", day_week="*",
+                duration=60, size_backup="5G", status="ACTIVE",
+                description=None, created_by_id=1,
+            )
+        self.assertEqual(repo.count(), initial + 3)
+
+
+class UpdateBackupPolicyUseCaseTest(TestCase):
+    def test_update_policy_returns_entity(self):
+        repo = StubPolicyRepo()
+        policy = repo.get_all()[0]
+        result = UpdateBackupPolicyUseCase(repo).execute(
+            policy_id=policy.id_policy,
+            policy_name="UPDATED",
+            client_id=1,
+            database_id=1,
+            host_id=1,
+            backup_type="DB_FULL",
+            destination="DISK",
+            minute="30",
+            hour="3",
+            day="*",
+            month="*",
+            day_week="*",
+            duration=90,
+            size_backup="20G",
+            status="ACTIVE",
+            description="Updated",
+            updated_by_id=1,
+        )
+        self.assertIsNotNone(result)
+
+
+class DeleteBackupPolicyUseCaseTest(TestCase):
+    def test_delete_policy_removes_it(self):
+        repo = StubPolicyRepo()
+        policy = repo.get_all()[0]
+        self.assertEqual(repo.count(), 1)
+        DeleteBackupPolicyUseCase(repo).execute(policy.id_policy)
+        self.assertEqual(repo.count(), 0)
 
 
 # ---------------------------------------------------------------------------
