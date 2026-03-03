@@ -1,7 +1,8 @@
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import path
 from coreRelback.views import (
-    index, creators,
+    index, creators, register_view,
     ClientListView, ClientCreateView, ClientUpdateView, ClientDeleteView,
     HostListView, HostCreateView, HostUpdateView, HostDeleteView,
     DatabaseListView, DatabaseCreateView, DatabaseUpdateView, DatabaseDeleteView,
@@ -53,4 +54,9 @@ urlpatterns = [
     path("reports/", report_read, name="report-read"),
     path("reports/read-log-detail/<int:idPolicy>/<int:dbKey>/<int:sessionKey>/", report_read_log_detail, name="report-read-log-detail"),
     path("reports/refresh-schedule/", report_refresh_schedule, name="report-refresh-schedule"),
+
+    # Auth endpoints
+    path("login/", auth_views.LoginView.as_view(template_name='auth/login.html'), name="login"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path("register/", register_view, name="register"),
 ]

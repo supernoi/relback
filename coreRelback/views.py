@@ -610,3 +610,27 @@ def report_read(request):
 def report_read_log_detail(request, idPolicy, dbKey, sessionKey):
     context = {"idPolicy": idPolicy, "dbKey": dbKey, "sessionKey": sessionKey}
     return render(request, "reportsReadLog.html", context)
+
+
+# ---------------------------
+# AUTH VIEWS
+# ---------------------------
+
+def register_view(request):
+    """Public view to create a new RelbackUser account.
+
+    Uses RelbackUserCreationForm (forms.py) which handles password hashing
+    and sets status=1 (active) by default.
+    After successful registration the user is redirected to the login page.
+    """
+    from coreRelback.forms import RelbackUserCreationForm
+
+    if request.method == 'POST':
+        form = RelbackUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Account created successfully. Please sign in.")
+            return redirect('coreRelback:login')
+    else:
+        form = RelbackUserCreationForm()
+    return render(request, 'auth/register.html', {'form': form})
