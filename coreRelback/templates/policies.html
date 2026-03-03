@@ -16,8 +16,8 @@
                         <p class="page-subtitle">Manage backup schedules and retention policies</p>
                     </div>
                 </div>
-                <button type="button" class="md-btn md-btn-primary page-actions" data-modal-target="#addPolicyModal">
-                    <i class="material-icons md-me-1">add</i>
+                <button type="button" class="btn btn-primary" data-modal-target="#addPolicyModal">
+                    <i class="material-icons" style="font-size: 18px;">add</i>
                     Create Policy
                 </button>
             </div>
@@ -25,42 +25,34 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="md-grid md-grid-cols-4 md-mb-5">
-        <div class="md-card oracle-info-gradient stats-card-content">
-            <div class="md-flex md-items-center md-justify-between">
-                <div>
-                    <h2 class="stats-title">{{ total_policies }}</h2>
-                    <p class="stats-subtitle">Total Policies</p>
-                </div>
-                <i class="material-icons-round stats-card-icon">security</i>
+    <div class="stats stats-vertical lg:stats-horizontal shadow w-full mb-5">
+        <div class="stat">
+            <div class="stat-figure text-primary">
+                <i class="material-icons-round" style="font-size: 2.5rem;">security</i>
             </div>
+            <div class="stat-title">Total Policies</div>
+            <div class="stat-value stats-title">{{ total_policies }}</div>
         </div>
-        <div class="md-card oracle-info-gradient stats-card-content">
-            <div class="md-flex md-items-center md-justify-between">
-                <div>
-                    <h2 class="stats-title">{{ active_policies|default:0 }}</h2>
-                    <p class="stats-subtitle">Active Policies</p>
-                </div>
-                <i class="material-icons-round stats-card-icon">play_circle</i>
+        <div class="stat">
+            <div class="stat-figure text-success">
+                <i class="material-icons-round" style="font-size: 2.5rem;">play_circle</i>
             </div>
+            <div class="stat-title">Active Policies</div>
+            <div class="stat-value text-success stats-title">{{ active_policies|default:0 }}</div>
         </div>
-        <div class="md-card oracle-info-gradient stats-card-content">
-            <div class="md-flex md-items-center md-justify-between">
-                <div>
-                    <h2 class="stats-title">{{ inactive_policies|default:0 }}</h2>
-                    <p class="stats-subtitle">Inactive Policies</p>
-                </div>
-                <i class="material-icons-round stats-card-icon">pause_circle</i>
+        <div class="stat">
+            <div class="stat-figure text-error">
+                <i class="material-icons-round" style="font-size: 2.5rem;">pause_circle</i>
             </div>
+            <div class="stat-title">Inactive Policies</div>
+            <div class="stat-value text-error stats-title">{{ inactive_policies|default:0 }}</div>
         </div>
-        <div class="md-card oracle-info-gradient stats-card-content">
-            <div class="md-flex md-items-center md-justify-between">
-                <div>
-                    <h2 class="stats-title">{{ scheduled_policies|default:0 }}</h2>
-                    <p class="stats-subtitle">Scheduled Policies</p>
-                </div>
-                <i class="material-icons-round stats-card-icon">schedule</i>
+        <div class="stat">
+            <div class="stat-figure text-info">
+                <i class="material-icons-round" style="font-size: 2.5rem;">schedule</i>
             </div>
+            <div class="stat-title">Scheduled Policies</div>
+            <div class="stat-value stats-title">{{ scheduled_policies|default:0 }}</div>
         </div>
     </div>
 
@@ -73,8 +65,8 @@
                     <i class="material-icons search-icon">search</i>
                     <div class="autocomplete-list" id="autocompleteList"></div>
                 </div>
-                <button class="md-btn md-btn-text clean-btn" id="cleanBtn">
-                    <i class="material-icons">clear</i>
+                <button class="btn btn-ghost btn-sm clean-btn" id="cleanBtn">
+                    <i class="material-icons" style="font-size: 18px;">clear</i>
                     Clean
                 </button>
             </div>
@@ -83,8 +75,8 @@
     <div class="md-grid md-grid-cols-1">
         <div class="md-card md-card-decorated">
             {% if policies %}
-                <div class="md-table-responsive">
-                    <table class="md-table md-mb-0" id="policiesTable">
+                <div class="overflow-x-auto">
+                    <table class="table table-xs table-zebra w-full" id="policiesTable">
                         <thead>
                             <tr>
                                 <th class="oracle-info-gradient">
@@ -262,7 +254,7 @@
 </div>
 
 <!-- Floating Action Button -->
-<button class="md-fab" id="addPolicyFab" title="Add Policy">
+<button class="btn btn-circle btn-primary btn-lg fixed bottom-6 right-6 shadow-lg z-50" id="addPolicyFab" title="Add Policy">
     <i class="material-icons">add</i>
 </button>
 
