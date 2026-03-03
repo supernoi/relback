@@ -11,6 +11,7 @@ from typing import List, Optional
 from coreRelback.domain.entities import (
     BackupDestination,
     BackupJobResult,
+    BackupLogEntry,
     BackupPolicyEntity,
     BackupStatusValue,
     BackupType,
@@ -384,7 +385,8 @@ FETCH FIRST 500 ROWS ONLY"""
             conditions.append("START_TIME < :to_date + INTERVAL '1' DAY")
             params["to_date"] = to_date
 
-        where_clause = ("WHERE " + " AND ".join(conditions)) if conditions else ""
+        where_clause = ("WHERE " + " AND ".join(conditions)
+                        ) if conditions else ""
         sql = self._SQL.format(where=where_clause)
 
         try:
@@ -395,7 +397,6 @@ FETCH FIRST 500 ROWS ONLY"""
         except Exception as exc:
             _logger.error("RMAN catalog query failed: %s", exc)
             return []
-
 
     @staticmethod
     def _row_to_entity(row: tuple) -> BackupJobResult:
@@ -413,3 +414,89 @@ FETCH FIRST 500 ROWS ONLY"""
             session_key=row[9],
             input_type=row[10],
         )
+
+    _SQL_DETAIL = """\
+SELECT
+    DB_NAME,
+    DBID,
+    START_TIME,
+    END_TIME,
+    STATUS,
+    INPUT_TYPE,
+    OUTPUT_BYTES_DISPLAY,
+    TIME_TAKEN_DISPLAY,
+    OUTPUT_DEVICE_TYPE,
+    SESSION_KEY,
+    INPUT_TYPE
+FROM RC_BACKUP_JOB_DETAILS
+WHERE DB_KEY = :db_key
+  AND SESSION_KEY = :session_key
+FETCH FIRST 1 ROWS ONLY"""
+
+    _SQL_LOG = """\
+SELECT RECID, OUTPUT, STAMP
+FROM RC_RMAN_OUTPUT
+WHERE DB_KEY = :db_key
+  AND SESSION_RECID = :session_key
+ORDER BY RECID"""
+
+    def get_backup_job_detail(
+        self,
+        db_key: int,
+        session_key: int,
+    ) -> Optional[BackupJobResult]:
+        """Return a single BackupJobResult for the given db_key / session_key.
+
+        Returns None when the Oracle catalog is unavailable or the record
+        is not found — never raises to the caller.
+        """
+        from coreRelback.gateways.oracle_catalog import get_catalog_connection
+        import logging as _log
+        _logger = _log.getLogger(__name__)
+
+        conn = get_catalog_connection()
+        if conn is None:
+            return None
+        try:
+            with conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    self._SQL_DETAIL,
+                    {"db_key": db_key, "session_key": session_key},
+                )
+                row = cursor.fetchone()
+                return self._row_to_entity(row) if row else None
+        except Exception as exc:
+            _logger.error("RMAN detail query failed: %s", exc)
+            return None
+
+    def get_backup_log(
+        self,
+        db_key: int,
+        session_key: int,
+    ) -> List[BackupLogEntry]:
+        """Return RMAN output lines from RC_RMAN_OUTPUT for the given session.
+
+        Returns empty list when catalog unavailable or no output recorded.
+        """
+        from coreRelback.gateways.oracle_catalog import get_catalog_connection
+        import logging as _log
+        _logger = _log.getLogger(__name__)
+
+        conn = get_catalog_connection()
+        if conn is None:
+            return []
+        try:
+            with conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    self._SQL_LOG,
+                    {"db_key": db_key, "session_key": session_key},
+                )
+                return [
+                    BackupLogEntry(recid=row[0], output=row[1], stamp=row[2])
+                    for row in cursor
+                ]
+        except Exception as exc:
+            _logger.error("RMAN log query failed: %s", exc)
+            return []

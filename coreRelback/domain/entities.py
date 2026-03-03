@@ -146,6 +146,14 @@ class BackupJobResult:
 
 
 @dataclass
+class BackupLogEntry:
+    """One line of RMAN output from RC_RMAN_OUTPUT (read-only catalog entity)."""
+    recid: int
+    output: str
+    stamp: Optional[int] = None
+
+
+@dataclass
 class DashboardStats:
     """Aggregated stats for the index page — computed, not stored."""
     clients_count: int

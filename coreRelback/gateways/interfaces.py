@@ -10,12 +10,13 @@ from datetime import date, datetime
 from typing import List, Optional
 
 from coreRelback.domain.entities import (
-    ClientEntity,
-    HostEntity,
-    DatabaseEntity,
-    BackupPolicyEntity,
-    ScheduleEntry,
     BackupJobResult,
+    BackupLogEntry,
+    BackupPolicyEntity,
+    ClientEntity,
+    DatabaseEntity,
+    HostEntity,
+    ScheduleEntry,
 )
 
 
@@ -194,4 +195,22 @@ class IOracleRmanRepository(ABC):
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
     ) -> List[BackupJobResult]:
+        ...
+
+    @abstractmethod
+    def get_backup_job_detail(
+        self,
+        db_key: int,
+        session_key: int,
+    ) -> Optional[BackupJobResult]:
+        """Return a single BackupJobResult for the given db_key/session_key."""
+        ...
+
+    @abstractmethod
+    def get_backup_log(
+        self,
+        db_key: int,
+        session_key: int,
+    ) -> List[BackupLogEntry]:
+        """Return RMAN output lines from RC_RMAN_OUTPUT for the given session."""
         ...
