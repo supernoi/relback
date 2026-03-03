@@ -525,7 +525,8 @@ class BackupStatusValueEnumTest(TestCase):
     """Verify all expected RMAN status values exist in the enum."""
 
     def test_all_expected_values_present(self):
-        expected = {"COMPLETED", "FAILED", "RUNNING", "WARNING", "INTERRUPTED", "UNKNOWN"}
+        expected = {"COMPLETED", "FAILED", "RUNNING",
+                    "WARNING", "INTERRUPTED", "UNKNOWN"}
         actual = {v.value for v in BackupStatusValue}
         self.assertEqual(expected, actual)
 
@@ -541,21 +542,25 @@ class BackupJobResultSeverityTest(TestCase):
         return BackupJobResult(db_name="TESTDB", dbid=1, status=status)
 
     def test_completed_severity(self):
-        self.assertEqual(self._job(BackupStatusValue.COMPLETED).severity, "success")
+        self.assertEqual(
+            self._job(BackupStatusValue.COMPLETED).severity, "success")
 
     def test_running_severity(self):
         self.assertEqual(self._job(BackupStatusValue.RUNNING).severity, "info")
 
     def test_warning_severity(self):
-        self.assertEqual(self._job(BackupStatusValue.WARNING).severity, "warning")
+        self.assertEqual(
+            self._job(BackupStatusValue.WARNING).severity, "warning")
 
     def test_failed_severity_is_error_not_danger(self):
         """Regression: changed from 'danger' to DaisyUI token 'error' in Phase 2."""
         self.assertEqual(self._job(BackupStatusValue.FAILED).severity, "error")
 
     def test_interrupted_severity(self):
-        self.assertEqual(self._job(BackupStatusValue.INTERRUPTED).severity, "interrupted")
+        self.assertEqual(
+            self._job(BackupStatusValue.INTERRUPTED).severity, "interrupted")
 
     def test_unknown_severity_is_neutral_not_danger(self):
         """Regression: changed from 'danger' to DaisyUI token 'neutral' in Phase 2."""
-        self.assertEqual(self._job(BackupStatusValue.UNKNOWN).severity, "neutral")
+        self.assertEqual(
+            self._job(BackupStatusValue.UNKNOWN).severity, "neutral")
