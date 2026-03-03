@@ -35,6 +35,7 @@ from coreRelback.services.use_cases import (
     CreateBackupPolicyUseCase,
     UpdateBackupPolicyUseCase,
     DeleteBackupPolicyUseCase,
+    GetBackupDetailUseCase,
 )
 
 
@@ -672,10 +673,40 @@ def report_read(request):
     return render(request, "reports.html", context)
 
 
-
+@login_required
 @login_required
 def report_read_log_detail(request, idPolicy, dbKey, sessionKey):
-    context = {"idPolicy": idPolicy, "dbKey": dbKey, "sessionKey": sessionKey}
+    """Backup session log detail view.
+
+    Fetches:
+    - ``policyDetail`` — BackupPolicy ORM instance for metadata
+    - ``execDetail``   — BackupJobResult entity (RC_BACKUP_JOB_DETAILS)
+    - ``reportLog``    — list of BackupLogEntry entities (RC_RMAN_OUTPUT)
+
+    Renders gracefully when Oracle catalog is unavailable.
+    """
+    from coreRelback.models import BackupPolicy
+
+    try:
+        policy = BackupPolicy.objects.select_related(
+            'client', 'host', 'database'
+        ).get(pk=idPolicy)
+    except BackupPolicy.DoesNotExist:
+        policy = None
+
+    detail_result = GetBackupDetailUseCase(OracleRmanRepository()).execute(
+        db_key=dbKey, session_key=sessionKey
+    )
+
+    context = {
+        "idPolicy": idPolicy,
+        "dbKey": dbKey,
+        "sessionKey": sessionKey,
+        "policyDetail": policy,
+        "execDetail": detail_result["exec_detail"],
+        "reportLog": detail_result["report_log"],
+        "oracle_available": detail_result["oracle_available"],
+    }
     return render(request, "reportsReadLog.html", context)
 
 
@@ -696,7 +727,8 @@ def register_view(request):
         form = RelbackUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Account created successfully. Please sign in.")
+            messages.success(
+                request, "Account created successfully. Please sign in.")
             return redirect('coreRelback:login')
     else:
         form = RelbackUserCreationForm()

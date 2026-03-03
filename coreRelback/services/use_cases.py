@@ -10,6 +10,7 @@ from typing import List, Optional
 
 from coreRelback.domain.entities import (
     BackupJobResult,
+    BackupLogEntry,
     BackupPolicyEntity,
     BackupStatusValue,
     ClientEntity,
@@ -387,3 +388,41 @@ class DeleteBackupPolicyUseCase:
 
     def execute(self, policy_id: int) -> None:
         self._policies.delete(policy_id)
+
+
+# ---------------------------------------------------------------------------
+# Oracle RMAN Catalog — Log Detail Use Case
+# ---------------------------------------------------------------------------
+
+class GetBackupDetailUseCase:
+    """Fetch execution detail and RMAN output log for one backup session.
+
+    Single Responsibility: retrieve the two Oracle catalog datasets needed
+    by the ``report_read_log_detail`` view without leaking gateway details.
+    """
+
+    def __init__(self, rman_repo: IOracleRmanRepository):
+        self._rman = rman_repo
+
+    def execute(
+        self,
+        db_key: int,
+        session_key: int,
+    ) -> dict:
+        """Return a dict with keys ``exec_detail`` and ``report_log``.
+
+        Both keys are always present; values are ``None`` / ``[]`` when the
+        Oracle catalog is unavailable — the view must handle the empty state
+        gracefully.
+        """
+        exec_detail: Optional[BackupJobResult] = self._rman.get_backup_job_detail(
+            db_key=db_key, session_key=session_key
+        )
+        report_log: List[BackupLogEntry] = self._rman.get_backup_log(
+            db_key=db_key, session_key=session_key
+        )
+        return {
+            "exec_detail": exec_detail,
+            "report_log": report_log,
+            "oracle_available": exec_detail is not None or len(report_log) > 0,
+        }

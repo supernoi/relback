@@ -13,6 +13,7 @@ from unittest.mock import patch
 from coreRelback.domain.entities import (
     BackupDestination,
     BackupJobResult,
+    BackupLogEntry,
     BackupPolicyEntity,
     BackupStatusValue,
     BackupType,
@@ -34,6 +35,7 @@ from coreRelback.gateways.interfaces import (
 from coreRelback.gateways.repositories import OracleRmanRepository
 from coreRelback.services.use_cases import (
     AuditBackupUseCase,
+    GetBackupDetailUseCase,
     CreateBackupPolicyUseCase,
     CreateClientUseCase,
     CreateDatabaseUseCase,
@@ -221,11 +223,19 @@ class StubScheduleRepo(IScheduleRepository):
 
 
 class StubRmanRepo(IOracleRmanRepository):
-    def __init__(self, jobs=None):
+    def __init__(self, jobs=None, detail=None, log=None):
         self._jobs = jobs or []
+        self._detail = detail
+        self._log = log or []
 
     def get_backup_jobs(self, **kwargs) -> List[BackupJobResult]:
         return list(self._jobs)
+
+    def get_backup_job_detail(self, db_key: int, session_key: int) -> Optional[BackupJobResult]:
+        return self._detail
+
+    def get_backup_log(self, db_key: int, session_key: int) -> List[BackupLogEntry]:
+        return list(self._log)
 
 
 # ---------------------------------------------------------------------------
@@ -700,3 +710,97 @@ class OracleRmanRepositoryUnavailableTest(TestCase):
             use_case = AuditBackupUseCase(OracleRmanRepository())
             result = use_case.execute()
             self.assertEqual(result, [])
+
+
+# ---------------------------------------------------------------------------
+# GetBackupDetailUseCase Tests
+# ---------------------------------------------------------------------------
+
+class GetBackupDetailUseCaseTest(TestCase):
+    """Tests for GetBackupDetailUseCase using stub repository."""
+
+    def _make_job(self, session_key=42):
+        return BackupJobResult(
+            db_name="ORCL", dbid=100,
+            status=BackupStatusValue.COMPLETED,
+            session_key=session_key,
+            time_taken_display="00:05:30",
+            output_bytes_display="1.23G",
+        )
+
+    def _make_log_entry(self, recid=1):
+        return BackupLogEntry(recid=recid, output="RMAN> backup database;")
+
+    def test_returns_exec_detail_and_log_from_stub(self):
+        job = self._make_job()
+        log = [self._make_log_entry()]
+        repo = StubRmanRepo(detail=job, log=log)
+        result = GetBackupDetailUseCase(repo).execute(db_key=1, session_key=42)
+        self.assertEqual(result["exec_detail"], job)
+        self.assertEqual(result["report_log"], log)
+
+    def test_oracle_available_true_when_detail_present(self):
+        repo = StubRmanRepo(detail=self._make_job(), log=[])
+        result = GetBackupDetailUseCase(repo).execute(db_key=1, session_key=42)
+        self.assertTrue(result["oracle_available"])
+
+    def test_oracle_available_true_when_log_non_empty(self):
+        repo = StubRmanRepo(detail=None, log=[self._make_log_entry()])
+        result = GetBackupDetailUseCase(repo).execute(db_key=1, session_key=42)
+        self.assertTrue(result["oracle_available"])
+
+    def test_oracle_available_false_when_both_empty(self):
+        repo = StubRmanRepo(detail=None, log=[])
+        result = GetBackupDetailUseCase(repo).execute(db_key=1, session_key=42)
+        self.assertFalse(result["oracle_available"])
+
+    def test_returns_empty_state_when_catalog_unavailable(self):
+        """OracleRmanRepository returns None/[] when catalog connection is None."""
+        with patch(
+            "coreRelback.gateways.oracle_catalog.get_catalog_connection",
+            return_value=None,
+        ):
+            repo = OracleRmanRepository()
+            result = GetBackupDetailUseCase(
+                repo).execute(db_key=1, session_key=99)
+        self.assertIsNone(result["exec_detail"])
+        self.assertEqual(result["report_log"], [])
+        self.assertFalse(result["oracle_available"])
+
+
+class BackupLogEntryEntityTest(TestCase):
+    """Tests for the BackupLogEntry domain entity."""
+
+    def test_fields_stored_correctly(self):
+        entry = BackupLogEntry(
+            recid=7, output="RMAN> backup incremental level 0;", stamp=12345)
+        self.assertEqual(entry.recid, 7)
+        self.assertEqual(entry.output, "RMAN> backup incremental level 0;")
+        self.assertEqual(entry.stamp, 12345)
+
+    def test_stamp_optional_defaults_none(self):
+        entry = BackupLogEntry(recid=1, output="output line")
+        self.assertIsNone(entry.stamp)
+
+
+class OracleRmanRepositoryDetailUnavailableTest(TestCase):
+    """Unit tests for OracleRmanRepository.get_backup_job_detail / get_backup_log
+    when catalog is unavailable (no real Oracle needed)."""
+
+    def test_get_backup_job_detail_returns_none_when_unavailable(self):
+        with patch(
+            "coreRelback.gateways.oracle_catalog.get_catalog_connection",
+            return_value=None,
+        ):
+            repo = OracleRmanRepository()
+            result = repo.get_backup_job_detail(db_key=1, session_key=99)
+        self.assertIsNone(result)
+
+    def test_get_backup_log_returns_empty_list_when_unavailable(self):
+        with patch(
+            "coreRelback.gateways.oracle_catalog.get_catalog_connection",
+            return_value=None,
+        ):
+            repo = OracleRmanRepository()
+            result = repo.get_backup_log(db_key=1, session_key=99)
+        self.assertEqual(result, [])

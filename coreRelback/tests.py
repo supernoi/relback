@@ -261,3 +261,66 @@ class BackupBadgeTagTests(SimpleTestCase):
         from coreRelback.domain.entities import BackupStatusValue
         html = self._render(BackupStatusValue.FAILED)
         self.assertIn("badge-error", html)
+
+
+# ---------------------------------------------------------------------------
+# Report Log Detail View Integration Tests
+# ---------------------------------------------------------------------------
+
+class ReportLogDetailViewTests(TestCase):
+    """Integration tests for the report_read_log_detail view.
+
+    No real Oracle catalog required — settings_test.py sets ORACLE_CATALOG=None.
+    The view must render gracefully with an empty log and no exec detail.
+    """
+
+    def setUp(self):
+        from django.contrib.auth.models import User
+        self.user = User.objects.create_superuser(
+            username="logdetail_admin",
+            password="testpass123",
+            email="logdetail@example.com",
+        )
+        self.client.force_login(self.user)
+
+    def _url(self, policy_id=999, db_key=1, session_key=1):
+        return reverse(
+            "coreRelback:report-read-log-detail",
+            kwargs={"idPolicy": policy_id, "dbKey": db_key,
+                    "sessionKey": session_key},
+        )
+
+    def test_log_detail_redirects_unauthenticated(self):
+        """Unauthenticated users must be redirected to login."""
+        self.client.logout()
+        response = self.client.get(self._url())
+        self.assertIn(response.status_code, (302, 301))
+        self.assertIn("/login/", response["Location"])
+
+    def test_log_detail_renders_template(self):
+        """Authenticated GET must render reportsReadLog.html with 200."""
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "reportsReadLog.html")
+
+    def test_log_detail_context_keys_present(self):
+        """View must supply all context keys consumed by the template."""
+        response = self.client.get(self._url())
+        self.assertEqual(response.status_code, 200)
+        for key in ("policyDetail", "execDetail", "reportLog", "oracle_available",
+                    "idPolicy", "dbKey", "sessionKey"):
+            self.assertIn(key, response.context,
+                          f"'{key}' missing from report_read_log_detail context")
+
+    def test_log_detail_oracle_unavailable_in_test_env(self):
+        """Oracle catalog is None in test env — execDetail=None, reportLog=[], oracle_available=False."""
+        response = self.client.get(self._url())
+        self.assertIs(response.context["oracle_available"], False)
+        self.assertIsNone(response.context["execDetail"])
+        self.assertEqual(response.context["reportLog"], [])
+
+    def test_log_detail_policy_not_found_no_500(self):
+        """When idPolicy doesn't exist in SQLite, policyDetail=None and view returns 200."""
+        response = self.client.get(self._url(policy_id=99999))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.context["policyDetail"])
