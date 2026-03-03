@@ -78,24 +78,40 @@ To minimize interruptions and maximize velocity within an approved Task/PR scope
 
 The Agent MUST follow this automated flow for every task:
 
+### ⛔ Hard Constraint: Issue-First, Branch-First
+
+> **NEVER commit directly to `master`.**
+> **NEVER start implementation without a GitHub Issue.**
+
+The mandatory sequence before writing a single line of code:
+
+```
+1. gh api repos/supernoi/relback/issues --method POST --field title="..." --field body="..."  → get Issue #N
+2. git checkout -b feature/<scope>-<N>        (e.g. feature/core-2)
+3. Implement → Sensor gate → atomic commit(s) on feature branch
+4. gh pr create --base master --head feature/<scope>-<N> --body "Closes #N ..."
+5. Merge PR → git checkout master && git pull → git branch -d feature/<scope>-<N>
+```
+
 ### A. Atomic Commit Protocol
 
-- **Constraint**: One commit per sub-task.
+- **Constraint**: One commit per sub-task, **always on the feature branch, never on master**.
 - **Format**: `<type>(<scope>): <subject> (#<issue_number>)`
 - **Scopes**: `core`, `oracle`, `ui`, `auth`, `infra`, `arch`.
 - **Automatic Step**: After a successful "Sensor-First" gate, execute:
-  `git add . && git commit -m "<type>(<scope>): <message> (#issue)"`
+  `git add . && git commit -m "<type>(<scope>): <message> (#N)"`
 
 ### B. Automated PR Generation
 
-- When the Edit Plan is finished, the Agent must generate the PR description using `.github/pull_request_template.md`.
-- **Title**: `[<SCOPE>] <Brief Description>`
-- **Body**: Fill all sections (What was done, Tests performed, CDD Checklist).
+- When the Edit Plan is finished, the Agent opens the PR using:
+  `gh pr create --base master --head feature/<scope>-<N> --title "[SCOPE] ..." --body "..."`
+- **Body** must use `.github/pull_request_template.md` sections and include `Closes #N`.
 
 ### C. Task/Issue Management
 
+- **Step 0 (mandatory)**: Before any work, create the Issue with `gh api ... /issues POST` and record `#N`.
 - Every task must start by reading the Issue description to assume the correct **Role**.
-- If a task requires a new sub-task, the Agent should propose: "New Task: [Role] Description".
+- If a task requires a new sub-task, the Agent must propose: "New Task: [Role] Description" and open a child Issue before proceeding.
 
 ## 🏛️ Clean Architecture Reinforcement (Uncle Bob)
 
