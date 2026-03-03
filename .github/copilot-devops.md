@@ -4,6 +4,7 @@
 - Fail fast on configuration errors.
 - Keep runtime matrix minimal unless required.
 - Prefer deterministic installs from `requirements.txt`.
+- Include **Oracle Syntax Validation** in CI using SQL linting tools to validate `databaseProject/` queries.
 
 ## Delivery Rules
 - Protect `master` with required CI checks.
