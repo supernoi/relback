@@ -1,150 +1,126 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>relBack - Cadastro</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 0;
-        }
-        .register-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            width: 100%;
-            max-width: 500px;
-        }
-        .register-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        .register-form .form-floating {
-            margin-bottom: 20px;
-        }
-        .btn-register {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 12px;
-            font-weight: 600;
-        }
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .alert {
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="register-card">
-        <div class="register-header">
-            <div class="logo">
-                <i class="bi bi-shield-check"></i> RelBack
-            </div>
-            <p class="text-muted">Create New Account</p>
+{% load static %}{% load tailwind_tags %}
+<!doctype html>
+<html lang="en" data-theme="relback_dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>relBack — Sign Up</title>
+    {# FOUC prevention: restore saved DaisyUI theme before first paint #}
+    <script>
+      (function () {
+        var t = localStorage.getItem("relback-theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+    {% tailwind_css %}
+  </head>
+  <body class="bg-base-200 min-h-screen flex items-center justify-center p-4">
+
+    <div class="card w-full max-w-sm bg-base-100 shadow-xl border border-base-300 my-6">
+      <div class="card-body gap-4">
+
+        {# Brand #}
+        <div class="flex flex-col items-center gap-1 mb-2">
+          <i class="material-icons text-primary" style="font-size:3rem;">storage</i>
+          <h1 class="text-2xl font-bold text-primary">relBack</h1>
+          <p class="text-sm opacity-50">Create New Account</p>
         </div>
 
+        {# Flash messages #}
         {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
+          {% for message in messages %}
+          <div role="alert"
+               class="alert shadow-sm {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}">
+            <span class="text-sm">{{ message }}</span>
+          </div>
+          {% endfor %}
         {% endif %}
 
-        <form method="post" class="register-form">
-            {% csrf_token %}
-            
-            <div class="form-floating">
-                {{ form.username }}
-                <label for="{{ form.username.id_for_label }}">
-                    <i class="bi bi-person"></i> Username
-                </label>
-                {% if form.username.errors %}
-                    <div class="text-danger small mt-1">
-                        {% for error in form.username.errors %}{{ error }}{% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+        {# Registration form #}
+        <form method="post" class="flex flex-col gap-3">
+          {% csrf_token %}
 
-            <div class="form-floating">
-                {{ form.name }}
-                <label for="{{ form.name.id_for_label }}">
-                    <i class="bi bi-person-badge"></i> Full Name
-                </label>
-                {% if form.name.errors %}
-                    <div class="text-danger small mt-1">
-                        {% for error in form.name.errors %}{{ error }}{% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+          {# Username #}
+          <div class="form-control">
+            <label class="label pb-1" for="{{ form.username.id_for_label }}">
+              <span class="label-text text-xs font-medium uppercase tracking-wide">Username</span>
+            </label>
+            {{ form.username }}
+            {% if form.username.errors %}
+            <label class="label pt-1">
+              <span class="label-text-alt text-error">{% for e in form.username.errors %}{{ e }}{% endfor %}</span>
+            </label>
+            {% endif %}
+          </div>
 
-            <div class="form-floating">
-                {{ form.email }}
-                <label for="{{ form.email.id_for_label }}">
-                    <i class="bi bi-envelope"></i> Email
-                </label>
-                {% if form.email.errors %}
-                    <div class="text-danger small mt-1">
-                        {% for error in form.email.errors %}{{ error }}{% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+          {# Full Name #}
+          <div class="form-control">
+            <label class="label pb-1" for="{{ form.name.id_for_label }}">
+              <span class="label-text text-xs font-medium uppercase tracking-wide">Full Name</span>
+            </label>
+            {{ form.name }}
+            {% if form.name.errors %}
+            <label class="label pt-1">
+              <span class="label-text-alt text-error">{% for e in form.name.errors %}{{ e }}{% endfor %}</span>
+            </label>
+            {% endif %}
+          </div>
 
-            <div class="form-floating">
-                {{ form.password1 }}
-                <label for="{{ form.password1.id_for_label }}">
-                    <i class="bi bi-lock"></i> Password
-                </label>
-                {% if form.password1.errors %}
-                    <div class="text-danger small mt-1">
-                        {% for error in form.password1.errors %}{{ error }}{% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+          {# Email #}
+          <div class="form-control">
+            <label class="label pb-1" for="{{ form.email.id_for_label }}">
+              <span class="label-text text-xs font-medium uppercase tracking-wide">Email</span>
+            </label>
+            {{ form.email }}
+            {% if form.email.errors %}
+            <label class="label pt-1">
+              <span class="label-text-alt text-error">{% for e in form.email.errors %}{{ e }}{% endfor %}</span>
+            </label>
+            {% endif %}
+          </div>
 
-            <div class="form-floating">
-                {{ form.password2 }}
-                <label for="{{ form.password2.id_for_label }}">
-                    <i class="bi bi-lock-fill"></i> Confirm Password
-                </label>
-                {% if form.password2.errors %}
-                    <div class="text-danger small mt-1">
-                        {% for error in form.password2.errors %}{{ error }}{% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+          {# Password #}
+          <div class="form-control">
+            <label class="label pb-1" for="{{ form.password1.id_for_label }}">
+              <span class="label-text text-xs font-medium uppercase tracking-wide">Password</span>
+            </label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+            <label class="label pt-1">
+              <span class="label-text-alt text-error">{% for e in form.password1.errors %}{{ e }}{% endfor %}</span>
+            </label>
+            {% endif %}
+          </div>
 
-            <button type="submit" class="btn btn-primary btn-register w-100">
-                <i class="bi bi-person-plus"></i> Sign Up
-            </button>
+          {# Confirm Password #}
+          <div class="form-control">
+            <label class="label pb-1" for="{{ form.password2.id_for_label }}">
+              <span class="label-text text-xs font-medium uppercase tracking-wide">Confirm Password</span>
+            </label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+            <label class="label pt-1">
+              <span class="label-text-alt text-error">{% for e in form.password2.errors %}{{ e }}{% endfor %}</span>
+            </label>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full mt-1">
+            Sign Up
+          </button>
         </form>
 
-        <div class="login-link">
-            <p class="text-muted">
-                Already have an account? 
-                <a href="{% url 'coreRelback:login' %}" class="text-decoration-none">Sign in</a>
-            </p>
-        </div>
+        <p class="text-center text-xs opacity-60">
+          Already have an account?
+          <a href="{% url 'coreRelback:login' %}" class="link link-primary font-medium">Sign in</a>
+        </p>
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <script>
+      setTimeout(function () {
+        document.querySelectorAll("[role=alert]").forEach(function (el) { el.remove(); });
+      }, 5000);
+    </script>
+  </body>
 </html>

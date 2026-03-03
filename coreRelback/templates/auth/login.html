@@ -1,121 +1,99 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>relBack - Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .login-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            width: 100%;
-            max-width: 400px;
-        }
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        .login-form .form-floating {
-            margin-bottom: 20px;
-        }
-        .btn-login {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            padding: 12px;
-            font-weight: 600;
-        }
-        .register-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .alert {
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="login-card">
-        <div class="login-header">
-            <div class="logo">
-                <i class="bi bi-shield-check"></i> RelBack
-            </div>
-            <p class="text-muted">Oracle Backup Management System</p>
+{% load static %}{% load tailwind_tags %}
+<!doctype html>
+<html lang="en" data-theme="relback_dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>relBack — Sign In</title>
+    {# FOUC prevention: restore saved DaisyUI theme before first paint #}
+    <script>
+      (function () {
+        var t = localStorage.getItem("relback-theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+    {% tailwind_css %}
+  </head>
+  <body class="bg-base-200 min-h-screen flex items-center justify-center p-4">
+
+    <div class="card w-full max-w-sm bg-base-100 shadow-xl border border-base-300">
+      <div class="card-body gap-4">
+
+        {# Brand #}
+        <div class="flex flex-col items-center gap-1 mb-2">
+          <i class="material-icons text-primary" style="font-size:3rem;">storage</i>
+          <h1 class="text-2xl font-bold text-primary">relBack</h1>
+          <p class="text-sm opacity-50">Oracle Backup Management System</p>
         </div>
 
+        {# Flash messages #}
         {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
+          {% for message in messages %}
+          <div role="alert"
+               class="alert shadow-sm {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}">
+            <span class="text-sm">{{ message }}</span>
+          </div>
+          {% endfor %}
         {% endif %}
 
+        {# Non-field errors #}
         {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-                {% for error in form.non_field_errors %}
-                    {{ error }}
-                {% endfor %}
-            </div>
+        <div role="alert" class="alert alert-error shadow-sm">
+          <ul class="text-sm list-disc pl-4">
+            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+          </ul>
+        </div>
         {% endif %}
 
-        <form method="post" class="login-form">
-            {% csrf_token %}
-            
-            <div class="form-floating">
-                {{ form.username }}
-                <label for="{{ form.username.id_for_label }}">
-                    <i class="bi bi-person"></i> Username
-                </label>
-                {% if form.username.errors %}
-                    <div class="text-danger small mt-1">
-                        {% for error in form.username.errors %}{{ error }}{% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+        {# Login form #}
+        <form method="post" class="flex flex-col gap-3">
+          {% csrf_token %}
 
-            <div class="form-floating">
-                {{ form.password }}
-                <label for="{{ form.password.id_for_label }}">
-                    <i class="bi bi-lock"></i> Password
-                </label>
-                {% if form.password.errors %}
-                    <div class="text-danger small mt-1">
-                        {% for error in form.password.errors %}{{ error }}{% endfor %}
-                    </div>
-                {% endif %}
-            </div>
+          <div class="form-control">
+            <label class="label pb-1" for="{{ form.username.id_for_label }}">
+              <span class="label-text text-xs font-medium uppercase tracking-wide">Username</span>
+            </label>
+            {{ form.username }}
+            {% if form.username.errors %}
+            <label class="label pt-1">
+              <span class="label-text-alt text-error">
+                {% for e in form.username.errors %}{{ e }}{% endfor %}
+              </span>
+            </label>
+            {% endif %}
+          </div>
 
-            <button type="submit" class="btn btn-primary btn-login w-100">
-                <i class="bi bi-box-arrow-in-right"></i> Sign In
-            </button>
+          <div class="form-control">
+            <label class="label pb-1" for="{{ form.password.id_for_label }}">
+              <span class="label-text text-xs font-medium uppercase tracking-wide">Password</span>
+            </label>
+            {{ form.password }}
+            {% if form.password.errors %}
+            <label class="label pt-1">
+              <span class="label-text-alt text-error">
+                {% for e in form.password.errors %}{{ e }}{% endfor %}
+              </span>
+            </label>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full mt-1">
+            Sign In
+          </button>
         </form>
 
-        <div class="register-link">
-            <p class="text-muted">
-                Don't have an account? 
-                <a href="{% url 'coreRelback:register' %}" class="text-decoration-none">Sign up</a>
-            </p>
-        </div>
+        <p class="text-center text-xs opacity-60">
+          Don't have an account?
+          <a href="{% url 'coreRelback:register' %}" class="link link-primary font-medium">Sign up</a>
+        </p>
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <script>
+      // Auto-dismiss alerts after 5 s
+      setTimeout(function () {
+        document.querySelectorAll("[role=alert]").forEach(function (el) { el.remove(); });
+      }, 5000);
+    </script>
+  </body>
 </html>

@@ -16,8 +16,7 @@
     <!-- Tailwind CSS + DaisyUI (compiled via django-tailwind) -->
     {% tailwind_css %}
 
-    <!-- Legacy CSS: kept during migration — remove per-phase as components are migrated -->
-    <!-- Material Design CSS -->
+    <!-- Material Icons (used throughout content templates — keep until Phase 4 icon audit) -->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
@@ -26,178 +25,227 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
       rel="stylesheet"
     />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
-      rel="stylesheet"
-    />
 
-    <!-- Modern Theme CSS -->
+    <!-- Legacy content CSS: md-card, md-badge, md-btn etc. — remove per Phase 4 migration -->
     <link href="{% static 'css/oracle-modern-theme.css' %}" rel="stylesheet" />
 
     {% block extra_css %}{% endblock %}
   </head>
   <body>
-    <!-- Navigation Bar -->
-    <nav class="md-navbar">
-      <div class="md-container">
-        <a class="md-navbar-brand" href="{% url 'coreRelback:index' %}">
-          <i
-            class="material-icons animate-pulse"
-            style="font-size: 2rem; color: var(--oracle-red)"
-            >storage</i
+    {# ────────────────────────────────────────────────────────────────────
+       DaisyUI Drawer Layout
+       lg:drawer-open  → sidebar always visible on large screens
+       On mobile: hidden behind overlay, toggled via #main-drawer checkbox
+    ──────────────────────────────────────────────────────────────────── #}
+    <div class="drawer lg:drawer-open">
+      <input id="main-drawer" type="checkbox" class="drawer-toggle" />
+
+      {# ── Page Content ──────────────────────────────────────────────── #}
+      <div class="drawer-content flex flex-col min-h-screen">
+
+        {# Top Navbar ─────────────────────────────────────────────────── #}
+        <div class="navbar bg-base-200 border-b border-base-300 sticky top-0 z-30 px-4 gap-2 min-h-12">
+
+          {# Mobile: hamburger opens sidebar #}
+          <label
+            for="main-drawer"
+            class="btn btn-ghost btn-sm btn-circle drawer-button lg:hidden"
+            aria-label="Open menu"
           >
-          <span class="md-navbar-logo">relBack</span>
-        </a>
+            <i class="material-icons">menu</i>
+          </label>
 
-        <button class="md-navbar-toggle" type="button" id="navbarToggle">
-          <span class="material-icons">menu</span>
-        </button>
-
-        <div class="md-navbar-nav" id="navbarNav">
-          <div class="md-nav-items">
-            <a
-              class="md-nav-link animate-fade-in-up"
-              href="{% url 'coreRelback:index' %}"
-              style="animation-delay: 0.1s"
-            >
-              <i class="material-icons">home</i>
-              <span class="md-nav-text">Home</span>
-            </a>
-            <a
-              class="md-nav-link animate-fade-in-up"
-              href="{% url 'coreRelback:client-list' %}"
-              style="animation-delay: 0.2s"
-            >
-              <i class="material-icons">business</i>
-              <span class="md-nav-text">Clients</span>
-            </a>
-            <a
-              class="md-nav-link animate-fade-in-up"
-              href="{% url 'coreRelback:host-list' %}"
-              style="animation-delay: 0.3s"
-            >
-              <i class="material-icons">dns</i>
-              <span class="md-nav-text">Hosts</span>
-            </a>
-            <a
-              class="md-nav-link animate-fade-in-up"
-              href="{% url 'coreRelback:database-list' %}"
-              style="animation-delay: 0.4s"
-            >
-              <i class="material-icons">storage</i>
-              <span class="md-nav-text">Databases</span>
-            </a>
-            <a
-              class="md-nav-link animate-fade-in-up"
-              href="{% url 'coreRelback:policy-list' %}"
-              style="animation-delay: 0.5s"
-            >
-              <i class="material-icons">security</i>
-              <span class="md-nav-text">Policies</span>
-            </a>
-            <a
-              class="md-nav-link animate-fade-in-up"
-              href="{% url 'coreRelback:report-read' %}"
-              style="animation-delay: 0.6s"
-            >
-              <i class="material-icons">assessment</i>
-              <span class="md-nav-text">Reports</span>
-            </a>
+          {# Breadcrumb slot — pages populate {% block breadcrumb %} #}
+          <div class="flex-1 text-sm breadcrumbs overflow-hidden hidden sm:block">
+            <ul>
+              <li>
+                <a href="{% url 'coreRelback:index' %}" class="opacity-60 hover:opacity-100">
+                  relBack
+                </a>
+              </li>
+              {% block breadcrumb %}{% endblock %}
+            </ul>
           </div>
 
-          <div class="md-nav-actions">
+          {# Right actions: theme toggle + user dropdown #}
+          <div class="flex items-center gap-1">
+
+            {# Theme cycle button #}
             <button
-              class="md-theme-toggle"
               id="themeToggle"
-              title="Toggle Dark/Light Mode"
+              class="btn btn-ghost btn-sm btn-circle"
+              title="Cycle theme"
             >
-              <i class="material-icons" id="themeIcon">dark_mode</i>
+              <i class="material-icons text-xl" id="themeIcon">dark_mode</i>
             </button>
 
-            <div class="md-dropdown">
-              <button class="md-dropdown-trigger" id="userDropdown">
-                <i class="material-icons">account_circle</i>
-                <span class="md-nav-text">{{ request.user.username }}</span>
-                <i class="material-icons md-dropdown-arrow"
-                  >keyboard_arrow_down</i
-                >
-              </button>
-              <div class="md-dropdown-menu" id="userMenu">
-                <a
-                  class="md-dropdown-item"
-                  href="{% url 'coreRelback:user-settings' %}"
-                >
-                  <i class="material-icons">settings</i>
-                  <span>Settings</span>
-                </a>
-                <div class="md-dropdown-divider"></div>
-                <form
-                  method="post"
-                  action="{% url 'coreRelback:logout' %}"
-                  style="margin: 0"
-                >
-                  {% csrf_token %}
-                  <button
-                    type="submit"
-                    class="md-dropdown-item"
-                    style="
-                      background: none;
-                      border: none;
-                      width: 100%;
-                      text-align: left;
-                      cursor: pointer;
-                    "
-                  >
-                    <i class="material-icons">logout</i>
-                    <span>Sign Out</span>
-                  </button>
-                </form>
+            {# User dropdown — DaisyUI pure-CSS, no JS required #}
+            {% if user.is_authenticated %}
+            <div class="dropdown dropdown-end">
+              <div
+                tabindex="0"
+                role="button"
+                class="btn btn-ghost btn-sm gap-1 normal-case"
+              >
+                <i class="material-icons text-xl">account_circle</i>
+                <span class="hidden md:inline text-sm font-normal">
+                  {{ request.user.username }}
+                </span>
+                <i class="material-icons text-sm">keyboard_arrow_down</i>
               </div>
+              <ul
+                tabindex="0"
+                class="dropdown-content menu bg-base-100 rounded-box shadow-lg border border-base-300 z-50 w-48 p-2 mt-1"
+              >
+                <li>
+                  <a href="{% url 'coreRelback:user-settings' %}">
+                    <i class="material-icons text-sm">settings</i>
+                    Settings
+                  </a>
+                </li>
+                <li>
+                  <form method="post" action="{% url 'coreRelback:logout' %}" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full text-left flex items-center gap-2 px-2 py-1.5 rounded hover:bg-base-200">
+                      <i class="material-icons text-sm">logout</i>
+                      Sign Out
+                    </button>
+                  </form>
+                </li>
+              </ul>
             </div>
+            {% endif %}
           </div>
         </div>
-      </div>
-    </nav>
+        {# /Top Navbar #}
 
-    <!-- Main Content -->
-    <main class="md-main-content">
-      {% if messages %} {% for message in messages %}
-      <div class="md-snackbar md-snackbar-{{ message.tags }}" role="alert">
-        <div class="md-snackbar-content">
-          <i class="material-icons md-snackbar-icon">
-            {% if message.tags == 'success' %}check_circle {% elif message.tags
-            == 'error' %}error {% elif message.tags == 'warning' %}warning {%
-            else %}info{% endif %}
-          </i>
-          <span class="md-snackbar-message">{{ message }}</span>
-        </div>
-        <button type="button" class="md-snackbar-close">
-          <i class="material-icons">close</i>
-        </button>
-      </div>
-      {% endfor %} {% endif %} {% block content %} {% endblock %}
-    </main>
-
-    <!-- Material Design Footer -->
-    <footer class="md-footer">
-      <div class="md-container">
-        <p class="md-mb-0">
-          <i
-            class="material-icons md-me-1"
-            style="vertical-align: middle; font-size: 16px"
-            >copyright</i
+        {# Flash messages — DaisyUI alerts (dismissible) ──────────────── #}
+        {% if messages %}
+        <div class="px-4 pt-3 space-y-2">
+          {% for message in messages %}
+          <div
+            role="alert"
+            class="alert shadow-sm {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}"
           >
-          2025 RelBack - Oracle Report Backup
-        </p>
-      </div>
-    </footer>
+            <i class="material-icons">
+              {% if message.tags == 'success' %}check_circle
+              {% elif message.tags == 'error' %}error
+              {% elif message.tags == 'warning' %}warning
+              {% else %}info{% endif %}
+            </i>
+            <span>{{ message }}</span>
+            <button
+              class="btn btn-ghost btn-xs"
+              onclick="this.closest('[role=alert]').remove()"
+              aria-label="Dismiss"
+            >
+              <i class="material-icons text-sm">close</i>
+            </button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
 
-    <!-- Material Design JavaScript -->
+        {# Main Page Content ─────────────────────────────────────────── #}
+        <main class="flex-1 p-4">
+          {% block content %}{% endblock %}
+        </main>
+
+        {# Footer ──────────────────────────────────────────────────── #}
+        <footer class="footer footer-center p-3 bg-base-200 border-t border-base-300 text-base-content text-xs opacity-50">
+          <aside>
+            <p>
+              <i class="material-icons" style="font-size:14px;vertical-align:middle;">copyright</i>
+              2025 RelBack — Oracle Report Backup
+            </p>
+          </aside>
+        </footer>
+      </div>
+      {# /drawer-content #}
+
+      {# ── Sidebar ──────────────────────────────────────────────────── #}
+      <div class="drawer-side z-40">
+        <label for="main-drawer" aria-label="Close menu" class="drawer-overlay"></label>
+
+        <aside class="bg-base-200 border-r border-base-300 flex flex-col w-64 min-h-screen">
+
+          {# Brand / Logo #}
+          <div class="flex items-center gap-3 px-4 py-4 border-b border-base-300">
+            <i class="material-icons text-primary" style="font-size:2rem;">storage</i>
+            <div>
+              <p class="font-bold text-lg leading-tight text-primary">relBack</p>
+              <p class="text-xs opacity-50 leading-tight">Oracle Backup Monitor</p>
+            </div>
+          </div>
+
+          {# Navigation links #}
+          <ul class="menu menu-md p-3 gap-0.5 flex-1">
+            <li class="menu-title text-xs uppercase tracking-wider opacity-40 mt-1">
+              Navigation
+            </li>
+            <li>
+              <a href="{% url 'coreRelback:index' %}">
+                <i class="material-icons text-sm">home</i>
+                Dashboard
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'coreRelback:client-list' %}">
+                <i class="material-icons text-sm">business</i>
+                Clients
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'coreRelback:host-list' %}">
+                <i class="material-icons text-sm">dns</i>
+                Hosts
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'coreRelback:database-list' %}">
+                <i class="material-icons text-sm">storage</i>
+                Databases
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'coreRelback:policy-list' %}">
+                <i class="material-icons text-sm">security</i>
+                Policies
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'coreRelback:report-read' %}">
+                <i class="material-icons text-sm">assessment</i>
+                Reports
+              </a>
+            </li>
+          </ul>
+
+          {# Bottom user info #}
+          {% if user.is_authenticated %}
+          <div class="flex items-center gap-2 px-4 py-3 border-t border-base-300">
+            <div class="avatar placeholder">
+              <div class="bg-primary text-primary-content rounded-full w-8 text-xs font-bold flex items-center justify-center">
+                {{ request.user.username|first|upper }}
+              </div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium truncate">{{ request.user.username }}</p>
+              <p class="text-xs opacity-50">Logged in</p>
+            </div>
+          </div>
+          {% endif %}
+        </aside>
+      </div>
+      {# /drawer-side #}
+    </div>
+    {# /drawer #}
+
     <script>
       // ---------------------------------------------------------------
       // DaisyUI Theme Cycle: relback_dark → relback_light → dracula → …
       // Operates on <html data-theme="…"> (DaisyUI standard).
-      // localStorage key: 'relback-theme' (namespaced).
+      // localStorage key: 'relback-theme' (namespaced to avoid collisions).
       // ---------------------------------------------------------------
       const RELBACK_THEMES = ["relback_dark", "relback_light", "dracula"];
       const THEME_ICONS = {
@@ -232,89 +280,17 @@
           const next = RELBACK_THEMES[(idx + 1) % RELBACK_THEMES.length];
           applyTheme(next);
         });
-        // Sync icon to theme applied by the FOUC script or HTML default
         applyTheme(
           document.documentElement.getAttribute("data-theme") || "relback_dark",
         );
       }
 
-      // Mobile Navigation Toggle
-      const navbarToggle = document.getElementById("navbarToggle");
-      const navbarNav = document.getElementById("navbarNav");
-
-      if (navbarToggle && navbarNav) {
-        navbarToggle.addEventListener("click", function () {
-          navbarNav.classList.toggle("md-navbar-nav-open");
-        });
-      }
-
-      // User Dropdown Toggle
-      const userDropdown = document.getElementById("userDropdown");
-      const userMenu = document.getElementById("userMenu");
-
-      if (userDropdown && userMenu) {
-        userDropdown.addEventListener("click", function (e) {
-          e.preventDefault();
-          userMenu.classList.toggle("md-dropdown-menu-open");
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener("click", function (e) {
-          if (!userDropdown.contains(e.target)) {
-            userMenu.classList.remove("md-dropdown-menu-open");
-          }
-        });
-      }
-
-      // Add ripple effect to buttons
-      document.querySelectorAll(".md-btn, .md-nav-link").forEach((button) => {
-        button.addEventListener("click", function (e) {
-          let ripple = document.createElement("span");
-          ripple.classList.add("md-ripple");
-          this.appendChild(ripple);
-
-          let x = e.clientX - e.target.offsetLeft;
-          let y = e.clientY - e.target.offsetTop;
-
-          ripple.style.left = x + "px";
-          ripple.style.top = y + "px";
-
-          setTimeout(() => {
-            ripple.remove();
-          }, 600);
-        });
-      });
-
-      // Auto-dismiss snackbars after 5 seconds
-      setTimeout(() => {
-        document.querySelectorAll(".md-snackbar").forEach((snackbar) => {
-          const closeBtn = snackbar.querySelector(".md-snackbar-close");
-          if (closeBtn) {
-            closeBtn.click();
-          }
+      // Auto-dismiss DaisyUI alerts after 5 s
+      setTimeout(function () {
+        document.querySelectorAll("[role=alert]").forEach(function (el) {
+          el.remove();
         });
       }, 5000);
-
-      // Snackbar close functionality
-      document.querySelectorAll(".md-snackbar-close").forEach((closeBtn) => {
-        closeBtn.addEventListener("click", function () {
-          this.closest(".md-snackbar").remove();
-        });
-      });
-
-      // Add fade-in animation to cards
-      document.addEventListener("DOMContentLoaded", function () {
-        const cards = document.querySelectorAll(".md-card");
-        cards.forEach((card, index) => {
-          card.style.opacity = "0";
-          card.style.transform = "translateY(20px)";
-          setTimeout(() => {
-            card.style.transition = "opacity 0.5s ease, transform 0.5s ease";
-            card.style.opacity = "1";
-            card.style.transform = "translateY(0)";
-          }, index * 100);
-        });
-      });
     </script>
 
     {% block extra_js %}{% endblock %}
