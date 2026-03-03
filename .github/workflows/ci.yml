@@ -57,3 +57,37 @@ jobs:
             --exclude-rules L016,L036 || true
         # 'true' makes non-zero exit non-blocking until rules are confirmed
         # Remove '|| true' once baseline is established
+
+  tailwind-build:
+    name: Tailwind CSS Build Sensor (Node 20)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: theme/static_src/package.json
+
+      - name: Install npm dependencies
+        working-directory: theme/static_src
+        run: npm ci
+
+      - name: Build Tailwind CSS
+        working-directory: theme/static_src
+        run: npx tailwindcss -i ./src/styles.css -o ../static/css/dist/styles.css --minify
+
+      - name: Verify compiled CSS is non-placeholder (> 1 KB)
+        run: |
+          CSS_PATH="theme/static/css/dist/styles.css"
+          CSS_SIZE=$(wc -c < "$CSS_PATH")
+          echo "Compiled CSS size: ${CSS_SIZE} bytes"
+          if [ "$CSS_SIZE" -lt 1024 ]; then
+            echo "ERROR: styles.css is ${CSS_SIZE} bytes — looks like a placeholder or empty build."
+            exit 1
+          fi
+          echo "✅ CSS build valid (${CSS_SIZE} bytes)"

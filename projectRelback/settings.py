@@ -9,7 +9,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import logging
 import os
+import shutil
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +42,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django_browser_reload.middleware.BrowserReloadMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -156,5 +157,27 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-import shutil  # noqa: E402
 NPM_BIN_PATH = shutil.which('npm') or '/usr/bin/npm'
+
+# ---------------------------------------------------------------------------
+# 🛡️  Runtime guard — warn (don't crash) if Tailwind CSS has not been compiled.
+# Protects the WSGI process on staging/production when 'tailwind build' was
+# not executed before deployment.  The shipped placeholder is < 100 bytes.
+# ---------------------------------------------------------------------------
+_TAILWIND_DIST_CSS = BASE_DIR / 'theme' / 'static' / 'css' / 'dist' / 'styles.css'
+_theme_logger = logging.getLogger('relback.theme')
+# 4 096 bytes: any real Tailwind build (even --minify) comfortably exceeds this.
+# The placeholder comment file ships at ~200 bytes, so this catches it reliably.
+if not _TAILWIND_DIST_CSS.exists() or _TAILWIND_DIST_CSS.stat().st_size < 4096:
+    _theme_logger.warning(
+        "Tailwind CSS not compiled: '%s' is missing or a placeholder. "
+        "Run: python manage.py tailwind install && python manage.py tailwind build",
+        _TAILWIND_DIST_CSS,
+    )
+
+# ---------------------------------------------------------------------------
+# Guard live-reload middleware: inject ONLY in debug mode to avoid routing
+# overhead and 404 noise on production/staging.
+# ---------------------------------------------------------------------------
+if DEBUG:
+    MIDDLEWARE.insert(1, 'django_browser_reload.middleware.BrowserReloadMiddleware')
