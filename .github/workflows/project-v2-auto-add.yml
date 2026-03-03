@@ -13,11 +13,17 @@ permissions:
 
 jobs:
   add-to-project:
-    if: ${{ secrets.PROJECTS_AUTOMATION_TOKEN != '' }}
     runs-on: ubuntu-latest
+    env:
+      PROJECTS_AUTOMATION_TOKEN: ${{ secrets.PROJECTS_AUTOMATION_TOKEN }}
     steps:
+      - name: Skip gracefully when token is missing
+        if: ${{ env.PROJECTS_AUTOMATION_TOKEN == '' }}
+        run: echo "PROJECTS_AUTOMATION_TOKEN is not configured; skipping project auto-add."
+
       - name: Add item to Project #3
+        if: ${{ env.PROJECTS_AUTOMATION_TOKEN != '' }}
         uses: actions/add-to-project@v1.0.2
         with:
           project-url: https://github.com/users/supernoi/projects/3
-          github-token: ${{ secrets.PROJECTS_AUTOMATION_TOKEN }}
+          github-token: ${{ env.PROJECTS_AUTOMATION_TOKEN }}

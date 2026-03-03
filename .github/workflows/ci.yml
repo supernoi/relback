@@ -71,7 +71,7 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-          cache-dependency-path: theme/static_src/package.json
+          cache-dependency-path: theme/static_src/package-lock.json
 
       - name: Install npm dependencies
         working-directory: theme/static_src
@@ -79,7 +79,9 @@ jobs:
 
       - name: Build Tailwind CSS
         working-directory: theme/static_src
-        run: npx tailwindcss -i ./src/styles.css -o ../static/css/dist/styles.css --minify
+        run: |
+          mkdir -p ../static/css/dist
+          npm run build
 
       - name: Verify compiled CSS is non-placeholder (> 1 KB)
         run: |
