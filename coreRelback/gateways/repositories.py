@@ -331,9 +331,31 @@ class DjangoScheduleRepository(IScheduleRepository):
 class OracleRmanRepository(IOracleRmanRepository):
     """
     Concrete read-only gateway for Oracle RMAN Catalog queries.
-    This class isolates all python-oracledb / cx_Oracle interactions.
-    Replace the stub body with real connections when Oracle Catalog is available.
+
+    Queries RC_BACKUP_JOB_DETAILS (standard Recovery Catalog view, Oracle 10g+)
+    using python-oracledb thin mode.  Connection config comes from
+    ``settings.ORACLE_CATALOG``; returns an empty list gracefully when
+    the catalog is unavailable or not configured.
     """
+
+    # Column order must match _row_to_entity tuple unpacking below.
+    _SQL = """\
+SELECT
+    DB_NAME,
+    DBID,
+    START_TIME,
+    END_TIME,
+    STATUS,
+    INPUT_TYPE,
+    OUTPUT_BYTES_DISPLAY,
+    TIME_TAKEN_DISPLAY,
+    OUTPUT_DEVICE_TYPE,
+    SESSION_KEY,
+    INPUT_TYPE
+FROM RC_BACKUP_JOB_DETAILS
+{where}
+ORDER BY START_TIME DESC
+FETCH FIRST 500 ROWS ONLY"""
 
     def get_backup_jobs(
         self,
@@ -341,15 +363,39 @@ class OracleRmanRepository(IOracleRmanRepository):
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
     ) -> List[BackupJobResult]:
-        # TODO: Replace with real Oracle connection using python-oracledb.
-        # Example:
-        #   import oracledb
-        #   conn = oracledb.connect(user=..., password=..., dsn=...)
-        #   cursor = conn.cursor()
-        #   cursor.execute(RMAN_QUERY, params)
-        #   rows = cursor.fetchall()
-        #   return [self._row_to_entity(r) for r in rows]
-        return []
+        from coreRelback.gateways.oracle_catalog import get_catalog_connection
+        import logging as _log
+        _logger = _log.getLogger(__name__)
+
+        conn = get_catalog_connection()
+        if conn is None:
+            return []
+
+        # Build WHERE dynamically to avoid NULL bind-variable issues in Oracle.
+        conditions: list = []
+        params: dict = {}
+        if db_name:
+            conditions.append("DB_NAME = :db_name")
+            params["db_name"] = db_name
+        if from_date:
+            conditions.append("START_TIME >= :from_date")
+            params["from_date"] = from_date
+        if to_date:
+            conditions.append("START_TIME < :to_date + INTERVAL '1' DAY")
+            params["to_date"] = to_date
+
+        where_clause = ("WHERE " + " AND ".join(conditions)) if conditions else ""
+        sql = self._SQL.format(where=where_clause)
+
+        try:
+            with conn:
+                cursor = conn.cursor()
+                cursor.execute(sql, params)
+                return [self._row_to_entity(row) for row in cursor]
+        except Exception as exc:
+            _logger.error("RMAN catalog query failed: %s", exc)
+            return []
+
 
     @staticmethod
     def _row_to_entity(row: tuple) -> BackupJobResult:
