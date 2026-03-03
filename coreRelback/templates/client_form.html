@@ -4,21 +4,21 @@
 {% block title %}{% if object %}Edit Client{% else %}Add Client{% endif %} - RelBack{% endblock %}
 
 {% block content %}
-<div class="md-container-fluid">
+<div>
     <!-- Page Header -->
-    <div class="md-grid md-grid-cols-1 md-mb-5">
-        <div class="md-card md-p-5">
-            <div class="md-flex md-items-center">
-                <a href="{% url 'coreRelback:client-list' %}" class="md-btn md-btn-text md-me-4" style="padding: 0.75rem;">
+    <div class="mb-5">
+        <div class="md-card p-5">
+            <div class="flex items-center">
+                <a href="{% url 'coreRelback:client-list' %}" class="btn btn-ghost mr-4" style="padding: 0.75rem;">
                     <i class="material-icons" style="font-size: 1.5rem;">arrow_back</i>
                 </a>
-                <div class="md-flex md-items-center">
-                    <i class="material-icons md-me-3" style="font-size: 56px; color: var(--oracle-red);">
+                <div class="flex items-center">
+                    <i class="material-icons mr-3" style="font-size: 56px; color: var(--oracle-red);">
                         {% if object %}edit{% else %}add_business{% endif %}
                     </i>
                     <div>
-                        <h1 class="h2 md-mb-1">{% if object %}Edit Client{% else %}Add New Client{% endif %}</h1>
-                        <p class="md-text-muted md-mb-0" style="font-size: 1.1rem;">{% if object %}Update client information{% else %}Create a new backup client{% endif %}</p>
+                        <h1 class="h2 mb-1">{% if object %}Edit Client{% else %}Add New Client{% endif %}</h1>
+                        <p class="text-base-content/60 mb-0" style="font-size: 1.1rem;">{% if object %}Update client information{% else %}Create a new backup client{% endif %}</p>
                     </div>
                 </div>
             </div>
@@ -26,87 +26,81 @@
     </div>
 
     <!-- Form -->
-    <div class="md-grid md-grid-cols-1 md-justify-center">
+    <div class="flex justify-center">
         <div style="max-width: 900px; margin: 0 auto; width: 100%;">
             <div class="md-card">
-                <div class="md-p-5">
+                <div class="p-5">
                     <form method="post">
                         {% csrf_token %}
-                        
+
                         <!-- Client Information Section -->
-                        <div class="md-mb-5">
-                            <h4 style="color: var(--text-primary);" class="md-mb-4">
-                                <i class="material-icons md-me-2" style="vertical-align: middle; font-size: 1.5rem;">info</i>
+                        <div class="mb-5">
+                            <h4 style="color: var(--text-primary);" class="mb-4">
+                                <i class="material-icons mr-2" style="vertical-align: middle; font-size: 1.5rem;">info</i>
                                 Client Information
                             </h4>
-                            
-                            <div class="md-grid md-grid-cols-2 md-gap-4">
-                                <div class="md-input-group">
-                                    <div class="md-input-floating">
-                                        <input type="text" 
-                                               class="md-input{% if form.name.errors %} is-invalid{% endif %}" 
-                                               id="id_name" 
-                                               name="name" 
-                                               value="{{ form.name.value|default:'' }}"
-                                               placeholder=" "
-                                               required>
-                                        <label class="md-label" for="id_name">
-                                            <i class="material-icons md-me-1" style="font-size: 16px;">business</i>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="form-control mb-3">
+                                    <label class="label" for="id_name">
+                                        <span class="label-text">
+                                            <i class="material-icons mr-1" style="font-size: 16px; vertical-align: middle;">business</i>
                                             Client Name *
-                                        </label>
-                                        {% if form.name.errors %}
-                                            <div class="md-invalid-feedback">
-                                                {{ form.name.errors.0 }}
-                                            </div>
-                                        {% endif %}
-                                    </div>
+                                        </span>
+                                    </label>
+                                    <input type="text"
+                                           class="input input-bordered w-full{% if form.name.errors %} input-error{% endif %}"
+                                           id="id_name"
+                                           name="name"
+                                           value="{{ form.name.value|default:'' }}"
+                                           required>
+                                    {% if form.name.errors %}
+                                        <label class="label"><span class="label-text-alt text-error">{{ form.name.errors.0 }}</span></label>
+                                    {% endif %}
                                 </div>
-                                <div class="md-input-group">
-                                    <div class="md-input-floating">
-                                        <input type="text" 
-                                               class="md-input{% if form.description.errors %} is-invalid{% endif %}" 
-                                               id="id_description" 
-                                               name="description" 
-                                               value="{{ form.description.value|default:'' }}"
-                                               placeholder=" ">
-                                        <label class="md-label" for="id_description">
-                                            <i class="material-icons md-me-1" style="font-size: 16px;">description</i>
+                                <div class="form-control mb-3">
+                                    <label class="label" for="id_description">
+                                        <span class="label-text">
+                                            <i class="material-icons mr-1" style="font-size: 16px; vertical-align: middle;">description</i>
                                             Description
-                                        </label>
-                                        {% if form.description.errors %}
-                                            <div class="md-invalid-feedback">
-                                                {{ form.description.errors.0 }}
-                                            </div>
-                                        {% endif %}
-                                    </div>
+                                        </span>
+                                    </label>
+                                    <input type="text"
+                                           class="input input-bordered w-full{% if form.description.errors %} input-error{% endif %}"
+                                           id="id_description"
+                                           name="description"
+                                           value="{{ form.description.value|default:'' }}">
+                                    {% if form.description.errors %}
+                                        <label class="label"><span class="label-text-alt text-error">{{ form.description.errors.0 }}</span></label>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
 
                         <!-- Additional Information (if editing) -->
                         {% if object %}
-                        <div class="md-mb-4">
-                            <h5 style="color: var(--text-primary);" class="md-mb-3">
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">history</i>
+                        <div class="mb-4">
+                            <h5 style="color: var(--text-primary);" class="mb-3">
+                                <i class="material-icons mr-2" style="vertical-align: middle;">history</i>
                                 Additional Information
                             </h5>
-                            
-                            <div class="md-grid md-grid-cols-2 md-gap-3">
-                                <div class="md-input-group">
-                                    <label class="md-label md-text-muted">Client ID</label>
-                                    <p class="md-p-3" style="background-color: var(--background-secondary); border-radius: var(--radius-md); margin: 0;">{{ object.id_client }}</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div class="form-control">
+                                    <label class="label"><span class="label-text text-base-content/60">Client ID</span></label>
+                                    <p class="p-3" style="background-color: var(--background-secondary); border-radius: var(--radius-md); margin: 0;">{{ object.id_client }}</p>
                                 </div>
-                                <div class="md-input-group">
-                                    <label class="md-label md-text-muted">Created</label>
-                                    <p class="md-p-3" style="background-color: var(--background-secondary); border-radius: var(--radius-md); margin: 0;">{{ object.created_at|date:"F d, Y G:i" }}</p>
+                                <div class="form-control">
+                                    <label class="label"><span class="label-text text-base-content/60">Created</span></label>
+                                    <p class="p-3" style="background-color: var(--background-secondary); border-radius: var(--radius-md); margin: 0;">{{ object.created_at|date:"F d, Y G:i" }}</p>
                                 </div>
                             </div>
-                            
+
                             {% if object.updated_at %}
-                            <div class="md-grid md-grid-cols-2 md-gap-3 md-mt-3">
-                                <div class="md-input-group">
-                                    <label class="md-label md-text-muted">Last Updated</label>
-                                    <p class="md-p-3" style="background-color: var(--background-secondary); border-radius: var(--radius-md); margin: 0;">{{ object.updated_at|date:"F d, Y G:i" }}</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                <div class="form-control">
+                                    <label class="label"><span class="label-text text-base-content/60">Last Updated</span></label>
+                                    <p class="p-3" style="background-color: var(--background-secondary); border-radius: var(--radius-md); margin: 0;">{{ object.updated_at|date:"F d, Y G:i" }}</p>
                                 </div>
                             </div>
                             {% endif %}
@@ -114,19 +108,19 @@
                         {% endif %}
 
                         <!-- Form Actions -->
-                        <div class="md-flex md-gap-2 md-pt-3 md-border-top">
-                            <button type="submit" class="md-btn md-btn-primary">
-                                <i class="material-icons md-me-1">save</i>
+                        <div class="flex gap-2 pt-3 border-t border-base-300">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="material-icons mr-1">save</i>
                                 {% if object %}Update Client{% else %}Create Client{% endif %}
                             </button>
-                            <a href="{% url 'coreRelback:client-list' %}" class="md-btn md-btn-outlined">
-                                <i class="material-icons md-me-1">cancel</i>
+                            <a href="{% url 'coreRelback:client-list' %}" class="btn btn-outline">
+                                <i class="material-icons mr-1">cancel</i>
                                 Cancel
                             </a>
                             {% if object %}
-                            <a href="{% url 'coreRelback:client-delete' object.id_client %}" 
-                               class="md-btn md-btn-danger md-ms-auto">
-                                <i class="material-icons md-me-1">delete</i>
+                            <a href="{% url 'coreRelback:client-delete' object.id_client %}"
+                               class="btn btn-error ml-auto">
+                                <i class="material-icons mr-1">delete</i>
                                 Delete Client
                             </a>
                             {% endif %}
@@ -136,15 +130,15 @@
             </div>
 
             <!-- Help Card -->
-            <div class="md-card md-mt-4">
-                <div style="background-color: var(--background-secondary); padding: var(--spacing-md);" class="md-rounded-top">
-                    <h6 class="md-mb-0">
-                        <i class="material-icons md-me-2" style="vertical-align: middle;">help</i>
-                        Help & Guidelines
+            <div class="md-card mt-4">
+                <div style="background-color: var(--background-secondary); padding: var(--spacing-md);" class="rounded-t-xl">
+                    <h6 class="mb-0">
+                        <i class="material-icons mr-2" style="vertical-align: middle;">help</i>
+                        Help &amp; Guidelines
                     </h6>
                 </div>
-                <div class="md-p-4">
-                    <ul class="md-mb-0">
+                <div class="p-4">
+                    <ul class="mb-0">
                         <li><strong>Client Name:</strong> A unique identifier for your organization or department.</li>
                         <li><strong>Description:</strong> Optional details about the client's purpose or location.</li>
                         <li>After creating a client, you can add hosts and databases associated with it.</li>
@@ -160,17 +154,17 @@
 // Form validation
 document.querySelector('form').addEventListener('submit', function(e) {
     const nameField = document.getElementById('id_name');
-    
     if (!nameField.value.trim()) {
         e.preventDefault();
-        nameField.classList.add('is-invalid');
-        
-        // Create or update error message
-        let feedback = nameField.parentNode.querySelector('.md-invalid-feedback');
+        nameField.classList.add('input-error');
+        let feedback = nameField.parentNode.querySelector('.label-text-alt');
         if (!feedback) {
-            feedback = document.createElement('div');
-            feedback.className = 'md-invalid-feedback';
-            nameField.parentNode.appendChild(feedback);
+            const lbl = document.createElement('label');
+            lbl.className = 'label';
+            feedback = document.createElement('span');
+            feedback.className = 'label-text-alt text-error';
+            lbl.appendChild(feedback);
+            nameField.parentNode.appendChild(lbl);
         }
         feedback.textContent = 'Client name is required.';
     }
@@ -179,29 +173,9 @@ document.querySelector('form').addEventListener('submit', function(e) {
 // Real-time validation
 document.getElementById('id_name').addEventListener('input', function() {
     if (this.value.trim()) {
-        this.classList.remove('is-invalid');
-        const feedback = this.parentNode.querySelector('.md-invalid-feedback');
-        if (feedback) {
-            feedback.remove();
-        }
-    }
-});
-
-// Add focus/blur animations to floating labels
-document.querySelectorAll('.md-input-floating .md-input').forEach(input => {
-    input.addEventListener('focus', function() {
-        this.parentNode.classList.add('md-input-focused');
-    });
-    
-    input.addEventListener('blur', function() {
-        if (!this.value) {
-            this.parentNode.classList.remove('md-input-focused');
-        }
-    });
-    
-    // Check if input has value on load
-    if (input.value) {
-        input.parentNode.classList.add('md-input-focused');
+        this.classList.remove('input-error');
+        const feedback = this.parentNode.querySelector('.label-text-alt');
+        if (feedback) feedback.parentNode.remove();
     }
 });
 </script>
