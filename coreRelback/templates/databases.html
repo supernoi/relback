@@ -6,7 +6,7 @@
 {% block content %}
 <div class="md-container-fluid">
     <!-- Page Header -->
-    <div class="md-grid md-grid-cols-1 md-mb-5">
+    <div class="mb-5">
         <div class="md-card page-header">
             <div class="md-flex md-justify-between md-items-center">
                 <div class="md-flex md-items-center">
@@ -57,11 +57,11 @@
     </div>
 
     <!-- Search and Actions -->
-    <div class="md-grid md-grid-cols-1 md-mb-5 search-section">
+    <div class="mb-5 search-section">
         <div class="md-card search-container">
             <div class="search-grid">
                 <div class="autocomplete-container">
-                    <input type="text" class="md-input" id="searchDatabases" placeholder="Search databases..." autocomplete="off">
+                    <input type="text" class="input input-bordered w-full" id="searchDatabases" placeholder="Search databases..." autocomplete="off">
                     <div class="autocomplete-list" id="autocompleteList"></div>
                 </div>
                 <button class="btn btn-ghost btn-sm clean-btn" id="cleanBtn">
@@ -72,7 +72,7 @@
         </div>
     </div>
     <!-- Databases Table -->
-    <div class="md-grid md-grid-cols-1">
+    <div>
         <div class="md-card md-card-decorated">
             {% if databases %}
                 <div class="overflow-x-auto">
@@ -446,13 +446,13 @@
                             Database Information
                         </h6>
                         
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label" for="edit-database-name">
-                                    Database Name *
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label pb-1" for="edit-database-name">
+                                    <span class="label-text font-medium">Database Name *</span>
                                 </label>
                                 <input type="text" 
-                                       class="form-input" 
+                                       class="input input-bordered w-full" 
                                        id="edit-database-name"
                                        name="name" 
                                        placeholder="Enter database name"
@@ -460,11 +460,11 @@
                                 <div class="form-error" id="edit-database-name-error"></div>
                             </div>
                             
-                            <div class="form-group">
-                                <label class="form-label" for="edit-database-description">
-                                    Description
+                            <div class="form-control">
+                                <label class="label pb-1" for="edit-database-description">
+                                    <span class="label-text font-medium">Description</span>
                                 </label>
-                                <textarea class="form-input" 
+                                <textarea class="textarea textarea-bordered w-full" 
                                           id="edit-database-description"
                                           name="description" 
                                           placeholder="Enter description"
@@ -535,52 +535,41 @@
                             Basic Information
                         </h5>
                         
-                        <div class="md-grid md-grid-cols-2 md-gap-4">
-                            <div class="md-input-group">
-                                <div class="md-input-floating">
-                                    <input type="text" 
-                                           class="md-input" 
-                                           id="add-database-name" 
-                                           name="name" 
-                                           placeholder=" "
-                                           required>
-                                    <label class="md-label" for="add-database-name">
-                                        <i class="material-icons md-me-1">storage</i>
-                                        Database Name *
-                                    </label>
-                                </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label pb-1" for="add-database-name">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">storage</i> Database Name *</span>
+                                </label>
+                                <input type="text" 
+                                       class="input input-bordered w-full" 
+                                       id="add-database-name" 
+                                       name="name" 
+                                       required>
                             </div>
-                            <div class="md-input-group">
-                                <div class="md-input-floating">
-                                    <select class="md-input" 
-                                            id="add-database-host" 
-                                            name="host" 
-                                            required>
-                                        <option value="" disabled selected>Select Host</option>
-                                        {% for host in hosts %}
-                                        <option value="{{ host.id_host }}">{{ host.hostname }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    <label class="md-label" for="add-database-host">
-                                        <i class="material-icons md-me-1">dns</i>
-                                        Host *
-                                    </label>
-                                </div>
+                            <div class="form-control">
+                                <label class="label pb-1" for="add-database-host">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">dns</i> Host *</span>
+                                </label>
+                                <select class="select select-bordered w-full" 
+                                        id="add-database-host" 
+                                        name="host" 
+                                        required>
+                                    <option value="" disabled selected>Select Host</option>
+                                    {% for host in hosts %}
+                                    <option value="{{ host.id_host }}">{{ host.hostname }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                         
-                        <div class="md-input-group">
-                            <div class="md-input-floating">
-                                <textarea class="md-input" 
-                                          id="add-database-description" 
-                                          name="description" 
-                                          placeholder=" "
-                                          rows="3"></textarea>
-                                <label class="md-label" for="add-database-description">
-                                    <i class="material-icons md-me-1">description</i>
-                                    Description
-                                </label>
-                            </div>
+                        <div class="form-control mt-2">
+                            <label class="label pb-1" for="add-database-description">
+                                <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">description</i> Description</span>
+                            </label>
+                            <textarea class="textarea textarea-bordered w-full" 
+                                      id="add-database-description" 
+                                      name="description" 
+                                      rows="3"></textarea>
                         </div>
                     </div>
 
@@ -591,37 +580,30 @@
                             Database Configuration
                         </h5>
                         
-                        <div class="md-grid md-grid-cols-2 md-gap-4">
-                            <div class="md-input-group">
-                                <div class="md-input-floating">
-                                    <select class="md-input" 
-                                            id="add-database-type" 
-                                            name="db_type"
-                                            required>
-                                        <option value="" disabled selected>Select Type</option>
-                                        <option value="Oracle">Oracle</option>
-                                        <option value="MySQL">MySQL</option>
-                                        <option value="PostgreSQL">PostgreSQL</option>
-                                        <option value="SQL Server">SQL Server</option>
-                                    </select>
-                                    <label class="md-label" for="add-database-type">
-                                        <i class="material-icons md-me-1">category</i>
-                                        Database Type *
-                                    </label>
-                                </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label pb-1" for="add-database-type">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">category</i> Database Type *</span>
+                                </label>
+                                <select class="select select-bordered w-full" 
+                                        id="add-database-type" 
+                                        name="db_type"
+                                        required>
+                                    <option value="" disabled selected>Select Type</option>
+                                    <option value="Oracle">Oracle</option>
+                                    <option value="MySQL">MySQL</option>
+                                    <option value="PostgreSQL">PostgreSQL</option>
+                                    <option value="SQL Server">SQL Server</option>
+                                </select>
                             </div>
-                            <div class="md-input-group">
-                                <div class="md-input-floating">
-                                    <input type="text" 
-                                           class="md-input" 
-                                           id="add-database-version" 
-                                           name="version" 
-                                           placeholder=" ">
-                                    <label class="md-label" for="add-database-version">
-                                        <i class="material-icons md-me-1">info</i>
-                                        Version
-                                    </label>
-                                </div>
+                            <div class="form-control">
+                                <label class="label pb-1" for="add-database-version">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">info</i> Version</span>
+                                </label>
+                                <input type="text" 
+                                       class="input input-bordered w-full" 
+                                       id="add-database-version" 
+                                       name="version">
                             </div>
                         </div>
                     </div>
@@ -913,7 +895,7 @@ function closeAddModal() {
     form.reset();
     
     // Clear any validation errors
-    form.querySelectorAll('.md-input').forEach(input => {
+    form.querySelectorAll('.input-bordered').forEach(input => {
         input.classList.remove('error');
     });
     form.querySelectorAll('.error-message').forEach(error => {
@@ -923,7 +905,7 @@ function closeAddModal() {
 
 function clearFormErrors() {
     const errorElements = document.querySelectorAll('.form-error');
-    const inputElements = document.querySelectorAll('.form-input');
+    const inputElements = document.querySelectorAll('.input-bordered');
     
     errorElements.forEach(el => el.classList.remove('show'));
     inputElements.forEach(el => el.classList.remove('error'));

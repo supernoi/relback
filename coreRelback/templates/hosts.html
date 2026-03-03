@@ -6,7 +6,7 @@
 {% block content %}
 <div class="md-container-fluid">
     <!-- Page Header -->
-    <div class="md-grid md-grid-cols-1 md-mb-5">
+    <div class="mb-5">
         <div class="md-card page-header">
             <div class="md-flex md-justify-between md-items-center">
                 <div class="md-flex md-items-center">
@@ -57,11 +57,11 @@
     </div>
 
     <!-- Search and Actions -->
-    <div class="md-grid md-grid-cols-1 md-mb-5 search-section">
+    <div class="mb-5 search-section">
         <div class="md-card search-container">
             <div class="search-grid">
                 <div class="autocomplete-container">
-                    <input type="text" class="md-input" id="searchHosts" placeholder="Search hosts..." autocomplete="off">
+                    <input type="text" class="input input-bordered w-full" id="searchHosts" placeholder="Search hosts..." autocomplete="off">
                     <div class="autocomplete-list" id="autocompleteList"></div>
                 </div>
                 <button class="btn btn-ghost btn-sm clean-btn" id="cleanBtn">
@@ -73,7 +73,7 @@
     </div>
 
     <!-- Hosts Table -->
-    <div class="md-grid md-grid-cols-1">
+    <div>
         <div class="md-card md-card-decorated">
             {% if hosts %}
                 <div class="overflow-x-auto">
@@ -311,14 +311,13 @@
                             Host Information
                         </h6>
                         
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label" for="edit-host-name">
-                                    <i class="material-icons">dns</i>
-                                    Host Name *
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label pb-1" for="edit-host-name">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">dns</i> Host Name *</span>
                                 </label>
                                 <input type="text" 
-                                       class="form-input" 
+                                       class="input input-bordered w-full" 
                                        id="edit-host-name" 
                                        name="hostname" 
                                        required
@@ -326,13 +325,12 @@
                                 <div class="form-error" id="edit-hostname-error"></div>
                             </div>
                             
-                            <div class="form-group">
-                                <label class="form-label" for="edit-host-ip">
-                                    <i class="material-icons">language</i>
-                                    IP Address *
+                            <div class="form-control">
+                                <label class="label pb-1" for="edit-host-ip">
+                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">language</i> IP Address *</span>
                                 </label>
                                 <input type="text" 
-                                       class="form-input" 
+                                       class="input input-bordered w-full" 
                                        id="edit-host-ip" 
                                        name="ip" 
                                        required
@@ -582,7 +580,7 @@ function closeEditModal() {
 
 function clearFormErrors() {
     const errorElements = document.querySelectorAll('.form-error');
-    const inputElements = document.querySelectorAll('.form-input');
+    const inputElements = document.querySelectorAll('.input-bordered');
     
     errorElements.forEach(el => el.classList.remove('show'));
     inputElements.forEach(el => el.classList.remove('error'));
@@ -793,52 +791,41 @@ document.addEventListener('DOMContentLoaded', function() {
                         Basic Information
                     </h5>
                     
-                    <div class="md-grid md-grid-cols-2 md-gap-4">
-                        <div class="md-input-group">
-                            <div class="md-input-floating">
-                                <input type="text" 
-                                       class="md-input" 
-                                       id="add-host-name" 
-                                       name="name" 
-                                       placeholder=" "
-                                       required>
-                                <label class="md-label" for="add-host-name">
-                                    <i class="material-icons md-me-1">storage</i>
-                                    Host Name *
-                                </label>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label pb-1" for="add-host-name">
+                                <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">storage</i> Host Name *</span>
+                            </label>
+                            <input type="text" 
+                                   class="input input-bordered w-full" 
+                                   id="add-host-name" 
+                                   name="name" 
+                                   required>
                         </div>
-                        <div class="md-input-group">
-                            <div class="md-input-floating">
-                                <select class="md-input" 
-                                        id="add-host-client" 
-                                        name="client" 
-                                        required>
-                                    <option value="" disabled selected>Select Client</option>
-                                    {% for client in clients %}
-                                    <option value="{{ client.id_client }}">{{ client.name }}</option>
-                                    {% endfor %}
-                                </select>
-                                <label class="md-label" for="add-host-client">
-                                    <i class="material-icons md-me-1">business</i>
-                                    Client *
-                                </label>
-                            </div>
+                        <div class="form-control">
+                            <label class="label pb-1" for="add-host-client">
+                                <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">business</i> Client *</span>
+                            </label>
+                            <select class="select select-bordered w-full" 
+                                    id="add-host-client" 
+                                    name="client" 
+                                    required>
+                                <option value="" disabled selected>Select Client</option>
+                                {% for client in clients %}
+                                <option value="{{ client.id_client }}">{{ client.name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     
-                    <div class="md-input-group">
-                        <div class="md-input-floating">
-                            <textarea class="md-input" 
-                                      id="add-host-description" 
-                                      name="description" 
-                                      placeholder=" "
-                                      rows="3"></textarea>
-                            <label class="md-label" for="add-host-description">
-                                <i class="material-icons md-me-1">description</i>
-                                Description
-                            </label>
-                        </div>
+                    <div class="form-control mt-2">
+                        <label class="label pb-1" for="add-host-description">
+                            <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">description</i> Description</span>
+                        </label>
+                        <textarea class="textarea textarea-bordered w-full" 
+                                  id="add-host-description" 
+                                  name="description" 
+                                  rows="3"></textarea>
                     </div>
                 </div>
 
@@ -849,37 +836,29 @@ document.addEventListener('DOMContentLoaded', function() {
                         Network Configuration
                     </h5>
                     
-                    <div class="md-grid md-grid-cols-2 md-gap-4">
-                        <div class="md-input-group">
-                            <div class="md-input-floating">
-                                <input type="text" 
-                                       class="md-input" 
-                                       id="add-host-ip" 
-                                       name="ip_address" 
-                                       placeholder=" "
-                                       pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
-                                <label class="md-label" for="add-host-ip">
-                                    <i class="material-icons md-me-1">router</i>
-                                    IP Address
-                                </label>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label pb-1" for="add-host-ip">
+                                <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">router</i> IP Address</span>
+                            </label>
+                            <input type="text" 
+                                   class="input input-bordered w-full" 
+                                   id="add-host-ip" 
+                                   name="ip_address" 
+                                   pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
                             <div class="field-hint">Format: 192.168.1.100</div>
                         </div>
-                        <div class="md-input-group">
-                            <div class="md-input-floating">
-                                <input type="number" 
-                                       class="md-input" 
-                                       id="add-host-port" 
-                                       name="port" 
-                                       placeholder=" "
-                                       value="22"
-                                       min="1" 
-                                       max="65535">
-                                <label class="md-label" for="add-host-port">
-                                    <i class="material-icons md-me-1">settings_ethernet</i>
-                                    Port
-                                </label>
-                            </div>
+                        <div class="form-control">
+                            <label class="label pb-1" for="add-host-port">
+                                <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">settings_ethernet</i> Port</span>
+                            </label>
+                            <input type="number" 
+                                   class="input input-bordered w-full" 
+                                   id="add-host-port" 
+                                   name="port" 
+                                   value="22"
+                                   min="1" 
+                                   max="65535">
                             <div class="field-hint">Default: 22 (SSH)</div>
                         </div>
                     </div>
@@ -892,37 +871,30 @@ document.addEventListener('DOMContentLoaded', function() {
                         System Information
                     </h5>
                     
-                    <div class="md-grid md-grid-cols-2 md-gap-4">
-                        <div class="md-input-group">
-                            <div class="md-input-floating">
-                                <select class="md-input" 
-                                        id="add-host-platform" 
-                                        name="platform">
-                                    <option value="" disabled selected>Select Platform</option>
-                                    <option value="Linux">Linux</option>
-                                    <option value="Windows">Windows</option>
-                                    <option value="AIX">AIX</option>
-                                    <option value="Solaris">Solaris</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                <label class="md-label" for="add-host-platform">
-                                    <i class="material-icons md-me-1">laptop</i>
-                                    Operating System
-                                </label>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label pb-1" for="add-host-platform">
+                                <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">laptop</i> Operating System</span>
+                            </label>
+                            <select class="select select-bordered w-full" 
+                                    id="add-host-platform" 
+                                    name="platform">
+                                <option value="" disabled selected>Select Platform</option>
+                                <option value="Linux">Linux</option>
+                                <option value="Windows">Windows</option>
+                                <option value="AIX">AIX</option>
+                                <option value="Solaris">Solaris</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </div>
-                        <div class="md-input-group">
-                            <div class="md-input-floating">
-                                <input type="text" 
-                                       class="md-input" 
-                                       id="add-host-version" 
-                                       name="version" 
-                                       placeholder=" ">
-                                <label class="md-label" for="add-host-version">
-                                    <i class="material-icons md-me-1">info</i>
-                                    OS Version
-                                </label>
-                            </div>
+                        <div class="form-control">
+                            <label class="label pb-1" for="add-host-version">
+                                <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">info</i> OS Version</span>
+                            </label>
+                            <input type="text" 
+                                   class="input input-bordered w-full" 
+                                   id="add-host-version" 
+                                   name="version">
                             <div class="field-hint">e.g., Ubuntu 22.04, Windows Server 2019</div>
                         </div>
                     </div>
@@ -952,38 +924,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 <!-- Guidelines Section -->
                 <div class="form-section">
-                    <div class="md-info-card">
-                        <div class="md-info-header">
-                            <i class="material-icons">help</i>
-                            <h6>Host Configuration Guidelines</h6>
-                        </div>
-                        <div class="md-grid md-grid-cols-2 md-gap-4">
-                            <div>
-                                <h6 class="info-subtitle">Required Information:</h6>
-                                <ul class="md-info-list">
-                                    <li><strong>Host Name:</strong> Unique identifier for the server</li>
-                                    <li><strong>Client:</strong> Associated backup client</li>
-                                </ul>
-                                
-                                <h6 class="info-subtitle">Network Settings:</h6>
-                                <ul class="md-info-list">
-                                    <li><strong>IP Address:</strong> Server's network address</li>
-                                    <li><strong>Port:</strong> Connection port (default: 22 for SSH)</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h6 class="info-subtitle">System Information:</h6>
-                                <ul class="md-info-list">
-                                    <li><strong>Platform:</strong> Operating system type</li>
-                                    <li><strong>Version:</strong> Specific OS version/build</li>
-                                </ul>
-                                
-                                <h6 class="info-subtitle">Best Practices:</h6>
-                                <ul class="md-info-list">
-                                    <li>Use descriptive host names</li>
-                                    <li>Keep system information up to date</li>
-                                    <li>Test connections after configuration</li>
-                                </ul>
+                    <div class="alert alert-info">
+                        <i class="material-icons">help</i>
+                        <div>
+                            <h6 class="font-semibold">Host Configuration Guidelines</h6>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                <div>
+                                    <h6 class="info-subtitle">Required Information:</h6>
+                                    <ul class="list-disc list-inside space-y-1 text-sm">
+                                        <li><strong>Host Name:</strong> Unique identifier for the server</li>
+                                        <li><strong>Client:</strong> Associated backup client</li>
+                                    </ul>
+                                    
+                                    <h6 class="info-subtitle">Network Settings:</h6>
+                                    <ul class="list-disc list-inside space-y-1 text-sm">
+                                        <li><strong>IP Address:</strong> Server's network address</li>
+                                        <li><strong>Port:</strong> Connection port (default: 22 for SSH)</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h6 class="info-subtitle">System Information:</h6>
+                                    <ul class="list-disc list-inside space-y-1 text-sm">
+                                        <li><strong>Platform:</strong> Operating system type</li>
+                                        <li><strong>Version:</strong> Specific OS version/build</li>
+                                    </ul>
+                                    
+                                    <h6 class="info-subtitle">Best Practices:</h6>
+                                    <ul class="list-disc list-inside space-y-1 text-sm">
+                                        <li>Use descriptive host names</li>
+                                        <li>Keep system information up to date</li>
+                                        <li>Test connections after configuration</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1032,7 +1004,7 @@ function closeAddHostModal() {
     document.getElementById('add-host-active').checked = true;
     
     // Clear any validation errors
-    form.querySelectorAll('.md-input').forEach(input => {
+    form.querySelectorAll('.input-bordered').forEach(input => {
         input.classList.remove('error');
     });
     form.querySelectorAll('.error-message').forEach(error => {
@@ -1113,24 +1085,6 @@ document.getElementById('add-host-client').addEventListener('change', function()
 document.getElementById('add-host-ip').addEventListener('input', function() {
     if (this.classList.contains('error')) {
         validateAddHostForm();
-    }
-});
-
-// Floating label animation for add host form
-document.querySelectorAll('#addHostModal .md-input-floating .md-input').forEach(input => {
-    input.addEventListener('focus', function() {
-        this.parentNode.classList.add('md-input-focused');
-    });
-    
-    input.addEventListener('blur', function() {
-        if (!this.value && input.type !== 'number') {
-            this.parentNode.classList.remove('md-input-focused');
-        }
-    });
-    
-    // Check if input has value on load
-    if (input.value || input.type === 'number') {
-        input.parentNode.classList.add('md-input-focused');
     }
 });
 
