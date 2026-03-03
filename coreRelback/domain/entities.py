@@ -19,6 +19,7 @@ class BackupStatusValue(str, Enum):
     FAILED = "FAILED"
     RUNNING = "RUNNING"
     WARNING = "WARNING"
+    INTERRUPTED = "INTERRUPTED"  # RMAN backup stopped/aborted mid-run
     UNKNOWN = "UNKNOWN"
 
 
@@ -127,13 +128,21 @@ class BackupJobResult:
 
     @property
     def severity(self) -> str:
-        """Returns a display severity level for UI rendering."""
+        """Returns a DaisyUI semantic severity token for UI badge rendering.
+
+        Maps BackupStatusValue → DaisyUI badge variant name used in
+        the ``backup_badge`` template tag (Interface Adapter layer).
+        NEVER import UI framework names further inward than this property.
+        """
         mapping = {
-            BackupStatusValue.COMPLETED: "success",
-            BackupStatusValue.RUNNING: "info",
-            BackupStatusValue.WARNING: "warning",
+            BackupStatusValue.COMPLETED:   "success",
+            BackupStatusValue.RUNNING:     "info",
+            BackupStatusValue.WARNING:     "warning",
+            BackupStatusValue.FAILED:      "error",
+            BackupStatusValue.INTERRUPTED: "interrupted",
+            BackupStatusValue.UNKNOWN:     "neutral",
         }
-        return mapping.get(self.status, "danger")
+        return mapping.get(self.status, "neutral")
 
 
 @dataclass

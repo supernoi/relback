@@ -117,7 +117,8 @@ class LoginViewTests(TestCase):
 
     def setUp(self):
         from coreRelback.models import RelbackUser
-        ru = RelbackUser(username="logintest", status=1, email="login@test.com")
+        ru = RelbackUser(username="logintest", status=1,
+                         email="login@test.com")
         ru.set_password("pass1234!")
         ru.save()
 
@@ -177,4 +178,65 @@ class LogoutRegisterTests(TestCase):
         from coreRelback.models import RelbackUser
         self.assertEqual(response.status_code, 302)
         self.assertIn("/login/", response["Location"])
-        self.assertTrue(RelbackUser.objects.filter(username="newuser").exists())
+        self.assertTrue(RelbackUser.objects.filter(
+            username="newuser").exists())
+
+
+class BackupBadgeTagTests(SimpleTestCase):
+    """Unit tests for the backup_badge template tag presenter.
+
+    These run without a database (SimpleTestCase) since the tag is purely
+    presentational and has no DB interaction.
+    """
+
+    def _render(self, status_str: str, compact: bool = False) -> str:
+        from coreRelback.templatetags.backup_tags import backup_badge
+        return backup_badge(status_str, compact=compact)
+
+    def test_completed_renders_success_badge(self):
+        html = self._render("COMPLETED")
+        self.assertIn("badge-success", html)
+        self.assertIn("check_circle", html)
+        self.assertIn("Completed", html)
+
+    def test_failed_renders_error_badge(self):
+        html = self._render("FAILED")
+        self.assertIn("badge-error", html)
+        self.assertIn("error_outline", html)
+        self.assertIn("Failed", html)
+
+    def test_running_renders_info_badge(self):
+        html = self._render("RUNNING")
+        self.assertIn("badge-info", html)
+        self.assertIn("sync", html)
+
+    def test_warning_renders_warning_badge(self):
+        html = self._render("WARNING")
+        self.assertIn("badge-warning", html)
+        self.assertIn("warning", html)
+
+    def test_interrupted_renders_violet_ghost_badge(self):
+        html = self._render("INTERRUPTED")
+        self.assertIn("badge-ghost", html)
+        self.assertIn("#a78bfa", html)  # violet token from tailwind.config.js
+        self.assertIn("block", html)    # Material icon name
+        self.assertIn("Interrupted", html)
+
+    def test_unknown_renders_neutral_badge(self):
+        html = self._render("UNKNOWN")
+        self.assertIn("badge-neutral", html)
+
+    def test_unknown_key_falls_back_to_neutral(self):
+        html = self._render("SOME_FUTURE_STATUS")
+        self.assertIn("badge-neutral", html)
+
+    def test_compact_hides_label_shows_title(self):
+        html = self._render("COMPLETED", compact=True)
+        self.assertIn("badge-sm", html)
+        self.assertIn('title="Completed"', html)
+        self.assertNotIn(">Completed<", html)
+
+    def test_accepts_enum_member(self):
+        from coreRelback.domain.entities import BackupStatusValue
+        html = self._render(BackupStatusValue.FAILED)
+        self.assertIn("badge-error", html)

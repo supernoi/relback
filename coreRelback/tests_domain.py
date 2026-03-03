@@ -238,12 +238,14 @@ class BackupJobResultEntityTest(TestCase):
         self.assertFalse(job.is_ok)
 
     def test_severity_mapping(self):
+        """Severity tokens must match DaisyUI semantic names (updated in Phase 2)."""
         cases = {
-            BackupStatusValue.COMPLETED: "success",
-            BackupStatusValue.RUNNING: "info",
-            BackupStatusValue.WARNING: "warning",
-            BackupStatusValue.FAILED: "danger",
-            BackupStatusValue.UNKNOWN: "danger",
+            BackupStatusValue.COMPLETED:   "success",
+            BackupStatusValue.RUNNING:     "info",
+            BackupStatusValue.WARNING:     "warning",
+            BackupStatusValue.FAILED:      "error",       # was "danger" pre-Phase 2
+            BackupStatusValue.INTERRUPTED: "interrupted",
+            BackupStatusValue.UNKNOWN:     "neutral",     # was "danger" pre-Phase 2
         }
         for status, expected in cases.items():
             job = BackupJobResult(db_name="ORCL", dbid=1, status=status)
@@ -513,3 +515,47 @@ class UpdateDatabaseUseCaseTest(TestCase):
             client_id=1, host_id=1, dbid=2, updated_by_id=1,
         )
         self.assertEqual(updated.db_name, "NEW_DB")
+
+
+# ---------------------------------------------------------------------------
+# BackupStatusValue — Phase 2: INTERRUPTED enum + DaisyUI severity mapping
+# ---------------------------------------------------------------------------
+
+class BackupStatusValueEnumTest(TestCase):
+    """Verify all expected RMAN status values exist in the enum."""
+
+    def test_all_expected_values_present(self):
+        expected = {"COMPLETED", "FAILED", "RUNNING", "WARNING", "INTERRUPTED", "UNKNOWN"}
+        actual = {v.value for v in BackupStatusValue}
+        self.assertEqual(expected, actual)
+
+    def test_interrupted_is_string_enum(self):
+        self.assertEqual(BackupStatusValue.INTERRUPTED, "INTERRUPTED")
+        self.assertIsInstance(BackupStatusValue.INTERRUPTED, str)
+
+
+class BackupJobResultSeverityTest(TestCase):
+    """Verify BackupJobResult.severity returns correct DaisyUI token for every status."""
+
+    def _job(self, status: BackupStatusValue) -> BackupJobResult:
+        return BackupJobResult(db_name="TESTDB", dbid=1, status=status)
+
+    def test_completed_severity(self):
+        self.assertEqual(self._job(BackupStatusValue.COMPLETED).severity, "success")
+
+    def test_running_severity(self):
+        self.assertEqual(self._job(BackupStatusValue.RUNNING).severity, "info")
+
+    def test_warning_severity(self):
+        self.assertEqual(self._job(BackupStatusValue.WARNING).severity, "warning")
+
+    def test_failed_severity_is_error_not_danger(self):
+        """Regression: changed from 'danger' to DaisyUI token 'error' in Phase 2."""
+        self.assertEqual(self._job(BackupStatusValue.FAILED).severity, "error")
+
+    def test_interrupted_severity(self):
+        self.assertEqual(self._job(BackupStatusValue.INTERRUPTED).severity, "interrupted")
+
+    def test_unknown_severity_is_neutral_not_danger(self):
+        """Regression: changed from 'danger' to DaisyUI token 'neutral' in Phase 2."""
+        self.assertEqual(self._job(BackupStatusValue.UNKNOWN).severity, "neutral")

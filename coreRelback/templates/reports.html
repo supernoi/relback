@@ -139,8 +139,11 @@
                     <select class="filter-select" name="status_filter" id="status_filter" data-placeholder="All Status">
                         <option value="">All Status</option>
                         <option value="COMPLETED" {% if request.GET.status_filter == "COMPLETED" %}selected{% endif %}>Completed</option>
-                        <option value="FAILED" {% if request.GET.status_filter == "FAILED" %}selected{% endif %}>Failed</option>
                         <option value="RUNNING" {% if request.GET.status_filter == "RUNNING" %}selected{% endif %}>Running</option>
+                        <option value="FAILED" {% if request.GET.status_filter == "FAILED" %}selected{% endif %}>Failed</option>
+                        <option value="WARNING" {% if request.GET.status_filter == "WARNING" %}selected{% endif %}>Warning</option>
+                        <option value="INTERRUPTED" {% if request.GET.status_filter == "INTERRUPTED" %}selected{% endif %}>Interrupted</option>
+                        <option value="UNKNOWN" {% if request.GET.status_filter == "UNKNOWN" %}selected{% endif %}>Unknown</option>
                     </select>
                 </div>
                 
@@ -325,24 +328,9 @@
                             <td>{{ j.start_time|date:"d/M/Y H:i" }}</td>
                             <td>{{ j.end_time|date:"d/M/Y H:i"|default:"-" }}</td>
                             <td>
-                                {% if j.status == 'COMPLETED' %}
-                                    <span class="md-badge md-badge-success">
-                                        <i class="material-icons md-me-1" style="font-size: 12px; vertical-align: middle;">check_circle</i>
-                                        Completed
-                                    </span>
-                                {% elif j.status == 'FAILED' %}
-                                    <span class="md-badge md-badge-danger">
-                                        <i class="material-icons md-me-1" style="font-size: 12px; vertical-align: middle;">error</i>
-                                        Failed
-                                    </span>
-                                {% elif j.status == 'RUNNING' %}
-                                    <span class="md-badge md-badge-warning">
-                                        <i class="material-icons md-me-1" style="font-size: 12px; vertical-align: middle;">hourglass_empty</i>
-                                        Running
-                                    </span>
-                                {% else %}
-                                    <span class="md-badge md-badge-secondary">{{ j.status }}</span>
-                                {% endif %}
+                                {# Presenter: backup_tags.backup_badge maps status → DaisyUI badge #}
+                                {% load backup_tags %}
+                                {% backup_badge j.status %}
                             </td>
                             <td>
                                 {% if j.elapsed_seconds %}
