@@ -1,0 +1,4 @@
+# Django template files — Prettier reformats Django template block tags
+# in ways that break Django's tokenizer (splits {%...%} across lines).
+# Formatting is handled by djLint or disabled intentionally for these files.
+coreRelback/templates/

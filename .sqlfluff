@@ -1,0 +1,27 @@
+[sqlfluff]
+# Relback project SQL linting configuration.
+# Large Oracle PL/SQL files are excluded via .sqlfluffignore.
+#
+# Dialect is set to ansi for the small utility SQL files (migrations, diagnostics).
+# Oracle PL/SQL stored procedures are excluded via .sqlfluffignore.
+dialect = ansi
+
+# Disable rules that produce false positives or are inappropriate for
+# Oracle-style migration / diagnostic SQL in this project:
+#
+#  L016 / L036  — excluded in CI (already in exclude list)
+#  RF02         — unqualified multi-table column references (Oracle join style)
+#  RF03         — unqualified single-table references (Oracle catalog queries)
+#  AL01         — implicit table aliasing (Oracle: table_name alias, no AS keyword)
+#  AL02         — implicit column aliasing (Oracle: expr col_name, no AS keyword)
+#  AL09         — self-aliasing columns
+#  ST06         — SELECT field ordering (wildcards vs expressions)
+#  LT14         — WHERE keyword must start new line (single-line queries)
+exclude_rules = L016,L036,RF02,RF03,RF04,AL01,AL02,AL09,ST06,LT14,AM04,CP03
+
+[sqlfluff:layout:type:comma]
+spacing_after = single
+
+[sqlfluff:indentation]
+indent_unit = space
+tab_space_size = 4

@@ -51,12 +51,9 @@ jobs:
         run: pip install sqlfluff
 
       - name: Lint SQL scripts in databaseProject/
-        run: |
-          sqlfluff lint databaseProject/ \
-            --dialect ansi \
-            --exclude-rules L016,L036 || true
-        # 'true' makes non-zero exit non-blocking until rules are confirmed
-        # Remove '|| true' once baseline is established
+        # Config and exclusions are read from .sqlfluff and .sqlfluffignore at repo root.
+        # Oracle PL/SQL files are excluded via .sqlfluffignore; see that file for rationale.
+        run: sqlfluff lint databaseProject/
 
   tailwind-build:
     name: Tailwind CSS Build Sensor (Node 20)
