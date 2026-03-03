@@ -1,0 +1,39 @@
+version: "3.9"
+
+# ---------------------------------------------------------------------------
+#  relback — production-mode compose
+#
+#  Quick start (Demo / SQLite mode):
+#    1. cp .env.example .env  && edit DJANGO_SECRET_KEY
+#    2. docker compose up --build
+#    3. docker compose exec web python manage.py seed_demo
+#    4. Open http://localhost:8000  |  login: admin / demo1234
+#
+#  Oracle production mode:
+#    Set DB_ENGINE, DB_NAME, DB_USER … and ORACLE_CATALOG_* in .env
+# ---------------------------------------------------------------------------
+
+services:
+  web:
+    build: .
+    image: relback:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: projectRelback.settings_prod
+    volumes:
+      # Persist SQLite database (ignored in Oracle mode)
+      - relback_db:/app/db.sqlite3
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/login/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  relback_db:
