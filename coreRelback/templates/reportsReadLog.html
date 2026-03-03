@@ -4,80 +4,82 @@
 
 {% block content %}
 <div class="container mx-auto px-4 mt-5">
-    <h1 class="mb-4">Report Backup Policy Detail</h1>
+  <h1 class="mb-4">Report Backup Policy Detail</h1>
 
+  <div class="overflow-x-auto">
+    <table class="table table-xs w-full">
+      <tbody>
+        <tr>
+          <th>ID Policy</th>
+          <td>{{ policyDetail.id_policy }}</td>
+          <th>Policy Name</th>
+          <td>{{ policyDetail.policy_name }}</td>
+        </tr>
+        <tr>
+          <th>Status</th>
+          <td>{{ policyDetail.status }}</td>
+          <th>Backup Type</th>
+          <td>{{ policyDetail.backup_type }}</td>
+        </tr>
+        <tr>
+          <th>Client</th>
+          <td>{{ policyDetail.client.name }}</td>
+          <th>Database (DB_NAME)</th>
+          <td>{{ policyDetail.database.db_name }}</td>
+        </tr>
+        <tr>
+          <th>Hostname</th>
+          <td>{{ policyDetail.host.hostname }}</td>
+          <th>Duration Estimated</th>
+          <td>{{ policyDetail.duration }} Minutes</td>
+        </tr>
+        <tr>
+          <th>Size Backup Estimated</th>
+          <td>{{ policyDetail.size_backup }}</td>
+          <th>Duration Realized</th>
+          <td>{{ execDetail.time_taken_display }} H:M:S</td>
+        </tr>
+        <tr>
+          <th>Size Backup Realized</th>
+          <td>{{ execDetail.output_bytes_display }}</td>
+          <th colspan="2"></th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-5">
+    <div class="text-center mb-3">
+      <h4>Log of the Backup Execution (RMAN Output)</h4>
+    </div>
     <div class="overflow-x-auto">
-        <table class="table table-xs w-full">
-            <tbody>
-                <tr>
-                    <th>ID Policy</th>
-                    <td>{{ policyDetail.id_policy }}</td>
-                    <th>Policy Name</th>
-                    <td>{{ policyDetail.policy_name }}</td>
-                </tr>
-                <tr>
-                    <th>Status</th>
-                    <td>{{ policyDetail.status }}</td>
-                    <th>Backup Type</th>
-                    <td>{{ policyDetail.backup_type }}</td>
-                </tr>
-                <tr>
-                    <th>Client</th>
-                    <td>{{ policyDetail.client.name }}</td>
-                    <th>Database (DB_NAME)</th>
-                    <td>{{ policyDetail.database.db_name }}</td>
-                </tr>
-                <tr>
-                    <th>Hostname</th>
-                    <td>{{ policyDetail.host.hostname }}</td>
-                    <th>Duration Estimated</th>
-                    <td>{{ policyDetail.duration }} Minutes</td>
-                </tr>
-                <tr>
-                    <th>Size Backup Estimated</th>
-                    <td>{{ policyDetail.size_backup }}</td>
-                    <th>Duration Realized</th>
-                    <td>{{ execDetail.time_taken_display }} H:M:S</td>
-                </tr>
-                <tr>
-                    <th>Size Backup Realized</th>
-                    <td>{{ execDetail.output_bytes_display }}</td>
-                    <th colspan="2"></th>
-                </tr>
-            </tbody>
-        </table>
+      <table class="table table-xs table-zebra w-full">
+        <thead>
+          <tr>
+            <th>RECID</th>
+            <th>RMAN Output</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rl in reportLog %}
+          <tr>
+            <td>{{ rl.recid }}</td>
+            <td>{{ rl.output }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="2" class="text-center">No log entries found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
 
-    <div class="mt-5">
-        <div class="text-center mb-3">
-            <h4>Log of the Backup Execution (RMAN Output)</h4>
-        </div>
-        <div class="overflow-x-auto">
-            <table class="table table-xs table-zebra w-full">
-                <thead>
-                    <tr>
-                        <th>RECID</th>
-                        <th>RMAN Output</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for rl in reportLog %}
-                    <tr>
-                        <td>{{ rl.recid }}</td>
-                        <td>{{ rl.output }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="2" class="text-center">No log entries found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="mt-4">
-        <a href="{% url 'coreRelback:report-read' %}" class="btn btn-outline">Back</a>
-    </div>
+  <div class="mt-4">
+    <a href="{% url 'coreRelback:report-read' %}" class="btn btn-outline"
+      >Back</a
+    >
+  </div>
 </div>
 {% endblock %}
