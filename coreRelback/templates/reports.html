@@ -7,14 +7,24 @@
 <div class="md-container-fluid">
     <!-- Page Header -->
     <div class="md-grid md-grid-cols-1 md-mb-5">
-        <div class="md-card md-p-5">
-            <div class="md-flex md-items-center md-justify-between">
+        <div class="md-card page-header">
+            <div class="md-flex md-justify-between md-items-center">
                 <div class="md-flex md-items-center">
-                    <i class="material-icons md-me-3" style="font-size: 56px; color: var(--oracle-red);">assessment</i>
+                    <i class="material-icons page-header-icon">assessment</i>
                     <div>
-                        <h1 class="h2 md-mb-1">Backup Reports</h1>
-                        <p class="md-text-muted md-mb-0" style="font-size: 1.1rem;">Monitor backup jobs and system status</p>
+                        <h1 class="page-title">Backup Reports</h1>
+                        <p class="page-subtitle">Monitor backup jobs and system status</p>
                     </div>
+                </div>
+                <div class="page-actions">
+                    <button type="button" class="md-btn md-btn-outlined" onclick="refreshReports()">
+                        <i class="material-icons md-me-1">refresh</i>
+                        Refresh
+                    </button>
+                    <button type="button" class="md-btn md-btn-primary" onclick="exportReports()">
+                        <i class="material-icons md-me-1">download</i>
+                        Export
+                    </button>
                 </div>
             </div>
         </div>
@@ -22,131 +32,156 @@
     
     <!-- Stats Cards -->
     <div class="md-grid md-grid-cols-4 md-mb-5">
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ jobs|length }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Total Jobs</p>
+                    <h2 class="stats-title">{{ jobs|length }}</h2>
+                    <p class="stats-subtitle">Total Jobs</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">assignment</i>
+                <i class="material-icons-round stats-card-icon">assignment</i>
             </div>
         </div>
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ successful_jobs|default:0 }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Successful</p>
+                    <h2 class="stats-title">{{ successful_jobs|default:0 }}</h2>
+                    <p class="stats-subtitle">Successful</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">check_circle</i>
+                <i class="material-icons-round stats-card-icon">check_circle</i>
             </div>
         </div>
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ failed_jobs|default:0 }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Failed</p>
+                    <h2 class="stats-title">{{ failed_jobs|default:0 }}</h2>
+                    <p class="stats-subtitle">Failed</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">error</i>
+                <i class="material-icons-round stats-card-icon">error</i>
             </div>
         </div>
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ today_jobs|default:0 }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Today</p>
+                    <h2 class="stats-title">{{ today_jobs|default:0 }}</h2>
+                    <p class="stats-subtitle">Today's Jobs</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">today</i>
+                <i class="material-icons-round stats-card-icon">today</i>
             </div>
         </div>
     </div>
 
     <!-- Search and Filters -->
-    <div class="md-grid md-grid-cols-1 md-gap-5 md-mb-5">
-        <div class="md-card md-p-5">
+    <div class="md-grid md-grid-cols-1 md-mb-5 search-section">
+        <div class="md-card search-container">
             <div class="md-flex md-items-center md-mb-4">
-                <i class="material-icons md-me-3" style="font-size: 24px; color: var(--md-primary);">filter_list</i>
-                <h6 class="md-mb-0">Search Filters</h6>
+                <i class="material-icons md-me-3" style="font-size: 24px; color: #C74634;">filter_list</i>
+                <h6 class="md-mb-0">Smart Filters</h6>
+                <div class="md-ms-auto">
+                    <button type="button" class="md-btn md-btn-text" id="clearAllFilters" style="color: #697778;">
+                        <i class="material-icons md-me-1">clear_all</i>
+                        Clear All
+                    </button>
+                </div>
             </div>
-            <form method="get" id="filterForm">
-                <div class="md-grid md-grid-cols-12 md-gap-4">
-                    <div class="md-col-span-3">
-                        <label for="policy_name" class="md-form-label">Policy Name</label>
-                        <select class="md-form-control" name="policy_name" id="policy_name" data-placeholder="Select or type policy...">
-                            <option value="">All Policies</option>
-                            {% for policy in all_policies %}
-                            <option value="{{ policy }}" {% if request.GET.policy_name == policy %}selected{% endif %}>
-                                {{ policy }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="md-col-span-3">
-                        <label for="hostname" class="md-form-label">Hostname</label>
-                        <select class="md-form-control" name="hostname" id="hostname" data-placeholder="Select or type hostname...">
-                            <option value="">All Hosts</option>
-                            {% for host in all_hosts %}
-                            <option value="{{ host }}" {% if request.GET.hostname == host %}selected{% endif %}>
-                                {{ host }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="md-col-span-3">
-                        <label for="db_name" class="md-form-label">Database</label>
-                        <select class="md-form-control" name="db_name" id="db_name" data-placeholder="Select or type database...">
-                            <option value="">All Databases</option>
-                            {% for db in all_databases %}
-                            <option value="{{ db }}" {% if request.GET.db_name == db %}selected{% endif %}>
-                                {{ db }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="md-col-span-3">
-                        <label for="backup_type" class="md-form-label">Backup Type</label>
-                        <select class="md-form-control" name="backup_type" id="backup_type" data-placeholder="Select backup type...">
-                            <option value="">All Types</option>
-                            {% for type in all_backup_types %}
-                            <option value="{{ type }}" {% if request.GET.backup_type == type %}selected{% endif %}>
-                                {{ type }}
-                            </option>
-                            {% endfor %}
-                        </select>
+            
+            <!-- Advanced Filters -->
+            <div class="filters-grid">
+                <div class="filter-item">
+                    <label for="policy_name" class="filter-label">Policy</label>
+                    <select class="filter-select" name="policy_name" id="policy_name" data-placeholder="All Policies">
+                        <option value="">All Policies</option>
+                        {% for policy in all_policies %}
+                        <option value="{{ policy }}" {% if request.GET.policy_name == policy %}selected{% endif %}>
+                            {{ policy }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="hostname" class="filter-label">Host</label>
+                    <select class="filter-select" name="hostname" id="hostname" data-placeholder="All Hosts">
+                        <option value="">All Hosts</option>
+                        {% for host in all_hosts %}
+                        <option value="{{ host }}" {% if request.GET.hostname == host %}selected{% endif %}>
+                            {{ host }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="db_name" class="filter-label">Database</label>
+                    <select class="filter-select" name="db_name" id="db_name" data-placeholder="All Databases">
+                        <option value="">All Databases</option>
+                        {% for db in all_databases %}
+                        <option value="{{ db }}" {% if request.GET.db_name == db %}selected{% endif %}>
+                            {{ db }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="backup_type" class="filter-label">Type</label>
+                    <select class="filter-select" name="backup_type" id="backup_type" data-placeholder="All Types">
+                        <option value="">All Types</option>
+                        {% for type in all_backup_types %}
+                        <option value="{{ type }}" {% if request.GET.backup_type == type %}selected{% endif %}>
+                            {{ type }}
+                        </option>
+                        {% endfor %}
+                    </select>Select Date Range
+                </div>
+                
+                <div class="filter-item">
+                    <label for="status_filter" class="filter-label">Status</label>
+                    <select class="filter-select" name="status_filter" id="status_filter" data-placeholder="All Status">
+                        <option value="">All Status</option>
+                        <option value="COMPLETED" {% if request.GET.status_filter == "COMPLETED" %}selected{% endif %}>Completed</option>
+                        <option value="FAILED" {% if request.GET.status_filter == "FAILED" %}selected{% endif %}>Failed</option>
+                        <option value="RUNNING" {% if request.GET.status_filter == "RUNNING" %}selected{% endif %}>Running</option>
+                    </select>
+                </div>
+                
+                <div class="filter-item">
+                    <label for="date_range_filter" class="filter-label">Date Range</label>
+                    <div class="date-range-input">
+                        <input type="text" class="filter-input" id="date_range_filter" 
+                               placeholder="Click to select date range..." readonly 
+                               onclick="openDateRangePicker()">
+                        <i class="material-icons date-icon">date_range</i>
                     </div>
                 </div>
-                <div class="md-grid md-grid-cols-12 md-gap-4 md-mt-4">
-                    <div class="md-col-span-6">
-                        <div class="md-flex md-gap-3">
-                            <button type="submit" class="md-btn md-btn-primary" style="padding: 0.75rem 1.5rem; font-size: 1rem;" title="Apply Filters">
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">search</i>
-                                Apply
-                            </button>
-                            <a href="{% url 'coreRelback:report-read' %}" class="md-btn md-btn-outlined" style="padding: 0.75rem 1.5rem; font-size: 1rem;" title="Clear Filters">
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">clear</i>
-                                Clear
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
     <!-- Messages -->
     <div id="messageContainer"></div>
 
-    <!-- Date Controls and Generation -->
+    <!-- Schedule Generation -->
     <div class="md-grid md-grid-cols-1 md-gap-5 md-mb-5">
-        <div class="md-card md-p-5">
+        <div class="md-card md-p-4">
             <div class="md-flex md-items-center md-mb-4">
-                <i class="material-icons md-me-3" style="font-size: 24px; color: var(--md-primary);">event</i>
-                <h6 class="md-mb-0">Schedule Generation & Date Controls</h6>
+                <i class="material-icons md-me-3" style="font-size: 24px; color: #4C7AA5;">event</i>
+                <h6 class="md-mb-0">Schedule Generation</h6>
+                <div class="md-ms-auto">
+                    <span class="md-badge" style="background: rgba(76, 122, 165, 0.1); color: #4C7AA5; font-size: 0.75rem;">
+                        <i class="material-icons md-me-1" style="font-size: 14px;">info</i>
+                        Generate backup schedules for specific periods
+                    </span>
+                </div>
             </div>
-            <div class="md-grid md-grid-cols-12 md-gap-4 md-items-end">
-                <!-- Controle de dias gerados -->
-                <div class="md-col-span-3">
-                    <label for="generated_days" class="md-form-label">Generated Days</label>
-                    <select class="md-form-control" name="days" id="generated_days">
+            
+            <div class="schedule-controls-grid">
+                <!-- Quick Period Selection -->
+                <div class="schedule-control-item">
+                    <label for="generated_days" class="schedule-label">
+                        <i class="material-icons md-me-1">schedule</i>
+                        Quick Period
+                    </label>
+                    <select class="schedule-select" name="days" id="generated_days">
                         <option value="2" {% if request.GET.days == "2" %}selected{% endif %}>Today + Tomorrow</option>
                         <option value="7" {% if request.GET.days == "7" %}selected{% endif %}>Next 7 Days</option>
                         <option value="30" {% if request.GET.days == "30" %}selected{% endif %}>Next 30 Days</option>
@@ -154,28 +189,31 @@
                     </select>
                 </div>
                 
-                <!-- Calendário moderno -->
-                <div class="md-col-span-6">
-                    <label class="md-form-label">Date Range</label>
-                    <div class="date-range-picker">
-                        <div class="md-input-group">
-                            <input type="text" class="md-form-control" id="dateRange" name="date_range" 
-                                   placeholder="Select date range..." readonly 
-                                   value="{% if request.GET.start_date and request.GET.end_date %}{{ request.GET.start_date }} - {{ request.GET.end_date }}{% endif %}">
-                            <button class="md-btn md-btn-outlined" type="button" id="clearDates" title="Clear Dates" style="padding: 0.75rem;">
-                                <i class="material-icons" style="font-size: 16px;">clear</i>
-                            </button>
-                        </div>
-                        <input type="hidden" name="start_date" id="start_date" value="{{ request.GET.start_date }}">
-                        <input type="hidden" name="end_date" id="end_date" value="{{ request.GET.end_date }}">
+                <!-- Custom Date Range -->
+                <div class="schedule-control-item schedule-date-range">
+                    <label class="schedule-label">
+                        <i class="material-icons md-me-1">date_range</i>
+                        Custom Range
+                    </label>
+                    <div class="custom-date-range">
+                        <input type="text" class="schedule-input" id="dateRange" name="date_range" 
+                               placeholder="Click to select custom range..." readonly 
+                               onclick="openDateRangePicker()"
+                               value="{% if request.GET.start_date and request.GET.end_date %}{{ request.GET.start_date }} - {{ request.GET.end_date }}{% endif %}">
+                        <button type="button" class="clear-dates-btn" id="clearDates" title="Clear Custom Range">
+                            <i class="material-icons">clear</i>
+                        </button>
                     </div>
+                    <input type="hidden" name="start_date" id="start_date" value="{{ request.GET.start_date }}">
+                    <input type="hidden" name="end_date" id="end_date" value="{{ request.GET.end_date }}">
                 </div>
                 
-                <!-- Botão de geração -->
-                <div class="md-col-span-3">
-                    <button type="button" class="md-btn md-btn-success md-w-full" onclick="generateSchedules()" title="Generate Schedules" style="padding: 0.75rem 1.5rem; font-size: 1rem;">
-                        <i class="material-icons md-me-2" style="vertical-align: middle;">event</i>
-                        Generate
+                <!-- Generate Button -->
+                <div class="schedule-control-item">
+                    <label class="schedule-label" style="opacity: 0;">Action</label>
+                    <button type="button" class="schedule-generate-btn" onclick="generateSchedules()">
+                        <i class="material-icons md-me-2">event</i>
+                        Generate Schedules
                     </button>
                 </div>
             </div>
@@ -186,7 +224,7 @@
     <div class="modal fade" id="datePickerModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
-                <div class="modal-header md-bg-primary" style="color: white;">
+                <div class="modal-header" style="background: var(--oracle-info-gradient); color: white;">
                     <h5 class="modal-title">
                         <i class="material-icons md-me-2" style="vertical-align: middle;">date_range</i>
                         Select Date Range
@@ -410,6 +448,145 @@
 
 {% block extra_js %}
 <style>
+/* Enhanced Filters Styling */
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    align-items: end;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.filter-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--oracle-slate-150);
+    margin-bottom: 0;
+}
+
+.filter-select,
+.filter-input {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    font-size: 0.95rem;
+    background: var(--background-card);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    min-height: 48px;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+    border-color: #C74634;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(199, 70, 52, 0.1);
+}
+
+.date-range-input {
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.date-range-input:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(199, 70, 52, 0.15);
+}
+
+.date-range-input .date-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--oracle-slate-100);
+    font-size: 20px;
+    pointer-events: none;
+    transition: color 0.3s ease;
+}
+
+.date-range-input:hover .date-icon {
+    color: #C74634;
+}
+
+.date-range-input .filter-input {
+    padding-right: 45px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.date-range-input .filter-input:focus {
+    border-color: #C74634;
+    box-shadow: 0 0 0 3px rgba(199, 70, 52, 0.1);
+}
+
+/* Quick Search Enhancement */
+.autocomplete-container {
+    position: relative;
+    margin-bottom: 0;
+}
+
+.autocomplete-container .md-input {
+    padding: 0.875rem 3rem 0.875rem 1rem;
+    font-size: 1rem;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border-light);
+    background: var(--background-card);
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.autocomplete-container .md-input:focus {
+    border-color: #C74634;
+    box-shadow: 0 0 0 3px rgba(199, 70, 52, 0.1);
+}
+
+.autocomplete-container .search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--oracle-slate-100);
+    pointer-events: none;
+}
+
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--background-card);
+    border: 1px solid var(--border-light);
+    border-top: none;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+}
+
+.autocomplete-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-light);
+    transition: background-color 0.2s ease;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.active {
+    background-color: rgba(199, 70, 52, 0.1);
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
 /* Material Design Input Group */
 .md-input-group {
     display: flex;
@@ -446,6 +623,26 @@
     border-color: var(--md-primary);
     outline: 0;
     box-shadow: 0 0 0 0.25rem rgba(var(--md-primary-rgb), 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .filters-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .filters-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
 }
 /* Searchable Select Styles */
 .searchable-select-container {
@@ -519,14 +716,149 @@
     color: var(--md-on-surface-variant);
 }
 
+/* Schedule Controls Styling */
+.schedule-controls-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    gap: 1.5rem;
+    align-items: end;
+}
+
+.schedule-control-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.schedule-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4C7AA5;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.schedule-select,
+.schedule-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #E4F1F7;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+    color: #3C677D;
+    transition: all 0.3s ease;
+    min-height: 48px;
+}
+
+.schedule-select:focus,
+.schedule-input:focus {
+    border-color: #4C7AA5;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 122, 165, 0.1);
+}
+
+.schedule-date-range {
+    position: relative;
+}
+
+.custom-date-range {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.custom-date-range .schedule-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+    cursor: pointer;
+    flex: 1;
+}
+
+.clear-dates-btn {
+    background: #f8f9fa;
+    border: 2px solid #E4F1F7;
+    border-left: none;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    padding: 0.75rem;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clear-dates-btn:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.schedule-generate-btn {
+    background: linear-gradient(135deg, #1E3324 0%, #4C634C 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+}
+
+.schedule-generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 51, 36, 0.3);
+}
+
 /* Calendar Styles */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+}
+
+.calendar-nav-btn {
+    background: none;
+    border: 1px solid #E4F1F7;
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: #4C7AA5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-nav-btn:hover {
+    background: #E4F1F7;
+    border-color: #4C7AA5;
+}
+
+.calendar-month-title {
+    font-weight: 600;
+    color: #3C677D;
+    margin: 0;
+    min-width: 200px;
+    text-align: center;
+}
+
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
-    background-color: rgba(var(--md-outline-rgb), 0.12);
+    gap: 2px;
+    background-color: #E4F1F7;
     border-radius: 8px;
     overflow: hidden;
+    padding: 2px;
 }
 
 .calendar-day {
@@ -609,8 +941,150 @@
     border-radius: 4px !important;
 }
 
+/* Schedule Controls Styling */
+.schedule-controls-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr auto;
+    gap: 1.5rem;
+    align-items: end;
+}
+
+.schedule-control-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.schedule-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4C7AA5;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.schedule-select,
+.schedule-input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #E4F1F7;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background: white;
+    color: #3C677D;
+    transition: all 0.3s ease;
+    min-height: 48px;
+}
+
+.schedule-select:focus,
+.schedule-input:focus {
+    border-color: #4C7AA5;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 122, 165, 0.1);
+}
+
+.custom-date-range {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.custom-date-range .schedule-input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+    cursor: pointer;
+    flex: 1;
+}
+
+.clear-dates-btn {
+    background: #f8f9fa;
+    border: 2px solid #E4F1F7;
+    border-left: none;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    padding: 0.75rem;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clear-dates-btn:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.schedule-generate-btn {
+    background: linear-gradient(135deg, #1E3324 0%, #4C634C 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+}
+
+.schedule-generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 51, 36, 0.3);
+}
+
+/* Calendar Modal Styles */
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+}
+
+.calendar-nav-btn {
+    background: none;
+    border: 1px solid #E4F1F7;
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: #4C7AA5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-nav-btn:hover {
+    background: #E4F1F7;
+    border-color: #4C7AA5;
+}
+
+.calendar-month-title {
+    font-weight: 600;
+    color: #3C677D;
+    margin: 0;
+    min-width: 200px;
+    text-align: center;
+}
+
 /* Responsive improvements */
+@media (max-width: 1200px) {
+    .schedule-controls-grid {
+        grid-template-columns: 1fr 1fr auto;
+    }
+}
+
 @media (max-width: 768px) {
+    .schedule-controls-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
     .md-grid-cols-4 {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -801,13 +1275,9 @@ function initSearchableSelects() {
 // Calendário moderno estilo Skyscanner
 function initCalendar() {
     const dateRangeInput = document.getElementById('dateRange');
+    const filterDateRangeInput = document.getElementById('date_range_filter');
     
-    console.log('Initializing calendar...', dateRangeInput);
-    
-    if (!dateRangeInput) {
-        console.error('dateRange input not found!');
-        return;
-    }
+    console.log('Initializing calendar...', dateRangeInput, filterDateRangeInput);
     
     // Check if Bootstrap Modal is available
     if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
@@ -823,11 +1293,22 @@ function initCalendar() {
     
     const modal = new bootstrap.Modal(modalElement);
     
-    dateRangeInput.addEventListener('click', () => {
-        console.log('Date range input clicked');
-        renderCalendar();
-        modal.show();
-    });
+    // Add click handlers for both date inputs
+    if (dateRangeInput) {
+        dateRangeInput.addEventListener('click', () => {
+            console.log('Date range input clicked');
+            renderCalendar();
+            modal.show();
+        });
+    }
+    
+    if (filterDateRangeInput) {
+        filterDateRangeInput.addEventListener('click', () => {
+            console.log('Filter date range input clicked');
+            renderCalendar();
+            modal.show();
+        });
+    }
     
     const clearDatesBtn = document.getElementById('clearDates');
     if (clearDatesBtn) {
@@ -865,9 +1346,25 @@ function initCalendar() {
             if (selectedStartDate && selectedEndDate) {
                 const start = formatDate(selectedStartDate);
                 const end = formatDate(selectedEndDate);
-                dateRangeInput.value = `${start} - ${end}`;
-                document.getElementById('start_date').value = formatDateForInput(selectedStartDate);
-                document.getElementById('end_date').value = formatDateForInput(selectedEndDate);
+                
+                // Update both date inputs
+                if (dateRangeInput) {
+                    dateRangeInput.value = `${start} - ${end}`;
+                }
+                if (filterDateRangeInput) {
+                    filterDateRangeInput.value = `${start} - ${end}`;
+                }
+                
+                // Update hidden fields if they exist
+                const startDateField = document.getElementById('start_date');
+                const endDateField = document.getElementById('end_date');
+                if (startDateField) startDateField.value = formatDateForInput(selectedStartDate);
+                if (endDateField) endDateField.value = formatDateForInput(selectedEndDate);
+                
+                // Apply filter if in filter mode
+                currentFilters.date_range = { start: selectedStartDate, end: selectedEndDate };
+                applyFilters();
+                
                 console.log('Dates applied:', start, end);
             }
             modal.hide();
@@ -880,6 +1377,8 @@ function initCalendar() {
 function renderCalendar() {
     const grid = document.getElementById('calendarGrid');
     const monthDisplay = document.getElementById('currentMonth');
+    const selectedRangeDisplay = document.getElementById('selectedRangeDisplay');
+    const applyBtn = document.getElementById('applyDates');
     
     if (!grid || !monthDisplay) {
         console.error('Calendar elements not found!');
@@ -893,6 +1392,17 @@ function renderCalendar() {
         month: 'long', 
         year: 'numeric' 
     }).format(currentCalendarDate);
+    
+    // Update selected range display
+    if (selectedStartDate && selectedEndDate) {
+        const rangeText = `${formatDate(selectedStartDate)} - ${formatDate(selectedEndDate)}`;
+        document.getElementById('selectedRangeText').textContent = rangeText;
+        selectedRangeDisplay.style.display = 'block';
+        applyBtn.disabled = false;
+    } else {
+        selectedRangeDisplay.style.display = 'none';
+        applyBtn.disabled = true;
+    }
     
     // Clear grid
     grid.innerHTML = '';
@@ -997,6 +1507,28 @@ function formatDateForInput(date) {
     return date.toISOString().split('T')[0];
 }
 
+function openDateRangePicker() {
+    console.log('Opening date range picker...');
+    
+    // Check if Bootstrap Modal is available
+    if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
+        console.error('Bootstrap Modal not available!');
+        alert('Date picker requires Bootstrap. Please refresh the page.');
+        return;
+    }
+    
+    const modalElement = document.getElementById('datePickerModal');
+    if (!modalElement) {
+        console.error('datePickerModal not found!');
+        alert('Date picker modal not found. Please refresh the page.');
+        return;
+    }
+    
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    renderCalendar();
+    modal.show();
+}
+
 function generateSchedules() {
     const days = document.getElementById('generated_days').value || '2';
     const startDate = document.getElementById('start_date').value;
@@ -1064,6 +1596,316 @@ function downloadLogs() {
     showMessage('Log download functionality will be implemented soon', 'info');
 }
 
+// Global variables for dynamic filtering
+let allReportsData = [];
+let filteredReportsData = [];
+let currentFilters = {
+    quickSearch: '',
+    policy_name: '',
+    hostname: '',
+    db_name: '',
+    backup_type: '',
+    status_filter: '',
+    date_range: null
+};
+
+// Initialize reports data from the page
+function initializeReportsData() {
+    const tableRows = document.querySelectorAll('#tableReport tbody tr:not(.empty-state)');
+    allReportsData = [];
+    
+    tableRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 9) {
+            allReportsData.push({
+                element: row,
+                policy_name: cells[0].textContent.trim(),
+                hostname: cells[1].textContent.trim(),
+                db_name: cells[2].textContent.trim(),
+                backup_type: cells[3].textContent.trim(),
+                start_time: cells[4].textContent.trim(),
+                end_time: cells[5].textContent.trim(),
+                status: cells[6].textContent.trim(),
+                duration: cells[7].textContent.trim(),
+                size: cells[8].textContent.trim()
+            });
+        }
+    });
+    
+    filteredReportsData = [...allReportsData];
+    console.log('Initialized reports data:', allReportsData.length, 'items');
+}
+
+// Apply all filters
+function applyFilters() {
+    filteredReportsData = allReportsData.filter(item => {
+        // Quick search filter
+        if (currentFilters.quickSearch) {
+            const searchTerm = currentFilters.quickSearch.toLowerCase();
+            const searchableText = [
+                item.policy_name,
+                item.hostname,
+                item.db_name,
+                item.backup_type,
+                item.status
+            ].join(' ').toLowerCase();
+            
+            if (!searchableText.includes(searchTerm)) {
+                return false;
+            }
+        }
+        
+        // Specific field filters
+        if (currentFilters.policy_name && item.policy_name !== currentFilters.policy_name) {
+            return false;
+        }
+        
+        if (currentFilters.hostname && item.hostname !== currentFilters.hostname) {
+            return false;
+        }
+        
+        if (currentFilters.db_name && item.db_name !== currentFilters.db_name) {
+            return false;
+        }
+        
+        if (currentFilters.backup_type && item.backup_type !== currentFilters.backup_type) {
+            return false;
+        }
+        
+        if (currentFilters.status_filter) {
+            const itemStatus = item.status.toUpperCase();
+            if (!itemStatus.includes(currentFilters.status_filter.toUpperCase())) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+    
+    updateTableDisplay();
+    updateStats();
+}
+
+// Update table display
+function updateTableDisplay() {
+    const tbody = document.querySelector('#tableReport tbody');
+    const emptyState = tbody.querySelector('.empty-state');
+    
+    // Hide all rows first
+    allReportsData.forEach(item => {
+        item.element.style.display = 'none';
+    });
+    
+    // Show filtered rows
+    if (filteredReportsData.length > 0) {
+        filteredReportsData.forEach(item => {
+            item.element.style.display = '';
+            item.element.style.animation = 'fadeIn 0.3s ease';
+        });
+        
+        if (emptyState) {
+            emptyState.style.display = 'none';
+        }
+    } else {
+        // Show empty state
+        if (!emptyState) {
+            const emptyRow = document.createElement('tr');
+            emptyRow.className = 'empty-state';
+            emptyRow.innerHTML = `
+                <td colspan="10" class="md-text-center md-py-6">
+                    <div class="md-text-muted">
+                        <i class="material-icons md-mb-3" style="font-size: 64px; color: #C74634;">search_off</i>
+                        <h5>No results found</h5>
+                        <p class="md-mb-3">Try adjusting your filters or search terms.</p>
+                        <button type="button" class="md-btn md-btn-outlined" onclick="clearAllFilters()">
+                            <i class="material-icons md-me-2">clear_all</i>
+                            Clear All Filters
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(emptyRow);
+        } else {
+            emptyState.style.display = '';
+        }
+    }
+}
+
+// Update stats cards
+function updateStats() {
+    const statsCards = document.querySelectorAll('.stats-title');
+    
+    if (statsCards.length >= 4) {
+        // Total Jobs
+        statsCards[0].textContent = filteredReportsData.length;
+        
+        // Successful Jobs
+        const successful = filteredReportsData.filter(item => 
+            item.status.toUpperCase().includes('COMPLETED')
+        ).length;
+        statsCards[1].textContent = successful;
+        
+        // Failed Jobs
+        const failed = filteredReportsData.filter(item => 
+            item.status.toUpperCase().includes('FAILED')
+        ).length;
+        statsCards[2].textContent = failed;
+        
+        // Today's Jobs (simplified)
+        const today = new Date().toLocaleDateString();
+        const todayJobs = filteredReportsData.filter(item => 
+            item.start_time.includes(today.split('/').reverse().join('/'))
+        ).length;
+        statsCards[3].textContent = todayJobs;
+    }
+}
+
+// Quick search autocomplete
+function initQuickSearch() {
+    const quickSearchInput = document.getElementById('quickSearch');
+    const autocompleteList = document.getElementById('quickSearchList');
+    let currentFocus = -1;
+    
+    if (!quickSearchInput || !autocompleteList) return;
+    
+    quickSearchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase().trim();
+        currentFilters.quickSearch = searchTerm;
+        
+        // Clear autocomplete list
+        autocompleteList.innerHTML = '';
+        currentFocus = -1;
+        
+        if (searchTerm.length < 2) {
+            autocompleteList.style.display = 'none';
+            applyFilters();
+            return;
+        }
+        
+        // Get unique suggestions from all data
+        const suggestions = new Set();
+        allReportsData.forEach(item => {
+            [item.policy_name, item.hostname, item.db_name, item.backup_type].forEach(field => {
+                if (field.toLowerCase().includes(searchTerm) && !suggestions.has(field)) {
+                    suggestions.add(field);
+                }
+            });
+        });
+        
+        // Show suggestions
+        const suggestionArray = Array.from(suggestions).slice(0, 5);
+        if (suggestionArray.length > 0) {
+            autocompleteList.style.display = 'block';
+            
+            suggestionArray.forEach((suggestion, index) => {
+                const item = document.createElement('div');
+                item.className = 'autocomplete-item';
+                item.innerHTML = `
+                    <div style="font-weight: 500;">${suggestion}</div>
+                    <div style="font-size: 0.85rem; color: #697778;">Found in reports data</div>
+                `;
+                item.addEventListener('click', function() {
+                    quickSearchInput.value = suggestion;
+                    currentFilters.quickSearch = suggestion.toLowerCase();
+                    autocompleteList.style.display = 'none';
+                    applyFilters();
+                });
+                autocompleteList.appendChild(item);
+            });
+        } else {
+            autocompleteList.style.display = 'none';
+        }
+        
+        // Apply filter in real-time
+        applyFilters();
+    });
+    
+    // Handle keyboard navigation
+    quickSearchInput.addEventListener('keydown', function(e) {
+        const items = autocompleteList.querySelectorAll('.autocomplete-item');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            currentFocus++;
+            if (currentFocus >= items.length) currentFocus = 0;
+            setActive(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            currentFocus--;
+            if (currentFocus < 0) currentFocus = items.length - 1;
+            setActive(items);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (currentFocus > -1 && items[currentFocus]) {
+                items[currentFocus].click();
+            }
+        } else if (e.key === 'Escape') {
+            autocompleteList.style.display = 'none';
+            currentFocus = -1;
+        }
+    });
+    
+    function setActive(items) {
+        items.forEach((item, index) => {
+            item.classList.toggle('active', index === currentFocus);
+        });
+    }
+    
+    // Close autocomplete when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!quickSearchInput.contains(e.target) && !autocompleteList.contains(e.target)) {
+            autocompleteList.style.display = 'none';
+        }
+    });
+}
+
+// Initialize filter dropdowns
+function initFilterDropdowns() {
+    const filterSelects = document.querySelectorAll('.filter-select');
+    
+    filterSelects.forEach(select => {
+        select.addEventListener('change', function() {
+            const filterName = this.name;
+            currentFilters[filterName] = this.value;
+            applyFilters();
+        });
+    });
+}
+
+// Clear all filters
+function clearAllFilters() {
+    // Reset all filter values
+    Object.keys(currentFilters).forEach(key => {
+        currentFilters[key] = '';
+    });
+    currentFilters.date_range = null;
+    
+    // Clear UI elements
+    document.getElementById('quickSearch').value = '';
+    document.querySelectorAll('.filter-select').forEach(select => {
+        select.value = '';
+    });
+    document.getElementById('date_range_filter').value = '';
+    
+    // Hide autocomplete
+    document.getElementById('quickSearchList').style.display = 'none';
+    
+    // Apply filters (will show all data)
+    applyFilters();
+}
+
+// Function to open date range picker
+function openDateRangePicker() {
+    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+        const modalElement = document.getElementById('datePickerModal');
+        if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            renderCalendar();
+            modal.show();
+        }
+    }
+}
+
 // Initialize components when page loads
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing components...');
@@ -1073,6 +1915,16 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Bootstrap is not loaded!');
         return;
     }
+    
+    // Initialize reports data first
+    initializeReportsData();
+    
+    // Initialize filter components
+    initQuickSearch();
+    initFilterDropdowns();
+    
+    // Clear all filters button
+    document.getElementById('clearAllFilters').addEventListener('click', clearAllFilters);
     
     // Initialize components with error handling
     try {
@@ -1100,35 +1952,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     console.log('Components initialized successfully');
-    
-    // Test filters functionality
-    setTimeout(() => {
-        const filterInputs = document.querySelectorAll('.search-input');
-        console.log('Found filter inputs:', filterInputs.length);
-        
-        filterInputs.forEach((input, index) => {
-            console.log(`Filter ${index + 1}:`, input.placeholder, 'Value:', input.value);
-        });
-        
-        // Check if select options are being populated
-        const selects = document.querySelectorAll('select[data-placeholder]');
-        console.log('Found selects with data-placeholder:', selects.length);
-        
-        selects.forEach((select, index) => {
-            console.log(`Select ${index + 1} (${select.name}):`, select.options.length, 'options');
-            console.log(`  Current value: "${select.value}"`);
-            for (let i = 0; i < Math.min(select.options.length, 5); i++) {
-                console.log(`  Option ${i}: "${select.options[i].textContent.trim()}" = "${select.options[i].value}"`);
-            }
-        });
-        
-        // Also check the searchable inputs that were created
-        const searchInputs = document.querySelectorAll('.search-input');
-        console.log('Found search inputs:', searchInputs.length);
-        searchInputs.forEach((input, index) => {
-            console.log(`Search input ${index + 1}:`, input.placeholder, '| Value:', `"${input.value}"`);
-        });
-    }, 2000);
 });
 
 // Auto-refresh every 30 seconds

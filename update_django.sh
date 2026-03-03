@@ -1,17 +1,23 @@
 #!/bin/bash
 
-# Script para atualizar Django
-echo "🚀 Iniciando atualização do Django..."
+# Script para atualizar dependências do projeto
+echo "🚀 Iniciando atualização das dependências..."
 
 # Ativar ambiente virtual
-source venvRelback/bin/activate
+if [ -f .venv/bin/activate ]; then
+	source .venv/bin/activate
+elif [ -f venvRelback/bin/activate ]; then
+	source venvRelback/bin/activate
+else
+	echo "❌ Ambiente virtual não encontrado (.venv ou venvRelback)."
+	exit 1
+fi
 
-echo "📦 Atualizando Django para 5.2.4..."
-pip install --upgrade django==5.2.4
+echo "📦 Atualizando pip..."
+pip install --upgrade pip
 
-echo "📦 Atualizando dependências..."
-pip install --upgrade django-tables2
-pip install --upgrade oracledb
+echo "📦 Atualizando dependências Python conforme requirements.txt..."
+pip install --upgrade -r requirements.txt
 
 echo "🔍 Verificando configurações..."
 python manage.py check --deploy
@@ -21,7 +27,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 echo "📋 Listando versões atuais..."
-pip list | grep -i django
+pip show Django oracledb django-tables2 | grep -E "^(Name|Version):"
 
 echo "✅ Atualização concluída!"
 echo "🧪 Execute 'python manage.py runserver' para testar"

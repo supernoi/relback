@@ -1,0 +1,163 @@
+name: Execution Task
+description: Operational sprint task with DoD, dependencies, and risk.
+title: "[NX-XXX] "
+labels:
+  - sprint
+  - execution
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for executable backlog tasks (NX-xxx).
+
+  - type: input
+    id: backlog_id
+    attributes:
+      label: Backlog ID
+      description: Backlog task ID (e.g., NX-203)
+      placeholder: NX-000
+    validations:
+      required: true
+
+  - type: dropdown
+    id: sprint
+    attributes:
+      label: Sprint/Semana
+      options:
+        - Week 1 (26 Fev - 04 Mar)
+        - Week 2 (05 Mar - 11 Mar)
+        - Week 3 (12 Mar - 18 Mar)
+        - Week 4 (19 Mar - 25 Mar)
+        - Week 5 (26 Mar - 01 Abr)
+        - Week 6 (02 Abr - 08 Abr)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: owner_role
+    attributes:
+      label: Owner (role)
+      options:
+        - BL (Backend Lead)
+        - SRE (SRE/DevOps)
+        - QA (QA Engineer)
+        - SEC (Security Engineer)
+        - TL (Tech Lead)
+    validations:
+      required: true
+
+  - type: input
+    id: estimate_hours
+    attributes:
+      label: Estimated effort (hours)
+      description: Working-hour estimate
+      placeholder: "8"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 (critical)
+        - P1 (high)
+        - P2 (medium)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: change_type
+    attributes:
+      label: Conventional Commit Type
+      description: Select the type used for related commits/PR title
+      options:
+        - feat (new functionality)
+        - fix (bug fix)
+        - docs (documentation only)
+        - style (formatting/style only)
+        - refactor (code refactor without feature/bug fix)
+        - perf (performance improvement)
+        - test (add/fix tests)
+        - build (build/dependency changes)
+        - ci (CI/CD changes)
+        - chore (maintenance)
+        - revert (revert previous commit)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope_area
+    attributes:
+      label: Scope area
+      description: Main technical domain for this task
+      options:
+        - api (Rust backend/API)
+        - db (PostgreSQL/migrations/queries)
+        - app (Flutter/mobile)
+        - ci (pipeline/tooling)
+        - docs (documentation)
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Problem/objective of the task
+      placeholder: Describe objective, scope, and impact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Technical scope
+      description: What will change
+      placeholder: Affected files, modules, and endpoints.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: NX IDs or blocking issue links
+      placeholder: NX-101, #123, ...
+
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of Done (DoD)
+      description: Objective criteria to close the task
+      placeholder: |
+        - [ ] Implementation completed
+        - [ ] Tests executed and passing
+        - [ ] Documentation updated
+    validations:
+      required: true
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and mitigation
+      description: Main risks and mitigation plan
+      placeholder: List technical/operational risks and mitigations.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Final checklist
+      options:
+        - label: I read the backlog and confirmed the correct NX ID
+          required: true
+        - label: I defined measurable DoD
+          required: true
+        - label: I recorded explicit dependencies
+          required: true
+        - label: Task content is fully written in English
+          required: true
+        - label: Task is linked to GitHub Project #3 when applicable
+          required: true
+        - label: Planned commits will follow `<type>(<scope>): <subject> (#issue)`
+          required: true

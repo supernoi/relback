@@ -776,10 +776,22 @@ body {
   color: #4A7F98;
 }
 
+.btn-action.btn-view {
+  background: rgba(76, 122, 165, 0.1);
+  border: 1px solid rgba(76, 122, 165, 0.3);
+  color: #4C7AA5;
+}
+
+.btn-action.btn-view:hover {
+  background: rgba(76, 122, 165, 0.2);
+  border-color: rgba(76, 122, 165, 0.5);
+  color: #3A6183;
+}
+
 .btn-action.btn-delete {
   background: rgba(199, 70, 52, 0.1);
   border: 1px solid rgba(199, 70, 52, 0.3);
-  color: #33553C;
+  color: #C74634;
 }
 
 .btn-action.btn-delete:hover {
@@ -995,14 +1007,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.edit-modal-header {
-  background: linear-gradient(to bottom, #36293C, #594564);
-}
-
-.add-modal-header {
-  background: linear-gradient(to bottom, #1E3324, #4C634C);
 }
 
 .custom-modal-title {
@@ -1267,12 +1271,20 @@ body {
 }
 
 /* ===== MODAL ICON AND TEXT STYLING ===== */
+.edit-modal-header {
+  background: linear-gradient(to bottom, #36293C, #594564);
+}
+
 .edit-modal-header .custom-modal-title i {
   color: #C74634;
 }
 
 .edit-modal-header .custom-modal-title span {
   color: #E7F2F5;
+}
+
+.add-modal-header {
+  background: linear-gradient(to bottom, #36293C, #594564);
 }
 
 .add-modal-header .custom-modal-title i {
@@ -1323,7 +1335,7 @@ body {
 }
 
 .btn-save-confirm {
-  background: #00688C;
+  background: var(--sky-120);
   color: white;
   border: none;
   padding: var(--spacing-sm) var(--spacing-lg);
@@ -1337,12 +1349,12 @@ body {
 }
 
 .btn-save-confirm:hover {
-  background: #06485F;
+  background: var(--sky-150);
   transform: translateY(-1px);
 }
 
 .btn-add-confirm {
-  background: var(--pine-100);
+  background: var(--sky-120);
   color: white;
   border: none;
   padding: var(--spacing-sm) var(--spacing-lg);
@@ -1356,7 +1368,7 @@ body {
 }
 
 .btn-add-confirm:hover {
-  background: var(--pine-140);
+  background: var(--sky-150);
   transform: translateY(-1px);
 }
 
@@ -1395,8 +1407,12 @@ body {
 
 /* ===== STATS CARDS ENHANCED ===== */
 .stats-card-content {
-  padding: var(--spacing-xl);
-  min-height: 140px;
+  /* padding: var(--spacing-md); */
+  padding-left: var(--spacing-lg);
+  padding-right: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  min-height: 100px;
 }
 
 .stats-card-icon {

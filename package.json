@@ -1,3 +1,13 @@
 {
-  "dependencies": {}
+  "dependencies": {
+    "angular": "1.8.3",
+    "angular-ui-bootstrap": "2.5.6",
+    "bootstrap": "5.3.8",
+    "bootstrap-icons": "1.13.1",
+    "datatables.net": "2.3.7",
+    "datatables.net-bs5": "2.3.7",
+    "jquery": "4.0.0",
+    "materialize-css": "1.0.0",
+    "moment": "2.30.1"
+  }
 }

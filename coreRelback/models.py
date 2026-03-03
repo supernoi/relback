@@ -39,7 +39,7 @@ class RelbackUser(models.Model):
         verbose_name = "Usuário"
         verbose_name_plural = "Usuários"
         constraints = [
-            models.CheckConstraint(check=models.Q(status__in=[1, 2]), name="ck_users_status")
+            models.CheckConstraint(condition=models.Q(status__in=[1, 2]), name="ck_users_status")
         ]
 
     def __str__(self):
@@ -233,17 +233,17 @@ class BackupPolicy(models.Model):
         verbose_name_plural = "Políticas de Backup"
         constraints = [
             models.CheckConstraint(
-                check=models.Q(backup_type__in=[
+                    condition=models.Q(backup_type__in=[
                     'ARCHIVELOG', 'DB FULL', 'DB INCR', 'RECVR AREA', 'BACKUPSET'
                 ]),
                 name="politica_de_backup_ck2"
             ),
             models.CheckConstraint(
-                check=models.Q(destination__in=['DISK', 'SBT_TAPE', '*']),
+                    condition=models.Q(destination__in=['DISK', 'SBT_TAPE', '*']),
                 name="politica_de_backup_ck3"
             ),
             models.CheckConstraint(
-                check=models.Q(status__in=['ACTIVE', 'INACTIVE']),
+                    condition=models.Q(status__in=['ACTIVE', 'INACTIVE']),
                 name="politica_de_backup_ck1"
             )
         ]

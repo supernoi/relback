@@ -7,183 +7,196 @@
 <div class="md-container-fluid">
     <!-- Page Header -->
     <div class="md-grid md-grid-cols-1 md-mb-5">
-        <div class="md-card md-p-5">
-            <div class="md-flex md-items-center md-justify-between">
+        <div class="md-card page-header">
+            <div class="md-flex md-justify-between md-items-center">
                 <div class="md-flex md-items-center">
-                    <i class="material-icons md-me-3" style="font-size: 56px; color: #C74634;">security</i>
+                    <i class="material-icons page-header-icon">security</i>
                     <div>
-                        <h1 class="h2 md-mb-1">Backup Policies</h1>
-                        <p class="md-text-muted md-mb-0" style="font-size: 1.1rem;">Manage backup schedules and retention policies</p>
+                        <h1 class="page-title">Backup Policies</h1>
+                        <p class="page-subtitle">Manage backup schedules and retention policies</p>
                     </div>
                 </div>
-                <a href="{% url 'coreRelback:policy-create' %}" class="md-btn md-btn-primary" style="padding: 0.8rem 1.5rem; font-size: 1rem;">
+                <button type="button" class="md-btn md-btn-primary page-actions" data-modal-target="#addPolicyModal">
                     <i class="material-icons md-me-1">add</i>
                     Create Policy
-                </a>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- Stats Cards -->
     <div class="md-grid md-grid-cols-4 md-mb-5">
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ total_policies }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Total Policies</p>
+                    <h2 class="stats-title">{{ total_policies }}</h2>
+                    <p class="stats-subtitle">Total Policies</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">security</i>
+                <i class="material-icons-round stats-card-icon">security</i>
             </div>
         </div>
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ active_policies|default:0 }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Active Policies</p>
+                    <h2 class="stats-title">{{ active_policies|default:0 }}</h2>
+                    <p class="stats-subtitle">Active Policies</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">play_circle</i>
+                <i class="material-icons-round stats-card-icon">play_circle</i>
             </div>
         </div>
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ inactive_policies|default:0 }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Inactive Policies</p>
+                    <h2 class="stats-title">{{ inactive_policies|default:0 }}</h2>
+                    <p class="stats-subtitle">Inactive Policies</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">pause_circle</i>
+                <i class="material-icons-round stats-card-icon">pause_circle</i>
             </div>
         </div>
-        <div class="md-card oracle-card-gradient" style="background: linear-gradient(to bottom, #1E2C35, #3C677D) !important; color: white !important; padding: var(--spacing-xl); min-height: 140px;">
+        <div class="md-card oracle-info-gradient stats-card-content">
             <div class="md-flex md-items-center md-justify-between">
                 <div>
-                    <h2 class="h3 md-mb-1">{{ scheduled_policies|default:0 }}</h2>
-                    <p class="md-mb-0 h6" style="opacity: 0.75;">Scheduled Today</p>
+                    <h2 class="stats-title">{{ scheduled_policies|default:0 }}</h2>
+                    <p class="stats-subtitle">Scheduled Policies</p>
                 </div>
-                <i class="material-icons" style="font-size: 3rem; opacity: 0.8;">schedule</i>
+                <i class="material-icons-round stats-card-icon">schedule</i>
             </div>
         </div>
     </div>
 
-    <!-- Search and Filters -->
-    <div class="md-grid md-grid-cols-1 md-gap-5 md-mb-5">
-        <div class="md-card md-p-5">
-            <div class="md-grid md-grid-cols-12 md-gap-5 md-items-center">
-                <div class="md-col-span-6">
-                    <div class="md-form-floating">
-                        <input type="text" class="md-form-control" id="searchPolicy" placeholder="Search policies...">
-                        <label for="searchPolicy">Search policies...</label>
-                    </div>
+    <!-- Search and Actions -->
+    <div class="md-grid md-grid-cols-1 md-mb-5 search-section">
+        <div class="md-card search-container">
+            <div class="search-grid">
+                <div class="autocomplete-container">
+                    <input type="text" class="md-input" id="searchPolicies" placeholder="Search policies by name, client, host, or type..." autocomplete="off">
+                    <i class="material-icons search-icon">search</i>
+                    <div class="autocomplete-list" id="autocompleteList"></div>
                 </div>
-                <div class="md-col-span-3">
-                    <button class="md-btn md-btn-outlined md-w-full" style="padding: 0.75rem 1rem; font-size: 1rem;">
-                        <i class="material-icons md-me-2" style="vertical-align: middle;">filter_list</i>
-                        Filters
-                    </button>
-                </div>
-                <div class="md-col-span-3">
-                    <button class="md-btn md-btn-text md-w-full" style="padding: 0.75rem 1rem; font-size: 1rem;">
-                        <i class="material-icons md-me-2" style="vertical-align: middle;">refresh</i>
-                        Refresh
-                    </button>
-                </div>
+                <button class="md-btn md-btn-text clean-btn" id="cleanBtn">
+                    <i class="material-icons">clear</i>
+                    Clean
+                </button>
             </div>
         </div>
     </div>    <!-- Policies Table -->
     <div class="md-grid md-grid-cols-1">
-        <div class="md-card">
-            <div class="md-table-responsive">
-                <table class="md-table md-mb-0" id="policiesTable">
+        <div class="md-card md-card-decorated">
+            {% if policies %}
+                <div class="md-table-responsive">
+                    <table class="md-table md-mb-0" id="policiesTable">
                         <thead>
                             <tr>
-                                <th>
-                                    <i class="material-icons md-me-2" style="vertical-align: middle;">policy</i>
-                                    Policy Name
+                                <th class="oracle-info-gradient">
+                                    <div class="table-header-content">
+                                        <i class="material-icons table-header-icon">policy</i>
+                                        <span class="table-header-text">Policy Details</span>
+                                    </div>
                                 </th>
-                                <th>
-                                    <i class="material-icons md-me-2" style="vertical-align: middle;">business</i>
-                                    Client
+                                <th class="oracle-info-gradient">
+                                    <div class="table-header-content">
+                                        <i class="material-icons table-header-icon">business</i>
+                                        <span class="table-header-text">Client</span>
+                                    </div>
                                 </th>
-                                <th>
-                                    <i class="material-icons md-me-2" style="vertical-align: middle;">storage</i>
-                                    Host
+                                <th class="oracle-info-gradient">
+                                    <div class="table-header-content">
+                                        <i class="material-icons table-header-icon">storage</i>
+                                        <span class="table-header-text">Host</span>
+                                    </div>
                                 </th>
-                                <th>
-                                    <i class="material-icons md-me-2" style="vertical-align: middle;">database</i>
-                                    Database
+                                <th class="oracle-info-gradient">
+                                    <div class="table-header-content">
+                                        <i class="material-icons table-header-icon">database</i>
+                                        <span class="table-header-text">Database</span>
+                                    </div>
                                 </th>
-                                <th>
-                                    <i class="material-icons md-me-2" style="vertical-align: middle;">backup</i>
-                                    Type
+                                <th class="oracle-info-gradient">
+                                    <div class="table-header-content">
+                                        <i class="material-icons table-header-icon">backup</i>
+                                        <span class="table-header-text">Type</span>
+                                    </div>
                                 </th>
-                                <th>
-                                    <i class="material-icons md-me-2" style="vertical-align: middle;">schedule</i>
-                                    Schedule
+                                <th class="oracle-info-gradient">
+                                    <div class="table-header-content">
+                                        <i class="material-icons table-header-icon">schedule</i>
+                                        <span class="table-header-text">Schedule</span>
+                                    </div>
                                 </th>
-                                <th>
-                                    <i class="material-icons md-me-2" style="vertical-align: middle;">toggle_on</i>
-                                    Status
+                                <th class="oracle-info-gradient">
+                                    <div class="table-header-content">
+                                        <i class="material-icons table-header-icon">toggle_on</i>
+                                        <span class="table-header-text">Status</span>
+                                    </div>
                                 </th>
-                                <th class="md-text-center">Actions</th>
+                                <th class="oracle-info-gradient md-text-center">
+                                    <div class="table-header-content">
+                                        <i class="material-icons table-header-icon">settings</i>
+                                        <span class="table-header-text">Actions</span>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for policy in policies %}
                             <tr class="policy-row" 
+                                data-policy-id="{{ policy.id_policy }}"
+                                data-policy-name="{{ policy.policy_name|default:'Unnamed Policy'|escapejs }}"
+                                data-policy-description="{{ policy.description|default:'No description'|escapejs }}"
                                 data-client="{{ policy.client.name|default:'Unknown' }}" 
+                                data-host="{{ policy.host.hostname|default:'Unknown' }}"
+                                data-database="{{ policy.database.db_name|default:'Unknown' }}"
                                 data-status="{% if policy.status == '1' %}active{% else %}inactive{% endif %}"
-                                data-type="{{ policy.backup_type }}">
-                                <td style="padding: 1rem;">
-                                    <div class="md-flex md-items-center">
-                                        <div class="policy-type-icon md-me-3">
+                                data-type="{{ policy.backup_type|default:'Unknown' }}">
+                                <td>
+                                    <div class="table-cell-content">
+                                        <div class="table-cell-icon">
                                             {% if policy.backup_type == 'FULL' %}
-                                                <i class="material-icons md-text-primary">storage</i>
+                                                <i class="material-icons">storage</i>
                                             {% elif policy.backup_type == 'INCREMENTAL' %}
-                                                <i class="material-icons md-text-info">add_circle</i>
+                                                <i class="material-icons">add_circle</i>
                                             {% elif policy.backup_type == 'ARCHIVELOG' %}
-                                                <i class="material-icons md-text-warning">description</i>
+                                                <i class="material-icons">description</i>
                                             {% else %}
-                                                <i class="material-icons md-text-secondary">backup</i>
+                                                <i class="material-icons">backup</i>
                                             {% endif %}
                                         </div>
-                                        <div>
-                                            <strong>{{ policy.policy_name }}</strong>
+                                        <div class="table-cell-text">
+                                            <div class="table-cell-title">{{ policy.policy_name }}</div>
                                             {% if policy.description %}
-                                            <br><small class="md-text-muted">{{ policy.description|truncatechars:50 }}</small>
+                                                <div class="table-cell-subtitle">{{ policy.description|truncatechars:50 }}</div>
                                             {% endif %}
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     {% if policy.client %}
-                                    <span class="md-badge md-badge-primary">{{ policy.client.name }}</span>
+                                        <span class="md-chip md-chip-primary">{{ policy.client.name }}</span>
                                     {% else %}
-                                    <span class="md-text-muted">No Client</span>
+                                        <span class="md-text-muted">No Client</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if policy.host %}
-                                    <span class="md-badge md-badge-info">{{ policy.host.hostname }}</span>
+                                        <span class="md-chip md-chip-info">{{ policy.host.hostname }}</span>
                                     {% else %}
-                                    <span class="md-text-muted">No Host</span>
+                                        <span class="md-text-muted">No Host</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if policy.database %}
-                                    <span class="md-badge md-badge-secondary">{{ policy.database.db_name }}</span>
+                                        <span class="md-chip md-chip-success">{{ policy.database.db_name }}</span>
                                     {% else %}
-                                    <span class="md-text-muted">No Database</span>
+                                        <span class="md-text-muted">No Database</span>
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <span class="md-badge md-badge-info" style="background-color: rgba(var(--md-info-rgb), 0.2); color: var(--md-info);">
-                                        {{ policy.backup_type }}
-                                    </span>
+                                    <span class="md-chip md-chip-warning">{{ policy.backup_type }}</span>
                                 </td>
                                 <td>
                                     <div class="schedule-info">
-                                        <span class="md-font-medium">{{ policy.hour|default:"*" }}:{{ policy.minute|default:"00" }}</span>
-                                        <br>
-                                        <small class="md-text-muted">
+                                        <div class="table-cell-title">{{ policy.hour|default:"*" }}:{{ policy.minute|default:"00" }}</div>
+                                        <div class="table-cell-subtitle">
                                             {% if policy.day_week %}
                                                 Weekly ({{ policy.day_week }})
                                             {% elif policy.day %}
@@ -191,241 +204,825 @@
                                             {% else %}
                                                 Daily
                                             {% endif %}
-                                        </small>
+                                        </div>
                                     </div>
                                 </td>
                                 <td>
                                     {% if policy.status == '1' %}
-                                        <span class="md-badge md-badge-success">
-                                            <i class="material-icons md-me-1" style="font-size: 12px; vertical-align: middle;">play_circle</i>
+                                        <span class="md-chip md-chip-success">
+                                            <i class="material-icons md-me-1">play_circle</i>
                                             Active
                                         </span>
                                     {% else %}
-                                        <span class="md-badge md-badge-secondary">
-                                            <i class="material-icons md-me-1" style="font-size: 12px; vertical-align: middle;">pause_circle</i>
+                                        <span class="md-chip md-chip-danger">
+                                            <i class="material-icons md-me-1">pause_circle</i>
                                             Inactive
                                         </span>
                                     {% endif %}
                                 </td>
                                 <td class="md-text-center">
-                                    <div class="md-btn-group" role="group">
-                                        <!-- Run Now button removido -->
-                                        <a href="{% url 'coreRelback:policy-update' policy.id_policy %}" 
-                                           class="md-btn md-btn-sm md-btn-outlined md-btn-secondary" 
-                                           title="Edit" style="padding: 0.5rem; margin-right: 0.25rem;">
-                                            <i class="material-icons" style="font-size: 16px;">edit</i>
-                                        </a>
-                                        <a href="{% url 'coreRelback:policy-delete' policy.id_policy %}" 
-                                           class="md-btn md-btn-sm md-btn-outlined md-btn-danger" 
-                                           title="Delete" style="padding: 0.5rem;">
-                                            <i class="material-icons" style="font-size: 16px;">delete</i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="8" class="md-text-center md-py-6">
-                                    <div class="md-text-muted">
-                                        <i class="material-icons md-mb-3" style="font-size: 64px;">policy</i>
-                                        <h5>No backup policies found</h5>
-                                        <p>Start by creating your first backup policy.</p>
-                                        <a href="{% url 'coreRelback:policy-create' %}" class="md-btn md-btn-primary" style="padding: 0.75rem 1.5rem; font-size: 1rem;">
-                                            <i class="material-icons md-me-1" style="vertical-align: middle;">add</i>
-                                            Create First Policy
-                                        </a>
+                                    <div class="btn-actions-group">
+                                        <button type="button" class="btn-action btn-view" 
+                                                onclick="openViewModal('{{ policy.id_policy }}', '{{ policy.policy_name|escapejs }}', '{{ policy.description|default:'No description'|escapejs }}', '{{ policy.client.name|default:'No Client'|escapejs }}', '{{ policy.host.hostname|default:'No Host'|escapejs }}', '{{ policy.database.db_name|default:'No Database'|escapejs }}', '{{ policy.backup_type|default:'Unknown'|escapejs }}', '{% if policy.status == '1' %}Active{% else %}Inactive{% endif %}', '{{ policy.hour|default:'*' }}:{{ policy.minute|default:'00' }}', '{% if policy.day_week %}Weekly ({{ policy.day_week }}){% elif policy.day %}Monthly ({{ policy.day }}){% else %}Daily{% endif %}')"
+                                                title="View Details">
+                                            <i class="material-icons">visibility</i>
+                                        </button>
+                                        <button type="button" class="btn-action btn-edit" 
+                                                onclick="openEditModal('{{ policy.id_policy }}', '{{ policy.policy_name|escapejs }}', '{{ policy.description|default:''|escapejs }}')"
+                                                title="Edit">
+                                            <i class="material-icons">edit</i>
+                                        </button>
+                                        <button type="button" class="btn-action btn-delete" 
+                                                onclick="openDeleteModal('{{ policy.id_policy }}', '{{ policy.policy_name|escapejs }}', '{{ policy.client.name|default:'No Client'|escapejs }}', '{{ policy.backup_type|default:'Unknown'|escapejs }}')"
+                                                title="Delete">
+                                            <i class="material-icons">delete</i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
                             {% endfor %}
-                </table>
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="material-icons">policy</i>
+                    </div>
+                    <div class="empty-state-title">No Backup Policies</div>
+                    <div class="empty-state-description">Start by creating your first backup policy to manage your backup schedules.</div>
+                    <button type="button" class="empty-state-action" onclick="openAddModal()">
+                        <i class="material-icons md-me-1">add</i>
+                        Create First Policy
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Floating Action Button -->
+<button class="md-fab" id="addPolicyFab" title="Add Policy">
+    <i class="material-icons">add</i>
+</button>
+
+<!-- View Policy Details Modal -->
+<div class="custom-modal" id="viewPolicyModal">
+    <div class="custom-modal-backdrop"></div>
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-content">
+            <!-- Modal Header -->
+            <div class="custom-modal-header">
+                <h5 class="custom-modal-title">
+                    <i class="material-icons md-me-2" style="color: var(--sky-120);">visibility</i>
+                    <span>Policy Details</span>
+                </h5>
+                <button type="button" class="custom-modal-close" onclick="closeViewModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="custom-modal-body">
+                <!-- Info Message -->
+                <div class="alert-info">
+                    <i class="material-icons">info</i>
+                    <div>
+                        <strong>Backup Policy Information</strong>
+                        <p>Review the details of this backup policy configuration.</p>
+                    </div>
+                </div>
+                
+                <!-- Policy Details -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <i class="material-icons">policy</i>
+                        Policy Configuration
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Policy ID</div>
+                            <div class="info-value">
+                                <span class="md-code" id="view-policy-id">#---</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Policy Name</div>
+                            <div class="info-value" id="view-policy-name">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Description</div>
+                            <div class="info-value" id="view-policy-description">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Client</div>
+                            <div class="info-value" id="view-policy-client">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Host</div>
+                            <div class="info-value" id="view-policy-host">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Database</div>
+                            <div class="info-value" id="view-policy-database">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Backup Type</div>
+                            <div class="info-value" id="view-policy-type">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Status</div>
+                            <div class="info-value" id="view-policy-status">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Schedule Time</div>
+                            <div class="info-value" id="view-policy-time">---</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Schedule Frequency</div>
+                            <div class="info-value" id="view-policy-frequency">---</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeViewModal()">
+                    <i class="material-icons md-me-1">close</i>
+                    Close
+                </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Run Policy Modal removido -->
+<!-- Delete Confirmation Modal -->
+<div class="custom-modal" id="deletePolicyModal">
+    <div class="custom-modal-backdrop"></div>
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-content">
+            <!-- Modal Header -->
+            <div class="custom-modal-header">
+                <h5 class="custom-modal-title">
+                    <i class="material-icons md-me-2" style="color: var(--oracle-red);">delete</i>
+                    <span>Delete Policy</span>
+                </h5>
+                <button type="button" class="custom-modal-close" onclick="closeDeleteModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="custom-modal-body">
+                <!-- Warning Alert -->
+                <div class="alert-danger">
+                    <i class="material-icons">warning</i>
+                    <div>
+                        <strong>Warning: This action cannot be undone!</strong>
+                        <p>You are about to permanently delete this backup policy. This will stop all scheduled backups for this configuration.</p>
+                    </div>
+                </div>
+                
+                <!-- Policy to Delete -->
+                <div class="delete-question">
+                    <h4>Are you sure you want to delete this policy?</h4>
+                    <div class="detail-container">
+                        <div class="detail-row">
+                            <strong>Policy Name:</strong>
+                            <span id="modal-policy-name">---</span>
+                        </div>
+                        <div class="detail-row">
+                            <strong>Client:</strong>
+                            <span id="modal-policy-client">---</span>
+                        </div>
+                        <div class="detail-row">
+                            <strong>Backup Type:</strong>
+                            <span id="modal-policy-type">---</span>
+                        </div>
+                        <div class="detail-row">
+                            <strong>Policy ID:</strong>
+                            <span class="md-code">#<span id="modal-policy-id">---</span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- What will be deleted -->
+                <div class="what-deleted-section">
+                    <div class="what-deleted-header">
+                        <i class="material-icons">info</i>
+                        What will be deleted:
+                    </div>
+                    <div class="what-deleted-content">
+                        <div class="deleted-item">
+                            <i class="material-icons">policy</i>
+                            <div>
+                                <strong>Backup Policy Configuration</strong>
+                                <small>All backup schedule settings and parameters</small>
+                            </div>
+                        </div>
+                        <div class="deleted-item">
+                            <i class="material-icons">schedule</i>
+                            <div>
+                                <strong>Scheduled Jobs</strong>
+                                <small>All pending and future backup jobs for this policy</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
+                    <i class="material-icons md-me-1">close</i>
+                    Cancel
+                </button>
+                <form id="deletePolicyForm" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-delete-confirm">
+                        <i class="material-icons md-me-1">delete_forever</i>
+                        Delete Policy
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-<!-- Floating Action Button -->
-<button class="fab" id="addPolicyFab" title="Create Policy">
-    <i class="material-icons">add</i>
-</button>
+<!-- Edit Policy Modal -->
+<div class="custom-modal" id="editPolicyModal">
+    <div class="custom-modal-backdrop"></div>
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-content">
+            <!-- Modal Header -->
+            <div class="custom-modal-header edit-modal-header">
+                <h5 class="custom-modal-title">
+                    <i class="material-icons md-me-2">edit</i>
+                    <span>Edit Policy</span>
+                </h5>
+                <button type="button" class="custom-modal-close" onclick="closeEditModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="custom-modal-body">
+                <!-- Info Message -->
+                <div class="alert-info">
+                    <i class="material-icons">info</i>
+                    <div>
+                        <strong>Edit Policy Information</strong>
+                        <p>Update the policy name and description. Other settings require advanced configuration.</p>
+                    </div>
+                </div>
+                
+                <!-- Edit Form -->
+                <form id="editPolicyForm" method="post">
+                    {% csrf_token %}
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="material-icons">policy</i>
+                            Policy Information
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="material-icons">badge</i>
+                                    Policy ID
+                                </label>
+                                <div class="md-code">#<span id="edit-policy-id-display">---</span></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="edit-policy-name" class="form-label">
+                                    <i class="material-icons">policy</i>
+                                    Policy Name *
+                                </label>
+                                <input type="text" id="edit-policy-name" name="policy_name" class="form-input" required>
+                                <div class="form-error" id="edit-policy-name-error"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="edit-policy-description" class="form-label">
+                                    <i class="material-icons">description</i>
+                                    Description
+                                </label>
+                                <textarea id="edit-policy-description" name="description" class="form-input" rows="3"></textarea>
+                                <div class="form-error" id="edit-policy-description-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeEditModal()">
+                    <i class="material-icons md-me-1">close</i>
+                    Cancel
+                </button>
+                <button type="button" class="btn-save-confirm" onclick="submitEditForm()">
+                    <i class="material-icons md-me-1">save</i>
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<style>
-/* Status indicator */
-.policy-type-icon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(var(--md-primary-rgb), 0.1);
-}
+<!-- Add Policy Modal -->
+<div id="addPolicyModal" class="custom-modal">
+    <div class="custom-modal-backdrop"></div>
+    <div class="custom-modal-dialog">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header add-modal-header">
+                <h5 class="custom-modal-title">
+                    <i class="material-icons md-me-2">add</i>
+                    <span>Create New Policy</span>
+                </h5>
+                <button type="button" class="custom-modal-close" onclick="closeAddModal()">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
+            
+            <div class="custom-modal-body">
+                <!-- Info Message -->
+                <div class="alert-info">
+                    <i class="material-icons">info</i>
+                    <div>
+                        <strong>Create New Backup Policy</strong>
+                        <p>Fill in the basic information to create a new backup policy. Advanced settings can be configured after creation.</p>
+                    </div>
+                </div>
+                
+                <form id="addPolicyForm" method="post" action="{% url 'coreRelback:policy-create' %}">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="material-icons">policy</i>
+                            Basic Information
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="add-policy-name" class="form-label">
+                                    <i class="material-icons">policy</i>
+                                    Policy Name *
+                                </label>
+                                <input type="text" id="add-policy-name" name="policy_name" class="form-input" required placeholder="Enter policy name">
+                                <div class="field-hint">Choose a descriptive name for this backup policy</div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="add-policy-description" class="form-label">
+                                    <i class="material-icons">description</i>
+                                    Description
+                                </label>
+                                <textarea id="add-policy-description" name="description" class="form-input" rows="3" placeholder="Describe this backup policy (optional)"></textarea>
+                                <div class="field-hint">Provide additional details about this policy's purpose</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="material-icons">info</i>
+                            Additional Configuration
+                        </div>
+                        <div class="info-subtitle">
+                            After creating this policy, you'll be able to configure:
+                            <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                                <li>Client and host assignments</li>
+                                <li>Database selection</li>
+                                <li>Backup type (FULL, INCREMENTAL, ARCHIVELOG)</li>
+                                <li>Schedule configuration</li>
+                                <li>Retention policies</li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="custom-modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeAddModal()">
+                    <i class="material-icons md-me-1">close</i>
+                    Cancel
+                </button>
+                <button type="submit" form="addPolicyForm" class="btn-add-confirm">
+                    <i class="material-icons md-me-1">add</i>
+                    Create Policy
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-/* Table hover effects */
-.table-hover tbody tr:hover {
-    background-color: rgba(var(--md-primary-rgb), 0.05);
-}
 
-/* Button group improvements */
-.md-btn-group .md-btn {
-    border-radius: 4px !important;
-    margin-right: 2px;
-}
-
-.md-btn-group .md-btn:last-child {
-    margin-right: 0;
-}
-
-/* Badge styles */
-.md-badge {
-    font-size: 0.75rem;
-    padding: 0.375rem 0.75rem;
-    border-radius: 6px;
-}
-
-/* Schedule info styling */
-.schedule-info {
-    min-width: 120px;
-}
-
-/* Empty state styling */
-.md-text-muted h5 {
-    color: var(--md-on-surface-variant) !important;
-}
-
-/* Table improvements */
-.md-table th {
-    font-weight: 600;
-    padding: 1rem;
-    border-bottom: 2px solid rgba(var(--md-primary-rgb), 0.1);
-}
-
-.md-table td {
-    padding: 1rem;
-    border-bottom: 1px solid rgba(var(--md-outline-rgb), 0.12);
-}
-
-/* Responsive improvements */
-@media (max-width: 768px) {
-    .md-grid-cols-4 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .md-btn-group {
-        flex-direction: column;
-    }
-    
-    .md-btn-group .md-btn {
-        margin-right: 0;
-        margin-bottom: 2px;
-        width: 100%;
-    }
-    
-    .md-table th, .md-table td {
-        padding: 0.5rem;
-        font-size: 0.875rem;
-    }
-}
-</style>
 
 <script>
-let currentPolicyId = null;
+// Dados das policies para auto-completar
+const policiesData = [
+    {% for policy in policies %}
+    {
+        id: '{{ policy.id_policy }}',
+        name: "{{ policy.policy_name|default:'Unnamed Policy'|escapejs }}",
+        description: "{{ policy.description|default:'No description'|escapejs }}",
+        client: "{{ policy.client.name|default:'No Client'|escapejs }}",
+        host: "{{ policy.host.hostname|default:'No Host'|escapejs }}",
+        database: "{{ policy.database.db_name|default:'No Database'|escapejs }}",
+        type: "{{ policy.backup_type|default:'Unknown'|escapejs }}",
+        status: "{% if policy.status == '1' %}Active{% else %}Inactive{% endif %}",
+        time: "{{ policy.hour|default:'*' }}:{{ policy.minute|default:'00' }}",
+        frequency: "{% if policy.day_week %}Weekly ({{ policy.day_week }}){% elif policy.day %}Monthly ({{ policy.day }}){% else %}Daily{% endif %}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
 
-// Search functionality
-document.getElementById('searchPolicy').addEventListener('input', function() {
-    const searchTerm = this.value.toLowerCase();
-    filterPolicies();
+// FAB click handler
+document.getElementById('addPolicyFab').addEventListener('click', function() {
+    openAddModal();
 });
 
-// Filter functionality
-document.getElementById('filterStatus').addEventListener('change', function() {
-    filterPolicies();
-});
+// Auto-complete functionality
+const searchInput = document.getElementById('searchPolicies');
+const autocompleteList = document.getElementById('autocompleteList');
+let currentFocus = -1;
 
-document.getElementById('filterType').addEventListener('change', function() {
-    filterPolicies();
-});
-
-document.getElementById('filterClient').addEventListener('change', function() {
-    filterPolicies();
-});
-
-function filterPolicies() {
-    const searchTerm = document.getElementById('searchPolicy').value.toLowerCase();
-    const statusFilter = document.getElementById('filterStatus').value;
-    const typeFilter = document.getElementById('filterType').value;
-    const clientFilter = document.getElementById('filterClient').value;
+searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase().trim();
     
-    const rows = document.querySelectorAll('.policy-row');
+    // Limpar lista anterior
+    autocompleteList.innerHTML = '';
+    currentFocus = -1;
     
-    rows.forEach(row => {
-        const policyName = row.cells[0].textContent.toLowerCase();
-        const status = row.dataset.status;
-        const type = row.dataset.type;
-        const client = row.dataset.client;
+    if (searchTerm.length === 0) {
+        autocompleteList.style.display = 'none';
+        showAllRows();
+        return;
+    }
+    
+    // Filtrar policies
+    const filteredPolicies = policiesData.filter(policy => 
+        policy.name.toLowerCase().includes(searchTerm) || 
+        policy.description.toLowerCase().includes(searchTerm) ||
+        policy.client.toLowerCase().includes(searchTerm) ||
+        policy.host.toLowerCase().includes(searchTerm) ||
+        policy.database.toLowerCase().includes(searchTerm) ||
+        policy.type.toLowerCase().includes(searchTerm)
+    );
+    
+    // Mostrar sugestões
+    if (filteredPolicies.length > 0) {
+        autocompleteList.style.display = 'block';
         
-        const matchesSearch = !searchTerm || policyName.includes(searchTerm);
-        const matchesStatus = !statusFilter || status === statusFilter;
-        const matchesType = !typeFilter || type === typeFilter;
-        const matchesClient = !clientFilter || client === clientFilter;
+        filteredPolicies.slice(0, 5).forEach((policy, index) => {
+            const item = document.createElement('div');
+            item.className = 'autocomplete-item';
+            item.innerHTML = `
+                <div style="font-weight: 500;">${policy.name}</div>
+                <div style="font-size: 0.85rem; color: #697778;">${policy.client} • ${policy.type} • ${policy.status}</div>
+            `;
+            item.addEventListener('click', function() {
+                searchInput.value = policy.name;
+                autocompleteList.style.display = 'none';
+                filterTable(policy.name.toLowerCase());
+            });
+            autocompleteList.appendChild(item);
+        });
+    } else {
+        autocompleteList.style.display = 'none';
+    }
+    
+    // Filtrar tabela em tempo real
+    filterTable(searchTerm);
+});
+
+// Navegação por teclado no auto-complete
+searchInput.addEventListener('keydown', function(e) {
+    const items = autocompleteList.querySelectorAll('.autocomplete-item');
+    
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        currentFocus++;
+        if (currentFocus >= items.length) currentFocus = 0;
+        setActive(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        currentFocus--;
+        if (currentFocus < 0) currentFocus = items.length - 1;
+        setActive(items);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (currentFocus > -1 && items[currentFocus]) {
+            items[currentFocus].click();
+        }
+    } else if (e.key === 'Escape') {
+        autocompleteList.style.display = 'none';
+        currentFocus = -1;
+    }
+});
+
+function setActive(items) {
+    items.forEach((item, index) => {
+        item.classList.toggle('active', index === currentFocus);
+    });
+}
+
+// Fechar auto-complete ao clicar fora
+document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !autocompleteList.contains(e.target)) {
+        autocompleteList.style.display = 'none';
+    }
+});
+
+// Função para filtrar tabela
+function filterTable(searchTerm) {
+    const tableRows = document.querySelectorAll('tbody tr.policy-row');
+    
+    tableRows.forEach(row => {
+        const policyName = row.querySelector('.table-cell-title') ? 
+                          row.querySelector('.table-cell-title').textContent.toLowerCase() : '';
+        const client = row.dataset.client.toLowerCase();
+        const host = row.dataset.host.toLowerCase();
+        const database = row.dataset.database.toLowerCase();
+        const type = row.dataset.type.toLowerCase();
         
-        if (matchesSearch && matchesStatus && matchesType && matchesClient) {
+        if (policyName.includes(searchTerm) || client.includes(searchTerm) || 
+            host.includes(searchTerm) || database.includes(searchTerm) || type.includes(searchTerm)) {
             row.style.display = '';
+            row.style.animation = 'fadeIn 0.3s ease';
         } else {
             row.style.display = 'none';
         }
     });
-    
-    updateEmptyState();
 }
 
-// Funções Run Policy removidas
-
-// Update empty state based on visible rows
-function updateEmptyState() {
-    const visibleRows = document.querySelectorAll('.policy-row:not([style*="display: none"])');
-    const emptyRow = document.querySelector('tbody tr td[colspan="8"]');
-    
-    if (visibleRows.length === 0 && !emptyRow) {
-        const tbody = document.querySelector('#policiesTable tbody');
-        const emptyMessage = `
-            <tr class="empty-state-row">
-                <td colspan="8" class="md-text-center md-py-6">
-                    <div class="md-text-muted">
-                        <i class="material-icons md-mb-3" style="font-size: 64px;">search_off</i>
-                        <h5>No policies match your criteria</h5>
-                        <p>Try adjusting your search or filters.</p>
-                    </div>
-                </td>
-            </tr>
-        `;
-        tbody.insertAdjacentHTML('beforeend', emptyMessage);
-    } else if (visibleRows.length > 0) {
-        const emptyStateRow = document.querySelector('.empty-state-row');
-        if (emptyStateRow) {
-            emptyStateRow.remove();
-        }
-    }
-}
-
-// Confirmation for delete actions
-document.querySelectorAll('a[href*="delete"]').forEach(link => {
-    link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const policyName = this.closest('tr').cells[0].textContent.trim();
-        
-        if (confirm(`Are you sure you want to delete the policy "${policyName}"?`)) {
-            window.location.href = this.href;
-        }
+function showAllRows() {
+    const tableRows = document.querySelectorAll('tbody tr.policy-row');
+    tableRows.forEach(row => {
+        row.style.display = '';
+        row.style.animation = 'fadeIn 0.3s ease';
     });
+}
+
+// Botão Clean
+document.getElementById('cleanBtn').addEventListener('click', function() {
+    searchInput.value = '';
+    autocompleteList.style.display = 'none';
+    showAllRows();
+    searchInput.focus();
+    
+    // Adicionar efeito visual ao botão
+    this.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        this.style.transform = 'scale(1)';
+    }, 150);
 });
 
-// Auto-refresh data every 30 seconds
-setInterval(function() {
-    // In a real application, you would fetch updated data via AJAX
-    console.log('Auto-refresh: Checking for policy updates...');
-}, 30000);
+// Modal functions for view details
+function openViewModal(policyId, policyName, policyDescription, policyClient, policyHost, policyDatabase, policyType, policyStatus, policyTime, policyFrequency) {
+    // Populate modal with policy data
+    document.getElementById('view-policy-id').textContent = policyId;
+    document.getElementById('view-policy-name').textContent = policyName;
+    document.getElementById('view-policy-description').textContent = policyDescription || 'No description';
+    document.getElementById('view-policy-client').textContent = policyClient;
+    document.getElementById('view-policy-host').textContent = policyHost;
+    document.getElementById('view-policy-database').textContent = policyDatabase;
+    document.getElementById('view-policy-type').textContent = policyType;
+    document.getElementById('view-policy-status').textContent = policyStatus;
+    document.getElementById('view-policy-time').textContent = policyTime;
+    document.getElementById('view-policy-frequency').textContent = policyFrequency;
+    
+    // Show modal
+    const modal = document.getElementById('viewPolicyModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeViewModal() {
+    const modal = document.getElementById('viewPolicyModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// Modal functions for delete confirmation
+function openDeleteModal(policyId, policyName, policyClient, policyType) {
+    // Populate modal with policy data
+    document.getElementById('modal-policy-name').textContent = policyName;
+    document.getElementById('modal-policy-client').textContent = policyClient;
+    document.getElementById('modal-policy-type').textContent = policyType;
+    document.getElementById('modal-policy-id').textContent = policyId;
+    
+    // Set form action to delete URL
+    const deleteForm = document.getElementById('deletePolicyForm');
+    deleteForm.action = `{% url 'coreRelback:policy-delete' 0 %}`.replace('0', policyId);
+    
+    // Show modal
+    const modal = document.getElementById('deletePolicyModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deletePolicyModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// Modal functions for edit policy
+function openEditModal(policyId, policyName, policyDescription) {
+    const modal = document.getElementById('editPolicyModal');
+    const nameInput = document.getElementById('edit-policy-name');
+    const descInput = document.getElementById('edit-policy-description');
+    const policyIdSpan = document.getElementById('edit-policy-id-display');
+    
+    // Populate form fields
+    nameInput.value = policyName;
+    descInput.value = policyDescription || '';
+    policyIdSpan.textContent = policyId;
+    
+    // Set form action
+    const editForm = document.getElementById('editPolicyForm');
+    editForm.action = `{% url 'coreRelback:policy-update' 0 %}`.replace('0', policyId);
+    
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on name input for immediate editing
+    nameInput.focus();
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editPolicyModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    
+    // Clear any error states
+    clearFormErrors();
+}
+
+// Add Modal Functions
+function openAddModal() {
+    const modal = document.getElementById('addPolicyModal');
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on first input
+    setTimeout(() => {
+        document.getElementById('add-policy-name').focus();
+    }, 100);
+}
+
+function closeAddModal() {
+    const modal = document.getElementById('addPolicyModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    
+    // Reset form
+    const form = document.getElementById('addPolicyForm');
+    form.reset();
+    
+    // Clear any validation errors
+    form.querySelectorAll('.form-input').forEach(input => {
+        input.classList.remove('error');
+    });
+    form.querySelectorAll('.error-message').forEach(error => {
+        error.remove();
+    });
+}
+
+function clearFormErrors() {
+    const errorElements = document.querySelectorAll('.form-error');
+    const inputElements = document.querySelectorAll('.form-input');
+    
+    errorElements.forEach(el => el.classList.remove('show'));
+    inputElements.forEach(el => el.classList.remove('error'));
+}
+
+function validateEditForm() {
+    const nameInput = document.getElementById('edit-policy-name');
+    const nameError = document.getElementById('edit-policy-name-error');
+    let isValid = true;
+    
+    // Clear previous errors
+    clearFormErrors();
+    
+    // Validate name field
+    if (!nameInput.value.trim()) {
+        nameInput.classList.add('error');
+        nameError.textContent = 'Policy name is required';
+        nameError.classList.add('show');
+        isValid = false;
+    } else if (nameInput.value.trim().length < 2) {
+        nameInput.classList.add('error');
+        nameError.textContent = 'Policy name must be at least 2 characters';
+        nameError.classList.add('show');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+function submitEditForm() {
+    if (!validateEditForm()) {
+        return;
+    }
+    
+    const saveButton = document.querySelector('.btn-save-confirm');
+    
+    // Disable save button during submission
+    saveButton.disabled = true;
+    saveButton.innerHTML = '<i class="material-icons">hourglass_empty</i>Saving...';
+    
+    // Submit the form
+    document.getElementById('editPolicyForm').submit();
+}
+
+// Close modals when clicking on backdrop
+['viewPolicyModal', 'deletePolicyModal', 'editPolicyModal', 'addPolicyModal'].forEach(modalId => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
+                const closeFunctions = {
+                    'viewPolicyModal': closeViewModal,
+                    'deletePolicyModal': closeDeleteModal,
+                    'editPolicyModal': closeEditModal,
+                    'addPolicyModal': closeAddModal
+                };
+                closeFunctions[modalId]();
+            }
+        });
+    }
+});
+
+// Close modal with ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modals = ['viewPolicyModal', 'deletePolicyModal', 'editPolicyModal', 'addPolicyModal'];
+        const closeFunctions = [closeViewModal, closeDeleteModal, closeEditModal, closeAddModal];
+        
+        modals.forEach((modalId, index) => {
+            const modal = document.getElementById(modalId);
+            if (modal && modal.classList.contains('show')) {
+                closeFunctions[index]();
+            }
+        });
+    }
+});
+
+// Add row hover effects
+document.addEventListener('DOMContentLoaded', function() {
+    const tableRows = document.querySelectorAll('tbody tr.policy-row');
+    tableRows.forEach(row => {
+        row.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = 'var(--sky-30)';
+            this.style.transform = 'scale(1.005)';
+            this.style.transition = 'all 0.3s ease';
+        });
+        
+        row.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+            this.style.transform = 'scale(1)';
+        });
+    });
+    
+    // Animate cards on load
+    const cards = document.querySelectorAll('.md-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+    
+    // Focus automático no campo de busca
+    searchInput.focus();
+});
+
+// Real-time validation for edit form
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.getElementById('edit-policy-name');
+    if (nameInput) {
+        nameInput.addEventListener('input', function() {
+            if (this.classList.contains('error')) {
+                validateEditForm();
+            }
+        });
+    }
+    
+    // Add button event listener
+    const addButton = document.querySelector('[data-modal-target="#addPolicyModal"]');
+    if (addButton) {
+        addButton.addEventListener('click', openAddModal);
+    }
+});
 </script>
 {% endblock %}

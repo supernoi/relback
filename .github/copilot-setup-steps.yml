@@ -1,0 +1,11 @@
+name: Copilot Setup Steps
+
+steps:
+  - title: Read architecture baseline
+    description: Review `.github/copilot-architecture.md`.
+  - title: Read backend conventions
+    description: Review `.github/copilot-instructions.md` or framework-specific docs.
+  - title: Validate project locally
+    description: Run `python manage.py check` and `python manage.py test`.
+  - title: Open PR with checklist
+    description: Use `.github/pull_request_template.md` when available.

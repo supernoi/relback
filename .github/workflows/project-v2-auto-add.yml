@@ -1,0 +1,23 @@
+name: Project V2 Auto Add
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  add-to-project:
+    if: ${{ secrets.PROJECTS_AUTOMATION_TOKEN != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add item to Project #3
+        uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/users/supernoi/projects/3
+          github-token: ${{ secrets.PROJECTS_AUTOMATION_TOKEN }}
