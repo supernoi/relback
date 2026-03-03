@@ -7,14 +7,84 @@ from .models import Client, Host, Database, BackupPolicy, RelbackUser, Schedule
 from coreRelback.services.schedule_generator import generate_schedules
 from django import forms
 
+# --- Clean Architecture: use-case factories ---
+from coreRelback.gateways.repositories import (
+    DjangoClientRepository,
+    DjangoHostRepository,
+    DjangoDatabaseRepository,
+    DjangoBackupPolicyRepository,
+    DjangoScheduleRepository,
+)
+from coreRelback.services.use_cases import (
+    GetDashboardStatsUseCase,
+    GetScheduleReportUseCase,
+    GenerateScheduleUseCase,
+)
+
+
+def _make_dashboard_use_case() -> GetDashboardStatsUseCase:
+    return GetDashboardStatsUseCase(
+        client_repo=DjangoClientRepository(),
+        host_repo=DjangoHostRepository(),
+        database_repo=DjangoDatabaseRepository(),
+        policy_repo=DjangoBackupPolicyRepository(),
+    )
+
+
+def _make_schedule_report_use_case() -> GetScheduleReportUseCase:
+    return GetScheduleReportUseCase(schedule_repo=DjangoScheduleRepository())
+
+
+def _make_generate_schedule_use_case() -> GenerateScheduleUseCase:
+    return GenerateScheduleUseCase(
+        policy_repo=DjangoBackupPolicyRepository(),
+        schedule_repo=DjangoScheduleRepository(),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Infrastructure helpers (used by test_without_db.py and health checks)
+# ---------------------------------------------------------------------------
+
+def is_database_available() -> bool:
+    """Returns True if the Django default DB is reachable."""
+    try:
+        from django.db import connection
+        connection.ensure_connection()
+        return True
+    except Exception:
+        return False
+
+
+from django.http import JsonResponse
+
+
+def get_hosts_by_client(request, client_id: int) -> JsonResponse:
+    """Returns hosts JSON for a given client_id (used by AJAX selects)."""
+    try:
+        hosts = list(Host.objects.filter(client_id=client_id).values('id_host', 'hostname'))
+        return JsonResponse({'hosts': hosts})
+    except Exception:
+        return JsonResponse({'hosts': []})
+
+
+def get_databases_by_client(request, client_id: int) -> JsonResponse:
+    """Returns databases JSON for a given client_id (used by AJAX selects)."""
+    try:
+        dbs = list(Database.objects.filter(client_id=client_id).values('id_database', 'db_name'))
+        return JsonResponse({'databases': dbs})
+    except Exception:
+        return JsonResponse({'databases': []})
+
 
 # Função para a página inicial
 def index(request):
+    stats = _make_dashboard_use_case().execute()
     context = {
-        'clients_count': Client.objects.count(),
-        'hosts_count': Host.objects.count(),
-        'databases_count': Database.objects.count(),
-        'policies_count': BackupPolicy.objects.count(),
+        'clients_count': stats.clients_count,
+        'hosts_count': stats.hosts_count,
+        'databases_count': stats.databases_count,
+        'policies_count': stats.policies_count,
     }
     return render(request, "index.html", context)
 
@@ -256,83 +326,78 @@ class ScheduleFilterForm(forms.Form):
 
 
 def report_refresh_schedule(request):
-    days = int(request.GET.get('days', 2))
-    start_date = request.GET.get('start_date')
-    end_date = request.GET.get('end_date')
-    
-    from coreRelback.services.schedule_generator import generate_schedules
     import datetime
-    
-    if start_date and end_date:
-        # Gerar para faixa específica
-        start = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
-        end = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+    days = int(request.GET.get('days', 2))
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    use_case = _make_generate_schedule_use_case()
+
+    if start_date_str and end_date_str:
+        start = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        end = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
         current = start
         while current <= end:
-            generate_schedules(current)
+            use_case.execute(current)
             current += datetime.timedelta(days=1)
     else:
-        # Gerar para próximos dias (padrão: hoje + amanhã)
         reference_date = datetime.date.today()
         for i in range(days):
-            generate_schedules(reference_date + datetime.timedelta(days=i))
-    
+            use_case.execute(reference_date + datetime.timedelta(days=i))
+
     return redirect('coreRelback:report-read')
 
 
 def report_read(request):
+    import datetime
     form = ScheduleFilterForm(request.GET or None)
-    jobs = Schedule.objects.select_related('backup_policy', 'backup_policy__database', 'backup_policy__host').order_by('schedule_start')
-    
-    # Filtros básicos
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+    days = int(request.GET.get('days', 2))
+
+    from_date = None
+    to_date = None
+    if start_date_str and end_date_str:
+        from_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        to_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+    entries = _make_schedule_report_use_case().execute(
+        from_date=from_date, to_date=to_date, days=days
+    )
+
+    # Apply form filters on entities (in-memory — no extra ORM calls needed)
     if form.is_valid():
-        if form.cleaned_data['policy_name']:
-            jobs = jobs.filter(backup_policy__policy_name__icontains=form.cleaned_data['policy_name'])
-        if form.cleaned_data['hostname']:
-            jobs = jobs.filter(backup_policy__host__hostname__icontains=form.cleaned_data['hostname'])
-        if form.cleaned_data['db_name']:
-            jobs = jobs.filter(backup_policy__database__db_name__icontains=form.cleaned_data['db_name'])
-        if form.cleaned_data['backup_type']:
-            jobs = jobs.filter(backup_policy__backup_type__icontains=form.cleaned_data['backup_type'])
-    
-    # Filtro por parâmetros GET diretos (para campos de data)
-    start_date = request.GET.get('start_date')
-    end_date = request.GET.get('end_date')
-    
-    if start_date and end_date:
-        # Filtrar por faixa de datas específica
-        import datetime
-        start = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
-        end = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
-        jobs = jobs.filter(schedule_start__date__gte=start, schedule_start__date__lte=end)
-    elif not start_date and not end_date:
-        # Padrão: mostrar próximos dias conforme seleção
-        days = int(request.GET.get('days', 2))
-        import datetime
-        today = datetime.date.today()
-        end_date_calc = today + datetime.timedelta(days=days-1)
-        jobs = jobs.filter(schedule_start__date__gte=today, schedule_start__date__lte=end_date_calc)
-    
-    jobs_data = []
-    for job in jobs:
-        jobs_data.append({
-            'policy_name': job.backup_policy.policy_name if job.backup_policy else '-',
-            'hostname': job.backup_policy.host.hostname if job.backup_policy and job.backup_policy.host else '-',
-            'db_name': job.backup_policy.database.db_name if job.backup_policy and job.backup_policy.database else '-',
-            'backup_type': job.backup_policy.backup_type if job.backup_policy else '-',
-            'start_time': job.schedule_start,
+        cd = form.cleaned_data
+        if cd.get('policy_name'):
+            entries = [e for e in entries if cd['policy_name'].lower() in (e.policy_name or '').lower()]
+        if cd.get('hostname'):
+            entries = [e for e in entries if cd['hostname'].lower() in (e.hostname or '').lower()]
+        if cd.get('db_name'):
+            entries = [e for e in entries if cd['db_name'].lower() in (e.db_name or '').lower()]
+        if cd.get('backup_type'):
+            entries = [e for e in entries if cd['backup_type'].lower() in (e.backup_type or '').lower()]
+
+    jobs_data = [
+        {
+            'policy_name': e.policy_name or '-',
+            'hostname': e.hostname or '-',
+            'db_name': e.db_name or '-',
+            'backup_type': e.backup_type or '-',
+            'start_time': e.schedule_start,
             'end_time': '-',
-            'status': getattr(job.backup_policy, 'status', '-') if job.backup_policy else '-',
+            'status': '-',
             'elapsed_seconds': '',
             'input_bytes': '',
-            'session_key': job.id_schedule
-        })
-    # Prepare data for dropdown selects
+            'session_key': e.id_schedule,
+        }
+        for e in entries
+    ]
+
     all_policies = BackupPolicy.objects.values_list('policy_name', flat=True).distinct().order_by('policy_name')
     all_hosts = Host.objects.values_list('hostname', flat=True).distinct().order_by('hostname')
     all_databases = Database.objects.values_list('db_name', flat=True).distinct().order_by('db_name')
     all_backup_types = BackupPolicy.objects.values_list('backup_type', flat=True).distinct().order_by('backup_type')
-    
+
     context = {
         'jobs': jobs_data,
         'form': form,
@@ -348,16 +413,5 @@ def report_read(request):
 
 
 def report_read_log_detail(request, idPolicy, dbKey, sessionKey):
-    # Exemplo: obtenha detalhes a partir dos parâmetros e passe para o template
     context = {"idPolicy": idPolicy, "dbKey": dbKey, "sessionKey": sessionKey}
     return render(request, "reportsReadLog.html", context)
-
-
-def report_refresh_schedule(request):
-    days = int(request.GET.get('days', 1))
-    from coreRelback.services.schedule_generator import generate_schedules
-    import datetime
-    reference_date = datetime.date.today()
-    for i in range(days):
-        generate_schedules(reference_date + datetime.timedelta(days=i))
-    return redirect('coreRelback:report-read')
