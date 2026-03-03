@@ -9,14 +9,14 @@ class RelbackLoginForm(forms.Form):
     username = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
+            'class': 'input input-bordered w-full',
             'placeholder': 'Username',
             'id': 'username'
         })
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
+            'class': 'input input-bordered w-full',
             'placeholder': 'Password',
             'id': 'password'
         })
@@ -54,32 +54,32 @@ class RelbackUserCreationForm(forms.ModelForm):
     password1 = forms.CharField(
         label='Password',
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
+            'class': 'input input-bordered w-full',
             'placeholder': 'Enter your password'
         })
     )
     password2 = forms.CharField(
         label='Confirm Password',
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
+            'class': 'input input-bordered w-full',
             'placeholder': 'Confirm your password'
         })
     )
-    
+
     class Meta:
         model = RelbackUser
         fields = ('username', 'name', 'email')
         widgets = {
             'username': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input input-bordered w-full',
                 'placeholder': 'Username'
             }),
             'name': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'input input-bordered w-full',
                 'placeholder': 'Full name'
             }),
             'email': forms.EmailInput(attrs={
-                'class': 'form-control',
+                'class': 'input input-bordered w-full',
                 'placeholder': 'Email'
             }),
         }
