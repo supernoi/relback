@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load backup_tags %}
 
 {% block title %}Reports - RelBack{% endblock %}
 
@@ -16,13 +17,13 @@
                         <p class="page-subtitle">Monitor backup jobs and system status</p>
                     </div>
                 </div>
-                <div class="page-actions">
-                    <button type="button" class="md-btn md-btn-outlined" onclick="refreshReports()">
-                        <i class="material-icons md-me-1">refresh</i>
+                <div class="page-actions flex gap-2">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="refreshReports()">
+                        <i class="material-icons" style="font-size: 18px;">refresh</i>
                         Refresh
                     </button>
-                    <button type="button" class="md-btn md-btn-primary" onclick="exportReports()">
-                        <i class="material-icons md-me-1">download</i>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="exportReports()">
+                        <i class="material-icons" style="font-size: 18px;">download</i>
                         Export
                     </button>
                 </div>
@@ -31,42 +32,34 @@
     </div>
     
     <!-- Stats Cards -->
-    <div class="md-grid md-grid-cols-4 md-mb-5">
-        <div class="md-card oracle-info-gradient stats-card-content">
-            <div class="md-flex md-items-center md-justify-between">
-                <div>
-                    <h2 class="stats-title">{{ jobs|length }}</h2>
-                    <p class="stats-subtitle">Total Jobs</p>
-                </div>
-                <i class="material-icons-round stats-card-icon">assignment</i>
+    <div class="stats stats-vertical lg:stats-horizontal shadow w-full mb-5">
+        <div class="stat">
+            <div class="stat-figure text-primary">
+                <i class="material-icons-round" style="font-size: 2.5rem;">assignment</i>
             </div>
+            <div class="stat-title">Total Jobs</div>
+            <div class="stat-value stats-title">{{ jobs|length }}</div>
         </div>
-        <div class="md-card oracle-info-gradient stats-card-content">
-            <div class="md-flex md-items-center md-justify-between">
-                <div>
-                    <h2 class="stats-title">{{ successful_jobs|default:0 }}</h2>
-                    <p class="stats-subtitle">Successful</p>
-                </div>
-                <i class="material-icons-round stats-card-icon">check_circle</i>
+        <div class="stat">
+            <div class="stat-figure text-success">
+                <i class="material-icons-round" style="font-size: 2.5rem;">check_circle</i>
             </div>
+            <div class="stat-title">Successful</div>
+            <div class="stat-value text-success stats-title">{{ successful_jobs|default:0 }}</div>
         </div>
-        <div class="md-card oracle-info-gradient stats-card-content">
-            <div class="md-flex md-items-center md-justify-between">
-                <div>
-                    <h2 class="stats-title">{{ failed_jobs|default:0 }}</h2>
-                    <p class="stats-subtitle">Failed</p>
-                </div>
-                <i class="material-icons-round stats-card-icon">error</i>
+        <div class="stat">
+            <div class="stat-figure text-error">
+                <i class="material-icons-round" style="font-size: 2.5rem;">error</i>
             </div>
+            <div class="stat-title">Failed</div>
+            <div class="stat-value text-error stats-title">{{ failed_jobs|default:0 }}</div>
         </div>
-        <div class="md-card oracle-info-gradient stats-card-content">
-            <div class="md-flex md-items-center md-justify-between">
-                <div>
-                    <h2 class="stats-title">{{ today_jobs|default:0 }}</h2>
-                    <p class="stats-subtitle">Today's Jobs</p>
-                </div>
-                <i class="material-icons-round stats-card-icon">today</i>
+        <div class="stat">
+            <div class="stat-figure text-info">
+                <i class="material-icons-round" style="font-size: 2.5rem;">today</i>
             </div>
+            <div class="stat-title">Today's Jobs</div>
+            <div class="stat-value stats-title">{{ today_jobs|default:0 }}</div>
         </div>
     </div>
 
@@ -77,8 +70,8 @@
                 <i class="material-icons md-me-3" style="font-size: 24px; color: #C74634;">filter_list</i>
                 <h6 class="md-mb-0">Smart Filters</h6>
                 <div class="md-ms-auto">
-                    <button type="button" class="md-btn md-btn-text" id="clearAllFilters" style="color: #697778;">
-                        <i class="material-icons md-me-1">clear_all</i>
+                    <button type="button" class="btn btn-ghost btn-sm" id="clearAllFilters">
+                        <i class="material-icons" style="font-size: 18px;">clear_all</i>
                         Clear All
                     </button>
                 </div>
@@ -223,44 +216,40 @@
         </div>
     </div>
 
-    <!-- Modal do Calendário -->
-    <div class="modal fade" id="datePickerModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header" style="background: var(--oracle-info-gradient); color: white;">
-                    <h5 class="modal-title">
-                        <i class="material-icons md-me-2" style="vertical-align: middle;">date_range</i>
-                        Select Date Range
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <!-- Date Picker Dialog (DaisyUI) -->
+    <dialog id="datePickerModal" class="modal">
+        <div class="modal-box w-11/12 max-w-2xl">
+            <div class="flex items-center gap-2 mb-4">
+                <i class="material-icons text-primary">date_range</i>
+                <h3 class="font-bold text-lg">Select Date Range</h3>
+            </div>
+            <div class="calendar-container">
+                <div class="flex justify-between items-center mb-4">
+                    <button type="button" class="btn btn-sm btn-outline" id="prevMonth">
+                        <i class="material-icons">chevron_left</i>
+                    </button>
+                    <h6 class="m-0 font-semibold" id="currentMonth"></h6>
+                    <button type="button" class="btn btn-sm btn-outline" id="nextMonth">
+                        <i class="material-icons">chevron_right</i>
+                    </button>
                 </div>
-                <div class="modal-body">
-                    <div class="calendar-container">
-                        <div class="calendar-navigation md-flex md-justify-between md-items-center md-mb-4">
-                            <button type="button" class="md-btn md-btn-outlined" id="prevMonth">
-                                <i class="material-icons">chevron_left</i>
-                            </button>
-                            <h6 class="md-mb-0" id="currentMonth"></h6>
-                            <button type="button" class="md-btn md-btn-outlined" id="nextMonth">
-                                <i class="material-icons">chevron_right</i>
-                            </button>
-                        </div>
-                        <div class="calendar-grid" id="calendarGrid"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="md-btn md-btn-outlined" data-bs-dismiss="modal" style="padding: 0.75rem 1.5rem; font-size: 1rem;">
-                        <i class="material-icons md-me-2" style="vertical-align: middle;">close</i>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+            <div class="modal-action mt-4">
+                <form method="dialog">
+                    <button class="btn btn-outline">
+                        <i class="material-icons" style="font-size: 18px;">close</i>
                         Cancel
                     </button>
-                    <button type="button" class="md-btn md-btn-primary" id="applyDates" style="padding: 0.75rem 1.5rem; font-size: 1rem;">
-                        <i class="material-icons md-me-2" style="vertical-align: middle;">done</i>
-                        Apply
-                    </button>
-                </div>
+                </form>
+                <button type="button" class="btn btn-primary" id="applyDates" disabled>
+                    <i class="material-icons" style="font-size: 18px;">done</i>
+                    Apply
+                </button>
             </div>
         </div>
-    </div>
+        <form method="dialog" class="modal-backdrop"><button>close</button></form>
+    </dialog>
 
     <!-- Backup Jobs Table -->
     <div class="md-grid md-grid-cols-1">
@@ -273,8 +262,8 @@
                     </h5>
                 </div>
             </div>
-            <div class="md-table-responsive">
-                <table class="md-table md-mb-0" id="tableReport">
+            <div class="overflow-x-auto">
+                <table class="table table-xs table-zebra w-full" id="tableReport">
                     <thead>
                         <tr>
                             <th style="padding: 1rem;">
@@ -323,13 +312,12 @@
                             <td>{{ j.hostname }}</td>
                             <td>{{ j.db_name }}</td>
                             <td>
-                                <span class="md-badge md-badge-info">{{ j.backup_type }}</span>
+                                <span class="badge badge-sm badge-info">{{ j.backup_type }}</span>
                             </td>
                             <td>{{ j.start_time|date:"d/M/Y H:i" }}</td>
                             <td>{{ j.end_time|date:"d/M/Y H:i"|default:"-" }}</td>
                             <td>
                                 {# Presenter: backup_tags.backup_badge maps status → DaisyUI badge #}
-                                {% load backup_tags %}
                                 {% backup_badge j.status %}
                             </td>
                             <td>
@@ -346,15 +334,15 @@
                                     -
                                 {% endif %}
                             </td>
-                            <td class="md-text-center">
-                                <div class="md-btn-group" role="group">
-                                    <button type="button" class="md-btn md-btn-sm md-btn-outlined md-btn-secondary" 
-                                            title="View Details" style="padding: 0.5rem; margin-right: 0.25rem;"
+                            <td class="text-center">
+                                <div class="flex gap-1 justify-center">
+                                    <button type="button" class="btn btn-sm btn-ghost btn-square"
+                                            title="View Details"
                                             onclick="jobDetail('{{ j.session_key }}')">
                                         <i class="material-icons" style="font-size: 16px;">visibility</i>
                                     </button>
-                                    <button type="button" class="md-btn md-btn-sm md-btn-outlined md-btn-primary" 
-                                            title="View Logs" style="padding: 0.5rem;"
+                                    <button type="button" class="btn btn-sm btn-ghost btn-square"
+                                            title="View Logs"
                                             onclick="viewLogs('{{ j.session_key }}')">
                                         <i class="material-icons" style="font-size: 16px;">description</i>
                                     </button>
@@ -363,13 +351,13 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="10" class="md-text-center md-py-6">
-                                <div class="md-text-muted">
-                                    <i class="material-icons md-mb-3" style="font-size: 64px;">assessment</i>
-                                    <h5>No backup jobs found</h5>
-                                    <p class="md-mb-3">Backup jobs will appear here once they start running.</p>
-                                    <a href="{% url 'coreRelback:report-refresh-schedule' %}" class="md-btn md-btn-primary" style="padding: 0.75rem 1.5rem; font-size: 1rem;">
-                                        <i class="material-icons md-me-2" style="vertical-align: middle;">refresh</i>
+                            <td colspan="10" class="text-center py-10">
+                                <div class="text-base-content/60 flex flex-col items-center gap-3">
+                                    <i class="material-icons" style="font-size: 64px;">assessment</i>
+                                    <h5 class="text-lg font-semibold">No backup jobs found</h5>
+                                    <p>Backup jobs will appear here once they start running.</p>
+                                    <a href="{% url 'coreRelback:report-refresh-schedule' %}" class="btn btn-primary">
+                                        <i class="material-icons" style="font-size: 18px;">refresh</i>
                                         Refresh Data
                                     </a>
                                 </div>
@@ -383,55 +371,47 @@
     </div>
 </div>
 
-<!-- Modal for Job Details -->
-<div class="modal fade" id="jobDetailModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header md-bg-primary" style="color: white;">
-                <h5 class="modal-title">
-                    <i class="material-icons md-me-2" style="vertical-align: middle;">info</i>
-                    Job Details
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div id="jobDetailContent">
-                    <!-- Content will be loaded via AJAX -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="md-btn md-btn-outlined" data-bs-dismiss="modal" style="padding: 0.75rem 1.5rem; font-size: 1rem;">Close</button>
-            </div>
+<!-- Job Details Dialog (DaisyUI) -->
+<dialog id="jobDetailModal" class="modal">
+    <div class="modal-box w-11/12 max-w-3xl">
+        <div class="flex items-center gap-2 mb-4">
+            <i class="material-icons text-primary">info</i>
+            <h3 class="font-bold text-lg">Job Details</h3>
+        </div>
+        <div id="jobDetailContent" class="py-2">
+            <!-- Content loaded via JS -->
+        </div>
+        <div class="modal-action">
+            <form method="dialog">
+                <button class="btn">Close</button>
+            </form>
         </div>
     </div>
-</div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
 
-<!-- Modal for Logs -->
-<div class="modal fade" id="jobLogsModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-xl">
-        <div class="modal-content">
-            <div class="modal-header md-bg-primary" style="color: white;">
-                <h5 class="modal-title">
-                    <i class="material-icons md-me-2" style="vertical-align: middle;">description</i>
-                    Job Logs
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div id="jobLogsContent">
-                    <!-- Logs will be loaded via AJAX -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="md-btn md-btn-outlined" data-bs-dismiss="modal" style="padding: 0.75rem 1.5rem; font-size: 1rem;">Close</button>
-                <button type="button" class="md-btn md-btn-primary" onclick="downloadLogs()" style="padding: 0.75rem 1.5rem; font-size: 1rem;">
-                    <i class="material-icons md-me-2" style="vertical-align: middle;">download</i>
-                    Download Logs
-                </button>
-            </div>
+<!-- Job Logs Dialog (DaisyUI) -->
+<dialog id="jobLogsModal" class="modal">
+    <div class="modal-box w-11/12 max-w-5xl">
+        <div class="flex items-center gap-2 mb-4">
+            <i class="material-icons text-primary">description</i>
+            <h3 class="font-bold text-lg">Job Logs</h3>
+        </div>
+        <div id="jobLogsContent" class="py-2">
+            <!-- Logs loaded via JS -->
+        </div>
+        <div class="modal-action">
+            <button type="button" class="btn btn-primary" onclick="downloadLogs()">
+                <i class="material-icons" style="font-size: 18px;">download</i>
+                Download Logs
+            </button>
+            <form method="dialog">
+                <button class="btn">Close</button>
+            </form>
         </div>
     </div>
-</div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
 {% endblock %}
 
 {% block extra_js %}
@@ -1109,22 +1089,21 @@ let currentCalendarDate = new Date();
 // Função para mostrar mensagens
 function showMessage(message, type = 'success') {
     const messageContainer = document.getElementById('messageContainer');
-    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
-    
+    const alertClass = type === 'success' ? 'alert-success' : (type === 'info' ? 'alert-info' : 'alert-error');
+
     messageContainer.innerHTML = `
-        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-            <i class="material-icons me-2" style="vertical-align: middle;">${type === 'success' ? 'check_circle' : 'error'}</i>
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div role="alert" class="alert ${alertClass} mb-4">
+            <i class="material-icons">${type === 'success' ? 'check_circle' : (type === 'info' ? 'info' : 'error')}</i>
+            <span>${message}</span>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="this.closest('[role=alert]').remove()">
+                <i class="material-icons" style="font-size:16px;">close</i>
+            </button>
         </div>
     `;
-    
+
     setTimeout(() => {
-        const alert = messageContainer.querySelector('.alert');
-        if (alert) {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        }
+        const alert = messageContainer.querySelector('[role=alert]');
+        if (alert) alert.remove();
     }, 5000);
 }
 
@@ -1264,40 +1243,32 @@ function initSearchableSelects() {
 function initCalendar() {
     const dateRangeInput = document.getElementById('dateRange');
     const filterDateRangeInput = document.getElementById('date_range_filter');
-    
+
     console.log('Initializing calendar...', dateRangeInput, filterDateRangeInput);
-    
-    // Check if Bootstrap Modal is available
-    if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
-        console.error('Bootstrap Modal not available!');
-        return;
-    }
-    
+
     const modalElement = document.getElementById('datePickerModal');
     if (!modalElement) {
         console.error('datePickerModal not found!');
         return;
     }
-    
-    const modal = new bootstrap.Modal(modalElement);
-    
+
     // Add click handlers for both date inputs
     if (dateRangeInput) {
         dateRangeInput.addEventListener('click', () => {
             console.log('Date range input clicked');
             renderCalendar();
-            modal.show();
+            modalElement.showModal();
         });
     }
-    
+
     if (filterDateRangeInput) {
         filterDateRangeInput.addEventListener('click', () => {
             console.log('Filter date range input clicked');
             renderCalendar();
-            modal.show();
+            modalElement.showModal();
         });
     }
-    
+
     const clearDatesBtn = document.getElementById('clearDates');
     if (clearDatesBtn) {
         clearDatesBtn.addEventListener('click', (e) => {
@@ -1305,13 +1276,13 @@ function initCalendar() {
             e.stopPropagation();
             selectedStartDate = null;
             selectedEndDate = null;
-            dateRangeInput.value = '';
+            if (dateRangeInput) dateRangeInput.value = '';
             document.getElementById('start_date').value = '';
             document.getElementById('end_date').value = '';
             console.log('Dates cleared');
         });
     }
-    
+
     const prevMonthBtn = document.getElementById('prevMonth');
     if (prevMonthBtn) {
         prevMonthBtn.addEventListener('click', () => {
@@ -1319,7 +1290,7 @@ function initCalendar() {
             renderCalendar();
         });
     }
-    
+
     const nextMonthBtn = document.getElementById('nextMonth');
     if (nextMonthBtn) {
         nextMonthBtn.addEventListener('click', () => {
@@ -1327,14 +1298,14 @@ function initCalendar() {
             renderCalendar();
         });
     }
-    
+
     const applyDatesBtn = document.getElementById('applyDates');
     if (applyDatesBtn) {
         applyDatesBtn.addEventListener('click', () => {
             if (selectedStartDate && selectedEndDate) {
                 const start = formatDate(selectedStartDate);
                 const end = formatDate(selectedEndDate);
-                
+
                 // Update both date inputs
                 if (dateRangeInput) {
                     dateRangeInput.value = `${start} - ${end}`;
@@ -1342,23 +1313,23 @@ function initCalendar() {
                 if (filterDateRangeInput) {
                     filterDateRangeInput.value = `${start} - ${end}`;
                 }
-                
+
                 // Update hidden fields if they exist
                 const startDateField = document.getElementById('start_date');
                 const endDateField = document.getElementById('end_date');
                 if (startDateField) startDateField.value = formatDateForInput(selectedStartDate);
                 if (endDateField) endDateField.value = formatDateForInput(selectedEndDate);
-                
+
                 // Apply filter if in filter mode
                 currentFilters.date_range = { start: selectedStartDate, end: selectedEndDate };
                 applyFilters();
-                
+
                 console.log('Dates applied:', start, end);
             }
-            modal.hide();
+            modalElement.close();
         });
     }
-    
+
     console.log('Calendar initialized successfully');
 }
 
@@ -1497,24 +1468,15 @@ function formatDateForInput(date) {
 
 function openDateRangePicker() {
     console.log('Opening date range picker...');
-    
-    // Check if Bootstrap Modal is available
-    if (typeof bootstrap === 'undefined' || !bootstrap.Modal) {
-        console.error('Bootstrap Modal not available!');
-        alert('Date picker requires Bootstrap. Please refresh the page.');
-        return;
-    }
-    
+
     const modalElement = document.getElementById('datePickerModal');
     if (!modalElement) {
         console.error('datePickerModal not found!');
-        alert('Date picker modal not found. Please refresh the page.');
         return;
     }
-    
-    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
     renderCalendar();
-    modal.show();
+    modalElement.showModal();
 }
 
 function generateSchedules() {
@@ -1532,37 +1494,38 @@ function generateSchedules() {
 
 function jobDetail(sessionKey) {
     // Load job details via AJAX
-    $('#jobDetailContent').html('<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>');
-    $('#jobDetailModal').modal('show');
-    
-    // You would implement AJAX call here to load job details
+    const contentEl = document.getElementById('jobDetailContent');
+    contentEl.innerHTML = '<div class="flex justify-center py-6"><span class="loading loading-spinner loading-md"></span></div>';
+    document.getElementById('jobDetailModal').showModal();
+
+    // Placeholder — real AJAX implementation pending
     setTimeout(() => {
-        $('#jobDetailContent').html(`
-            <div class="row">
-                <div class="col-md-6">
+        contentEl.innerHTML = `
+            <div class="grid grid-cols-2 gap-4">
+                <div>
                     <strong>Session Key:</strong> ${sessionKey}<br>
-                    <strong>Status:</strong> <span class="badge bg-success">Completed</span><br>
+                    <strong>Status:</strong> <span class="badge badge-success">Completed</span><br>
                     <strong>Duration:</strong> 45 minutes<br>
                 </div>
-                <div class="col-md-6">
+                <div>
                     <strong>Size:</strong> 2.5 GB<br>
                     <strong>Files:</strong> 12<br>
                     <strong>Compression:</strong> 65%<br>
                 </div>
             </div>
-        `);
+        `;
     }, 1000);
 }
-
 function viewLogs(sessionKey) {
     // Load job logs via AJAX
-    $('#jobLogsContent').html('<div class="text-center"><div class="spinner-border" role="status"><span class="visually-hidden">Loading logs...</span></div></div>');
-    $('#jobLogsModal').modal('show');
-    
-    // You would implement AJAX call here to load logs
+    const contentEl = document.getElementById('jobLogsContent');
+    contentEl.innerHTML = '<div class="flex justify-center py-6"><span class="loading loading-spinner loading-md"></span><span class="ml-2">Loading logs...</span></div>';
+    document.getElementById('jobLogsModal').showModal();
+
+    // Placeholder — real AJAX implementation pending
     setTimeout(() => {
-        $('#jobLogsContent').html(`
-            <pre class="bg-dark text-light p-3 rounded" style="max-height: 400px; overflow-y: auto;">
+        contentEl.innerHTML = `
+            <pre class="bg-neutral text-neutral-content p-3 rounded-lg overflow-y-auto" style="max-height: 400px;">
 [2025-08-01 15:30:00] Starting backup job for database: ${sessionKey}
 [2025-08-01 15:30:05] Connecting to database...
 [2025-08-01 15:30:06] Connection established
@@ -1572,7 +1535,7 @@ function viewLogs(sessionKey) {
 [2025-08-01 15:35:02] Total size: 2.5 GB
 [2025-08-01 15:35:03] Backup job completed
             </pre>
-        `);
+        `;
     }, 1000);
 }
 
@@ -1700,13 +1663,13 @@ function updateTableDisplay() {
             const emptyRow = document.createElement('tr');
             emptyRow.className = 'empty-state';
             emptyRow.innerHTML = `
-                <td colspan="10" class="md-text-center md-py-6">
-                    <div class="md-text-muted">
-                        <i class="material-icons md-mb-3" style="font-size: 64px; color: #C74634;">search_off</i>
-                        <h5>No results found</h5>
-                        <p class="md-mb-3">Try adjusting your filters or search terms.</p>
-                        <button type="button" class="md-btn md-btn-outlined" onclick="clearAllFilters()">
-                            <i class="material-icons md-me-2">clear_all</i>
+                <td colspan="10" class="text-center py-10">
+                    <div class="text-base-content/60 flex flex-col items-center gap-3">
+                        <i class="material-icons" style="font-size: 64px; color: #C74634;">search_off</i>
+                        <h5 class="text-lg font-semibold">No results found</h5>
+                        <p>Try adjusting your filters or search terms.</p>
+                        <button type="button" class="btn btn-outline" onclick="clearAllFilters()">
+                            <i class="material-icons" style="font-size: 18px;">clear_all</i>
                             Clear All Filters
                         </button>
                     </div>
@@ -1884,26 +1847,17 @@ function clearAllFilters() {
 
 // Function to open date range picker
 function openDateRangePicker() {
-    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-        const modalElement = document.getElementById('datePickerModal');
-        if (modalElement) {
-            const modal = new bootstrap.Modal(modalElement);
-            renderCalendar();
-            modal.show();
-        }
+    const modalElement = document.getElementById('datePickerModal');
+    if (modalElement) {
+        renderCalendar();
+        modalElement.showModal();
     }
 }
 
 // Initialize components when page loads
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing components...');
-    
-    // Check if Bootstrap is loaded
-    if (typeof bootstrap === 'undefined') {
-        console.error('Bootstrap is not loaded!');
-        return;
-    }
-    
+
     // Initialize reports data first
     initializeReportsData();
     
