@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from .models import Client, Host, Database, BackupPolicy, RelbackUser, Schedule
 from django import forms
@@ -76,6 +77,7 @@ def is_database_available() -> bool:
         return False
 
 
+@login_required
 def get_hosts_by_client(request, client_id: int) -> JsonResponse:
     """Returns hosts JSON for a given client_id (used by AJAX selects)."""
     try:
@@ -86,6 +88,7 @@ def get_hosts_by_client(request, client_id: int) -> JsonResponse:
         return JsonResponse({'hosts': []})
 
 
+@login_required
 def get_databases_by_client(request, client_id: int) -> JsonResponse:
     """Returns databases JSON for a given client_id (used by AJAX selects)."""
     try:
@@ -97,6 +100,7 @@ def get_databases_by_client(request, client_id: int) -> JsonResponse:
 
 
 # Função para a página inicial
+@login_required
 def index(request):
     stats = _make_dashboard_use_case().execute()
     context = {
@@ -116,13 +120,13 @@ def creators(request):
 # ---------------------------
 # VIEWS PARA CLIENTS
 # ---------------------------
-class ClientListView(ListView):
+class ClientListView(LoginRequiredMixin, ListView):
     model = Client
     template_name = "clients.html"
     context_object_name = "clients"
 
 
-class ClientCreateView(CreateView):
+class ClientCreateView(LoginRequiredMixin, CreateView):
     model = Client
     template_name = "client_form.html"
     fields = ['name', 'description']
@@ -142,7 +146,7 @@ class ClientCreateView(CreateView):
         return redirect(self.success_url)
 
 
-class ClientUpdateView(UpdateView):
+class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Client
     template_name = "client_form.html"
     fields = ['name', 'description']
@@ -163,7 +167,7 @@ class ClientUpdateView(UpdateView):
         return redirect(self.success_url)
 
 
-class ClientDeleteView(DeleteView):
+class ClientDeleteView(LoginRequiredMixin, DeleteView):
     model = Client
     template_name = "client_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:client-list')
@@ -177,7 +181,7 @@ class ClientDeleteView(DeleteView):
 # ---------------------------
 # VIEWS PARA HOSTS
 # ---------------------------
-class HostListView(ListView):
+class HostListView(LoginRequiredMixin, ListView):
     model = Host
     template_name = "hosts.html"
     context_object_name = "hosts"
@@ -198,7 +202,7 @@ class HostListView(ListView):
         return context
 
 
-class HostCreateView(CreateView):
+class HostCreateView(LoginRequiredMixin, CreateView):
     model = Host
     template_name = "host_form.html"
     fields = ['hostname', 'description', 'ip', 'client']
@@ -220,7 +224,7 @@ class HostCreateView(CreateView):
         return redirect(self.success_url)
 
 
-class HostUpdateView(UpdateView):
+class HostUpdateView(LoginRequiredMixin, UpdateView):
     model = Host
     template_name = "host_form.html"
     fields = ['hostname', 'description', 'ip', 'client']
@@ -243,7 +247,7 @@ class HostUpdateView(UpdateView):
         return redirect(self.success_url)
 
 
-class HostDeleteView(DeleteView):
+class HostDeleteView(LoginRequiredMixin, DeleteView):
     model = Host
     template_name = "host_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:host-list')
@@ -256,7 +260,7 @@ class HostDeleteView(DeleteView):
 # ---------------------------
 # VIEWS PARA DATABASES
 # ---------------------------
-class DatabaseListView(ListView):
+class DatabaseListView(LoginRequiredMixin, ListView):
     model = Database
     template_name = "databases.html"
     context_object_name = "databases"
@@ -276,7 +280,7 @@ class DatabaseListView(ListView):
         return context
 
 
-class DatabaseCreateView(CreateView):
+class DatabaseCreateView(LoginRequiredMixin, CreateView):
     model = Database
     template_name = "database_form.html"
     fields = ['db_name', 'description', 'client', 'host', 'dbid']
@@ -299,7 +303,7 @@ class DatabaseCreateView(CreateView):
         return redirect(self.success_url)
 
 
-class DatabaseUpdateView(UpdateView):
+class DatabaseUpdateView(LoginRequiredMixin, UpdateView):
     model = Database
     template_name = "database_form.html"
     fields = ['db_name', 'description', 'client', 'host', 'dbid']
@@ -323,7 +327,7 @@ class DatabaseUpdateView(UpdateView):
         return redirect(self.success_url)
 
 
-class DatabaseDeleteView(DeleteView):
+class DatabaseDeleteView(LoginRequiredMixin, DeleteView):
     model = Database
     template_name = "database_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:database-list')
@@ -335,6 +339,7 @@ class DatabaseDeleteView(DeleteView):
 
 
 # Função de exemplo: lista de hosts vinculados a um determinado database
+@login_required
 def database_hosts_list(request, pk):
     database = get_object_or_404(Database, pk=pk)
     hosts = Host.objects.filter(client=database.client)
@@ -345,7 +350,7 @@ def database_hosts_list(request, pk):
 # ---------------------------
 # VIEWS PARA BACKUP POLICIES
 # ---------------------------
-class BackupPolicyListView(ListView):
+class BackupPolicyListView(LoginRequiredMixin, ListView):
     model = BackupPolicy
     template_name = "policies.html"
     context_object_name = "policies"
@@ -367,7 +372,7 @@ class BackupPolicyListView(ListView):
         return context
 
 
-class BackupPolicyCreateView(CreateView):
+class BackupPolicyCreateView(LoginRequiredMixin, CreateView):
     model = BackupPolicy
     template_name = "policy_form.html"
     fields = ['policy_name', 'client', 'database', 'host', 'backup_type', 'destination',
@@ -402,7 +407,7 @@ class BackupPolicyCreateView(CreateView):
         return redirect(self.success_url)
 
 
-class BackupPolicyUpdateView(UpdateView):
+class BackupPolicyUpdateView(LoginRequiredMixin, UpdateView):
     model = BackupPolicy
     template_name = "policy_form.html"
     fields = ['policy_name', 'client', 'database', 'host', 'backup_type', 'destination',
@@ -438,7 +443,7 @@ class BackupPolicyUpdateView(UpdateView):
         return redirect(self.success_url)
 
 
-class BackupPolicyDeleteView(DeleteView):
+class BackupPolicyDeleteView(LoginRequiredMixin, DeleteView):
     model = BackupPolicy
     template_name = "policy_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:policy-list')
@@ -450,7 +455,7 @@ class BackupPolicyDeleteView(DeleteView):
 
 
 # Se a detail for necessária (por exemplo, para visualização detalhada de uma política)
-class BackupPolicyDetailView(DetailView):
+class BackupPolicyDetailView(LoginRequiredMixin, DetailView):
     model = BackupPolicy
     template_name = "policy_detail.html"
 
@@ -506,6 +511,7 @@ class ScheduleFilterForm(forms.Form):
     end_date = forms.DateField(label='End Date', required=False)
 
 
+@login_required
 def report_refresh_schedule(request):
     import datetime
     days = int(request.GET.get('days', 2))
@@ -526,6 +532,7 @@ def report_refresh_schedule(request):
     return redirect('coreRelback:report-read')
 
 
+@login_required
 def report_read(request):
     import datetime
     form = ScheduleFilterForm(request.GET or None)
@@ -599,6 +606,7 @@ def report_read(request):
     return render(request, "reports.html", context)
 
 
+@login_required
 def report_read_log_detail(request, idPolicy, dbKey, sessionKey):
     context = {"idPolicy": idPolicy, "dbKey": dbKey, "sessionKey": sessionKey}
     return render(request, "reportsReadLog.html", context)
