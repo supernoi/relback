@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  check-and-test:
+    name: Sensor Gate — check + domain tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Django system check (Sensor Gate 1)
+        env:
+          DJANGO_SETTINGS_MODULE: projectRelback.settings_dev
+        run: python manage.py check
+
+      - name: Domain unit tests — no DB required (Sensor Gate 2)
+        env:
+          DJANGO_SETTINGS_MODULE: projectRelback.settings_dev
+        run: python -m unittest coreRelback.tests_domain -v
+
+  sql-lint:
+    name: SQL Syntax Validation (Oracle)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install sqlfluff
+        run: pip install sqlfluff
+
+      - name: Lint SQL scripts in databaseProject/
+        run: |
+          sqlfluff lint databaseProject/ \
+            --dialect ansi \
+            --exclude-rules L016,L036 || true
+        # 'true' makes non-zero exit non-blocking until rules are confirmed
+        # Remove '|| true' once baseline is established

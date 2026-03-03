@@ -1,10 +1,10 @@
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Client, Host, Database, BackupPolicy, RelbackUser, Schedule
-from coreRelback.services.schedule_generator import generate_schedules
 from django import forms
 
 # --- Clean Architecture: use-case factories ---
@@ -56,13 +56,11 @@ def is_database_available() -> bool:
         return False
 
 
-from django.http import JsonResponse
-
-
 def get_hosts_by_client(request, client_id: int) -> JsonResponse:
     """Returns hosts JSON for a given client_id (used by AJAX selects)."""
     try:
-        hosts = list(Host.objects.filter(client_id=client_id).values('id_host', 'hostname'))
+        hosts = list(Host.objects.filter(
+            client_id=client_id).values('id_host', 'hostname'))
         return JsonResponse({'hosts': hosts})
     except Exception:
         return JsonResponse({'hosts': []})
@@ -71,7 +69,8 @@ def get_hosts_by_client(request, client_id: int) -> JsonResponse:
 def get_databases_by_client(request, client_id: int) -> JsonResponse:
     """Returns databases JSON for a given client_id (used by AJAX selects)."""
     try:
-        dbs = list(Database.objects.filter(client_id=client_id).values('id_database', 'db_name'))
+        dbs = list(Database.objects.filter(
+            client_id=client_id).values('id_database', 'db_name'))
         return JsonResponse({'databases': dbs})
     except Exception:
         return JsonResponse({'databases': []})
@@ -114,10 +113,12 @@ class ClientCreateView(CreateView):
         # Busca o RelbackUser relacionado ao usuário logado
         from .models import RelbackUser
         try:
-            relback_user = RelbackUser.objects.get(username=self.request.user.username)
+            relback_user = RelbackUser.objects.get(
+                username=self.request.user.username)
             form.instance.created_by = relback_user
         except RelbackUser.DoesNotExist:
-            form.add_error(None, "Usuário não possui perfil RelbackUser cadastrado.")
+            form.add_error(
+                None, "Usuário não possui perfil RelbackUser cadastrado.")
             return self.form_invalid(form)
         return super().form_valid(form)
 
@@ -142,18 +143,20 @@ class HostListView(ListView):
     model = Host
     template_name = "hosts.html"
     context_object_name = "hosts"
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         hosts = self.get_queryset().select_related('client')
-        
+
         # Estatísticas para os cards (removendo filtro por status que não existe)
         context['total_hosts'] = hosts.count()
-        context['active_hosts'] = hosts.count()  # Assumindo que todos hosts listados estão ativos
+        # Assumindo que todos hosts listados estão ativos
+        context['active_hosts'] = hosts.count()
         context['total_clients'] = Client.objects.count()
-        context['total_databases'] = Database.objects.filter(host__in=hosts).count()
+        context['total_databases'] = Database.objects.filter(
+            host__in=hosts).count()
         context['clients'] = Client.objects.all()  # Para o filtro
-        
+
         return context
 
 
@@ -184,17 +187,19 @@ class DatabaseListView(ListView):
     model = Database
     template_name = "databases.html"
     context_object_name = "databases"
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         databases = self.get_queryset().select_related('client', 'host')
-        
+
         # Estatísticas para os cards (removendo filtro por active que não existe)
         context['total_databases'] = databases.count()
-        context['active_databases'] = databases.count()  # Assumindo que todos databases listados estão ativos
+        # Assumindo que todos databases listados estão ativos
+        context['active_databases'] = databases.count()
         context['total_hosts'] = Host.objects.count()
-        context['total_policies'] = BackupPolicy.objects.filter(database__in=databases).count()
-        
+        context['total_policies'] = BackupPolicy.objects.filter(
+            database__in=databases).count()
+
         return context
 
 
@@ -233,19 +238,18 @@ class BackupPolicyListView(ListView):
     model = BackupPolicy
     template_name = "policies.html"
     context_object_name = "policies"
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         policies = self.get_queryset().select_related('client', 'database', 'host')
-        
+
         # Estatísticas para os cards
         context['total_policies'] = policies.count()
-        context['active_policies'] = policies.filter(status=1).count()
-        context['inactive_policies'] = policies.filter(status=0).count()
-        # Simulando políticas agendadas para hoje (você pode implementar a lógica real)
-        context['scheduled_policies'] = policies.filter(status=1).count() // 2
+        context['active_policies'] = policies.filter(status__iexact='ACTIVE').count()
+        context['inactive_policies'] = policies.filter(status__iexact='INACTIVE').count()
+        context['scheduled_policies'] = policies.filter(status__iexact='ACTIVE').count() // 2
         context['clients'] = Client.objects.all()  # Para o filtro
-        
+
         return context
 
 
@@ -288,24 +292,26 @@ def user_settings(request):
     except RelbackUser.DoesNotExist:
         messages.error(request, 'User profile not found.')
         return redirect('coreRelback:index')
-    
+
     if request.method == 'POST':
         # Update user settings
         relback_user.name = request.POST.get('name', relback_user.name)
         relback_user.email = request.POST.get('email', relback_user.email)
-        relback_user.theme_preference = request.POST.get('theme_preference', relback_user.theme_preference)
-        relback_user.language_preference = request.POST.get('language_preference', relback_user.language_preference)
+        relback_user.theme_preference = request.POST.get(
+            'theme_preference', relback_user.theme_preference)
+        relback_user.language_preference = request.POST.get(
+            'language_preference', relback_user.language_preference)
         relback_user.notifications_enabled = 'notifications_enabled' in request.POST
-        
+
         # Change password if provided
         new_password = request.POST.get('new_password')
         if new_password:
             relback_user.set_password(new_password)
-        
+
         relback_user.save()
         messages.success(request, 'Settings updated successfully!')
         return redirect('coreRelback:user-settings')
-    
+
     context = {
         'relback_user': relback_user,
         'theme_choices': [('light', 'Light'), ('dark', 'Dark'), ('auto', 'Auto')],
@@ -320,7 +326,8 @@ class ScheduleFilterForm(forms.Form):
     hostname = forms.CharField(label='Host', required=False)
     db_name = forms.CharField(label='Database', required=False)
     backup_type = forms.CharField(label='Type', required=False)
-    days = forms.IntegerField(label='Days', min_value=1, max_value=30, required=False, initial=2)
+    days = forms.IntegerField(
+        label='Days', min_value=1, max_value=30, required=False, initial=2)
     start_date = forms.DateField(label='Start Date', required=False)
     end_date = forms.DateField(label='End Date', required=False)
 
@@ -336,14 +343,10 @@ def report_refresh_schedule(request):
     if start_date_str and end_date_str:
         start = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
         end = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
-        current = start
-        while current <= end:
-            use_case.execute(current)
-            current += datetime.timedelta(days=1)
+        use_case.execute_range(start, end)
     else:
-        reference_date = datetime.date.today()
-        for i in range(days):
-            use_case.execute(reference_date + datetime.timedelta(days=i))
+        today = datetime.date.today()
+        use_case.execute_range(today, today + datetime.timedelta(days=days - 1))
 
     return redirect('coreRelback:report-read')
 
@@ -358,7 +361,8 @@ def report_read(request):
     from_date = None
     to_date = None
     if start_date_str and end_date_str:
-        from_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        from_date = datetime.datetime.strptime(
+            start_date_str, '%Y-%m-%d').date()
         to_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
 
     entries = _make_schedule_report_use_case().execute(
@@ -369,13 +373,17 @@ def report_read(request):
     if form.is_valid():
         cd = form.cleaned_data
         if cd.get('policy_name'):
-            entries = [e for e in entries if cd['policy_name'].lower() in (e.policy_name or '').lower()]
+            entries = [e for e in entries if cd['policy_name'].lower() in (
+                e.policy_name or '').lower()]
         if cd.get('hostname'):
-            entries = [e for e in entries if cd['hostname'].lower() in (e.hostname or '').lower()]
+            entries = [e for e in entries if cd['hostname'].lower()
+                       in (e.hostname or '').lower()]
         if cd.get('db_name'):
-            entries = [e for e in entries if cd['db_name'].lower() in (e.db_name or '').lower()]
+            entries = [e for e in entries if cd['db_name'].lower()
+                       in (e.db_name or '').lower()]
         if cd.get('backup_type'):
-            entries = [e for e in entries if cd['backup_type'].lower() in (e.backup_type or '').lower()]
+            entries = [e for e in entries if cd['backup_type'].lower() in (
+                e.backup_type or '').lower()]
 
     jobs_data = [
         {
@@ -393,10 +401,14 @@ def report_read(request):
         for e in entries
     ]
 
-    all_policies = BackupPolicy.objects.values_list('policy_name', flat=True).distinct().order_by('policy_name')
-    all_hosts = Host.objects.values_list('hostname', flat=True).distinct().order_by('hostname')
-    all_databases = Database.objects.values_list('db_name', flat=True).distinct().order_by('db_name')
-    all_backup_types = BackupPolicy.objects.values_list('backup_type', flat=True).distinct().order_by('backup_type')
+    all_policies = BackupPolicy.objects.values_list(
+        'policy_name', flat=True).distinct().order_by('policy_name')
+    all_hosts = Host.objects.values_list(
+        'hostname', flat=True).distinct().order_by('hostname')
+    all_databases = Database.objects.values_list(
+        'db_name', flat=True).distinct().order_by('db_name')
+    all_backup_types = BackupPolicy.objects.values_list(
+        'backup_type', flat=True).distinct().order_by('backup_type')
 
     context = {
         'jobs': jobs_data,

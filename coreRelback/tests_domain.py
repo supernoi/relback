@@ -45,6 +45,7 @@ from coreRelback.services.use_cases import (
 class StubClientRepo(IClientRepository):
     def get_all(self) -> List[ClientEntity]:
         return [ClientEntity(id_client=1, name="Acme")]
+
     def count(self) -> int:
         return 1
 
@@ -52,6 +53,7 @@ class StubClientRepo(IClientRepository):
 class StubHostRepo(IHostRepository):
     def get_all(self) -> List[HostEntity]:
         return [HostEntity(id_host=1, hostname="srv01", ip="10.0.0.1")]
+
     def count(self) -> int:
         return 1
 
@@ -59,6 +61,7 @@ class StubHostRepo(IHostRepository):
 class StubDatabaseRepo(IDatabaseRepository):
     def get_all(self) -> List[DatabaseEntity]:
         return [DatabaseEntity(id_database=1, db_name="ORCL", dbid=12345)]
+
     def count(self) -> int:
         return 1
 
@@ -127,11 +130,13 @@ class StubRmanRepo(IOracleRmanRepository):
 
 class BackupJobResultEntityTest(TestCase):
     def test_is_ok_completed(self):
-        job = BackupJobResult(db_name="ORCL", dbid=1, status=BackupStatusValue.COMPLETED)
+        job = BackupJobResult(db_name="ORCL", dbid=1,
+                              status=BackupStatusValue.COMPLETED)
         self.assertTrue(job.is_ok)
 
     def test_is_ok_failed(self):
-        job = BackupJobResult(db_name="ORCL", dbid=1, status=BackupStatusValue.FAILED)
+        job = BackupJobResult(db_name="ORCL", dbid=1,
+                              status=BackupStatusValue.FAILED)
         self.assertFalse(job.is_ok)
 
     def test_severity_mapping(self):
@@ -144,7 +149,8 @@ class BackupJobResultEntityTest(TestCase):
         }
         for status, expected in cases.items():
             job = BackupJobResult(db_name="ORCL", dbid=1, status=status)
-            self.assertEqual(job.severity, expected, f"Severity mismatch for {status}")
+            self.assertEqual(job.severity, expected,
+                             f"Severity mismatch for {status}")
 
 
 # ---------------------------------------------------------------------------
@@ -172,21 +178,63 @@ class GenerateScheduleUseCaseTest(TestCase):
     def test_generates_entries_for_active_policies(self):
         policy_repo = StubPolicyRepo()
         schedule_repo = StubScheduleRepo()
-        use_case = GenerateScheduleUseCase(policy_repo=policy_repo, schedule_repo=schedule_repo)
+        use_case = GenerateScheduleUseCase(
+            policy_repo=policy_repo, schedule_repo=schedule_repo)
 
         count = use_case.execute(reference_date=datetime.date(2026, 3, 3))
 
-        self.assertTrue(schedule_repo.cleared, "Should have cleared schedules before regenerating")
-        self.assertGreater(count, 0, "Should have created at least one schedule entry")
+        self.assertTrue(schedule_repo.cleared,
+                        "Should have cleared schedules before regenerating")
+        self.assertGreater(
+            count, 0, "Should have created at least one schedule entry")
         self.assertEqual(len(schedule_repo._entries), count)
 
     def test_inactive_policies_are_skipped(self):
-        policy_repo = StubPolicyRepo(policies=[_make_policy(status=PolicyStatus.INACTIVE)])
+        policy_repo = StubPolicyRepo(
+            policies=[_make_policy(status=PolicyStatus.INACTIVE)])
         schedule_repo = StubScheduleRepo()
-        use_case = GenerateScheduleUseCase(policy_repo=policy_repo, schedule_repo=schedule_repo)
+        use_case = GenerateScheduleUseCase(
+            policy_repo=policy_repo, schedule_repo=schedule_repo)
 
         count = use_case.execute(reference_date=datetime.date(2026, 3, 3))
-        self.assertEqual(count, 0, "Inactive policies should not generate schedules")
+        self.assertEqual(
+            count, 0, "Inactive policies should not generate schedules")
+
+    def test_execute_range_clears_once_and_accumulates(self):
+        """execute_range must call clear_all exactly once regardless of range size."""
+        class CountingScheduleRepo(StubScheduleRepo):
+            def __init__(self):
+                super().__init__()
+                self.clear_count = 0
+
+            def clear_all(self):
+                super().clear_all()
+                self.clear_count += 1
+
+        # Specific policy: only matches 2026-03-03 (day=3, month=3)
+        policy = BackupPolicyEntity(
+            id_policy=3, policy_name="RANGE_TEST",
+            backup_type=BackupType.DB_FULL,
+            destination=BackupDestination.DISK,
+            status=PolicyStatus.ACTIVE,
+            minute="0", hour="2", day="3", month="3", day_week="*",
+            duration=10, size_backup="1G",
+        )
+        policy_repo = StubPolicyRepo(policies=[policy])
+        schedule_repo = CountingScheduleRepo()
+        use_case = GenerateScheduleUseCase(
+            policy_repo=policy_repo, schedule_repo=schedule_repo)
+
+        # Range spans 3 days — clear must fire only once
+        use_case.execute_range(
+            from_date=datetime.date(2026, 3, 3),
+            to_date=datetime.date(2026, 3, 5),
+        )
+
+        self.assertEqual(schedule_repo.clear_count, 1,
+                         "execute_range must clear exactly once, not once per day")
+        self.assertGreater(len(schedule_repo._entries), 0,
+                           "At least one entry should be generated")
 
     def test_cron_wildcard_generates_all_hours(self):
         policy = BackupPolicyEntity(
@@ -199,7 +247,8 @@ class GenerateScheduleUseCaseTest(TestCase):
         )
         policy_repo = StubPolicyRepo(policies=[policy])
         schedule_repo = StubScheduleRepo()
-        use_case = GenerateScheduleUseCase(policy_repo=policy_repo, schedule_repo=schedule_repo)
+        use_case = GenerateScheduleUseCase(
+            policy_repo=policy_repo, schedule_repo=schedule_repo)
 
         count = use_case.execute(reference_date=datetime.date(2026, 3, 3))
         self.assertEqual(count, 24, "Wildcard hour should produce 24 entries")

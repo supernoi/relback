@@ -82,13 +82,17 @@ class GenerateScheduleUseCase:
         self._policies = policy_repo
         self._schedules = schedule_repo
 
-    def execute(self, reference_date: Optional[datetime.date] = None) -> int:
+    def execute(self, reference_date: Optional[datetime.date] = None, *, clear: bool = True) -> int:
         """
-        Clears previous schedules and regenerates for the given reference date.
+        Generates schedules for a single reference_date.
+        By default clears ALL existing schedules first (safe for single-day calls).
+        Pass `clear=False` when calling inside a date-range loop to avoid
+        wiping entries already created for previous days.
         Returns the number of schedule entries created.
         """
         reference_date = reference_date or datetime.date.today()
-        self._schedules.clear_all()
+        if clear:
+            self._schedules.clear_all()
 
         active_policies = self._policies.get_active()
         entries: List[ScheduleEntry] = []
@@ -99,6 +103,23 @@ class GenerateScheduleUseCase:
 
         self._schedules.bulk_create(entries)
         return len(entries)
+
+    def execute_range(
+        self,
+        from_date: datetime.date,
+        to_date: datetime.date,
+    ) -> int:
+        """
+        Clears schedules once, then generates for every date in [from_date, to_date].
+        Returns total number of entries created.
+        """
+        self._schedules.clear_all()
+        total = 0
+        current = from_date
+        while current <= to_date:
+            total += self.execute(current, clear=False)
+            current += datetime.timedelta(days=1)
+        return total
 
     # ------------------------------------------------------------------
     # Cron expansion helpers (pure logic — no DB dependency)

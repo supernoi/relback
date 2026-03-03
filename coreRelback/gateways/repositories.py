@@ -16,7 +16,6 @@ from coreRelback.domain.entities import (
     BackupType,
     ClientEntity,
     DatabaseEntity,
-    DashboardStats,
     HostEntity,
     PolicyStatus,
     ScheduleEntry,
@@ -39,7 +38,8 @@ class DjangoClientRepository(IClientRepository):
     def get_all(self) -> List[ClientEntity]:
         from coreRelback.models import Client
         return [
-            ClientEntity(id_client=c.id_client, name=c.name or "", description=c.description)
+            ClientEntity(id_client=c.id_client, name=c.name or "",
+                         description=c.description)
             for c in Client.objects.all()
         ]
 
@@ -113,8 +113,10 @@ class DjangoBackupPolicyRepository(IBackupPolicyRepository):
         return BackupPolicyEntity(
             id_policy=p.id_policy,
             policy_name=p.policy_name,
-            backup_type=BackupType(p.backup_type) if p.backup_type in BackupType._value2member_map_ else BackupType.DB_FULL,
-            destination=BackupDestination(p.destination) if p.destination in BackupDestination._value2member_map_ else BackupDestination.DISK,
+            backup_type=BackupType(
+                p.backup_type) if p.backup_type in BackupType._value2member_map_ else BackupType.DB_FULL,
+            destination=BackupDestination(
+                p.destination) if p.destination in BackupDestination._value2member_map_ else BackupDestination.DISK,
             status=PolicyStatus(p.status.upper()),
             minute=p.minute,
             hour=p.hour,
@@ -159,7 +161,8 @@ class DjangoScheduleRepository(IScheduleRepository):
     def bulk_create(self, entries: List[ScheduleEntry]) -> None:
         from coreRelback.models import BackupPolicy, Schedule
         objs = [
-            Schedule(backup_policy_id=e.policy_id, schedule_start=e.schedule_start)
+            Schedule(backup_policy_id=e.policy_id,
+                     schedule_start=e.schedule_start)
             for e in entries
         ]
         Schedule.objects.bulk_create(objs, ignore_conflicts=True)
@@ -199,7 +202,8 @@ class OracleRmanRepository(IOracleRmanRepository):
             dbid=row[1],
             start_time=row[2],
             end_time=row[3],
-            status=BackupStatusValue(row[4]) if row[4] in BackupStatusValue._value2member_map_ else BackupStatusValue.UNKNOWN,
+            status=BackupStatusValue(
+                row[4]) if row[4] in BackupStatusValue._value2member_map_ else BackupStatusValue.UNKNOWN,
             backup_type=row[5],
             output_bytes_display=row[6],
             time_taken_display=row[7],
