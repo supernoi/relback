@@ -57,7 +57,8 @@ class DjangoClientRepository(IClientRepository):
 
     def create(self, name: str, description: Optional[str], created_by_id: int) -> ClientEntity:
         from coreRelback.models import Client
-        c = Client.objects.create(name=name, description=description, created_by_id=created_by_id)
+        c = Client.objects.create(
+            name=name, description=description, created_by_id=created_by_id)
         return ClientEntity(id_client=c.id_client, name=c.name or "", description=c.description)
 
     def update(self, client_id: int, name: str, description: Optional[str], updated_by_id: int) -> ClientEntity:

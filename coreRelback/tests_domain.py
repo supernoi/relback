@@ -65,13 +65,15 @@ class StubClientRepo(IClientRepository):
         return len(self._store)
 
     def create(self, name: str, description, created_by_id: int) -> ClientEntity:
-        entity = ClientEntity(id_client=self._next_id, name=name, description=description)
+        entity = ClientEntity(id_client=self._next_id,
+                              name=name, description=description)
         self._store[self._next_id] = entity
         self._next_id += 1
         return entity
 
     def update(self, client_id: int, name: str, description, updated_by_id: int) -> ClientEntity:
-        entity = ClientEntity(id_client=client_id, name=name, description=description)
+        entity = ClientEntity(id_client=client_id,
+                              name=name, description=description)
         self._store[client_id] = entity
         return entity
 
@@ -192,7 +194,8 @@ class StubPolicyRepo(IBackupPolicyRepository):
         return self.get_by_id(policy_id)
 
     def delete(self, policy_id: int) -> None:
-        self._policies = [p for p in self._policies if p.id_policy != policy_id]
+        self._policies = [
+            p for p in self._policies if p.id_policy != policy_id]
 
 
 class StubScheduleRepo(IScheduleRepository):
@@ -257,9 +260,11 @@ class GetDashboardStatsUseCaseTest(TestCase):
         client_repo = StubClientRepo()
         client_repo.create(name="Acme", description=None, created_by_id=1)
         host_repo = StubHostRepo()
-        host_repo.create(hostname="srv01", description="", ip="10.0.0.1", client_id=1, created_by_id=1)
+        host_repo.create(hostname="srv01", description="",
+                         ip="10.0.0.1", client_id=1, created_by_id=1)
         db_repo = StubDatabaseRepo()
-        db_repo.create(db_name="ORCL", description="", client_id=1, host_id=1, dbid=12345, created_by_id=1)
+        db_repo.create(db_name="ORCL", description="", client_id=1,
+                       host_id=1, dbid=12345, created_by_id=1)
         use_case = GetDashboardStatsUseCase(
             client_repo=client_repo,
             host_repo=host_repo,
@@ -422,14 +427,17 @@ class AuditBackupUseCaseTest(TestCase):
 class CreateClientUseCaseTest(TestCase):
     def test_create_returns_entity_with_correct_name(self):
         repo = StubClientRepo()
-        entity = CreateClientUseCase(repo).execute(name="Globo", description="TV", created_by_id=1)
+        entity = CreateClientUseCase(repo).execute(
+            name="Globo", description="TV", created_by_id=1)
         self.assertEqual(entity.name, "Globo")
         self.assertEqual(entity.description, "TV")
 
     def test_create_increments_count(self):
         repo = StubClientRepo()
-        CreateClientUseCase(repo).execute(name="X", description=None, created_by_id=1)
-        CreateClientUseCase(repo).execute(name="Y", description=None, created_by_id=1)
+        CreateClientUseCase(repo).execute(
+            name="X", description=None, created_by_id=1)
+        CreateClientUseCase(repo).execute(
+            name="Y", description=None, created_by_id=1)
         self.assertEqual(repo.count(), 2)
 
 
@@ -447,7 +455,8 @@ class UpdateClientUseCaseTest(TestCase):
 class DeleteClientUseCaseTest(TestCase):
     def test_delete_removes_entity(self):
         repo = StubClientRepo()
-        created = repo.create(name="ToRemove", description=None, created_by_id=1)
+        created = repo.create(
+            name="ToRemove", description=None, created_by_id=1)
         self.assertEqual(repo.count(), 1)
         DeleteClientUseCase(repo).execute(created.id_client)
         self.assertEqual(repo.count(), 0)
@@ -504,4 +513,3 @@ class UpdateDatabaseUseCaseTest(TestCase):
             client_id=1, host_id=1, dbid=2, updated_by_id=1,
         )
         self.assertEqual(updated.db_name, "NEW_DB")
-
