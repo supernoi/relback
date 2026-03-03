@@ -16,8 +16,8 @@
                         <p class="page-subtitle">Manage your backup clients and organizations</p>
                     </div>
                 </div>
-                <button type="button" class="md-btn md-btn-primary page-actions" data-modal-target="#addClientModal">
-                    <i class="material-icons md-me-1">add</i>
+                <button type="button" class="btn btn-primary" data-modal-target="#addClientModal">
+                    <i class="material-icons" style="font-size: 18px;">add</i>
                     Add Client
                 </button>
             </div>
@@ -25,24 +25,20 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="md-grid md-grid-cols-4 md-mb-5">
-        <div class="md-card oracle-info-gradient stats-card-content">
-            <div class="md-flex md-items-center md-justify-between">
-                <div>
-                    <h2 class="stats-title">{{ clients.count }}</h2>
-                    <p class="stats-subtitle">Total Clients</p>
-                </div>
-                <i class="material-icons-round stats-card-icon">business</i>
+    <div class="stats stats-vertical lg:stats-horizontal shadow w-full mb-5">
+        <div class="stat">
+            <div class="stat-figure text-primary">
+                <i class="material-icons-round" style="font-size: 2.5rem;">business</i>
             </div>
+            <div class="stat-title">Total Clients</div>
+            <div class="stat-value stats-title">{{ clients.count }}</div>
         </div>
-        <div class="md-card oracle-info-gradient stats-card-content">
-            <div class="md-flex md-items-center md-justify-between">
-                <div>
-                    <h2 class="stats-title">{{ clients|length }}</h2>
-                    <p class="stats-subtitle">Active Clients</p>
-                </div>
-                <i class="material-icons-round stats-card-icon">verified</i>
+        <div class="stat">
+            <div class="stat-figure text-success">
+                <i class="material-icons-round" style="font-size: 2.5rem;">verified</i>
             </div>
+            <div class="stat-title">Active Clients</div>
+            <div class="stat-value text-success stats-title">{{ clients|length }}</div>
         </div>
     </div>
 
@@ -54,8 +50,8 @@
                     <input type="text" class="md-input" id="searchClients" placeholder="Search clients..." autocomplete="off">
                     <div class="autocomplete-list" id="autocompleteList"></div>
                 </div>
-                <button class="md-btn md-btn-text clean-btn" id="cleanBtn">
-                    <i class="material-icons md-me-1">clear</i>
+                <button class="btn btn-ghost btn-sm clean-btn" id="cleanBtn">
+                    <i class="material-icons" style="font-size: 18px;">clear</i>
                     Clean
                 </button>
             </div>
@@ -66,8 +62,8 @@
     <div class="md-grid md-grid-cols-1">
         <div class="md-card md-card-decorated">
             {% if clients %}
-                <div class="md-table-responsive">
-                    <table class="md-table">
+                <div class="overflow-x-auto">
+                    <table class="table table-xs table-zebra w-full">
                         <thead>
                             <tr>
                                 <th class="oracle-info-gradient">
@@ -137,8 +133,8 @@
                     <i class="material-icons empty-state-icon">business</i>
                     <h4 class="empty-state-title">No clients found</h4>
                     <p class="empty-state-description">Get started by adding your first client</p>
-                    <a href="{% url 'coreRelback:client-create' %}" class="md-btn md-btn-primary empty-state-action">
-                        <i class="material-icons md-me-1">add</i>
+                    <a href="{% url 'coreRelback:client-create' %}" class="btn btn-primary">
+                        <i class="material-icons" style="font-size: 18px;">add</i>
                         Add First Client
                     </a>
                 </div>
@@ -148,7 +144,7 @@
 </div>
 
 <!-- Floating Action Button -->
-<button class="md-fab" id="addClientFab" title="Add Client">
+<button class="btn btn-circle btn-primary btn-lg fixed bottom-6 right-6 shadow-lg z-50" id="addClientFab" title="Add Client">
     <i class="material-icons">add</i>
 </button>
 
