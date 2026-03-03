@@ -19,7 +19,27 @@ from coreRelback.services.use_cases import (
     GetDashboardStatsUseCase,
     GetScheduleReportUseCase,
     GenerateScheduleUseCase,
+    CreateClientUseCase,
+    UpdateClientUseCase,
+    DeleteClientUseCase,
+    CreateHostUseCase,
+    UpdateHostUseCase,
+    DeleteHostUseCase,
+    CreateDatabaseUseCase,
+    UpdateDatabaseUseCase,
+    DeleteDatabaseUseCase,
+    CreateBackupPolicyUseCase,
+    UpdateBackupPolicyUseCase,
+    DeleteBackupPolicyUseCase,
 )
+
+
+def _get_relback_user(request):
+    """Resolves the RelbackUser for the current request. Returns None if not found."""
+    try:
+        return RelbackUser.objects.get(username=request.user.username)
+    except RelbackUser.DoesNotExist:
+        return None
 
 
 def _make_dashboard_use_case() -> GetDashboardStatsUseCase:
@@ -103,24 +123,22 @@ class ClientListView(ListView):
 
 
 class ClientCreateView(CreateView):
-
     model = Client
     template_name = "client_form.html"
     fields = ['name', 'description']
     success_url = reverse_lazy('coreRelback:client-list')
 
     def form_valid(self, form):
-        # Busca o RelbackUser relacionado ao usuário logado
-        from .models import RelbackUser
-        try:
-            relback_user = RelbackUser.objects.get(
-                username=self.request.user.username)
-            form.instance.created_by = relback_user
-        except RelbackUser.DoesNotExist:
-            form.add_error(
-                None, "Usuário não possui perfil RelbackUser cadastrado.")
+        relback_user = _get_relback_user(self.request)
+        if relback_user is None:
+            form.add_error(None, "Usuário não possui perfil RelbackUser cadastrado.")
             return self.form_invalid(form)
-        return super().form_valid(form)
+        CreateClientUseCase(DjangoClientRepository()).execute(
+            name=form.cleaned_data['name'],
+            description=form.cleaned_data.get('description'),
+            created_by_id=relback_user.pk,
+        )
+        return redirect(self.success_url)
 
 
 class ClientUpdateView(UpdateView):
@@ -129,11 +147,28 @@ class ClientUpdateView(UpdateView):
     fields = ['name', 'description']
     success_url = reverse_lazy('coreRelback:client-list')
 
+    def form_valid(self, form):
+        relback_user = _get_relback_user(self.request)
+        if relback_user is None:
+            form.add_error(None, "Usuário não possui perfil RelbackUser cadastrado.")
+            return self.form_invalid(form)
+        UpdateClientUseCase(DjangoClientRepository()).execute(
+            client_id=self.object.pk,
+            name=form.cleaned_data['name'],
+            description=form.cleaned_data.get('description'),
+            updated_by_id=relback_user.pk,
+        )
+        return redirect(self.success_url)
+
 
 class ClientDeleteView(DeleteView):
     model = Client
     template_name = "client_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:client-list')
+
+    def delete(self, request, *args, **kwargs):
+        DeleteClientUseCase(DjangoClientRepository()).execute(self.get_object().pk)
+        return redirect(self.success_url)
 
 
 # ---------------------------
@@ -166,6 +201,20 @@ class HostCreateView(CreateView):
     fields = ['hostname', 'description', 'ip', 'client']
     success_url = reverse_lazy('coreRelback:host-list')
 
+    def form_valid(self, form):
+        relback_user = _get_relback_user(self.request)
+        if relback_user is None:
+            form.add_error(None, "Usuário não possui perfil RelbackUser cadastrado.")
+            return self.form_invalid(form)
+        CreateHostUseCase(DjangoHostRepository()).execute(
+            hostname=form.cleaned_data['hostname'],
+            description=form.cleaned_data.get('description', ''),
+            ip=form.cleaned_data.get('ip', ''),
+            client_id=form.cleaned_data['client'].pk,
+            created_by_id=relback_user.pk,
+        )
+        return redirect(self.success_url)
+
 
 class HostUpdateView(UpdateView):
     model = Host
@@ -173,11 +222,30 @@ class HostUpdateView(UpdateView):
     fields = ['hostname', 'description', 'ip', 'client']
     success_url = reverse_lazy('coreRelback:host-list')
 
+    def form_valid(self, form):
+        relback_user = _get_relback_user(self.request)
+        if relback_user is None:
+            form.add_error(None, "Usuário não possui perfil RelbackUser cadastrado.")
+            return self.form_invalid(form)
+        UpdateHostUseCase(DjangoHostRepository()).execute(
+            host_id=self.object.pk,
+            hostname=form.cleaned_data['hostname'],
+            description=form.cleaned_data.get('description', ''),
+            ip=form.cleaned_data.get('ip', ''),
+            client_id=form.cleaned_data['client'].pk,
+            updated_by_id=relback_user.pk,
+        )
+        return redirect(self.success_url)
+
 
 class HostDeleteView(DeleteView):
     model = Host
     template_name = "host_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:host-list')
+
+    def delete(self, request, *args, **kwargs):
+        DeleteHostUseCase(DjangoHostRepository()).execute(self.get_object().pk)
+        return redirect(self.success_url)
 
 
 # ---------------------------
@@ -209,6 +277,21 @@ class DatabaseCreateView(CreateView):
     fields = ['db_name', 'description', 'client', 'host', 'dbid']
     success_url = reverse_lazy('coreRelback:database-list')
 
+    def form_valid(self, form):
+        relback_user = _get_relback_user(self.request)
+        if relback_user is None:
+            form.add_error(None, "Usuário não possui perfil RelbackUser cadastrado.")
+            return self.form_invalid(form)
+        CreateDatabaseUseCase(DjangoDatabaseRepository()).execute(
+            db_name=form.cleaned_data['db_name'],
+            description=form.cleaned_data.get('description', ''),
+            client_id=form.cleaned_data['client'].pk,
+            host_id=form.cleaned_data['host'].pk,
+            dbid=form.cleaned_data.get('dbid') or 0,
+            created_by_id=relback_user.pk,
+        )
+        return redirect(self.success_url)
+
 
 class DatabaseUpdateView(UpdateView):
     model = Database
@@ -216,11 +299,31 @@ class DatabaseUpdateView(UpdateView):
     fields = ['db_name', 'description', 'client', 'host', 'dbid']
     success_url = reverse_lazy('coreRelback:database-list')
 
+    def form_valid(self, form):
+        relback_user = _get_relback_user(self.request)
+        if relback_user is None:
+            form.add_error(None, "Usuário não possui perfil RelbackUser cadastrado.")
+            return self.form_invalid(form)
+        UpdateDatabaseUseCase(DjangoDatabaseRepository()).execute(
+            database_id=self.object.pk,
+            db_name=form.cleaned_data['db_name'],
+            description=form.cleaned_data.get('description', ''),
+            client_id=form.cleaned_data['client'].pk,
+            host_id=form.cleaned_data['host'].pk,
+            dbid=form.cleaned_data.get('dbid') or 0,
+            updated_by_id=relback_user.pk,
+        )
+        return redirect(self.success_url)
+
 
 class DatabaseDeleteView(DeleteView):
     model = Database
     template_name = "database_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:database-list')
+
+    def delete(self, request, *args, **kwargs):
+        DeleteDatabaseUseCase(DjangoDatabaseRepository()).execute(self.get_object().pk)
+        return redirect(self.success_url)
 
 
 # Função de exemplo: lista de hosts vinculados a um determinado database
@@ -263,6 +366,32 @@ class BackupPolicyCreateView(CreateView):
               'minute', 'hour', 'day', 'month', 'day_week', 'duration', 'size_backup', 'status', 'description']
     success_url = reverse_lazy('coreRelback:policy-list')
 
+    def form_valid(self, form):
+        relback_user = _get_relback_user(self.request)
+        if relback_user is None:
+            form.add_error(None, "Usuário não possui perfil RelbackUser cadastrado.")
+            return self.form_invalid(form)
+        cd = form.cleaned_data
+        CreateBackupPolicyUseCase(DjangoBackupPolicyRepository()).execute(
+            policy_name=cd['policy_name'],
+            client_id=cd['client'].pk,
+            database_id=cd['database'].pk,
+            host_id=cd['host'].pk,
+            backup_type=cd['backup_type'],
+            destination=cd['destination'],
+            minute=cd['minute'],
+            hour=cd['hour'],
+            day=cd['day'],
+            month=cd['month'],
+            day_week=cd['day_week'],
+            duration=int(cd['duration']),
+            size_backup=cd['size_backup'],
+            status=cd['status'],
+            description=cd.get('description'),
+            created_by_id=relback_user.pk,
+        )
+        return redirect(self.success_url)
+
 
 class BackupPolicyUpdateView(UpdateView):
     model = BackupPolicy
@@ -271,11 +400,42 @@ class BackupPolicyUpdateView(UpdateView):
               'minute', 'hour', 'day', 'month', 'day_week', 'duration', 'size_backup', 'status', 'description']
     success_url = reverse_lazy('coreRelback:policy-list')
 
+    def form_valid(self, form):
+        relback_user = _get_relback_user(self.request)
+        if relback_user is None:
+            form.add_error(None, "Usuário não possui perfil RelbackUser cadastrado.")
+            return self.form_invalid(form)
+        cd = form.cleaned_data
+        UpdateBackupPolicyUseCase(DjangoBackupPolicyRepository()).execute(
+            policy_id=self.object.pk,
+            policy_name=cd['policy_name'],
+            client_id=cd['client'].pk,
+            database_id=cd['database'].pk,
+            host_id=cd['host'].pk,
+            backup_type=cd['backup_type'],
+            destination=cd['destination'],
+            minute=cd['minute'],
+            hour=cd['hour'],
+            day=cd['day'],
+            month=cd['month'],
+            day_week=cd['day_week'],
+            duration=int(cd['duration']),
+            size_backup=cd['size_backup'],
+            status=cd['status'],
+            description=cd.get('description'),
+            updated_by_id=relback_user.pk,
+        )
+        return redirect(self.success_url)
+
 
 class BackupPolicyDeleteView(DeleteView):
     model = BackupPolicy
     template_name = "policy_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:policy-list')
+
+    def delete(self, request, *args, **kwargs):
+        DeleteBackupPolicyUseCase(DjangoBackupPolicyRepository()).execute(self.get_object().pk)
+        return redirect(self.success_url)
 
 
 # Se a detail for necessária (por exemplo, para visualização detalhada de uma política)

@@ -43,9 +43,33 @@ class DjangoClientRepository(IClientRepository):
             for c in Client.objects.all()
         ]
 
+    def get_by_id(self, client_id: int) -> Optional[ClientEntity]:
+        from coreRelback.models import Client
+        try:
+            c = Client.objects.get(pk=client_id)
+            return ClientEntity(id_client=c.id_client, name=c.name or "", description=c.description)
+        except Client.DoesNotExist:
+            return None
+
     def count(self) -> int:
         from coreRelback.models import Client
         return Client.objects.count()
+
+    def create(self, name: str, description: Optional[str], created_by_id: int) -> ClientEntity:
+        from coreRelback.models import Client
+        c = Client.objects.create(name=name, description=description, created_by_id=created_by_id)
+        return ClientEntity(id_client=c.id_client, name=c.name or "", description=c.description)
+
+    def update(self, client_id: int, name: str, description: Optional[str], updated_by_id: int) -> ClientEntity:
+        from coreRelback.models import Client
+        Client.objects.filter(pk=client_id).update(
+            name=name, description=description, updated_by_id=updated_by_id
+        )
+        return self.get_by_id(client_id)
+
+    def delete(self, client_id: int) -> None:
+        from coreRelback.models import Client
+        Client.objects.filter(pk=client_id).delete()
 
 
 class DjangoHostRepository(IHostRepository):
@@ -62,9 +86,39 @@ class DjangoHostRepository(IHostRepository):
             for h in Host.objects.select_related("client").all()
         ]
 
+    def get_by_id(self, host_id: int) -> Optional[HostEntity]:
+        from coreRelback.models import Host
+        try:
+            h = Host.objects.get(pk=host_id)
+            return HostEntity(id_host=h.id_host, hostname=h.hostname, ip=h.ip,
+                              description=h.description, client_id=h.client_id)
+        except Host.DoesNotExist:
+            return None
+
     def count(self) -> int:
         from coreRelback.models import Host
         return Host.objects.count()
+
+    def create(self, hostname: str, description: str, ip: str, client_id: int, created_by_id: int) -> HostEntity:
+        from coreRelback.models import Host
+        h = Host.objects.create(
+            hostname=hostname, description=description, ip=ip,
+            client_id=client_id, created_by_id=created_by_id
+        )
+        return HostEntity(id_host=h.id_host, hostname=h.hostname, ip=h.ip,
+                          description=h.description, client_id=h.client_id)
+
+    def update(self, host_id: int, hostname: str, description: str, ip: str, client_id: int, updated_by_id: int) -> HostEntity:
+        from coreRelback.models import Host
+        Host.objects.filter(pk=host_id).update(
+            hostname=hostname, description=description, ip=ip,
+            client_id=client_id, updated_by_id=updated_by_id
+        )
+        return self.get_by_id(host_id)
+
+    def delete(self, host_id: int) -> None:
+        from coreRelback.models import Host
+        Host.objects.filter(pk=host_id).delete()
 
 
 class DjangoDatabaseRepository(IDatabaseRepository):
@@ -83,9 +137,40 @@ class DjangoDatabaseRepository(IDatabaseRepository):
             for d in Database.objects.select_related("host", "client").all()
         ]
 
+    def get_by_id(self, database_id: int) -> Optional[DatabaseEntity]:
+        from coreRelback.models import Database
+        try:
+            d = Database.objects.get(pk=database_id)
+            return DatabaseEntity(id_database=d.id_database, db_name=d.db_name, dbid=d.dbid,
+                                  description=d.description, host_id=d.host_id,
+                                  client_id=d.client_id, last_resync=d.last_resync)
+        except Database.DoesNotExist:
+            return None
+
     def count(self) -> int:
         from coreRelback.models import Database
         return Database.objects.count()
+
+    def create(self, db_name: str, description: str, client_id: int, host_id: int, dbid: int, created_by_id: int) -> DatabaseEntity:
+        from coreRelback.models import Database
+        d = Database.objects.create(
+            db_name=db_name, description=description, client_id=client_id,
+            host_id=host_id, dbid=dbid, created_by_id=created_by_id
+        )
+        return DatabaseEntity(id_database=d.id_database, db_name=d.db_name, dbid=d.dbid,
+                              description=d.description, host_id=d.host_id, client_id=d.client_id)
+
+    def update(self, database_id: int, db_name: str, description: str, client_id: int, host_id: int, dbid: int, updated_by_id: int) -> DatabaseEntity:
+        from coreRelback.models import Database
+        Database.objects.filter(pk=database_id).update(
+            db_name=db_name, description=description, client_id=client_id,
+            host_id=host_id, dbid=dbid, updated_by_id=updated_by_id
+        )
+        return self.get_by_id(database_id)
+
+    def delete(self, database_id: int) -> None:
+        from coreRelback.models import Database
+        Database.objects.filter(pk=database_id).delete()
 
 
 class DjangoBackupPolicyRepository(IBackupPolicyRepository):
@@ -107,6 +192,76 @@ class DjangoBackupPolicyRepository(IBackupPolicyRepository):
     def count_active(self) -> int:
         from coreRelback.models import BackupPolicy
         return BackupPolicy.objects.filter(status__iexact="ACTIVE").count()
+
+    def get_by_id(self, policy_id: int) -> Optional[BackupPolicyEntity]:
+        from coreRelback.models import BackupPolicy
+        try:
+            return self._to_entity(BackupPolicy.objects.get(pk=policy_id))
+        except BackupPolicy.DoesNotExist:
+            return None
+
+    def create(
+        self,
+        policy_name: str,
+        client_id: int,
+        database_id: int,
+        host_id: int,
+        backup_type: str,
+        destination: str,
+        minute: str,
+        hour: str,
+        day: str,
+        month: str,
+        day_week: str,
+        duration: int,
+        size_backup: str,
+        status: str,
+        description: Optional[str],
+        created_by_id: int,
+    ) -> BackupPolicyEntity:
+        from coreRelback.models import BackupPolicy
+        p = BackupPolicy.objects.create(
+            policy_name=policy_name, client_id=client_id, database_id=database_id,
+            host_id=host_id, backup_type=backup_type, destination=destination,
+            minute=minute, hour=hour, day=day, month=month, day_week=day_week,
+            duration=duration, size_backup=size_backup, status=status,
+            description=description, created_by_id=created_by_id,
+        )
+        return self._to_entity(p)
+
+    def update(
+        self,
+        policy_id: int,
+        policy_name: str,
+        client_id: int,
+        database_id: int,
+        host_id: int,
+        backup_type: str,
+        destination: str,
+        minute: str,
+        hour: str,
+        day: str,
+        month: str,
+        day_week: str,
+        duration: int,
+        size_backup: str,
+        status: str,
+        description: Optional[str],
+        updated_by_id: int,
+    ) -> BackupPolicyEntity:
+        from coreRelback.models import BackupPolicy
+        BackupPolicy.objects.filter(pk=policy_id).update(
+            policy_name=policy_name, client_id=client_id, database_id=database_id,
+            host_id=host_id, backup_type=backup_type, destination=destination,
+            minute=minute, hour=hour, day=day, month=month, day_week=day_week,
+            duration=duration, size_backup=size_backup, status=status,
+            description=description, updated_by_id=updated_by_id,
+        )
+        return self.get_by_id(policy_id)
+
+    def delete(self, policy_id: int) -> None:
+        from coreRelback.models import BackupPolicy
+        BackupPolicy.objects.filter(pk=policy_id).delete()
 
     @staticmethod
     def _to_entity(p) -> BackupPolicyEntity:

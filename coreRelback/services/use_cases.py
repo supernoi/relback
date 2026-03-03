@@ -10,8 +10,12 @@ from typing import List, Optional
 
 from coreRelback.domain.entities import (
     BackupJobResult,
+    BackupPolicyEntity,
     BackupStatusValue,
+    ClientEntity,
+    DatabaseEntity,
     DashboardStats,
+    HostEntity,
     ScheduleEntry,
 )
 from coreRelback.gateways.interfaces import (
@@ -202,3 +206,184 @@ class AuditBackupUseCase:
             if job.status == BackupStatusValue.RUNNING and job.start_time and job.start_time < threshold:
                 job.status = BackupStatusValue.WARNING
         return jobs
+
+
+# ---------------------------------------------------------------------------
+# Client CRUD Use Cases
+# ---------------------------------------------------------------------------
+
+class CreateClientUseCase:
+    """Creates a new Client and returns the resulting entity."""
+
+    def __init__(self, client_repo: IClientRepository):
+        self._clients = client_repo
+
+    def execute(self, name: str, description: Optional[str], created_by_id: int) -> ClientEntity:
+        return self._clients.create(name=name, description=description, created_by_id=created_by_id)
+
+
+class UpdateClientUseCase:
+    """Updates an existing Client and returns the updated entity."""
+
+    def __init__(self, client_repo: IClientRepository):
+        self._clients = client_repo
+
+    def execute(self, client_id: int, name: str, description: Optional[str], updated_by_id: int) -> ClientEntity:
+        return self._clients.update(
+            client_id=client_id, name=name, description=description, updated_by_id=updated_by_id
+        )
+
+
+class DeleteClientUseCase:
+    """Removes a Client by id."""
+
+    def __init__(self, client_repo: IClientRepository):
+        self._clients = client_repo
+
+    def execute(self, client_id: int) -> None:
+        self._clients.delete(client_id)
+
+
+# ---------------------------------------------------------------------------
+# Host CRUD Use Cases
+# ---------------------------------------------------------------------------
+
+class CreateHostUseCase:
+    def __init__(self, host_repo: IHostRepository):
+        self._hosts = host_repo
+
+    def execute(self, hostname: str, description: str, ip: str, client_id: int, created_by_id: int) -> HostEntity:
+        return self._hosts.create(
+            hostname=hostname, description=description, ip=ip,
+            client_id=client_id, created_by_id=created_by_id,
+        )
+
+
+class UpdateHostUseCase:
+    def __init__(self, host_repo: IHostRepository):
+        self._hosts = host_repo
+
+    def execute(self, host_id: int, hostname: str, description: str, ip: str, client_id: int, updated_by_id: int) -> HostEntity:
+        return self._hosts.update(
+            host_id=host_id, hostname=hostname, description=description,
+            ip=ip, client_id=client_id, updated_by_id=updated_by_id,
+        )
+
+
+class DeleteHostUseCase:
+    def __init__(self, host_repo: IHostRepository):
+        self._hosts = host_repo
+
+    def execute(self, host_id: int) -> None:
+        self._hosts.delete(host_id)
+
+
+# ---------------------------------------------------------------------------
+# Database CRUD Use Cases
+# ---------------------------------------------------------------------------
+
+class CreateDatabaseUseCase:
+    def __init__(self, database_repo: IDatabaseRepository):
+        self._databases = database_repo
+
+    def execute(self, db_name: str, description: str, client_id: int, host_id: int, dbid: int, created_by_id: int) -> DatabaseEntity:
+        return self._databases.create(
+            db_name=db_name, description=description, client_id=client_id,
+            host_id=host_id, dbid=dbid, created_by_id=created_by_id,
+        )
+
+
+class UpdateDatabaseUseCase:
+    def __init__(self, database_repo: IDatabaseRepository):
+        self._databases = database_repo
+
+    def execute(self, database_id: int, db_name: str, description: str, client_id: int, host_id: int, dbid: int, updated_by_id: int) -> DatabaseEntity:
+        return self._databases.update(
+            database_id=database_id, db_name=db_name, description=description,
+            client_id=client_id, host_id=host_id, dbid=dbid, updated_by_id=updated_by_id,
+        )
+
+
+class DeleteDatabaseUseCase:
+    def __init__(self, database_repo: IDatabaseRepository):
+        self._databases = database_repo
+
+    def execute(self, database_id: int) -> None:
+        self._databases.delete(database_id)
+
+
+# ---------------------------------------------------------------------------
+# BackupPolicy CRUD Use Cases
+# ---------------------------------------------------------------------------
+
+class CreateBackupPolicyUseCase:
+    def __init__(self, policy_repo: IBackupPolicyRepository):
+        self._policies = policy_repo
+
+    def execute(
+        self,
+        policy_name: str,
+        client_id: int,
+        database_id: int,
+        host_id: int,
+        backup_type: str,
+        destination: str,
+        minute: str,
+        hour: str,
+        day: str,
+        month: str,
+        day_week: str,
+        duration: int,
+        size_backup: str,
+        status: str,
+        description: Optional[str],
+        created_by_id: int,
+    ) -> BackupPolicyEntity:
+        return self._policies.create(
+            policy_name=policy_name, client_id=client_id, database_id=database_id,
+            host_id=host_id, backup_type=backup_type, destination=destination,
+            minute=minute, hour=hour, day=day, month=month, day_week=day_week,
+            duration=duration, size_backup=size_backup, status=status,
+            description=description, created_by_id=created_by_id,
+        )
+
+
+class UpdateBackupPolicyUseCase:
+    def __init__(self, policy_repo: IBackupPolicyRepository):
+        self._policies = policy_repo
+
+    def execute(
+        self,
+        policy_id: int,
+        policy_name: str,
+        client_id: int,
+        database_id: int,
+        host_id: int,
+        backup_type: str,
+        destination: str,
+        minute: str,
+        hour: str,
+        day: str,
+        month: str,
+        day_week: str,
+        duration: int,
+        size_backup: str,
+        status: str,
+        description: Optional[str],
+        updated_by_id: int,
+    ) -> BackupPolicyEntity:
+        return self._policies.update(
+            policy_id=policy_id, policy_name=policy_name, client_id=client_id,
+            database_id=database_id, host_id=host_id, backup_type=backup_type,
+            destination=destination, minute=minute, hour=hour, day=day, month=month,
+            day_week=day_week, duration=duration, size_backup=size_backup, status=status,
+            description=description, updated_by_id=updated_by_id,
+        )
+
+
+class DeleteBackupPolicyUseCase:
+    def __init__(self, policy_repo: IBackupPolicyRepository):
+        self._policies = policy_repo
+
+    def execute(self, policy_id: int) -> None:
+        self._policies.delete(policy_id)

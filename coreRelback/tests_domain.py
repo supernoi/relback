@@ -32,9 +32,17 @@ from coreRelback.gateways.interfaces import (
 )
 from coreRelback.services.use_cases import (
     AuditBackupUseCase,
+    CreateClientUseCase,
+    CreateDatabaseUseCase,
+    CreateHostUseCase,
+    DeleteClientUseCase,
+    DeleteHostUseCase,
     GenerateScheduleUseCase,
     GetDashboardStatsUseCase,
     GetScheduleReportUseCase,
+    UpdateClientUseCase,
+    UpdateDatabaseUseCase,
+    UpdateHostUseCase,
 )
 
 
@@ -43,27 +51,94 @@ from coreRelback.services.use_cases import (
 # ---------------------------------------------------------------------------
 
 class StubClientRepo(IClientRepository):
+    def __init__(self):
+        self._store: dict = {}
+        self._next_id = 1
+
     def get_all(self) -> List[ClientEntity]:
-        return [ClientEntity(id_client=1, name="Acme")]
+        return list(self._store.values())
+
+    def get_by_id(self, client_id: int) -> Optional[ClientEntity]:
+        return self._store.get(client_id)
 
     def count(self) -> int:
-        return 1
+        return len(self._store)
+
+    def create(self, name: str, description, created_by_id: int) -> ClientEntity:
+        entity = ClientEntity(id_client=self._next_id, name=name, description=description)
+        self._store[self._next_id] = entity
+        self._next_id += 1
+        return entity
+
+    def update(self, client_id: int, name: str, description, updated_by_id: int) -> ClientEntity:
+        entity = ClientEntity(id_client=client_id, name=name, description=description)
+        self._store[client_id] = entity
+        return entity
+
+    def delete(self, client_id: int) -> None:
+        self._store.pop(client_id, None)
 
 
 class StubHostRepo(IHostRepository):
+    def __init__(self):
+        self._store: dict = {}
+        self._next_id = 1
+
     def get_all(self) -> List[HostEntity]:
-        return [HostEntity(id_host=1, hostname="srv01", ip="10.0.0.1")]
+        return list(self._store.values())
+
+    def get_by_id(self, host_id: int) -> Optional[HostEntity]:
+        return self._store.get(host_id)
 
     def count(self) -> int:
-        return 1
+        return len(self._store)
+
+    def create(self, hostname: str, description: str, ip: str, client_id: int, created_by_id: int) -> HostEntity:
+        entity = HostEntity(id_host=self._next_id, hostname=hostname, ip=ip,
+                            description=description, client_id=client_id)
+        self._store[self._next_id] = entity
+        self._next_id += 1
+        return entity
+
+    def update(self, host_id: int, hostname: str, description: str, ip: str, client_id: int, updated_by_id: int) -> HostEntity:
+        entity = HostEntity(id_host=host_id, hostname=hostname, ip=ip,
+                            description=description, client_id=client_id)
+        self._store[host_id] = entity
+        return entity
+
+    def delete(self, host_id: int) -> None:
+        self._store.pop(host_id, None)
 
 
 class StubDatabaseRepo(IDatabaseRepository):
+    def __init__(self):
+        self._store: dict = {}
+        self._next_id = 1
+
     def get_all(self) -> List[DatabaseEntity]:
-        return [DatabaseEntity(id_database=1, db_name="ORCL", dbid=12345)]
+        return list(self._store.values())
+
+    def get_by_id(self, database_id: int) -> Optional[DatabaseEntity]:
+        return self._store.get(database_id)
 
     def count(self) -> int:
-        return 1
+        return len(self._store)
+
+    def create(self, db_name: str, description: str, client_id: int, host_id: int, dbid: int, created_by_id: int) -> DatabaseEntity:
+        entity = DatabaseEntity(id_database=self._next_id, db_name=db_name, dbid=dbid,
+                                description=description, host_id=host_id, client_id=client_id)
+        self._store[self._next_id] = entity
+        self._next_id += 1
+        return entity
+
+    def update(self, database_id: int, db_name: str, description: str, client_id: int, host_id: int, dbid: int, updated_by_id: int) -> DatabaseEntity:
+        entity = DatabaseEntity(id_database=database_id, db_name=db_name, dbid=dbid,
+                                description=description, host_id=host_id, client_id=client_id)
+        self._store[database_id] = entity
+        return entity
+
+    def delete(self, database_id: int) -> None:
+        self._store.pop(database_id, None)
 
 
 def _make_policy(id_policy: int = 1, status: PolicyStatus = PolicyStatus.ACTIVE) -> BackupPolicyEntity:
@@ -85,7 +160,8 @@ def _make_policy(id_policy: int = 1, status: PolicyStatus = PolicyStatus.ACTIVE)
 
 class StubPolicyRepo(IBackupPolicyRepository):
     def __init__(self, policies=None):
-        self._policies = policies or [_make_policy()]
+        self._policies = list(policies or [_make_policy()])
+        self._next_id = 2
 
     def get_all(self) -> List[BackupPolicyEntity]:
         return self._policies
@@ -93,11 +169,30 @@ class StubPolicyRepo(IBackupPolicyRepository):
     def get_active(self) -> List[BackupPolicyEntity]:
         return [p for p in self._policies if p.status == PolicyStatus.ACTIVE]
 
+    def get_by_id(self, policy_id: int) -> Optional[BackupPolicyEntity]:
+        return next((p for p in self._policies if p.id_policy == policy_id), None)
+
     def count(self) -> int:
         return len(self._policies)
 
     def count_active(self) -> int:
         return sum(1 for p in self._policies if p.status == PolicyStatus.ACTIVE)
+
+    def create(self, policy_name, client_id, database_id, host_id, backup_type,
+               destination, minute, hour, day, month, day_week, duration, size_backup,
+               status, description, created_by_id):
+        p = _make_policy(id_policy=self._next_id)
+        self._next_id += 1
+        self._policies.append(p)
+        return p
+
+    def update(self, policy_id, policy_name, client_id, database_id, host_id, backup_type,
+               destination, minute, hour, day, month, day_week, duration, size_backup,
+               status, description, updated_by_id):
+        return self.get_by_id(policy_id)
+
+    def delete(self, policy_id: int) -> None:
+        self._policies = [p for p in self._policies if p.id_policy != policy_id]
 
 
 class StubScheduleRepo(IScheduleRepository):
@@ -159,10 +254,16 @@ class BackupJobResultEntityTest(TestCase):
 
 class GetDashboardStatsUseCaseTest(TestCase):
     def test_returns_correct_counts(self):
+        client_repo = StubClientRepo()
+        client_repo.create(name="Acme", description=None, created_by_id=1)
+        host_repo = StubHostRepo()
+        host_repo.create(hostname="srv01", description="", ip="10.0.0.1", client_id=1, created_by_id=1)
+        db_repo = StubDatabaseRepo()
+        db_repo.create(db_name="ORCL", description="", client_id=1, host_id=1, dbid=12345, created_by_id=1)
         use_case = GetDashboardStatsUseCase(
-            client_repo=StubClientRepo(),
-            host_repo=StubHostRepo(),
-            database_repo=StubDatabaseRepo(),
+            client_repo=client_repo,
+            host_repo=host_repo,
+            database_repo=db_repo,
             policy_repo=StubPolicyRepo(),
         )
         stats = use_case.execute()
@@ -312,3 +413,95 @@ class AuditBackupUseCaseTest(TestCase):
         use_case = AuditBackupUseCase(rman_repo=StubRmanRepo(jobs=jobs))
         result = use_case.execute()
         self.assertEqual(result[0].status, BackupStatusValue.RUNNING)
+
+
+# ---------------------------------------------------------------------------
+# CRUD Use Case Tests
+# ---------------------------------------------------------------------------
+
+class CreateClientUseCaseTest(TestCase):
+    def test_create_returns_entity_with_correct_name(self):
+        repo = StubClientRepo()
+        entity = CreateClientUseCase(repo).execute(name="Globo", description="TV", created_by_id=1)
+        self.assertEqual(entity.name, "Globo")
+        self.assertEqual(entity.description, "TV")
+
+    def test_create_increments_count(self):
+        repo = StubClientRepo()
+        CreateClientUseCase(repo).execute(name="X", description=None, created_by_id=1)
+        CreateClientUseCase(repo).execute(name="Y", description=None, created_by_id=1)
+        self.assertEqual(repo.count(), 2)
+
+
+class UpdateClientUseCaseTest(TestCase):
+    def test_update_changes_name(self):
+        repo = StubClientRepo()
+        created = repo.create(name="Old", description=None, created_by_id=1)
+        updated = UpdateClientUseCase(repo).execute(
+            client_id=created.id_client, name="New", description="desc", updated_by_id=1
+        )
+        self.assertEqual(updated.name, "New")
+        self.assertEqual(updated.description, "desc")
+
+
+class DeleteClientUseCaseTest(TestCase):
+    def test_delete_removes_entity(self):
+        repo = StubClientRepo()
+        created = repo.create(name="ToRemove", description=None, created_by_id=1)
+        self.assertEqual(repo.count(), 1)
+        DeleteClientUseCase(repo).execute(created.id_client)
+        self.assertEqual(repo.count(), 0)
+
+
+class CreateHostUseCaseTest(TestCase):
+    def test_create_host_stores_entity(self):
+        repo = StubHostRepo()
+        entity = CreateHostUseCase(repo).execute(
+            hostname="db-host-01", description="Oracle host", ip="192.168.1.10",
+            client_id=1, created_by_id=1,
+        )
+        self.assertEqual(entity.hostname, "db-host-01")
+        self.assertEqual(entity.ip, "192.168.1.10")
+        self.assertEqual(repo.count(), 1)
+
+
+class UpdateHostUseCaseTest(TestCase):
+    def test_update_host_changes_hostname(self):
+        repo = StubHostRepo()
+        created = repo.create("h1", "", "1.1.1.1", 1, 1)
+        updated = UpdateHostUseCase(repo).execute(
+            host_id=created.id_host, hostname="h1-renamed", description="",
+            ip="1.1.1.2", client_id=1, updated_by_id=1,
+        )
+        self.assertEqual(updated.hostname, "h1-renamed")
+
+
+class DeleteHostUseCaseTest(TestCase):
+    def test_delete_host_removes_it(self):
+        repo = StubHostRepo()
+        created = repo.create("srv", "", "2.2.2.2", 1, 1)
+        DeleteHostUseCase(repo).execute(created.id_host)
+        self.assertIsNone(repo.get_by_id(created.id_host))
+
+
+class CreateDatabaseUseCaseTest(TestCase):
+    def test_create_database_stores_entity(self):
+        repo = StubDatabaseRepo()
+        entity = CreateDatabaseUseCase(repo).execute(
+            db_name="PROD", description="Production", client_id=1, host_id=1, dbid=9999, created_by_id=1,
+        )
+        self.assertEqual(entity.db_name, "PROD")
+        self.assertEqual(entity.dbid, 9999)
+        self.assertEqual(repo.count(), 1)
+
+
+class UpdateDatabaseUseCaseTest(TestCase):
+    def test_update_database_changes_db_name(self):
+        repo = StubDatabaseRepo()
+        created = repo.create("OLD_DB", "", 1, 1, 1, 1)
+        updated = UpdateDatabaseUseCase(repo).execute(
+            database_id=created.id_database, db_name="NEW_DB", description="",
+            client_id=1, host_id=1, dbid=2, updated_by_id=1,
+        )
+        self.assertEqual(updated.db_name, "NEW_DB")
+

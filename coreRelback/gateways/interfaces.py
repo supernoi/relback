@@ -16,7 +16,6 @@ from coreRelback.domain.entities import (
     BackupPolicyEntity,
     ScheduleEntry,
     BackupJobResult,
-    DashboardStats,
 )
 
 
@@ -26,7 +25,23 @@ class IClientRepository(ABC):
         ...
 
     @abstractmethod
+    def get_by_id(self, client_id: int) -> Optional[ClientEntity]:
+        ...
+
+    @abstractmethod
     def count(self) -> int:
+        ...
+
+    @abstractmethod
+    def create(self, name: str, description: Optional[str], created_by_id: int) -> ClientEntity:
+        ...
+
+    @abstractmethod
+    def update(self, client_id: int, name: str, description: Optional[str], updated_by_id: int) -> ClientEntity:
+        ...
+
+    @abstractmethod
+    def delete(self, client_id: int) -> None:
         ...
 
 
@@ -36,7 +51,23 @@ class IHostRepository(ABC):
         ...
 
     @abstractmethod
+    def get_by_id(self, host_id: int) -> Optional[HostEntity]:
+        ...
+
+    @abstractmethod
     def count(self) -> int:
+        ...
+
+    @abstractmethod
+    def create(self, hostname: str, description: str, ip: str, client_id: int, created_by_id: int) -> HostEntity:
+        ...
+
+    @abstractmethod
+    def update(self, host_id: int, hostname: str, description: str, ip: str, client_id: int, updated_by_id: int) -> HostEntity:
+        ...
+
+    @abstractmethod
+    def delete(self, host_id: int) -> None:
         ...
 
 
@@ -46,7 +77,23 @@ class IDatabaseRepository(ABC):
         ...
 
     @abstractmethod
+    def get_by_id(self, database_id: int) -> Optional[DatabaseEntity]:
+        ...
+
+    @abstractmethod
     def count(self) -> int:
+        ...
+
+    @abstractmethod
+    def create(self, db_name: str, description: str, client_id: int, host_id: int, dbid: int, created_by_id: int) -> DatabaseEntity:
+        ...
+
+    @abstractmethod
+    def update(self, database_id: int, db_name: str, description: str, client_id: int, host_id: int, dbid: int, updated_by_id: int) -> DatabaseEntity:
+        ...
+
+    @abstractmethod
+    def delete(self, database_id: int) -> None:
         ...
 
 
@@ -60,11 +107,64 @@ class IBackupPolicyRepository(ABC):
         ...
 
     @abstractmethod
+    def get_by_id(self, policy_id: int) -> Optional[BackupPolicyEntity]:
+        ...
+
+    @abstractmethod
     def count(self) -> int:
         ...
 
     @abstractmethod
     def count_active(self) -> int:
+        ...
+
+    @abstractmethod
+    def create(
+        self,
+        policy_name: str,
+        client_id: int,
+        database_id: int,
+        host_id: int,
+        backup_type: str,
+        destination: str,
+        minute: str,
+        hour: str,
+        day: str,
+        month: str,
+        day_week: str,
+        duration: int,
+        size_backup: str,
+        status: str,
+        description: Optional[str],
+        created_by_id: int,
+    ) -> BackupPolicyEntity:
+        ...
+
+    @abstractmethod
+    def update(
+        self,
+        policy_id: int,
+        policy_name: str,
+        client_id: int,
+        database_id: int,
+        host_id: int,
+        backup_type: str,
+        destination: str,
+        minute: str,
+        hour: str,
+        day: str,
+        month: str,
+        day_week: str,
+        duration: int,
+        size_backup: str,
+        status: str,
+        description: Optional[str],
+        updated_by_id: int,
+    ) -> BackupPolicyEntity:
+        ...
+
+    @abstractmethod
+    def delete(self, policy_id: int) -> None:
         ...
 
 
