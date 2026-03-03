@@ -2,7 +2,7 @@
 {% load static %}
 {% load backup_tags %}
 
-{% block title %}Reports - RelBack{% endblock %}
+{% block title %}Reports - RelBack{% endblock title %}
 
 {% block content %}
 <div class="md-container-fluid">
@@ -431,7 +431,7 @@
     </div>
     <form method="dialog" class="modal-backdrop"><button>close</button></form>
 </dialog>
-{% endblock %}
+{% endblock content %}
 
 {% block extra_js %}
 <style>
@@ -1921,4 +1921,4 @@ setInterval(function() {
     console.log('Auto-refresh check...');
 }, 30000);
 </script>
-{% endblock %}
+{% endblock extra_js %}

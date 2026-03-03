@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}RelBack - Oracle Report Backup{% endblock %}</title>
+    <title>{% block title %}RelBack - Oracle Report Backup{% endblock title %}</title>
     {# FOUC prevention: restore saved DaisyUI theme BEFORE first CSS paint #}
     <script>
       (function () {
@@ -29,7 +29,7 @@
     <!-- Legacy content CSS: md-card, md-badge, md-btn etc. — remove per Phase 4 migration -->
     <link href="{% static 'css/oracle-modern-theme.css' %}" rel="stylesheet" />
 
-    {% block extra_css %}{% endblock %}
+    {% block extra_css %}{% endblock extra_css %}
   </head>
   <body>
     {# ────────────────────────────────────────────────────────────────────
@@ -63,7 +63,7 @@
                   relBack
                 </a>
               </li>
-              {% block breadcrumb %}{% endblock %}
+              {% block breadcrumb %}{% endblock breadcrumb %}
             </ul>
           </div>
 
@@ -148,7 +148,7 @@
 
         {# Main Page Content ─────────────────────────────────────────── #}
         <main class="flex-1 p-4">
-          {% block content %}{% endblock %}
+          {% block content %}{% endblock content %}
         </main>
 
         {# Footer ──────────────────────────────────────────────────── #}
@@ -293,6 +293,6 @@
       }, 5000);
     </script>
 
-    {% block extra_js %}{% endblock %}
+    {% block extra_js %}{% endblock extra_js %}
   </body>
 </html>
