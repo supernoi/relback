@@ -63,6 +63,25 @@
         </div>
     </div>
 
+    <!-- Oracle Catalog Connection Banner -->
+    {% if oracle_available %}
+    <div role="alert" class="alert alert-success mb-4 shadow-sm flex gap-3 items-center">
+        <i class="material-icons">check_circle</i>
+        <span>
+            <strong>Oracle RMAN Catalog connected</strong> — Showing real backup job results.
+        </span>
+        <button class="btn btn-sm btn-ghost ml-auto" onclick="this.parentElement.remove()" aria-label="Dismiss">✕</button>
+    </div>
+    {% else %}
+    <div role="alert" class="alert alert-warning mb-4 shadow-sm flex gap-3 items-center">
+        <i class="material-icons">warning_amber</i>
+        <span>
+            <strong>Oracle RMAN Catalog unavailable</strong> — Showing <em>scheduled jobs only</em>.
+            Backup results will appear automatically when the catalog is online.
+        </span>
+    </div>
+    {% endif %}
+
     <!-- Search and Filters -->
     <div class="md-grid md-grid-cols-1 md-mb-5 search-section">
         <div class="md-card search-container">

@@ -104,6 +104,27 @@ class AuthenticatedTemplateTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "policies.html")
 
+    def test_report_read_template(self):
+        response = self.client.get(reverse("coreRelback:report-read"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "reports.html")
+
+    def test_report_read_context_keys_present(self):
+        """report_read must supply all context keys consumed by reports.html."""
+        response = self.client.get(reverse("coreRelback:report-read"))
+        self.assertEqual(response.status_code, 200)
+        for key in ("jobs", "oracle_available", "successful_jobs",
+                    "failed_jobs", "today_jobs", "running_jobs"):
+            self.assertIn(key, response.context,
+                          f"'{key}' missing from report_read context")
+
+    def test_report_read_oracle_unavailable_in_test_env(self):
+        """In the test environment ORACLE_CATALOG=None so oracle_available must be False."""
+        response = self.client.get(reverse("coreRelback:report-read"))
+        self.assertIs(response.context["oracle_available"], False)
+        self.assertIsInstance(response.context["jobs"], list)
+        self.assertEqual(response.context["running_jobs"], 0)
+
     def test_creators_template_public(self):
         """creators() renders even for unauthenticated users."""
         self.client.logout()

@@ -595,6 +595,9 @@ def report_read(request):
         today_jobs = sum(
             1 for j in backup_jobs
             if j.start_time and j.start_time.date() == today)
+        running_jobs = sum(
+            1 for j in backup_jobs
+            if j.status == BackupStatusValue.RUNNING)
     else:
         # ── Fallback: schedule entries when RMAN Catalog unavailable ──────
         entries = _make_schedule_report_use_case().execute(
@@ -639,6 +642,7 @@ def report_read(request):
         today = datetime.date.today()
         successful_jobs = 0
         failed_jobs = 0
+        running_jobs = 0
         today_jobs = sum(
             1 for e in entries
             if e.schedule_start.date() == today)
@@ -659,7 +663,7 @@ def report_read(request):
         'successful_jobs':  successful_jobs,
         'failed_jobs':      failed_jobs,
         'today_jobs':       today_jobs,
-        'running_jobs':     0,
+        'running_jobs':     running_jobs,
         'all_policies':     all_policies,
         'all_hosts':        all_hosts,
         'all_databases':    all_databases,
