@@ -245,9 +245,12 @@ class BackupPolicyListView(ListView):
 
         # Estatísticas para os cards
         context['total_policies'] = policies.count()
-        context['active_policies'] = policies.filter(status__iexact='ACTIVE').count()
-        context['inactive_policies'] = policies.filter(status__iexact='INACTIVE').count()
-        context['scheduled_policies'] = policies.filter(status__iexact='ACTIVE').count() // 2
+        context['active_policies'] = policies.filter(
+            status__iexact='ACTIVE').count()
+        context['inactive_policies'] = policies.filter(
+            status__iexact='INACTIVE').count()
+        context['scheduled_policies'] = policies.filter(
+            status__iexact='ACTIVE').count() // 2
         context['clients'] = Client.objects.all()  # Para o filtro
 
         return context
@@ -346,7 +349,8 @@ def report_refresh_schedule(request):
         use_case.execute_range(start, end)
     else:
         today = datetime.date.today()
-        use_case.execute_range(today, today + datetime.timedelta(days=days - 1))
+        use_case.execute_range(
+            today, today + datetime.timedelta(days=days - 1))
 
     return redirect('coreRelback:report-read')
 
