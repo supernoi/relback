@@ -1,0 +1,19 @@
+# Large Oracle PL/SQL files — too complex for ANSI dialect linting.
+# These are Oracle-specific stored procedures and the schema creation script;
+# they use PL/SQL syntax (DECLARE, BEGIN/END, DBMS_*, etc.) that sqlfluff
+# cannot parse in dialect=ansi mode without false positives.
+databaseProject/script_create_schema_relback.sql
+databaseProject/sp_create_schedule.sql
+databaseProject/sp_report_html_original.sql
+
+# Oracle DDL with multi-column ADD syntax: ALTER TABLE ... ADD (col1, col2 ...)
+# ANSI parser raises PRS (unparsable) on this Oracle-specific form.
+databaseProject/alter_users_add_preferences.sql
+
+# Oracle-specific analytical query using tab-based column alignment
+# and Oracle-only functions (DECODE, SYSDATE, RIGHT JOIN).
+databaseProject/Scripts/Script-3.sql
+
+# Empty placeholder scripts with no meaningful SQL content.
+databaseProject/Scripts/Script-1.sql
+databaseProject/Scripts/Script-2.sql
