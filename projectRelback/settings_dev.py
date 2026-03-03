@@ -23,3 +23,6 @@ MIGRATION_MODULES = DisableMigrations()
 
 # Para desenvolvimento: permitir templates sem contexto
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
+
+# Oracle RMAN Catalog: disabled in dev/test — OracleRmanRepository returns []
+ORACLE_CATALOG = None

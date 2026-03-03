@@ -9,14 +9,17 @@ from .models import Client, Host, Database, BackupPolicy, RelbackUser, Schedule
 from django import forms
 
 # --- Clean Architecture: use-case factories ---
+from coreRelback.domain.entities import BackupStatusValue
 from coreRelback.gateways.repositories import (
     DjangoClientRepository,
     DjangoHostRepository,
     DjangoDatabaseRepository,
     DjangoBackupPolicyRepository,
     DjangoScheduleRepository,
+    OracleRmanRepository,
 )
 from coreRelback.services.use_cases import (
+    AuditBackupUseCase,
     GetDashboardStatsUseCase,
     GetScheduleReportUseCase,
     GenerateScheduleUseCase,
@@ -539,6 +542,7 @@ def report_read(request):
     start_date_str = request.GET.get('start_date')
     end_date_str = request.GET.get('end_date')
     days = int(request.GET.get('days', 2))
+    status_filter = request.GET.get('status_filter', '')
 
     from_date = None
     to_date = None
@@ -547,41 +551,97 @@ def report_read(request):
             start_date_str, '%Y-%m-%d').date()
         to_date = datetime.datetime.strptime(end_date_str, '%Y-%m-%d').date()
 
-    entries = _make_schedule_report_use_case().execute(
-        from_date=from_date, to_date=to_date, days=days
+    # ── Oracle RMAN Catalog: attempt real backup job results ──────────────
+    from_dt = (datetime.datetime.combine(from_date, datetime.time.min)
+               if from_date else None)
+    to_dt = (datetime.datetime.combine(to_date, datetime.time.max)
+             if to_date else None)
+
+    backup_jobs = AuditBackupUseCase(OracleRmanRepository()).execute(
+        from_date=from_dt, to_date=to_dt,
     )
+    oracle_available = bool(backup_jobs)
 
-    # Apply form filters on entities (in-memory — no extra ORM calls needed)
-    if form.is_valid():
-        cd = form.cleaned_data
-        if cd.get('policy_name'):
-            entries = [e for e in entries if cd['policy_name'].lower() in (
-                e.policy_name or '').lower()]
-        if cd.get('hostname'):
-            entries = [e for e in entries if cd['hostname'].lower()
-                       in (e.hostname or '').lower()]
-        if cd.get('db_name'):
-            entries = [e for e in entries if cd['db_name'].lower()
-                       in (e.db_name or '').lower()]
-        if cd.get('backup_type'):
-            entries = [e for e in entries if cd['backup_type'].lower() in (
-                e.backup_type or '').lower()]
-
-    jobs_data = [
-        {
-            'policy_name': e.policy_name or '-',
-            'hostname': e.hostname or '-',
-            'db_name': e.db_name or '-',
-            'backup_type': e.backup_type or '-',
-            'start_time': e.schedule_start,
-            'end_time': '-',
-            'status': '-',
-            'elapsed_seconds': '',
-            'input_bytes': '',
-            'session_key': e.id_schedule,
-        }
-        for e in entries
-    ]
+    if backup_jobs:
+        # Map BackupJobResult entities → template context dict.
+        today = datetime.date.today()
+        jobs_data = []
+        for j in backup_jobs:
+            status_str = (j.status.value if hasattr(j.status, 'value')
+                          else str(j.status))
+            if status_filter and status_filter.upper() not in status_str.upper():
+                continue
+            jobs_data.append({
+                'policy_name':          j.input_type or '-',
+                'hostname':             j.db_name,
+                'db_name':              j.db_name,
+                'backup_type':          j.backup_type or j.input_type or '-',
+                'start_time':           j.start_time,
+                'end_time':             j.end_time,
+                'status':               status_str,
+                'elapsed_seconds':      None,
+                'time_taken_display':   j.time_taken_display,
+                'output_bytes_display': j.output_bytes_display,
+                'input_bytes':          None,
+                'session_key':          j.session_key or 0,
+            })
+        successful_jobs = sum(
+            1 for j in backup_jobs
+            if j.status == BackupStatusValue.COMPLETED)
+        failed_jobs = sum(
+            1 for j in backup_jobs
+            if j.status in (BackupStatusValue.FAILED,
+                            BackupStatusValue.INTERRUPTED))
+        today_jobs = sum(
+            1 for j in backup_jobs
+            if j.start_time and j.start_time.date() == today)
+    else:
+        # ── Fallback: schedule entries when RMAN Catalog unavailable ──────
+        entries = _make_schedule_report_use_case().execute(
+            from_date=from_date, to_date=to_date, days=days,
+        )
+        if form.is_valid():
+            cd = form.cleaned_data
+            if cd.get('policy_name'):
+                entries = [e for e in entries if cd['policy_name'].lower() in (
+                    e.policy_name or '').lower()]
+            if cd.get('hostname'):
+                entries = [e for e in entries if cd['hostname'].lower()
+                           in (e.hostname or '').lower()]
+            if cd.get('db_name'):
+                entries = [e for e in entries if cd['db_name'].lower()
+                           in (e.db_name or '').lower()]
+            if cd.get('backup_type'):
+                entries = [e for e in entries if cd['backup_type'].lower() in (
+                    e.backup_type or '').lower()]
+        if status_filter:
+            entries = [
+                e for e in entries
+                if status_filter.upper() == 'SCHEDULED'
+            ]
+        jobs_data = [
+            {
+                'policy_name':          e.policy_name or '-',
+                'hostname':             e.hostname or '-',
+                'db_name':              e.db_name or '-',
+                'backup_type':          e.backup_type or '-',
+                'start_time':           e.schedule_start,
+                'end_time':             None,
+                'status':               'SCHEDULED',
+                'elapsed_seconds':      None,
+                'time_taken_display':   None,
+                'output_bytes_display': None,
+                'input_bytes':          None,
+                'session_key':          e.id_schedule,
+            }
+            for e in entries
+        ]
+        today = datetime.date.today()
+        successful_jobs = 0
+        failed_jobs = 0
+        today_jobs = sum(
+            1 for e in entries
+            if e.schedule_start.date() == today)
 
     all_policies = BackupPolicy.objects.values_list(
         'policy_name', flat=True).distinct().order_by('policy_name')
@@ -593,17 +653,20 @@ def report_read(request):
         'backup_type', flat=True).distinct().order_by('backup_type')
 
     context = {
-        'jobs': jobs_data,
-        'form': form,
-        'successful_jobs': [],
-        'failed_jobs': [],
-        'running_jobs': [],
-        'all_policies': all_policies,
-        'all_hosts': all_hosts,
-        'all_databases': all_databases,
+        'jobs':             jobs_data,
+        'form':             form,
+        'oracle_available': oracle_available,
+        'successful_jobs':  successful_jobs,
+        'failed_jobs':      failed_jobs,
+        'today_jobs':       today_jobs,
+        'running_jobs':     0,
+        'all_policies':     all_policies,
+        'all_hosts':        all_hosts,
+        'all_databases':    all_databases,
         'all_backup_types': all_backup_types,
     }
     return render(request, "reports.html", context)
+
 
 
 @login_required

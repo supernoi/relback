@@ -8,6 +8,7 @@ using stub / in-memory repositories.
 import datetime
 from typing import List, Optional
 from unittest import TestCase
+from unittest.mock import patch
 
 from coreRelback.domain.entities import (
     BackupDestination,
@@ -30,6 +31,7 @@ from coreRelback.gateways.interfaces import (
     IOracleRmanRepository,
     IScheduleRepository,
 )
+from coreRelback.gateways.repositories import OracleRmanRepository
 from coreRelback.services.use_cases import (
     AuditBackupUseCase,
     CreateBackupPolicyUseCase,
@@ -655,3 +657,46 @@ class BackupJobResultSeverityTest(TestCase):
         """Regression: changed from 'danger' to DaisyUI token 'neutral' in Phase 2."""
         self.assertEqual(
             self._job(BackupStatusValue.UNKNOWN).severity, "neutral")
+
+
+# ---------------------------------------------------------------------------
+# Oracle RMAN Catalog Gateway — unavailability contract
+# ---------------------------------------------------------------------------
+
+class OracleRmanRepositoryUnavailableTest(TestCase):
+    """Verify graceful fallback when ORACLE_CATALOG is not configured."""
+
+    def test_returns_empty_list_when_catalog_not_configured(self):
+        """OracleRmanRepository.get_backup_jobs() must return [] without DB."""
+        with patch(
+            "coreRelback.gateways.oracle_catalog.get_catalog_connection",
+            return_value=None,
+        ):
+            repo = OracleRmanRepository()
+            result = repo.get_backup_jobs()
+            self.assertEqual(result, [])
+
+    def test_filtered_call_returns_empty_list_when_unavailable(self):
+        """Filters and date ranges do not raise when catalog is unavailable."""
+        import datetime
+        with patch(
+            "coreRelback.gateways.oracle_catalog.get_catalog_connection",
+            return_value=None,
+        ):
+            repo = OracleRmanRepository()
+            result = repo.get_backup_jobs(
+                db_name="PROD",
+                from_date=datetime.datetime(2026, 1, 1),
+                to_date=datetime.datetime(2026, 1, 31),
+            )
+            self.assertEqual(result, [])
+
+    def test_audit_backup_use_case_returns_empty_when_unavailable(self):
+        """AuditBackupUseCase delegates to repository; empty list propagates."""
+        with patch(
+            "coreRelback.gateways.oracle_catalog.get_catalog_connection",
+            return_value=None,
+        ):
+            use_case = AuditBackupUseCase(OracleRmanRepository())
+            result = use_case.execute()
+            self.assertEqual(result, [])

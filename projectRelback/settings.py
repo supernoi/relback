@@ -181,3 +181,18 @@ if not _TAILWIND_DIST_CSS.exists() or _TAILWIND_DIST_CSS.stat().st_size < 4096:
 # ---------------------------------------------------------------------------
 if DEBUG:
     MIDDLEWARE.insert(1, 'django_browser_reload.middleware.BrowserReloadMiddleware')
+
+# ---------------------------------------------------------------------------
+# Oracle RMAN Recovery Catalog connection (read-only, separate from Django DB)
+#
+# Set ORACLE_CATALOG = None in settings_dev.py / settings_test.py to skip.
+# In production, override via environment variables so credentials are never
+# committed to version control.
+# ---------------------------------------------------------------------------
+import os as _os
+
+ORACLE_CATALOG: dict | None = {
+    "user":     _os.environ.get("ORACLE_CATALOG_USER",     "relback"),
+    "password": _os.environ.get("ORACLE_CATALOG_PASSWORD", "relback"),
+    "dsn":      _os.environ.get("ORACLE_CATALOG_DSN",      "192.168.124.139:1521/cobaia"),
+}
