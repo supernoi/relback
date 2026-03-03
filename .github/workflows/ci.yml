@@ -34,6 +34,11 @@ jobs:
           DJANGO_SETTINGS_MODULE: projectRelback.settings_dev
         run: python -m unittest coreRelback.tests_domain -v
 
+      - name: Integration tests — views + auth (Sensor Gate 3)
+        env:
+          DJANGO_SETTINGS_MODULE: projectRelback.settings_test
+        run: python manage.py test coreRelback.tests --verbosity=2
+
   sql-lint:
     name: SQL Syntax Validation (Oracle)
     runs-on: ubuntu-latest
