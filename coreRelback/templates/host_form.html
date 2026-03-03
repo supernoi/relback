@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% if object %}Edit Host{% else %}Add Host{% endif %} - RelBack{% endblock %}
+{% block title %}{% if object %}Edit Host{% else %}Add Host{% endif %} - RelBack{% endblock title %}
 
 {% block content %}
 <div>
@@ -382,4 +382,4 @@ document.getElementById('testConnection').addEventListener('click', function() {
 });
 {% endif %}
 </script>
-{% endblock %}
+{% endblock content %}

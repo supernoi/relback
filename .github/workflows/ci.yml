@@ -55,6 +55,28 @@ jobs:
         # Oracle PL/SQL files are excluded via .sqlfluffignore; see that file for rationale.
         run: sqlfluff lint databaseProject/
 
+  template-lint:
+    name: Django Template Lint (djlint)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install djlint
+        run: pip install "djlint>=1.36.0,<2.0"
+
+      - name: Lint Django templates
+        # Config is read from .djlintrc at repo root.
+        # Enforces T003 (named endblocks) to prevent formatter-collapse regressions.
+        run: djlint coreRelback/templates/ --lint
+
   tailwind-build:
     name: Tailwind CSS Build Sensor (Node 20)
     runs-on: ubuntu-latest

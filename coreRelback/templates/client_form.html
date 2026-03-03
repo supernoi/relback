@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% if object %}Edit Client{% else %}Add Client{% endif %} - RelBack{% endblock %}
+{% block title %}{% if object %}Edit Client{% else %}Add Client{% endif %} - RelBack{% endblock title %}
 
 {% block content %}
 <div>
@@ -179,4 +179,4 @@ document.getElementById('id_name').addEventListener('input', function() {
     }
 });
 </script>
-{% endblock %}
+{% endblock content %}
