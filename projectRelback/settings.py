@@ -30,6 +30,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tailwind',
+    'theme',
+    'django_browser_reload',
     'coreRelback',
     'django_tables2',
 ]
@@ -37,6 +40,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django_browser_reload.middleware.BrowserReloadMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -141,3 +145,16 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
+
+# ---------------------------------------------------------------------------
+# Tailwind CSS + DaisyUI
+# ---------------------------------------------------------------------------
+TAILWIND_APP_NAME = 'theme'
+
+# Required for django-tailwind live-reload in development
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+import shutil  # noqa: E402
+NPM_BIN_PATH = shutil.which('npm') or '/usr/bin/npm'

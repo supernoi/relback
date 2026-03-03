@@ -1,11 +1,16 @@
 {% load static %}
+{% load tailwind_tags %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="relback_dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}RelBack - Oracle Report Backup{% endblock %}</title>
     
+    <!-- Tailwind CSS + DaisyUI (compiled via django-tailwind) -->
+    {% tailwind_css %}
+
+    <!-- Legacy CSS: kept during migration — remove per-phase as components are migrated -->
     <!-- Material Design CSS -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
