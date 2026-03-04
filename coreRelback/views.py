@@ -572,9 +572,11 @@ def report_read(request):
                if from_date else None)
     to_dt = (datetime.datetime.combine(to_date, datetime.time.max)
              if to_date else None)
+    relback_user = _get_relback_user(request)
+    request_client_id = getattr(relback_user, 'default_client_id', None) if relback_user else None
 
     backup_jobs = AuditBackupUseCase(_get_rman_repo()).execute(
-        from_date=from_dt, to_date=to_dt,
+        from_date=from_dt, to_date=to_dt, client_id=request_client_id,
     )
     oracle_available = bool(backup_jobs)
 
@@ -689,7 +691,6 @@ def report_read(request):
 
 
 @login_required
-@login_required
 def report_read_log_detail(request, idPolicy, dbKey, sessionKey):
     """Backup session log detail view.
 
@@ -709,8 +710,9 @@ def report_read_log_detail(request, idPolicy, dbKey, sessionKey):
     except BackupPolicy.DoesNotExist:
         policy = None
 
+    log_client_id = policy.client_id if policy else None
     detail_result = GetBackupDetailUseCase(_get_rman_repo()).execute(
-        db_key=dbKey, session_key=sessionKey
+        db_key=dbKey, session_key=sessionKey, client_id=log_client_id
     )
 
     context = {

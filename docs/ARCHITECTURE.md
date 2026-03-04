@@ -206,6 +206,15 @@ Custom session-based auth using `RelbackUser`. No Django `AbstractBaseUser`.
 
 Session is stored in `django.contrib.sessions` (database-backed in production, file in dev).
 
+### 4.1 Multi-tenant catalog (Phase 19)
+
+Reports and log detail are scoped by client when configured:
+
+- **Client.catalog_dsn** (optional): when set, Oracle RMAN catalog queries for that client use this DSN; credentials from global `ORACLE_CATALOG`.
+- **RelbackUser.default_client** (optional): when set, `report_read` passes this client’s id to `AuditBackupUseCase` so only that client’s catalog is queried.
+- **report_read_log_detail**: passes `policy.client_id` to `GetBackupDetailUseCase` so the correct client catalog is used.
+- **IOracleRmanRepository** and **get_catalog_connection(client_id)** accept optional `client_id`; implementations use the client’s DSN when present.
+
 ---
 
 ## 5. Frontend Architecture

@@ -187,6 +187,7 @@ class IOracleRmanRepository(ABC):
     """
     Read-only gateway to the Oracle RMAN Catalog.
     Implementations MUST never perform write operations against catalog tables.
+    Multi-tenant (Phase 19): client_id scopes to that client's catalog when set.
     """
     @abstractmethod
     def get_backup_jobs(
@@ -194,6 +195,7 @@ class IOracleRmanRepository(ABC):
         db_name: Optional[str] = None,
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
+        client_id: Optional[int] = None,
     ) -> List[BackupJobResult]:
         ...
 
@@ -202,6 +204,7 @@ class IOracleRmanRepository(ABC):
         self,
         db_key: int,
         session_key: int,
+        client_id: Optional[int] = None,
     ) -> Optional[BackupJobResult]:
         """Return a single BackupJobResult for the given db_key/session_key."""
         ...
@@ -211,6 +214,7 @@ class IOracleRmanRepository(ABC):
         self,
         db_key: int,
         session_key: int,
+        client_id: Optional[int] = None,
     ) -> List[BackupLogEntry]:
         """Return RMAN output lines from RC_RMAN_OUTPUT for the given session."""
         ...
