@@ -347,10 +347,20 @@ Stage 2 (runtime)       python:3.13-slim
 
 ```bash
 cp .env.example .env        # fill DJANGO_SECRET_KEY at minimum
-docker compose up --build   # http://localhost:8000
+docker compose up --build   # http://localhost:80 (Nginx) or https://localhost:443 (self-signed)
 docker compose exec web python manage.py seed_demo  # optional demo data
 # Login: admin / demo1234
 ```
+
+### Nginx + TLS (reverse proxy)
+
+| Component | Role |
+| --------- | ----- |
+| **Nginx** | Reverse proxy in front of Gunicorn; listens on 80 (HTTP) and 443 (HTTPS). |
+| **Dev** | On first run, `nginx/entrypoint.sh` generates a self-signed certificate so HTTPS works without setup. |
+| **Prod** | Mount Let's Encrypt (certbot) certs: add to `docker-compose` for service `nginx`: `volumes: - ./certs:/etc/nginx/certs:ro` with `fullchain.pem` and `privkey.pem` in `./certs`. |
+
+**Files:** `nginx/nginx.conf`, `nginx/entrypoint.sh`, `nginx/Dockerfile`. Compose service `nginx` depends on `web` (healthcheck). Optional env in `.env.example`: `NGINX_CERTS_PATH` to document where prod certs live.
 
 ---
 
@@ -388,8 +398,9 @@ relback/
 │   ├── ARCHITECTURE.md          ← This document
 │   ├── ROADMAP_TAILWIND_DAISYUI.md
 │   └── UX_UI_analysis.md
+├── nginx/                       ← Nginx reverse proxy (Phase 13): nginx.conf, entrypoint.sh, Dockerfile
 ├── Dockerfile                   ← Multi-stage (Node 20 CSS + Python 3.13 Gunicorn)
-├── docker-compose.yml           ← One-command production preview
+├── docker-compose.yml           ← Web + Nginx; TLS self-signed (dev) or mount certs (prod)
 ├── .env.example                 ← Env var template (commit safe — no real values)
 ├── .dockerignore
 ├── .sqlfluff / .djlintrc        ← Lint configs
