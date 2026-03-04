@@ -28,14 +28,20 @@ Before writing any code, follow this sequence:
 4. **Atomic Commits**: If sensors pass, commit: `<type>(<scope>): <subject> (#N)`.
 5. **PR Handoff**: Use `gh pr create` with `.github/pull_request_template.md` and include `Closes #N`.
 
-## 🤖 Autonomous GitHub — No User Interaction Required
+## 🤖 Autonomous GitHub — Full Lifecycle & Conflict Prevention (Zero Interaction)
 
-- **Push**: After atomic commit(s) on a feature branch, run `git push -u origin <branch>` automatically. Do not ask for confirmation.
-- **Issue**: When starting a new task, create the GitHub Issue via `gh issue create` (or `gh api .../issues --method POST`) and record the issue number. Do not wait for the user to create it.
-- **PR**: When the planned work is done and sensors pass, create the PR via `gh pr create --base master --head <branch> --body "Closes #N"` (and title as needed). Use `.github/pull_request_template.md` sections if present. Do not stop and ask "should I open the PR?" — open it.
-- **Merge after PR**: Once the PR is created and CI/sensors pass (or after review approval when required), merge the PR into the base branch (master): run `gh pr merge <number> --merge` (or `--squash` if project prefers). Do not leave the PR open without merging when the user requests "merge" or "prossiga"; merge first, then start the next phase from an updated master.
-- **Scope**: Only create one issue and one PR per logical task/phase; do not batch unrelated changes.
-- **Phase chaining**: When a phase is concluded successfully (implementation done, tests pass, PR created), start the next phase automatically: create issue → branch → implement → commit → push → PR. Only begin the next phase after the previous one is successfully delivered. After merging the PR into master, proceed to the next phase from `master`.
+- **Serial Execution Only**: Always finish one Phase/Issue completely (including merging to master) before starting the next one. Multiple open feature branches are strictly forbidden to prevent merge conflicts.
+- **Workflow Start**: When starting a new task, immediately create the GitHub Issue via `gh issue create` (or `gh api`) and record ID #N. Switch to `git checkout -b feature/<scope>-<N>`. Do not wait for user creation.
+- **Automatic Push**: After every successful atomic commit (following the "Sensor-First" gate), run `git push -u origin <branch>` immediately without asking.
+- **Auto-PR & Merge**: Once the implementation is done and all sensors (`manage.py check/test`) pass:
+  1. **Create PR**: Run `gh pr create --base master --head <branch> --body "Closes #N"` using the `.github/pull_request_template.md`.
+  2. **Immediate Merge**: If sensors are green, execute `gh pr merge <number> --merge --delete-branch` immediately. Do not ask "should I merge?". If it's green, **merge it**.
+- **Conflict Management**: If a merge conflict occurs, the Agent must automatically:
+  1. `git checkout master && git pull`
+  2. `git checkout feature/branch && git merge master`
+  3. Resolve conflicts, run sensors, and re-push.
+- **Phase Chaining**: After merging, switch to `master`, run `git pull`, and only then start the next phase from a clean state.
+- **Handoff**: Only stop for user interaction after the PR is merged and the branch is deleted, or if a "Sensor" fails more than 3 times.
 
 ## 💾 Django & Oracle Guidelines
 
@@ -93,3 +99,17 @@ Before writing any code, follow this sequence:
 - Protect `master` with required CI checks; never merge with failing sensors.
 - Keep secrets only in GitHub Secrets (or secure secret stores), never in tracked files.
 - Include SQL linting or syntax validation in CI for queries under `databaseProject/` when feasible.
+
+## 🤖 Autonomous GitHub — Full Lifecycle & Conflict Prevention
+
+- [cite_start]**Serial Execution Only**: Always finish one Phase/Issue completely (including merging to master) before starting the next one. [cite: 10, 24] [cite_start]Do not allow multiple feature branches to remain open simultaneously to prevent merge conflicts. [cite: 16, 22]
+- [cite_start]**Automatic Push**: After atomic commit(s) on a feature branch, run `git push -u origin <branch>` immediately without asking. [cite: 16]
+- **Auto-PR & Merge**: Once implementation is done and all sensors (`manage.py check/test`) pass:
+  1. [cite_start]Create the PR via `gh pr create --base master --head <branch> --body "Closes #N"` using the standard template. [cite: 15, 18, 19]
+  2. [cite_start]**Immediate Merge**: If no blocking CI/review is required by the user, run `gh pr merge <number> --merge --delete-branch` immediately.
+  3. Do not stop and ask "should I merge?". [cite_start]If the task is done and tests are green, **merge it**. [cite: 21]
+- **Conflict Resolution**: If a conflict occurs during merge, the Agent must:
+  1. [cite_start]`git checkout master && git pull` [cite: 11, 26]
+  2. [cite_start]`git checkout feature/branch && git merge master` [cite: 11]
+  3. [cite_start]Resolve conflicts, run sensors, and re-push. [cite: 12, 16]
+- [cite_start]**Next Phase Trigger**: Only after the current PR is merged into `master`, switch back to `master`, pull the latest changes, and start the next phase from a clean state. [cite: 23, 25, 26]

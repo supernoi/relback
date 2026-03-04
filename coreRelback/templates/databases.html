@@ -3,661 +3,604 @@
 
 {% block title %}Databases - RelBack{% endblock title %}
 
+{% block breadcrumb %}Databases{% endblock breadcrumb %}
+
 {% block content %}
-<div class="md-container-fluid">
+<div class="max-w-7xl mx-auto px-4 py-6">
+
     <!-- Page Header -->
-    <div class="mb-5">
-        <div class="md-card page-header">
-            <div class="md-flex md-justify-between md-items-center">
-                <div class="md-flex md-items-center">
-                    <i class="material-icons page-header-icon">storage</i>
-                    <div>
-                        <h1 class="page-title">Database Management</h1>
-                        <p class="page-subtitle">Manage your database backup configurations</p>
-                    </div>
-                </div>
-                {% if user_can_edit %}
-                <button type="button" class="btn btn-primary" data-modal-target="#addDatabaseModal">
-                    <i class="material-icons" style="font-size: 18px;">add</i>
-                    Add Database
-                </button>
-                {% endif %}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div class="flex items-center gap-3">
+            <i class="material-icons-round text-primary text-3xl">storage</i>
+            <div>
+                <h1 class="text-2xl font-bold">Database Management</h1>
+                <p class="text-sm text-base-content/60">Manage your database backup configurations</p>
             </div>
         </div>
+        <button type="button" class="btn btn-primary" data-modal-target="#addDatabaseModal">
+            <i class="material-icons-round text-lg">add</i>
+            Add Database
+        </button>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="stats stats-vertical lg:stats-horizontal shadow w-full mb-5">
+    <!-- Stats -->
+    <div class="stats stats-horizontal shadow-sm w-full mb-6 bg-base-100 border border-base-300">
         <div class="stat">
             <div class="stat-figure text-primary">
-                <i class="material-icons-round" style="font-size: 2.5rem;">storage</i>
+                <i class="material-icons-round text-4xl">storage</i>
             </div>
             <div class="stat-title">Total Databases</div>
-            <div class="stat-value stats-title">{{ databases.count }}</div>
+            <div class="stat-value text-primary">{{ databases.count }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-success">
-                <i class="material-icons-round" style="font-size: 2.5rem;">check_circle</i>
+                <i class="material-icons-round text-4xl">check_circle</i>
             </div>
             <div class="stat-title">Active Databases</div>
-            <div class="stat-value text-success stats-title">{{ active_databases|default:0 }}</div>
+            <div class="stat-value text-success">{{ active_databases|default:0 }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-info">
-                <i class="material-icons-round" style="font-size: 2.5rem;">account_tree</i>
+                <i class="material-icons-round text-4xl">account_tree</i>
             </div>
             <div class="stat-title">Oracle Databases</div>
-            <div class="stat-value stats-title">{{ oracle_databases|default:0 }}</div>
+            <div class="stat-value text-info">{{ oracle_databases|default:0 }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-warning">
-                <i class="material-icons-round" style="font-size: 2.5rem;">backup</i>
+                <i class="material-icons-round text-4xl">backup</i>
             </div>
             <div class="stat-title">Backed Up Today</div>
-            <div class="stat-value stats-title">{{ backed_up_today|default:0 }}</div>
+            <div class="stat-value text-warning">{{ backed_up_today|default:0 }}</div>
         </div>
     </div>
 
-    <!-- Search and Actions -->
-    <div class="mb-5 search-section">
-        <div class="md-card search-container">
-            <div class="search-grid">
-                <div class="autocomplete-container">
-                    <input type="text" class="input input-bordered w-full" id="searchDatabases" placeholder="Search databases..." autocomplete="off">
-                    <div class="autocomplete-list" id="autocompleteList"></div>
-                </div>
-                <button class="btn btn-ghost btn-sm clean-btn" id="cleanBtn">
-                    <i class="material-icons" style="font-size: 18px;">clear</i>
-                    Clean
-                </button>
+    <!-- Search -->
+    <div class="bg-base-100 border border-base-300 rounded-xl p-4 shadow-sm mb-6">
+        <div class="flex items-center gap-3">
+            <div class="relative flex-1">
+                <input type="text" class="input input-bordered w-full" id="searchDatabases" placeholder="Search databases..." autocomplete="off">
+                <div class="absolute top-full left-0 right-0 z-50 bg-base-100 border border-base-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto" id="autocompleteList" style="display: none;"></div>
             </div>
+            <button class="btn btn-ghost btn-sm" id="cleanBtn">
+                <i class="material-icons-round text-lg">clear</i>
+                Clear
+            </button>
         </div>
     </div>
+
     <!-- Databases Table -->
-    <div>
-        <div class="md-card md-card-decorated">
-            {% if databases %}
-                <div class="overflow-x-auto">
-                    <table class="table table-xs table-zebra w-full">
-                        <thead>
-                            <tr>
-                                <th class="oracle-info-gradient">
-                                    <div class="table-header-content">
-                                        <i class="material-icons table-header-icon">storage</i>
-                                        <span class="table-header-text">Database</span>
-                                    </div>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <div class="table-header-content">
-                                        <i class="material-icons table-header-icon">dns</i>
-                                        <span class="table-header-text">Host</span>
-                                    </div>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <div class="table-header-content">
-                                        <i class="material-icons table-header-icon">category</i>
-                                        <span class="table-header-text">Type</span>
-                                    </div>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <div class="table-header-content">
-                                        <i class="material-icons table-header-icon">folder</i>
-                                        <span class="table-header-text">Size</span>
-                                    </div>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <div class="table-header-content">
-                                        <i class="material-icons table-header-icon">schedule</i>
-                                        <span class="table-header-text">Last Backup</span>
-                                    </div>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <div class="table-header-content">
-                                        <i class="material-icons table-header-icon">verified</i>
-                                        <span class="table-header-text">Status</span>
-                                    </div>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <div class="table-header-content">
-                                        <i class="material-icons table-header-icon">settings</i>
-                                        <span class="table-header-text">Actions</span>
-                                    </div>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for database in databases %}
-                        <tr class="database-row" 
-                            data-host="{{ database.host.name|default:'Unknown' }}" 
-                            data-type="{{ database.db_type|default:'Unknown' }}"
-                            data-status="{% if database.active %}active{% else %}inactive{% endif %}"
-                            data-backup="{% if database.last_backup_date %}{% with now_timestamp=now|date:'U'|add:'-604800' backup_timestamp=database.last_backup_date|date:'U' %}{% if backup_timestamp > now_timestamp %}recent{% else %}old{% endif %}{% endwith %}{% else %}none{% endif %}">
-                            <td class="md-ps-4">
-
-                                <div class="table-cell-content">
-                                    <div class="table-cell-icon">
-                                        <i class="material-icons-round">storage</i>
-                                    </div>
-                                    <div>
-                                        <h5 class="table-cell-title">{{ database.db_name|default:"Unnamed Database" }}</h5>
-                                        {% if database.description %}
-                                            <div class="table-cell-subtitle">{{ database.description }}</div>
-                                        {% endif %}
-                                    </div>
+    <div class="bg-base-100 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+        {% if databases %}
+            <div class="overflow-x-auto">
+                <table class="table table-sm w-full">
+                    <thead>
+                        <tr class="bg-base-200">
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">storage</i>
+                                    Database
                                 </div>
-
-                            </td>
-                            <td>
-                                {% if database.host %}
-                                <div class="md-flex md-items-center">
-                                    <div class="md-status-dot {% if database.host.active %}md-status-success{% else %}md-status-secondary{% endif %} md-me-2"></div>
-                                    <span>{{ database.host.name }}</span>
+                            </th>
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">dns</i>
+                                    Host
                                 </div>
-                                {% else %}
-                                <span class="md-text-muted">No Host</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if database.db_type %}
-                                <span class="md-chip md-chip-secondary">{{ database.db_type }}</span>
-                                {% else %}
-                                <span class="md-text-muted">Unknown</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if database.size %}
-                                <span class="md-text-nowrap">{{ database.size|filesizeformat }}</span>
-                                {% else %}
-                                <span class="md-text-muted">Unknown</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if database.last_backup_date %}
+                            </th>
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">category</i>
+                                    Type
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">folder</i>
+                                    Size
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">schedule</i>
+                                    Last Backup
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">verified</i>
+                                    Status
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">settings</i>
+                                    Actions
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for database in databases %}
+                    <tr class="database-row hover:bg-base-200/50 transition-colors"
+                        data-host="{{ database.host.name|default:'Unknown' }}"
+                        data-type="{{ database.db_type|default:'Unknown' }}"
+                        data-status="{% if database.active %}active{% else %}inactive{% endif %}"
+                        data-backup="{% if database.last_backup_date %}{% with now_timestamp=now|date:'U'|add:'-604800' backup_timestamp=database.last_backup_date|date:'U' %}{% if backup_timestamp > now_timestamp %}recent{% else %}old{% endif %}{% endwith %}{% else %}none{% endif %}">
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                    <i class="material-icons-round text-primary text-sm">storage</i>
+                                </div>
                                 <div>
-                                    <small>{{ database.last_backup_date|date:"M d, Y" }}</small>
-                                    <br>
-                                    {% with now_timestamp=now|date:'U'|add:'-604800' backup_timestamp=database.last_backup_date|date:'U' %}
-                                    {% if backup_timestamp > now_timestamp %}
-                                        <span class="md-chip md-chip-success">Recent</span>
-                                    {% else %}
-                                        <span class="md-chip md-chip-warning">Outdated</span>
+                                    <h5 class="font-semibold text-sm">{{ database.db_name|default:"Unnamed Database" }}</h5>
+                                    {% if database.description %}
+                                        <div class="text-xs text-base-content/50">{{ database.description }}</div>
                                     {% endif %}
-                                    {% endwith %}
                                 </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if database.host %}
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full {% if database.host.active %}bg-success{% else %}bg-base-300{% endif %} inline-block"></span>
+                                <span class="text-sm">{{ database.host.name }}</span>
+                            </div>
+                            {% else %}
+                            <span class="text-sm text-base-content/50">No Host</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if database.db_type %}
+                            <span class="badge badge-ghost badge-sm">{{ database.db_type }}</span>
+                            {% else %}
+                            <span class="text-sm text-base-content/50">Unknown</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if database.size %}
+                            <span class="text-sm whitespace-nowrap">{{ database.size|filesizeformat }}</span>
+                            {% else %}
+                            <span class="text-sm text-base-content/50">Unknown</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if database.last_backup_date %}
+                            <div>
+                                <small class="text-sm">{{ database.last_backup_date|date:"M d, Y" }}</small>
+                                <br>
+                                {% with now_timestamp=now|date:'U'|add:'-604800' backup_timestamp=database.last_backup_date|date:'U' %}
+                                {% if backup_timestamp > now_timestamp %}
+                                    <span class="badge badge-success badge-sm">Recent</span>
                                 {% else %}
-                                <span class="md-chip md-chip-danger">Never</span>
+                                    <span class="badge badge-warning badge-sm">Outdated</span>
                                 {% endif %}
-                            </td>
-                            <td>
-                                {% if database.active %}
-                                <span class="md-chip md-chip-success">
-                                    <i class="material-icons md-me-1" style="font-size: 12px;">check_circle</i>
-                                    Active
-                                </span>
-                                {% else %}
-                                <span class="md-chip md-chip-secondary">
-                                    <i class="material-icons md-me-1" style="font-size: 12px;">pause_circle</i>
-                                    Inactive
-                                </span>
-                                {% endif %}
-                            </td>
-                            <td class="md-text-center">
-                                <div class="btn-actions-group">
-                                    <a href="#" 
-                                       class="btn-action btn-view"
-                                       title="View Details"
-                                       onclick="openViewModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.name|default:'No Host'|escapejs }}', '{{ database.db_type|default:'Unknown'|escapejs }}')">
-                                        <i class="material-icons">visibility</i>
-                                    </a>
-                                    {% if user_can_edit %}
-                                    <a href="#" 
-                                       class="btn-action btn-edit"
-                                       title="Edit Database"
-                                       onclick="openEditModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}')">
-                                        <i class="material-icons">edit</i>
-                                    </a>
-                                    {% endif %}
-                                    {% if user_can_delete %}
-                                    <a href="#" 
-                                       class="btn-action btn-delete"
-                                       title="Delete Database"
-                                       onclick="openDeleteModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.name|default:'No Host'|escapejs }}')">
-                                        <i class="material-icons">delete</i>
-                                    </a>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                                                <tr>
-                            <td colspan="7" class="md-text-center md-py-5">
-                                <div class="md-empty-state">
-                                    <i class="material-icons md-mb-3" style="font-size: 64px; color: #C74634; opacity: 0.6;">storage</i>
-                                    <h5 class="md-text-muted">No databases found</h5>
-                                    <p class="md-text-muted">Start by adding your first database configuration.</p>
-                                    {% if user_can_edit %}
-                                    <a href="{% url 'coreRelback:database-create' %}" class="btn btn-primary">
-                                        <i class="material-icons" style="font-size: 18px;">add</i>
-                                        Add First Database
-                                    </a>
-                                    {% endif %}
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
+                                {% endwith %}
+                            </div>
+                            {% else %}
+                            <span class="badge badge-error badge-sm">Never</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if database.active %}
+                            <span class="badge badge-success badge-sm gap-1">
+                                <i class="material-icons-round text-xs">check_circle</i>
+                                Active
+                            </span>
+                            {% else %}
+                            <span class="badge badge-ghost badge-sm gap-1">
+                                <i class="material-icons-round text-xs">pause_circle</i>
+                                Inactive
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-1">
+                                <a href="#"
+                                   class="btn btn-ghost btn-xs"
+                                   title="View Details"
+                                   onclick="openViewModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.name|default:'No Host'|escapejs }}', '{{ database.db_type|default:'Unknown'|escapejs }}')">
+                                    <i class="material-icons-round text-sm">visibility</i>
+                                </a>
+                                <a href="#"
+                                   class="btn btn-ghost btn-xs"
+                                   title="Edit Database"
+                                   onclick="openEditModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}')">
+                                    <i class="material-icons-round text-sm">edit</i>
+                                </a>
+                                <a href="#"
+                                   class="btn btn-ghost btn-xs text-error"
+                                   title="Delete Database"
+                                   onclick="openDeleteModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.name|default:'No Host'|escapejs }}')">
+                                    <i class="material-icons-round text-sm">delete</i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="flex flex-col items-center justify-center py-16 px-4">
+                                <i class="material-icons-round text-6xl text-base-content/20">storage</i>
+                                <h5 class="text-lg font-semibold text-base-content/70 mt-4">No databases found</h5>
+                                <p class="text-sm text-base-content/50 mt-2">Start by adding your first database configuration.</p>
+                                <a href="{% url 'coreRelback:database-create' %}" class="btn btn-primary mt-4">
+                                    <i class="material-icons-round text-lg">add</i>
+                                    Add First Database
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
                 </table>
-                </div>
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     </div>
 </div>
 
-<!-- Floating Action Button -->
-{% if user_can_edit %}
-<button class="btn btn-circle btn-primary btn-lg fixed bottom-6 right-6 shadow-lg z-50" id="addDatabaseFab" title="Add Database">
-    <i class="material-icons">add</i>
-</button>
-{% endif %}
-
 <!-- View Database Details Modal -->
-<div class="custom-modal" id="viewDatabaseModal">
-    <div class="custom-modal-backdrop"></div>
-    <div class="custom-modal-dialog">
-        <div class="custom-modal-content">
-            <!-- Modal Header -->
-            <div class="custom-modal-header">
-                <h5 class="custom-modal-title">
-                    <i class="material-icons" style="color: #4C7AA5;">visibility</i>
-                    Database Details
-                </h5>
-                <button type="button" class="custom-modal-close" onclick="closeViewModal()">
-                    <i class="material-icons">close</i>
-                </button>
-            </div>
-            
-            <!-- Modal Body -->
-            <div class="custom-modal-body">
-                <!-- Info Message -->
-                <div class="alert-info">
-                    <i class="material-icons">info</i>
-                    <div>
-                        <strong>Database Information:</strong> Complete details and configuration of the selected database.
-                    </div>
-                </div>
-                
-                <!-- Database Details -->
-                <div class="form-section">
-                    <h6 class="form-section-title">
-                        <i class="material-icons">storage</i>
-                        Basic Information
-                    </h6>
-                    
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <strong class="info-label">Database Name:</strong>
-                            <span class="info-value" id="view-database-name"></span>
-                        </div>
-                        <div class="info-item">
-                            <strong class="info-label">Description:</strong>
-                            <span class="info-value" id="view-database-description"></span>
-                        </div>
-                        <div class="info-item">
-                            <strong class="info-label">Database ID:</strong>
-                            <span class="info-value" id="view-database-id"></span>
-                        </div>
-                        <div class="info-item">
-                            <strong class="info-label">Host:</strong>
-                            <span class="info-value" id="view-database-host"></span>
-                        </div>
-                        <div class="info-item">
-                            <strong class="info-label">Type:</strong>
-                            <span class="info-value" id="view-database-type"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Modal Footer -->
-            <div class="custom-modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeViewModal()">
-                    <i class="material-icons">close</i>
-                    Close
-                </button>
+<div class="modal" id="viewDatabaseModal">
+    <div class="modal-box max-w-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="material-icons-round text-info">visibility</i>
+                Database Details
+            </h3>
+            <button type="button" class="btn btn-ghost btn-sm btn-circle" onclick="closeViewModal()">
+                <i class="material-icons-round">close</i>
+            </button>
+        </div>
+
+        <div class="alert alert-info mb-4">
+            <i class="material-icons-round">info</i>
+            <div>
+                <strong>Database Information:</strong> Complete details and configuration of the selected database.
             </div>
         </div>
+
+        <div class="space-y-3">
+            <h6 class="flex items-center gap-2 font-semibold text-sm">
+                <i class="material-icons-round text-sm">storage</i>
+                Basic Information
+            </h6>
+            <div class="bg-base-200 rounded-lg p-4 space-y-2">
+                <div class="flex justify-between text-sm">
+                    <strong>Database Name:</strong>
+                    <span id="view-database-name"></span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <strong>Description:</strong>
+                    <span id="view-database-description"></span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <strong>Database ID:</strong>
+                    <span id="view-database-id"></span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <strong>Host:</strong>
+                    <span id="view-database-host"></span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <strong>Type:</strong>
+                    <span id="view-database-type"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="closeViewModal()">
+                <i class="material-icons-round text-lg">close</i>
+                Close
+            </button>
+        </div>
     </div>
+    <div class="modal-backdrop" onclick="closeViewModal()"></div>
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div class="custom-modal" id="deleteDatabaseModal">
-    <div class="custom-modal-backdrop"></div>
-    <div class="custom-modal-dialog">
-        <div class="custom-modal-content">
-            <!-- Modal Header -->
-            <div class="custom-modal-header">
-                <h5 class="custom-modal-title">
-                    <i class="material-icons">warning</i>
-                    Delete Database
-                </h5>
-                <button type="button" class="custom-modal-close" onclick="closeDeleteModal()">
-                    <i class="material-icons">close</i>
-                </button>
-            </div>
-            
-            <!-- Modal Body -->
-            <div class="custom-modal-body">
-                <!-- Warning Message -->
-                <div class="alert-danger">
-                    <i class="material-icons">dangerous</i>
-                    <div>
-                        <strong>Warning:</strong> This action cannot be undone. Deleting this database will also remove all associated backup configurations and data.
-                    </div>
-                </div>
-                
-                <!-- Database Details -->
-                <p class="delete-question">Are you sure you want to delete the following database?</p>
-                
-                <div class="detail-container">
-                    <div class="detail-row">
-                        <strong>Database Name:</strong>
-                        <span id="modal-database-name"></span>
-                    </div>
-                    <div class="detail-row">
-                        <strong>Host:</strong>
-                        <span id="modal-database-host"></span>
-                    </div>
-                    <div class="detail-row">
-                        <strong>Type:</strong>
-                        <span id="modal-database-type"></span>
-                    </div>
-                    <div class="detail-row">
-                        <strong>Database ID:</strong>
-                        <span id="modal-database-id"></span>
-                    </div>
-                </div>
+<div class="modal" id="deleteDatabaseModal">
+    <div class="modal-box max-w-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="material-icons-round text-warning">warning</i>
+                Delete Database
+            </h3>
+            <button type="button" class="btn btn-ghost btn-sm btn-circle" onclick="closeDeleteModal()">
+                <i class="material-icons-round">close</i>
+            </button>
+        </div>
 
-                <!-- What will be deleted info -->
-                <div class="what-deleted-section">
-                    <div class="what-deleted-header">
-                        <i class="material-icons">info</i>
-                        What will be deleted?
-                    </div>
-                    <div class="what-deleted-content">
-                        <div class="deleted-item">
-                            <i class="material-icons">backup</i>
-                            <div>
-                                <strong>Backup Policies</strong>
-                                <small>All backup configurations</small>
-                            </div>
-                        </div>
-                        <div class="deleted-item">
-                            <i class="material-icons">history</i>
-                            <div>
-                                <strong>Backup History</strong>
-                                <small>All backup job records</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Modal Footer -->
-            <div class="custom-modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
-                    <i class="material-icons">cancel</i>
-                    Cancel
-                </button>
-                <form method="post" id="deleteDatabaseForm" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-delete-confirm">
-                        <i class="material-icons">delete_forever</i>
-                        Yes, Delete Database
-                    </button>
-                </form>
+        <div class="alert alert-error mb-4">
+            <i class="material-icons-round">dangerous</i>
+            <div>
+                <strong>Warning:</strong> This action cannot be undone. Deleting this database will also remove all associated backup configurations and data.
             </div>
         </div>
+
+        <p class="font-medium mb-3">Are you sure you want to delete the following database?</p>
+
+        <div class="bg-base-200 rounded-lg p-4 space-y-2 mb-4">
+            <div class="flex justify-between text-sm">
+                <strong>Database Name:</strong>
+                <span id="modal-database-name"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <strong>Host:</strong>
+                <span id="modal-database-host"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <strong>Type:</strong>
+                <span id="modal-database-type"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <strong>Database ID:</strong>
+                <span id="modal-database-id"></span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <div class="flex items-center gap-2 font-semibold text-sm mb-2">
+                <i class="material-icons-round text-info text-sm">info</i>
+                What will be deleted?
+            </div>
+            <div class="grid grid-cols-1 gap-2">
+                <div class="flex items-center gap-3 p-3 bg-base-200 rounded-lg">
+                    <i class="material-icons-round text-error text-lg">backup</i>
+                    <div>
+                        <div class="font-medium text-sm">Backup Policies</div>
+                        <div class="text-xs text-base-content/60">All backup configurations</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-base-200 rounded-lg">
+                    <i class="material-icons-round text-error text-lg">history</i>
+                    <div>
+                        <div class="font-medium text-sm">Backup History</div>
+                        <div class="text-xs text-base-content/60">All backup job records</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="closeDeleteModal()">
+                <i class="material-icons-round text-lg">cancel</i>
+                Cancel
+            </button>
+            <form method="post" id="deleteDatabaseForm" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-error">
+                    <i class="material-icons-round text-lg">delete_forever</i>
+                    Yes, Delete Database
+                </button>
+            </form>
+        </div>
     </div>
+    <div class="modal-backdrop" onclick="closeDeleteModal()"></div>
 </div>
 
 <!-- Edit Database Modal -->
-<div class="custom-modal" id="editDatabaseModal">
-    <div class="custom-modal-backdrop"></div>
-    <div class="custom-modal-dialog">
-        <div class="custom-modal-content">
-            <!-- Modal Header -->
-            <div class="custom-modal-header edit-modal-header">
-                <h5 class="custom-modal-title">
-                    <i class="material-icons">edit</i>
-                    <span>Edit Database</span>
-                </h5>
-                <button type="button" class="custom-modal-close" onclick="closeEditModal()">
-                    <i class="material-icons">close</i>
-                </button>
-            </div>
-            
-            <!-- Modal Body -->
-            <div class="custom-modal-body">
-                <!-- Info Message -->
-                <div class="alert-info">
-                    <i class="material-icons">info</i>
-                    <div>
-                        <strong>Update Information:</strong> Modify the database details below. Changes will be saved immediately upon submission.
-                    </div>
-                </div>
-                
-                <!-- Edit Form -->
-                <form method="post" id="editDatabaseForm">
-                    {% csrf_token %}
-                    
-                    <div class="form-section">
-                        <h6 class="form-section-title">
-                            <i class="material-icons">storage</i>
-                            Database Information
-                        </h6>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control">
-                                <label class="label pb-1" for="edit-database-name">
-                                    <span class="label-text font-medium">Database Name *</span>
-                                </label>
-                                <input type="text" 
-                                       class="input input-bordered w-full" 
-                                       id="edit-database-name"
-                                       name="name" 
-                                       placeholder="Enter database name"
-                                       required>
-                                <div class="form-error" id="edit-database-name-error"></div>
-                            </div>
-                            
-                            <div class="form-control">
-                                <label class="label pb-1" for="edit-database-description">
-                                    <span class="label-text font-medium">Description</span>
-                                </label>
-                                <textarea class="textarea textarea-bordered w-full" 
-                                          id="edit-database-description"
-                                          name="description" 
-                                          placeholder="Enter description"
-                                          rows="3"></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Database ID Display -->
-                    <div class="form-section">
-                        <h6 class="form-section-title">
-                            <i class="material-icons">info</i>
-                            Additional Information
-                        </h6>
-                        
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <strong>Database ID:</strong>
-                                <span id="edit-database-id-display"></span>
-                            </div>
-                            <div class="info-item">
-                                <strong>Host:</strong>
-                                <span id="edit-database-host-display"></span>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            
-            <!-- Modal Footer -->
-            <div class="custom-modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeEditModal()">
-                    <i class="material-icons">cancel</i>
-                    Cancel
-                </button>
-                <button type="submit" form="editDatabaseForm" class="btn-save-confirm" onclick="submitEditForm()">
-                    <i class="material-icons">save</i>
-                    Update Database
-                </button>
+<div class="modal" id="editDatabaseModal">
+    <div class="modal-box max-w-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="material-icons-round text-primary">edit</i>
+                Edit Database
+            </h3>
+            <button type="button" class="btn btn-ghost btn-sm btn-circle" onclick="closeEditModal()">
+                <i class="material-icons-round">close</i>
+            </button>
+        </div>
+
+        <div class="alert alert-info mb-4">
+            <i class="material-icons-round">info</i>
+            <div>
+                <strong>Update Information:</strong> Modify the database details below. Changes will be saved immediately upon submission.
             </div>
         </div>
+
+        <form method="post" id="editDatabaseForm">
+            {% csrf_token %}
+
+            <div class="space-y-3 border-b border-base-200 pb-4 mb-4">
+                <h6 class="flex items-center gap-2 font-semibold text-sm">
+                    <i class="material-icons-round text-sm">storage</i>
+                    Database Information
+                </h6>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label pb-1" for="edit-database-name">
+                            <span class="label-text font-medium">Database Name *</span>
+                        </label>
+                        <input type="text"
+                               class="input input-bordered w-full"
+                               id="edit-database-name"
+                               name="name"
+                               placeholder="Enter database name"
+                               required>
+                        <div class="form-error text-xs text-error mt-1 hidden" id="edit-database-name-error"></div>
+                    </div>
+                    <div class="form-control">
+                        <label class="label pb-1" for="edit-database-description">
+                            <span class="label-text font-medium">Description</span>
+                        </label>
+                        <textarea class="textarea textarea-bordered w-full"
+                                  id="edit-database-description"
+                                  name="description"
+                                  placeholder="Enter description"
+                                  rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h6 class="flex items-center gap-2 font-semibold text-sm">
+                    <i class="material-icons-round text-sm">info</i>
+                    Additional Information
+                </h6>
+                <div class="bg-base-200 rounded-lg p-3 space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <strong>Database ID:</strong>
+                        <span id="edit-database-id-display"></span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <strong>Host:</strong>
+                        <span id="edit-database-host-display"></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="closeEditModal()">
+                <i class="material-icons-round text-lg">cancel</i>
+                Cancel
+            </button>
+            <button type="submit" form="editDatabaseForm" class="btn btn-primary" onclick="submitEditForm()">
+                <i class="material-icons-round text-lg">save</i>
+                Update Database
+            </button>
+        </div>
     </div>
+    <div class="modal-backdrop" onclick="closeEditModal()"></div>
 </div>
 
 <!-- Add Database Modal -->
-<div id="addDatabaseModal" class="custom-modal">
-    <div class="custom-modal-backdrop"></div>
-    <div class="custom-modal-dialog">
-        <div class="custom-modal-content">
-            <div class="custom-modal-header add-modal-header">
-                <h5 class="custom-modal-title">
-                    <i class="material-icons">add_business</i>
-                    <span>Add New Database</span>
-                </h5>
-                <button type="button" class="custom-modal-close" onclick="closeAddModal()">
-                    <i class="material-icons">close</i>
-                </button>
-            </div>
-            
-            <div class="custom-modal-body">
-                <form id="addDatabaseForm" method="post" action="{% url 'coreRelback:database-create' %}">
-                    {% csrf_token %}
-                    
-                    <!-- Basic Information Section -->
-                    <div class="form-section">
-                        <h5 class="form-section-title">
-                            <i class="material-icons md-me-2">info</i>
-                            Basic Information
-                        </h5>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control">
-                                <label class="label pb-1" for="add-database-name">
-                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">storage</i> Database Name *</span>
-                                </label>
-                                <input type="text" 
-                                       class="input input-bordered w-full" 
-                                       id="add-database-name" 
-                                       name="name" 
-                                       required>
-                            </div>
-                            <div class="form-control">
-                                <label class="label pb-1" for="add-database-host">
-                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">dns</i> Host *</span>
-                                </label>
-                                <select class="select select-bordered w-full" 
-                                        id="add-database-host" 
-                                        name="host" 
-                                        required>
-                                    <option value="" disabled selected>Select Host</option>
-                                    {% for host in hosts %}
-                                    <option value="{{ host.id_host }}">{{ host.hostname }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-control mt-2">
-                            <label class="label pb-1" for="add-database-description">
-                                <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">description</i> Description</span>
-                            </label>
-                            <textarea class="textarea textarea-bordered w-full" 
-                                      id="add-database-description" 
-                                      name="description" 
-                                      rows="3"></textarea>
-                        </div>
-                    </div>
+<div class="modal" id="addDatabaseModal">
+    <div class="modal-box max-w-2xl">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="material-icons-round text-primary">add_business</i>
+                Add New Database
+            </h3>
+            <button type="button" class="btn btn-ghost btn-sm btn-circle" onclick="closeAddModal()">
+                <i class="material-icons-round">close</i>
+            </button>
+        </div>
 
-                    <!-- Database Configuration Section -->
-                    <div class="form-section">
-                        <h5 class="form-section-title">
-                            <i class="material-icons md-me-2">settings</i>
-                            Database Configuration
-                        </h5>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control">
-                                <label class="label pb-1" for="add-database-type">
-                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">category</i> Database Type *</span>
-                                </label>
-                                <select class="select select-bordered w-full" 
-                                        id="add-database-type" 
-                                        name="db_type"
-                                        required>
-                                    <option value="" disabled selected>Select Type</option>
-                                    <option value="Oracle">Oracle</option>
-                                    <option value="MySQL">MySQL</option>
-                                    <option value="PostgreSQL">PostgreSQL</option>
-                                    <option value="SQL Server">SQL Server</option>
-                                </select>
-                            </div>
-                            <div class="form-control">
-                                <label class="label pb-1" for="add-database-version">
-                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">info</i> Version</span>
-                                </label>
-                                <input type="text" 
-                                       class="input input-bordered w-full" 
-                                       id="add-database-version" 
-                                       name="version">
-                            </div>
-                        </div>
-                    </div>
+        <form id="addDatabaseForm" method="post" action="{% url 'coreRelback:database-create' %}">
+            {% csrf_token %}
 
-                    <!-- Status Section -->
-                    <div class="form-section">
-                        <h5 class="form-section-title">
-                            <i class="material-icons md-me-2">settings</i>
-                            Status & Configuration
-                        </h5>
-                        
-                        <div class="md-checkbox-group">
-                            <label class="md-checkbox-label">
-                                <input type="checkbox" 
-                                       class="md-checkbox" 
-                                       id="add-database-active" 
-                                       name="active" 
-                                       checked>
-                                <span class="md-checkbox-checkmark"></span>
-                                <i class="material-icons md-me-1">power_settings_new</i>
-                                Database is Active
-                            </label>
-                            <div class="field-hint">Enable this database for backup operations</div>
-                        </div>
+            <div class="space-y-3 border-b border-base-200 pb-4 mb-4">
+                <h6 class="flex items-center gap-2 font-semibold text-sm">
+                    <i class="material-icons-round text-sm">info</i>
+                    Basic Information
+                </h6>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label pb-1" for="add-database-name">
+                            <span class="label-text font-medium">
+                                <i class="material-icons-round text-xs align-middle mr-1">storage</i> Database Name *
+                            </span>
+                        </label>
+                        <input type="text"
+                               class="input input-bordered w-full"
+                               id="add-database-name"
+                               name="name"
+                               required>
                     </div>
-                </form>
+                    <div class="form-control">
+                        <label class="label pb-1" for="add-database-host">
+                            <span class="label-text font-medium">
+                                <i class="material-icons-round text-xs align-middle mr-1">dns</i> Host *
+                            </span>
+                        </label>
+                        <select class="select select-bordered w-full"
+                                id="add-database-host"
+                                name="host"
+                                required>
+                            <option value="" disabled selected>Select Host</option>
+                            {% for host in hosts %}
+                            <option value="{{ host.id_host }}">{{ host.hostname }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-control">
+                    <label class="label pb-1" for="add-database-description">
+                        <span class="label-text font-medium">
+                            <i class="material-icons-round text-xs align-middle mr-1">description</i> Description
+                        </span>
+                    </label>
+                    <textarea class="textarea textarea-bordered w-full"
+                              id="add-database-description"
+                              name="description"
+                              rows="3"></textarea>
+                </div>
             </div>
-            
-            <div class="custom-modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeAddModal()">
-                    <i class="material-icons">cancel</i>
-                    Cancel
-                </button>
-                <button type="submit" form="addDatabaseForm" class="btn-add-confirm">
-                    <i class="material-icons">add</i>
-                    Create Database
-                </button>
+
+            <div class="space-y-3 border-b border-base-200 pb-4 mb-4">
+                <h6 class="flex items-center gap-2 font-semibold text-sm">
+                    <i class="material-icons-round text-sm">settings</i>
+                    Database Configuration
+                </h6>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label pb-1" for="add-database-type">
+                            <span class="label-text font-medium">
+                                <i class="material-icons-round text-xs align-middle mr-1">category</i> Database Type *
+                            </span>
+                        </label>
+                        <select class="select select-bordered w-full"
+                                id="add-database-type"
+                                name="db_type"
+                                required>
+                            <option value="" disabled selected>Select Type</option>
+                            <option value="Oracle">Oracle</option>
+                            <option value="MySQL">MySQL</option>
+                            <option value="PostgreSQL">PostgreSQL</option>
+                            <option value="SQL Server">SQL Server</option>
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label class="label pb-1" for="add-database-version">
+                            <span class="label-text font-medium">
+                                <i class="material-icons-round text-xs align-middle mr-1">info</i> Version
+                            </span>
+                        </label>
+                        <input type="text"
+                               class="input input-bordered w-full"
+                               id="add-database-version"
+                               name="version">
+                    </div>
+                </div>
             </div>
+
+            <div class="space-y-3 mb-4">
+                <h6 class="flex items-center gap-2 font-semibold text-sm">
+                    <i class="material-icons-round text-sm">settings</i>
+                    Status &amp; Configuration
+                </h6>
+                <label class="label cursor-pointer justify-start gap-3">
+                    <input type="checkbox"
+                           class="checkbox checkbox-primary"
+                           id="add-database-active"
+                           name="active"
+                           checked>
+                    <div class="flex items-center gap-1">
+                        <i class="material-icons-round text-sm">power_settings_new</i>
+                        <span class="label-text">Database is Active</span>
+                    </div>
+                </label>
+                <div class="text-xs text-base-content/50 ml-10">Enable this database for backup operations</div>
+            </div>
+        </form>
+
+        <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="closeAddModal()">
+                <i class="material-icons-round text-lg">cancel</i>
+                Cancel
+            </button>
+            <button type="submit" form="addDatabaseForm" class="btn btn-primary">
+                <i class="material-icons-round text-lg">add</i>
+                Create Database
+            </button>
         </div>
     </div>
+    <div class="modal-backdrop" onclick="closeAddModal()"></div>
 </div>
 
 <script>
-// Dados dos databases para auto-completar
 const databasesData = [
     {% for database in databases %}
     {
@@ -670,50 +613,38 @@ const databasesData = [
     {% endfor %}
 ];
 
-// FAB click handler
-const addDatabaseFab = document.getElementById('addDatabaseFab');
-if (addDatabaseFab) {
-addDatabaseFab.addEventListener('click', function() {
-    openAddModal();
-});
-}
-
-// Auto-complete functionality
 const searchInput = document.getElementById('searchDatabases');
 const autocompleteList = document.getElementById('autocompleteList');
 let currentFocus = -1;
 
 searchInput.addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase().trim();
-    
-    // Limpar lista anterior
+
     autocompleteList.innerHTML = '';
     currentFocus = -1;
-    
+
     if (searchTerm.length === 0) {
         autocompleteList.style.display = 'none';
         showAllRows();
         return;
     }
-    
-    // Filtrar databases
-    const filteredDatabases = databasesData.filter(database => 
-        database.name.toLowerCase().includes(searchTerm) || 
+
+    const filteredDatabases = databasesData.filter(database =>
+        database.name.toLowerCase().includes(searchTerm) ||
         database.description.toLowerCase().includes(searchTerm) ||
         database.host.toLowerCase().includes(searchTerm) ||
         database.type.toLowerCase().includes(searchTerm)
     );
-    
-    // Mostrar sugestões
+
     if (filteredDatabases.length > 0) {
         autocompleteList.style.display = 'block';
-        
+
         filteredDatabases.slice(0, 5).forEach((database, index) => {
             const item = document.createElement('div');
-            item.className = 'autocomplete-item';
+            item.className = 'autocomplete-item px-4 py-3 cursor-pointer hover:bg-base-200 transition-colors border-b border-base-200 last:border-0';
             item.innerHTML = `
-                <div style="font-weight: 600; color: #3C4545; margin-bottom: 4px;">${database.name}</div>
-                <div style="font-size: 0.85rem; color: #697778;">${database.host} • ${database.type}</div>
+                <div class="font-semibold text-sm">${database.name}</div>
+                <div class="text-xs text-base-content/60">${database.host} &bull; ${database.type}</div>
             `;
             item.addEventListener('click', function() {
                 searchInput.value = database.name;
@@ -725,15 +656,13 @@ searchInput.addEventListener('input', function() {
     } else {
         autocompleteList.style.display = 'none';
     }
-    
-    // Filtrar tabela em tempo real
+
     filterTable(searchTerm);
 });
 
-// Navegação por teclado no auto-complete
 searchInput.addEventListener('keydown', function(e) {
     const items = autocompleteList.querySelectorAll('.autocomplete-item');
-    
+
     if (e.key === 'ArrowDown') {
         e.preventDefault();
         currentFocus++;
@@ -757,30 +686,27 @@ searchInput.addEventListener('keydown', function(e) {
 
 function setActive(items) {
     items.forEach((item, index) => {
-        item.classList.toggle('active', index === currentFocus);
+        item.classList.toggle('bg-base-200', index === currentFocus);
     });
 }
 
-// Fechar auto-complete ao clicar fora
 document.addEventListener('click', function(e) {
     if (!searchInput.contains(e.target) && !autocompleteList.contains(e.target)) {
         autocompleteList.style.display = 'none';
     }
 });
 
-// Função para filtrar tabela
 function filterTable(searchTerm) {
     const tableRows = document.querySelectorAll('tbody tr.database-row');
-    
+
     tableRows.forEach(row => {
-        const databaseName = row.querySelector('.table-cell-title') ? 
-                           row.querySelector('.table-cell-title').textContent.toLowerCase() : '';
+        const databaseName = row.querySelector('h5') ?
+                           row.querySelector('h5').textContent.toLowerCase() : '';
         const hostName = row.dataset.host.toLowerCase();
         const dbType = row.dataset.type.toLowerCase();
-        
+
         if (databaseName.includes(searchTerm) || hostName.includes(searchTerm) || dbType.includes(searchTerm)) {
             row.style.display = '';
-            row.style.animation = 'fadeIn 0.3s ease';
         } else {
             row.style.display = 'none';
         }
@@ -791,108 +717,86 @@ function showAllRows() {
     const tableRows = document.querySelectorAll('tbody tr.database-row');
     tableRows.forEach(row => {
         row.style.display = '';
-        row.style.animation = 'fadeIn 0.3s ease';
     });
 }
 
-// Botão Clean
 document.getElementById('cleanBtn').addEventListener('click', function() {
     searchInput.value = '';
     autocompleteList.style.display = 'none';
     showAllRows();
     searchInput.focus();
-    
-    // Adicionar efeito visual ao botão
-    this.style.transform = 'scale(0.95)';
-    setTimeout(() => {
-        this.style.transform = 'scale(1)';
-    }, 150);
 });
 
-// Modal functions for view details
 function openViewModal(databaseId, databaseName, databaseDescription, databaseHost, databaseType) {
-    // Populate modal with database data
     document.getElementById('view-database-name').textContent = databaseName;
     document.getElementById('view-database-description').textContent = databaseDescription || 'No description';
     document.getElementById('view-database-id').textContent = databaseId;
     document.getElementById('view-database-host').textContent = databaseHost;
     document.getElementById('view-database-type').textContent = databaseType;
-    
-    // Show modal
+
     const modal = document.getElementById('viewDatabaseModal');
-    modal.classList.add('show');
+    modal.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
 }
 
 function closeViewModal() {
     const modal = document.getElementById('viewDatabaseModal');
-    modal.classList.remove('show');
+    modal.classList.remove('modal-open');
     document.body.style.overflow = '';
 }
 
-// Modal functions for delete confirmation
 function openDeleteModal(databaseId, databaseName, databaseDescription, databaseHost) {
-    // Populate modal with database data
     document.getElementById('modal-database-name').textContent = databaseName;
     document.getElementById('modal-database-host').textContent = databaseHost;
     document.getElementById('modal-database-type').textContent = databasesData.find(db => db.id === databaseId)?.type || 'Unknown';
     document.getElementById('modal-database-id').textContent = databaseId;
-    
-    // Set form action to delete URL
+
     const deleteForm = document.getElementById('deleteDatabaseForm');
     deleteForm.action = `{% url 'coreRelback:database-delete' 0 %}`.replace('0', databaseId);
-    
-    // Show modal
+
     const modal = document.getElementById('deleteDatabaseModal');
-    modal.classList.add('show');
+    modal.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
 }
 
 function closeDeleteModal() {
     const modal = document.getElementById('deleteDatabaseModal');
-    modal.classList.remove('show');
+    modal.classList.remove('modal-open');
     document.body.style.overflow = '';
 }
 
-// Modal functions for edit database
 function openEditModal(databaseId, databaseName, databaseDescription) {
     const modal = document.getElementById('editDatabaseModal');
     const nameInput = document.getElementById('edit-database-name');
     const descInput = document.getElementById('edit-database-description');
     const databaseIdSpan = document.getElementById('edit-database-id-display');
-    
-    // Populate form fields
+
     nameInput.value = databaseName;
     descInput.value = databaseDescription || '';
     databaseIdSpan.textContent = databaseId;
-    
-    // Set form action
+
     const editForm = document.getElementById('editDatabaseForm');
     editForm.action = `{% url 'coreRelback:database-update' 0 %}`.replace('0', databaseId);
-    
-    modal.classList.add('show');
+
+    modal.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
-    
-    // Focus on name input for immediate editing
+
     nameInput.focus();
 }
 
 function closeEditModal() {
     const modal = document.getElementById('editDatabaseModal');
-    modal.classList.remove('show');
+    modal.classList.remove('modal-open');
     document.body.style.overflow = '';
-    
-    // Clear any error states
+
     clearFormErrors();
 }
 
-// Add Modal Functions
 function openAddModal() {
     const modal = document.getElementById('addDatabaseModal');
-    modal.classList.add('show');
+    modal.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
-    
-    // Focus on first input
+
     setTimeout(() => {
         document.getElementById('add-database-name').focus();
     }, 100);
@@ -900,16 +804,14 @@ function openAddModal() {
 
 function closeAddModal() {
     const modal = document.getElementById('addDatabaseModal');
-    modal.classList.remove('show');
+    modal.classList.remove('modal-open');
     document.body.style.overflow = '';
-    
-    // Reset form
+
     const form = document.getElementById('addDatabaseForm');
     form.reset();
-    
-    // Clear any validation errors
+
     form.querySelectorAll('.input-bordered').forEach(input => {
-        input.classList.remove('error');
+        input.classList.remove('input-error');
     });
     form.querySelectorAll('.error-message').forEach(error => {
         error.remove();
@@ -919,32 +821,30 @@ function closeAddModal() {
 function clearFormErrors() {
     const errorElements = document.querySelectorAll('.form-error');
     const inputElements = document.querySelectorAll('.input-bordered');
-    
-    errorElements.forEach(el => el.classList.remove('show'));
-    inputElements.forEach(el => el.classList.remove('error'));
+
+    errorElements.forEach(el => el.classList.add('hidden'));
+    inputElements.forEach(el => el.classList.remove('input-error'));
 }
 
 function validateEditForm() {
     const nameInput = document.getElementById('edit-database-name');
     const nameError = document.getElementById('edit-database-name-error');
     let isValid = true;
-    
-    // Clear previous errors
+
     clearFormErrors();
-    
-    // Validate name field
+
     if (!nameInput.value.trim()) {
-        nameInput.classList.add('error');
+        nameInput.classList.add('input-error');
         nameError.textContent = 'Database name is required';
-        nameError.classList.add('show');
+        nameError.classList.remove('hidden');
         isValid = false;
     } else if (nameInput.value.trim().length < 2) {
-        nameInput.classList.add('error');
+        nameInput.classList.add('input-error');
         nameError.textContent = 'Database name must be at least 2 characters';
-        nameError.classList.add('show');
+        nameError.classList.remove('hidden');
         isValid = false;
     }
-    
+
     return isValid;
 }
 
@@ -952,98 +852,45 @@ function submitEditForm() {
     if (!validateEditForm()) {
         return;
     }
-    
-    const saveButton = document.querySelector('.btn-save-confirm');
-    
-    // Disable save button during submission
+
+    const saveButton = document.querySelector('#editDatabaseModal .btn-primary');
+
     saveButton.disabled = true;
-    saveButton.innerHTML = '<i class="material-icons">hourglass_empty</i>Saving...';
-    
-    // Submit the form
+    saveButton.innerHTML = '<i class="material-icons-round text-lg">hourglass_empty</i> Saving...';
+
     document.getElementById('editDatabaseForm').submit();
 }
 
-// Close modals when clicking on backdrop
-['viewDatabaseModal', 'deleteDatabaseModal', 'editDatabaseModal', 'addDatabaseModal'].forEach(modalId => {
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
-                const closeFunctionMap = {
-                    'viewDatabaseModal': closeViewModal,
-                    'deleteDatabaseModal': closeDeleteModal,
-                    'editDatabaseModal': closeEditModal,
-                    'addDatabaseModal': closeAddModal
-                };
-                closeFunctionMap[modalId]();
-            }
-        });
-    }
-});
-
-// Close modal with ESC key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const modals = ['viewDatabaseModal', 'deleteDatabaseModal', 'editDatabaseModal', 'addDatabaseModal'];
         const closeFunctions = [closeViewModal, closeDeleteModal, closeEditModal, closeAddModal];
-        
+
         modals.forEach((modalId, index) => {
             const modal = document.getElementById(modalId);
-            if (modal && modal.classList.contains('show')) {
+            if (modal && modal.classList.contains('modal-open')) {
                 closeFunctions[index]();
             }
         });
     }
 });
 
-// Add row hover effects
-document.addEventListener('DOMContentLoaded', function() {
-    const tableRows = document.querySelectorAll('tbody tr.database-row');
-    tableRows.forEach(row => {
-        row.addEventListener('mouseenter', function() {
-            this.style.backgroundColor = 'var(--sky-30)';
-            this.style.transform = 'scale(1.005)';
-            this.style.transition = 'all 0.3s ease';
-        });
-        
-        row.addEventListener('mouseleave', function() {
-            this.style.backgroundColor = '';
-            this.style.transform = 'scale(1)';
-        });
-    });
-    
-    // Animate cards on load
-    const cards = document.querySelectorAll('.md-card');
-    cards.forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, index * 100);
-    });
-    
-    // Focus automático no campo de busca
-    searchInput.focus();
-});
-
-// Real-time validation for edit form
 document.addEventListener('DOMContentLoaded', function() {
     const nameInput = document.getElementById('edit-database-name');
     if (nameInput) {
         nameInput.addEventListener('input', function() {
-            if (this.classList.contains('error')) {
+            if (this.classList.contains('input-error')) {
                 validateEditForm();
             }
         });
     }
-    
-    // Add button event listener
+
     const addButton = document.querySelector('[data-modal-target="#addDatabaseModal"]');
     if (addButton) {
         addButton.addEventListener('click', openAddModal);
     }
+
+    searchInput.focus();
 });
 </script>
 {% endblock content %}

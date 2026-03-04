@@ -5,76 +5,76 @@
 {% block title %}Reports - RelBack{% endblock title %}
 
 {% block content %}
-<div class="md-container-fluid">
+<div class="space-y-5">
     <!-- Page Header -->
-    <div class="md-grid md-grid-cols-1 md-mb-5">
-        <div class="md-card page-header">
-            <div class="md-flex md-justify-between md-items-center">
-                <div class="md-flex md-items-center">
-                    <i class="material-icons page-header-icon">assessment</i>
-                    <div>
-                        <h1 class="page-title">Backup Reports</h1>
-                        <p class="page-subtitle">Monitor backup jobs and system status</p>
-                    </div>
+    <div class="bg-base-200 border border-base-300 rounded-xl p-5 shadow-sm">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div class="flex items-center gap-3">
+                <i class="material-icons-round text-primary text-4xl">assessment</i>
+                <div>
+                    <h1 class="text-2xl font-bold">Backup Reports</h1>
+                    <p class="text-base-content/60 text-sm">Monitor backup jobs and system status</p>
                 </div>
-                <div class="page-actions flex gap-2">
-                    <button type="button" class="btn btn-outline btn-sm" onclick="refreshReports()">
-                        <i class="material-icons" style="font-size: 18px;">refresh</i>
-                        Refresh
-                    </button>
-                    <button type="button" class="btn btn-primary btn-sm" onclick="exportReports()">
-                        <i class="material-icons" style="font-size: 18px;">download</i>
-                        Export
-                    </button>
-                </div>
+            </div>
+            <div class="flex gap-2">
+                <button type="button" class="btn btn-outline btn-sm" onclick="refreshReports()">
+                    <i class="material-icons-round text-lg">refresh</i>
+                    Refresh
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="exportReports()">
+                    <i class="material-icons-round text-lg">download</i>
+                    Export
+                </button>
             </div>
         </div>
     </div>
-    
+
     <!-- Stats Cards -->
-    <div class="stats stats-vertical lg:stats-horizontal shadow w-full mb-5">
+    <div class="stats stats-vertical lg:stats-horizontal shadow w-full">
         <div class="stat">
             <div class="stat-figure text-primary">
-                <i class="material-icons-round" style="font-size: 2.5rem;">assignment</i>
+                <i class="material-icons-round text-4xl">assignment</i>
             </div>
             <div class="stat-title">Total Jobs</div>
-            <div class="stat-value stats-title" id="wsStatTotal">{{ jobs|length }}</div>
+            <div class="stat-value stats-title">{{ jobs|length }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-success">
-                <i class="material-icons-round" style="font-size: 2.5rem;">check_circle</i>
+                <i class="material-icons-round text-4xl">check_circle</i>
             </div>
             <div class="stat-title">Successful</div>
-            <div class="stat-value text-success stats-title" id="wsStatSuccessful">{{ successful_jobs|default:0 }}</div>
+            <div class="stat-value text-success stats-title">{{ successful_jobs|default:0 }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-error">
-                <i class="material-icons-round" style="font-size: 2.5rem;">error</i>
+                <i class="material-icons-round text-4xl">error</i>
             </div>
             <div class="stat-title">Failed</div>
-            <div class="stat-value text-error stats-title" id="wsStatFailed">{{ failed_jobs|default:0 }}</div>
+            <div class="stat-value text-error stats-title">{{ failed_jobs|default:0 }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-info">
-                <i class="material-icons-round" style="font-size: 2.5rem;">today</i>
+                <i class="material-icons-round text-4xl">today</i>
             </div>
             <div class="stat-title">Today's Jobs</div>
-            <div class="stat-value stats-title" id="wsStatToday">{{ today_jobs|default:0 }}</div>
+            <div class="stat-value stats-title">{{ today_jobs|default:0 }}</div>
         </div>
     </div>
 
     <!-- Oracle Catalog Connection Banner -->
     {% if oracle_available %}
-    <div role="alert" class="alert alert-success mb-4 shadow-sm flex gap-3 items-center">
-        <i class="material-icons">check_circle</i>
+    <div role="alert" class="alert alert-success shadow-sm">
+        <i class="material-icons-round">check_circle</i>
         <span>
             <strong>Oracle RMAN Catalog connected</strong> — Showing real backup job results.
         </span>
-        <button class="btn btn-sm btn-ghost ml-auto" onclick="this.parentElement.remove()" aria-label="Dismiss">✕</button>
+        <button class="btn btn-sm btn-ghost ml-auto" onclick="this.parentElement.remove()" aria-label="Dismiss">
+            <i class="material-icons-round text-sm">close</i>
+        </button>
     </div>
     {% else %}
-    <div role="alert" class="alert alert-warning mb-4 shadow-sm flex gap-3 items-center">
-        <i class="material-icons">warning_amber</i>
+    <div role="alert" class="alert alert-warning shadow-sm">
+        <i class="material-icons-round">warning</i>
         <span>
             <strong>Oracle RMAN Catalog unavailable</strong> — Showing <em>scheduled jobs only</em>.
             Backup results will appear automatically when the catalog is online.
@@ -83,90 +83,88 @@
     {% endif %}
 
     <!-- Search and Filters -->
-    <div class="md-grid md-grid-cols-1 md-mb-5 search-section">
-        <div class="md-card search-container">
-            <div class="md-flex md-items-center md-mb-4">
-                <i class="material-icons md-me-3" style="font-size: 24px; color: #C74634;">filter_list</i>
-                <h6 class="md-mb-0">Smart Filters</h6>
-                <div class="md-ms-auto">
-                    <button type="button" class="btn btn-ghost btn-sm" id="clearAllFilters">
-                        <i class="material-icons" style="font-size: 18px;">clear_all</i>
-                        Clear All
-                    </button>
-                </div>
+    <div class="bg-base-200 border border-base-300 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center mb-4">
+            <i class="material-icons-round text-primary text-2xl mr-3">filter_list</i>
+            <h6 class="font-semibold text-lg">Smart Filters</h6>
+            <div class="ml-auto">
+                <button type="button" class="btn btn-ghost btn-sm" id="clearAllFilters">
+                    <i class="material-icons-round text-lg">clear_all</i>
+                    Clear All
+                </button>
             </div>
-            
-            <!-- Advanced Filters -->
-            <div class="filters-grid">
-                <div class="filter-item">
-                    <label for="policy_name" class="filter-label">Policy</label>
-                    <select class="filter-select" name="policy_name" id="policy_name" data-placeholder="All Policies">
-                        <option value="">All Policies</option>
-                        {% for policy in all_policies %}
-                        <option value="{{ policy }}" {% if request.GET.policy_name == policy %}selected{% endif %}>
-                            {{ policy }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="filter-item">
-                    <label for="hostname" class="filter-label">Host</label>
-                    <select class="filter-select" name="hostname" id="hostname" data-placeholder="All Hosts">
-                        <option value="">All Hosts</option>
-                        {% for host in all_hosts %}
-                        <option value="{{ host }}" {% if request.GET.hostname == host %}selected{% endif %}>
-                            {{ host }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="filter-item">
-                    <label for="db_name" class="filter-label">Database</label>
-                    <select class="filter-select" name="db_name" id="db_name" data-placeholder="All Databases">
-                        <option value="">All Databases</option>
-                        {% for db in all_databases %}
-                        <option value="{{ db }}" {% if request.GET.db_name == db %}selected{% endif %}>
-                            {{ db }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                
-                <div class="filter-item">
-                    <label for="backup_type" class="filter-label">Type</label>
-                    <select class="filter-select" name="backup_type" id="backup_type" data-placeholder="All Types">
-                        <option value="">All Types</option>
-                        {% for type in all_backup_types %}
-                        <option value="{{ type }}" {% if request.GET.backup_type == type %}selected{% endif %}>
-                            {{ type }}
-                        </option>
-                        {% endfor %}
-                    </select>Select Date Range
-                </div>
-                
-                <div class="filter-item">
-                    <label for="status_filter" class="filter-label">Status</label>
-                    <select class="filter-select" name="status_filter" id="status_filter" data-placeholder="All Status">
-                        <option value="">All Status</option>
-                        <option value="COMPLETED" {% if request.GET.status_filter == "COMPLETED" %}selected{% endif %}>Completed</option>
-                        <option value="RUNNING" {% if request.GET.status_filter == "RUNNING" %}selected{% endif %}>Running</option>
-                        <option value="FAILED" {% if request.GET.status_filter == "FAILED" %}selected{% endif %}>Failed</option>
-                        <option value="WARNING" {% if request.GET.status_filter == "WARNING" %}selected{% endif %}>Warning</option>
-                        <option value="INTERRUPTED" {% if request.GET.status_filter == "INTERRUPTED" %}selected{% endif %}>Interrupted</option>
-                        <option value="UNKNOWN" {% if request.GET.status_filter == "UNKNOWN" %}selected{% endif %}>Unknown</option>
-                    </select>
-                </div>
-                
-                <div class="filter-item">
-                    <label for="date_range_filter" class="filter-label">Date Range</label>
-                    <div class="date-range-input">
-                        <input type="text" class="filter-input" id="date_range_filter" 
-                               placeholder="Click to select date range..." readonly 
-                               onclick="openDateRangePicker()">
-                        <i class="material-icons date-icon">date_range</i>
-                    </div>
+        </div>
+
+        <!-- Advanced Filters -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            <div class="form-control">
+                <label class="label" for="policy_name"><span class="label-text font-medium">Policy</span></label>
+                <select class="select select-bordered w-full select-sm" name="policy_name" id="policy_name" data-placeholder="All Policies">
+                    <option value="">All Policies</option>
+                    {% for policy in all_policies %}
+                    <option value="{{ policy }}" {% if request.GET.policy_name == policy %}selected{% endif %}>
+                        {{ policy }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label class="label" for="hostname"><span class="label-text font-medium">Host</span></label>
+                <select class="select select-bordered w-full select-sm" name="hostname" id="hostname" data-placeholder="All Hosts">
+                    <option value="">All Hosts</option>
+                    {% for host in all_hosts %}
+                    <option value="{{ host }}" {% if request.GET.hostname == host %}selected{% endif %}>
+                        {{ host }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label class="label" for="db_name"><span class="label-text font-medium">Database</span></label>
+                <select class="select select-bordered w-full select-sm" name="db_name" id="db_name" data-placeholder="All Databases">
+                    <option value="">All Databases</option>
+                    {% for db in all_databases %}
+                    <option value="{{ db }}" {% if request.GET.db_name == db %}selected{% endif %}>
+                        {{ db }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label class="label" for="backup_type"><span class="label-text font-medium">Type</span></label>
+                <select class="select select-bordered w-full select-sm" name="backup_type" id="backup_type" data-placeholder="All Types">
+                    <option value="">All Types</option>
+                    {% for type in all_backup_types %}
+                    <option value="{{ type }}" {% if request.GET.backup_type == type %}selected{% endif %}>
+                        {{ type }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label class="label" for="status_filter"><span class="label-text font-medium">Status</span></label>
+                <select class="select select-bordered w-full select-sm" name="status_filter" id="status_filter" data-placeholder="All Status">
+                    <option value="">All Status</option>
+                    <option value="COMPLETED" {% if request.GET.status_filter == "COMPLETED" %}selected{% endif %}>Completed</option>
+                    <option value="RUNNING" {% if request.GET.status_filter == "RUNNING" %}selected{% endif %}>Running</option>
+                    <option value="FAILED" {% if request.GET.status_filter == "FAILED" %}selected{% endif %}>Failed</option>
+                    <option value="WARNING" {% if request.GET.status_filter == "WARNING" %}selected{% endif %}>Warning</option>
+                    <option value="INTERRUPTED" {% if request.GET.status_filter == "INTERRUPTED" %}selected{% endif %}>Interrupted</option>
+                    <option value="UNKNOWN" {% if request.GET.status_filter == "UNKNOWN" %}selected{% endif %}>Unknown</option>
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label class="label" for="date_range_filter"><span class="label-text font-medium">Date Range</span></label>
+                <div class="relative">
+                    <input type="text" class="input input-bordered w-full input-sm pr-10" id="date_range_filter"
+                           placeholder="Select date range..." readonly
+                           onclick="openDateRangePicker()">
+                    <i class="material-icons-round absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 text-lg pointer-events-none">date_range</i>
                 </div>
             </div>
         </div>
@@ -176,61 +174,60 @@
     <div id="messageContainer"></div>
 
     <!-- Schedule Generation -->
-    <div class="md-grid md-grid-cols-1 md-gap-5 md-mb-5">
-        <div class="md-card md-p-4">
-            <div class="md-flex md-items-center md-mb-4">
-                <i class="material-icons md-me-3" style="font-size: 24px; color: #4C7AA5;">event</i>
-                <h6 class="md-mb-0">Schedule Generation</h6>
-                <div class="md-ms-auto">
-                    <span class="md-badge" style="background: rgba(76, 122, 165, 0.1); color: #4C7AA5; font-size: 0.75rem;">
-                        <i class="material-icons md-me-1" style="font-size: 14px;">info</i>
-                        Generate backup schedules for specific periods
-                    </span>
-                </div>
+    <div class="bg-base-200 border border-base-300 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center mb-4">
+            <i class="material-icons-round text-info text-2xl mr-3">event</i>
+            <h6 class="font-semibold text-lg">Schedule Generation</h6>
+            <div class="ml-auto">
+                <span class="badge badge-info badge-outline gap-1">
+                    <i class="material-icons-round text-sm">info</i>
+                    Generate backup schedules for specific periods
+                </span>
             </div>
-            
-            <div class="schedule-controls-grid">
-                <!-- Quick Period Selection -->
-                <div class="schedule-control-item">
-                    <label for="generated_days" class="schedule-label">
-                        <i class="material-icons md-me-1">schedule</i>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-[200px_1fr_auto] gap-4 items-end">
+            <div class="form-control">
+                <label class="label" for="generated_days">
+                    <span class="label-text font-medium flex items-center gap-1">
+                        <i class="material-icons-round text-sm">schedule</i>
                         Quick Period
-                    </label>
-                    <select class="schedule-select" name="days" id="generated_days">
-                        <option value="2" {% if request.GET.days == "2" %}selected{% endif %}>Today + Tomorrow</option>
-                        <option value="7" {% if request.GET.days == "7" %}selected{% endif %}>Next 7 Days</option>
-                        <option value="30" {% if request.GET.days == "30" %}selected{% endif %}>Next 30 Days</option>
-                        <option value="90" {% if request.GET.days == "90" %}selected{% endif %}>Next 90 Days</option>
-                    </select>
-                </div>
-                
-                <!-- Custom Date Range -->
-                <div class="schedule-control-item schedule-date-range">
-                    <label class="schedule-label">
-                        <i class="material-icons md-me-1">date_range</i>
+                    </span>
+                </label>
+                <select class="select select-bordered w-full" name="days" id="generated_days">
+                    <option value="2" {% if request.GET.days == "2" %}selected{% endif %}>Today + Tomorrow</option>
+                    <option value="7" {% if request.GET.days == "7" %}selected{% endif %}>Next 7 Days</option>
+                    <option value="30" {% if request.GET.days == "30" %}selected{% endif %}>Next 30 Days</option>
+                    <option value="90" {% if request.GET.days == "90" %}selected{% endif %}>Next 90 Days</option>
+                </select>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text font-medium flex items-center gap-1">
+                        <i class="material-icons-round text-sm">date_range</i>
                         Custom Range
-                    </label>
-                    <div class="custom-date-range">
-                        <input type="text" class="schedule-input" id="dateRange" name="date_range" 
-                               placeholder="Click to select custom range..." readonly 
-                               onclick="openDateRangePicker()"
-                               value="{% if request.GET.start_date and request.GET.end_date %}{{ request.GET.start_date }} - {{ request.GET.end_date }}{% endif %}">
-                        <button type="button" class="clear-dates-btn" id="clearDates" title="Clear Custom Range">
-                            <i class="material-icons">clear</i>
-                        </button>
-                    </div>
-                    <input type="hidden" name="start_date" id="start_date" value="{{ request.GET.start_date }}">
-                    <input type="hidden" name="end_date" id="end_date" value="{{ request.GET.end_date }}">
-                </div>
-                
-                <!-- Generate Button -->
-                <div class="schedule-control-item">
-                    <label class="schedule-label" style="opacity: 0;">Action</label>
-                    <button type="button" class="schedule-generate-btn" onclick="generateSchedules()">
-                        <i class="material-icons md-me-2">event</i>
-                        Generate Schedules
+                    </span>
+                </label>
+                <div class="join w-full">
+                    <input type="text" class="input input-bordered join-item flex-1" id="dateRange" name="date_range"
+                           placeholder="Click to select custom range..." readonly
+                           onclick="openDateRangePicker()"
+                           value="{% if request.GET.start_date and request.GET.end_date %}{{ request.GET.start_date }} - {{ request.GET.end_date }}{% endif %}">
+                    <button type="button" class="btn btn-ghost join-item" id="clearDates" title="Clear Custom Range">
+                        <i class="material-icons-round">clear</i>
                     </button>
                 </div>
+                <input type="hidden" name="start_date" id="start_date" value="{{ request.GET.start_date }}">
+                <input type="hidden" name="end_date" id="end_date" value="{{ request.GET.end_date }}">
+            </div>
+
+            <div class="form-control">
+                <label class="label invisible"><span class="label-text">Action</span></label>
+                <button type="button" class="btn btn-success" onclick="generateSchedules()">
+                    <i class="material-icons-round">event</i>
+                    Generate Schedules
+                </button>
             </div>
         </div>
     </div>
@@ -239,30 +236,33 @@
     <dialog id="datePickerModal" class="modal">
         <div class="modal-box w-11/12 max-w-2xl">
             <div class="flex items-center gap-2 mb-4">
-                <i class="material-icons text-primary">date_range</i>
+                <i class="material-icons-round text-primary">date_range</i>
                 <h3 class="font-bold text-lg">Select Date Range</h3>
             </div>
-            <div class="calendar-container">
+            <div>
                 <div class="flex justify-between items-center mb-4">
                     <button type="button" class="btn btn-sm btn-outline" id="prevMonth">
-                        <i class="material-icons">chevron_left</i>
+                        <i class="material-icons-round">chevron_left</i>
                     </button>
                     <h6 class="m-0 font-semibold" id="currentMonth"></h6>
                     <button type="button" class="btn btn-sm btn-outline" id="nextMonth">
-                        <i class="material-icons">chevron_right</i>
+                        <i class="material-icons-round">chevron_right</i>
                     </button>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
             </div>
+            <div id="selectedRangeDisplay" class="mt-3 text-center text-sm text-primary font-medium" style="display:none;">
+                Selected: <span id="selectedRangeText"></span>
+            </div>
             <div class="modal-action mt-4">
                 <form method="dialog">
                     <button class="btn btn-outline">
-                        <i class="material-icons" style="font-size: 18px;">close</i>
+                        <i class="material-icons-round text-lg">close</i>
                         Cancel
                     </button>
                 </form>
                 <button type="button" class="btn btn-primary" id="applyDates" disabled>
-                    <i class="material-icons" style="font-size: 18px;">done</i>
+                    <i class="material-icons-round text-lg">done</i>
                     Apply
                 </button>
             </div>
@@ -271,121 +271,116 @@
     </dialog>
 
     <!-- Backup Jobs Table -->
-    <div class="md-grid md-grid-cols-1">
-        <div class="md-card">
-            <div class="md-card-header md-p-4">
-                <div class="md-flex md-items-center md-justify-between">
-                    <h5 class="md-mb-0">
-                        <i class="material-icons md-me-2" style="vertical-align: middle;">assignment</i>
-                        Backup Jobs
-                    </h5>
-                </div>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="table table-xs table-zebra w-full" id="tableReport">
-                    <thead>
-                        <tr>
-                            <th style="padding: 1rem;">
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">policy</i>
-                                Policy
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">storage</i>
-                                Hostname
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">database</i>
-                                Database
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">backup</i>
-                                Type
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">schedule</i>
-                                Start Time
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">event_available</i>
-                                End Time
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">info</i>
-                                Status
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">timer</i>
-                                Duration
-                            </th>
-                            <th>
-                                <i class="material-icons md-me-2" style="vertical-align: middle;">folder</i>
-                                Size
-                            </th>
-                            <th class="md-text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="reportsTableBody">
-                        {% for j in jobs %}
-                        <tr>
-                            <td style="padding: 1rem;" class="md-font-medium">{{ j.policy_name }}</td>
-                            <td>{{ j.hostname }}</td>
-                            <td>{{ j.db_name }}</td>
-                            <td>
-                                <span class="badge badge-sm badge-info">{{ j.backup_type }}</span>
-                            </td>
-                            <td>{{ j.start_time|date:"d/M/Y H:i" }}</td>
-                            <td>{{ j.end_time|date:"d/M/Y H:i"|default:"-" }}</td>
-                            <td>
-                                {# Presenter: backup_tags.backup_badge maps status → DaisyUI badge #}
-                                {% backup_badge j.status %}
-                            </td>
-                            <td>
-                                {% if j.elapsed_seconds %}
-                                    {{ j.elapsed_seconds|floatformat:0 }}s
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if j.input_bytes %}
-                                    {{ j.input_bytes|filesizeformat }}
-                                {% else %}
-                                    -
-                                {% endif %}
-                            </td>
-                            <td class="text-center">
-                                <div class="flex gap-1 justify-center">
-                                    <button type="button" class="btn btn-sm btn-ghost btn-square"
-                                            title="View Details"
-                                            onclick="jobDetail('{{ j.session_key }}')">
-                                        <i class="material-icons" style="font-size: 16px;">visibility</i>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-ghost btn-square"
-                                            title="View Logs"
-                                            onclick="viewLogs('{{ j.session_key }}')">
-                                        <i class="material-icons" style="font-size: 16px;">description</i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="10" class="text-center py-10">
-                                <div class="text-base-content/60 flex flex-col items-center gap-3">
-                                    <i class="material-icons" style="font-size: 64px;">assessment</i>
-                                    <h5 class="text-lg font-semibold">No backup jobs found</h5>
-                                    <p>Backup jobs will appear here once they start running.</p>
-                                    <a href="{% url 'coreRelback:report-refresh-schedule' %}" class="btn btn-primary">
-                                        <i class="material-icons" style="font-size: 18px;">refresh</i>
-                                        Refresh Data
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+    <div class="bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-base-300">
+            <h5 class="font-semibold text-lg flex items-center gap-2">
+                <i class="material-icons-round text-primary">assignment</i>
+                Backup Jobs
+            </h5>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="table table-xs table-zebra w-full" id="tableReport">
+                <thead>
+                    <tr>
+                        <th class="p-4">
+                            <i class="material-icons-round text-sm align-middle mr-1">policy</i>
+                            Policy
+                        </th>
+                        <th>
+                            <i class="material-icons-round text-sm align-middle mr-1">storage</i>
+                            Hostname
+                        </th>
+                        <th>
+                            <i class="material-icons-round text-sm align-middle mr-1">database</i>
+                            Database
+                        </th>
+                        <th>
+                            <i class="material-icons-round text-sm align-middle mr-1">backup</i>
+                            Type
+                        </th>
+                        <th>
+                            <i class="material-icons-round text-sm align-middle mr-1">schedule</i>
+                            Start Time
+                        </th>
+                        <th>
+                            <i class="material-icons-round text-sm align-middle mr-1">event_available</i>
+                            End Time
+                        </th>
+                        <th>
+                            <i class="material-icons-round text-sm align-middle mr-1">info</i>
+                            Status
+                        </th>
+                        <th>
+                            <i class="material-icons-round text-sm align-middle mr-1">timer</i>
+                            Duration
+                        </th>
+                        <th>
+                            <i class="material-icons-round text-sm align-middle mr-1">folder</i>
+                            Size
+                        </th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for j in jobs %}
+                    <tr>
+                        <td class="p-4 font-medium">{{ j.policy_name }}</td>
+                        <td>{{ j.hostname }}</td>
+                        <td>{{ j.db_name }}</td>
+                        <td>
+                            <span class="badge badge-sm badge-info">{{ j.backup_type }}</span>
+                        </td>
+                        <td>{{ j.start_time|date:"d/M/Y H:i" }}</td>
+                        <td>{{ j.end_time|date:"d/M/Y H:i"|default:"-" }}</td>
+                        <td>
+                            {% backup_badge j.status %}
+                        </td>
+                        <td>
+                            {% if j.elapsed_seconds %}
+                                {{ j.elapsed_seconds|floatformat:0 }}s
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if j.input_bytes %}
+                                {{ j.input_bytes|filesizeformat }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <div class="flex gap-1 justify-center">
+                                <button type="button" class="btn btn-sm btn-ghost btn-square"
+                                        title="View Details"
+                                        onclick="jobDetail('{{ j.session_key }}')">
+                                    <i class="material-icons-round text-base">visibility</i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-ghost btn-square"
+                                        title="View Logs"
+                                        onclick="viewLogs('{{ j.session_key }}')">
+                                    <i class="material-icons-round text-base">description</i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" class="text-center py-10">
+                            <div class="text-base-content/60 flex flex-col items-center gap-3">
+                                <i class="material-icons-round text-6xl">assessment</i>
+                                <h5 class="text-lg font-semibold">No backup jobs found</h5>
+                                <p>Backup jobs will appear here once they start running.</p>
+                                <a href="{% url 'coreRelback:report-refresh-schedule' %}" class="btn btn-primary btn-sm">
+                                    <i class="material-icons-round text-lg">refresh</i>
+                                    Refresh Data
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -394,12 +389,10 @@
 <dialog id="jobDetailModal" class="modal">
     <div class="modal-box w-11/12 max-w-3xl">
         <div class="flex items-center gap-2 mb-4">
-            <i class="material-icons text-primary">info</i>
+            <i class="material-icons-round text-primary">info</i>
             <h3 class="font-bold text-lg">Job Details</h3>
         </div>
-        <div id="jobDetailContent" class="py-2">
-            <!-- Content loaded via JS -->
-        </div>
+        <div id="jobDetailContent" class="py-2"></div>
         <div class="modal-action">
             <form method="dialog">
                 <button class="btn">Close</button>
@@ -413,15 +406,13 @@
 <dialog id="jobLogsModal" class="modal">
     <div class="modal-box w-11/12 max-w-5xl">
         <div class="flex items-center gap-2 mb-4">
-            <i class="material-icons text-primary">description</i>
+            <i class="material-icons-round text-primary">description</i>
             <h3 class="font-bold text-lg">Job Logs</h3>
         </div>
-        <div id="jobLogsContent" class="py-2">
-            <!-- Logs loaded via JS -->
-        </div>
+        <div id="jobLogsContent" class="py-2"></div>
         <div class="modal-action">
             <button type="button" class="btn btn-primary" onclick="downloadLogs()">
-                <i class="material-icons" style="font-size: 18px;">download</i>
+                <i class="material-icons-round text-lg">download</i>
                 Download Logs
             </button>
             <form method="dialog">
@@ -435,422 +426,17 @@
 
 {% block extra_js %}
 <style>
-/* Enhanced Filters Styling */
-.filters-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    align-items: end;
-}
-
-.filter-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.filter-label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: var(--oracle-slate-150);
-    margin-bottom: 0;
-}
-
-.filter-select,
-.filter-input {
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    font-size: 0.95rem;
-    background: var(--background-card);
-    color: var(--text-primary);
-    transition: all 0.3s ease;
-    min-height: 48px;
-}
-
-.filter-select:focus,
-.filter-input:focus {
-    border-color: #C74634;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(199, 70, 52, 0.1);
-}
-
-.date-range-input {
-    position: relative;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.date-range-input:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(199, 70, 52, 0.15);
-}
-
-.date-range-input .date-icon {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--oracle-slate-100);
-    font-size: 20px;
-    pointer-events: none;
-    transition: color 0.3s ease;
-}
-
-.date-range-input:hover .date-icon {
-    color: #C74634;
-}
-
-.date-range-input .filter-input {
-    padding-right: 45px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.date-range-input .filter-input:focus {
-    border-color: #C74634;
-    box-shadow: 0 0 0 3px rgba(199, 70, 52, 0.1);
-}
-
-/* Quick Search Enhancement */
-.autocomplete-container {
-    position: relative;
-    margin-bottom: 0;
-}
-
-.autocomplete-container .md-input {
-    padding: 0.875rem 3rem 0.875rem 1rem;
-    font-size: 1rem;
-    border-radius: var(--radius-lg);
-    border: 2px solid var(--border-light);
-    background: var(--background-card);
-    transition: all 0.3s ease;
-    width: 100%;
-}
-
-.autocomplete-container .md-input:focus {
-    border-color: #C74634;
-    box-shadow: 0 0 0 3px rgba(199, 70, 52, 0.1);
-}
-
-.autocomplete-container .search-icon {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--oracle-slate-100);
-    pointer-events: none;
-}
-
-.autocomplete-list {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--background-card);
-    border: 1px solid var(--border-light);
-    border-top: none;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    box-shadow: var(--shadow-card);
-    max-height: 300px;
-    overflow-y: auto;
-    z-index: 100;
-    display: none;
-}
-
-.autocomplete-item {
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border-light);
-    transition: background-color 0.2s ease;
-}
-
-.autocomplete-item:hover,
-.autocomplete-item.active {
-    background-color: rgba(199, 70, 52, 0.1);
-}
-
-.autocomplete-item:last-child {
-    border-bottom: none;
-}
-
-/* Material Design Input Group */
-.md-input-group {
-    display: flex;
-    align-items: stretch;
-}
-
-.md-input-group .md-form-control {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-right: none;
-}
-
-.md-input-group .md-btn {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-/* Form styling improvements */
-.md-form-label {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--md-on-surface);
-}
-
-.md-form-control {
-    padding: 0.75rem 1rem;
-    border: 1px solid rgba(var(--md-outline-rgb), 0.38);
-    border-radius: 6px;
-    font-size: 1rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.md-form-control:focus {
-    border-color: var(--md-primary);
-    outline: 0;
-    box-shadow: 0 0 0 0.25rem rgba(var(--md-primary-rgb), 0.25);
-}
-
-/* Responsive adjustments */
-@media (max-width: 1200px) {
-    .filters-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .filters-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .filters-grid {
-        grid-template-columns: 1fr;
-    }
-}
-/* Searchable Select Styles */
-.searchable-select-container {
-    position: relative;
-    width: 100%;
-}
-
-.searchable-select {
-    position: relative;
-}
-
-.searchable-select .search-input {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid rgba(var(--md-outline-rgb), 0.38);
-    border-radius: 6px;
-    font-size: 1rem;
-    line-height: 1.5;
-    background-color: var(--md-surface);
-    color: var(--md-on-surface);
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-.searchable-select .search-input:focus {
-    border-color: var(--md-primary);
-    outline: 0;
-    box-shadow: 0 0 0 0.25rem rgba(var(--md-primary-rgb), 0.25);
-}
-
-.searchable-select .dropdown-options {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--md-surface);
-    border: 1px solid rgba(var(--md-outline-rgb), 0.38);
-    border-radius: 6px;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    max-height: 200px;
-    overflow-y: auto;
-    z-index: 1050;
-    display: none;
-    margin-top: 2px;
-}
-
-.searchable-select .dropdown-option {
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    border-bottom: 1px solid rgba(var(--md-outline-rgb), 0.12);
-    transition: background-color 0.15s ease-in-out;
-    color: var(--md-on-surface);
-}
-
-.searchable-select .dropdown-option:hover,
-.searchable-select .dropdown-option.selected {
-    background-color: rgba(var(--md-primary-rgb), 0.08);
-    color: var(--md-primary);
-}
-
-.searchable-select .dropdown-option.selected {
-    background-color: var(--md-primary);
-    color: var(--md-on-primary);
-}
-
-.searchable-select .dropdown-option:last-child {
-    border-bottom: none;
-}
-
-.searchable-select .dropdown-option[data-value=""] {
-    font-style: italic;
-    color: var(--md-on-surface-variant);
-}
-
-/* Schedule Controls Styling */
-.schedule-controls-grid {
-    display: grid;
-    grid-template-columns: 200px 1fr auto;
-    gap: 1.5rem;
-    align-items: end;
-}
-
-.schedule-control-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.schedule-label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #4C7AA5;
-    display: flex;
-    align-items: center;
-    margin-bottom: 0;
-}
-
-.schedule-select,
-.schedule-input {
-    padding: 0.75rem 1rem;
-    border: 2px solid #E4F1F7;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    background: white;
-    color: #3C677D;
-    transition: all 0.3s ease;
-    min-height: 48px;
-}
-
-.schedule-select:focus,
-.schedule-input:focus {
-    border-color: #4C7AA5;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(76, 122, 165, 0.1);
-}
-
-.schedule-date-range {
-    position: relative;
-}
-
-.custom-date-range {
-    position: relative;
-    display: flex;
-    align-items: stretch;
-}
-
-.custom-date-range .schedule-input {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-right: none;
-    cursor: pointer;
-    flex: 1;
-}
-
-.clear-dates-btn {
-    background: #f8f9fa;
-    border: 2px solid #E4F1F7;
-    border-left: none;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-    padding: 0.75rem;
-    color: #6c757d;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.clear-dates-btn:hover {
-    background: #e9ecef;
-    color: #495057;
-}
-
-.schedule-generate-btn {
-    background: linear-gradient(135deg, #1E3324 0%, #4C634C 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 48px;
-}
-
-.schedule-generate-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(30, 51, 36, 0.3);
-}
-
-/* Calendar Styles */
-.calendar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-}
-
-.calendar-nav-btn {
-    background: none;
-    border: 1px solid #E4F1F7;
-    border-radius: 6px;
-    padding: 0.5rem;
-    color: #4C7AA5;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.calendar-nav-btn:hover {
-    background: #E4F1F7;
-    border-color: #4C7AA5;
-}
-
-.calendar-month-title {
-    font-weight: 600;
-    color: #3C677D;
-    margin: 0;
-    min-width: 200px;
-    text-align: center;
-}
-
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 2px;
-    background-color: #E4F1F7;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     overflow: hidden;
     padding: 2px;
 }
 
 .calendar-day {
-    background: var(--md-surface);
-    color: var(--md-on-surface);
+    background: oklch(var(--b1));
     border: none;
     padding: 12px 8px;
     text-align: center;
@@ -860,243 +446,128 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 0.375rem;
 }
 
 .calendar-day:hover {
-    background-color: rgba(var(--md-primary-rgb), 0.08);
+    background: oklch(var(--p) / 0.1);
 }
 
 .calendar-day.selected {
-    background-color: var(--md-primary);
-    color: var(--md-on-primary);
+    background: oklch(var(--p));
+    color: oklch(var(--pc));
 }
 
 .calendar-day.in-range {
-    background-color: rgba(var(--md-primary-rgb), 0.12);
+    background: oklch(var(--p) / 0.12);
 }
 
 .calendar-day.disabled {
-    color: var(--md-on-surface-variant);
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.35;
 }
 
 .calendar-day.other-month {
-    color: var(--md-on-surface-variant);
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
 .weekday-header {
-    background-color: var(--md-surface-variant);
+    background: oklch(var(--b2));
     padding: 8px;
     text-align: center;
     font-weight: 600;
-    color: var(--md-on-surface-variant);
-}
-
-.date-range-picker .md-form-control {
-    cursor: pointer;
-}
-
-/* Badge improvements */
-.md-badge {
     font-size: 0.75rem;
-    padding: 0.375rem 0.75rem;
-    border-radius: 6px;
-    font-weight: 500;
+    color: oklch(var(--bc) / 0.5);
+    border-radius: 0.375rem;
 }
 
-/* Table improvements */
-.md-table th {
-    font-weight: 600;
-    padding: 1rem;
-    border-bottom: 2px solid rgba(var(--md-primary-rgb), 0.1);
-    background-color: var(--md-surface-variant);
-}
-
-.md-table td {
-    padding: 1rem;
-    border-bottom: 1px solid rgba(var(--md-outline-rgb), 0.12);
-}
-
-.md-table tbody tr:hover {
-    background-color: rgba(var(--md-primary-rgb), 0.04);
-}
-
-/* Button group improvements */
-.md-btn-group .md-btn {
-    border-radius: 4px !important;
-}
-
-/* Schedule Controls Styling */
-.schedule-controls-grid {
-    display: grid;
-    grid-template-columns: 200px 1fr auto;
-    gap: 1.5rem;
-    align-items: end;
-}
-
-.schedule-control-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.schedule-label {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #4C7AA5;
-    display: flex;
-    align-items: center;
-    margin-bottom: 0;
-}
-
-.schedule-select,
-.schedule-input {
-    padding: 0.75rem 1rem;
-    border: 2px solid #E4F1F7;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    background: white;
-    color: #3C677D;
-    transition: all 0.3s ease;
-    min-height: 48px;
-}
-
-.schedule-select:focus,
-.schedule-input:focus {
-    border-color: #4C7AA5;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(76, 122, 165, 0.1);
-}
-
-.custom-date-range {
+.searchable-select-container {
     position: relative;
-    display: flex;
-    align-items: stretch;
+    width: 100%;
 }
 
-.custom-date-range .schedule-input {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-right: none;
+.searchable-select-container .search-input {
+    width: 100%;
+    height: 2rem;
+    padding: 0 1rem;
+    font-size: 0.875rem;
+    border: 1px solid oklch(var(--bc) / 0.2);
+    border-radius: var(--rounded-btn, 0.5rem);
+    background: oklch(var(--b1));
+    color: oklch(var(--bc));
+}
+
+.searchable-select-container .search-input:focus {
+    outline: 2px solid oklch(var(--p));
+    outline-offset: 2px;
+}
+
+.searchable-select-container .dropdown-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: oklch(var(--b1));
+    border: 1px solid oklch(var(--bc) / 0.2);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 50;
+    display: none;
+    margin-top: 2px;
+}
+
+.searchable-select-container .dropdown-option {
+    padding: 0.5rem 0.75rem;
     cursor: pointer;
-    flex: 1;
+    font-size: 0.875rem;
+    border-bottom: 1px solid oklch(var(--bc) / 0.05);
+    transition: background-color 0.15s;
 }
 
-.clear-dates-btn {
-    background: #f8f9fa;
-    border: 2px solid #E4F1F7;
-    border-left: none;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-    padding: 0.75rem;
-    color: #6c757d;
+.searchable-select-container .dropdown-option:hover {
+    background: oklch(var(--p) / 0.08);
+}
+
+.searchable-select-container .dropdown-option.selected {
+    background: oklch(var(--p));
+    color: oklch(var(--pc));
+}
+
+.searchable-select-container .dropdown-option:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: oklch(var(--b1));
+    border: 1px solid oklch(var(--bc) / 0.2);
+    border-radius: 0 0 0.5rem 0.5rem;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 50;
+    display: none;
+}
+
+.autocomplete-item {
+    padding: 0.5rem 0.75rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    border-bottom: 1px solid oklch(var(--bc) / 0.05);
+    transition: background-color 0.2s;
 }
 
-.clear-dates-btn:hover {
-    background: #e9ecef;
-    color: #495057;
+.autocomplete-item:hover,
+.autocomplete-item.active {
+    background: oklch(var(--p) / 0.08);
 }
 
-.schedule-generate-btn {
-    background: linear-gradient(135deg, #1E3324 0%, #4C634C 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 48px;
-}
-
-.schedule-generate-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(30, 51, 36, 0.3);
-}
-
-/* Calendar Modal Styles */
-.calendar-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-}
-
-.calendar-nav-btn {
-    background: none;
-    border: 1px solid #E4F1F7;
-    border-radius: 6px;
-    padding: 0.5rem;
-    color: #4C7AA5;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.calendar-nav-btn:hover {
-    background: #E4F1F7;
-    border-color: #4C7AA5;
-}
-
-.calendar-month-title {
-    font-weight: 600;
-    color: #3C677D;
-    margin: 0;
-    min-width: 200px;
-    text-align: center;
-}
-
-/* Responsive improvements */
-@media (max-width: 1200px) {
-    .schedule-controls-grid {
-        grid-template-columns: 1fr 1fr auto;
-    }
-}
-
-@media (max-width: 768px) {
-    .schedule-controls-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .md-grid-cols-4 {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .md-grid-cols-12 .md-col-span-3 {
-        grid-column: span 6;
-    }
-    
-    .md-grid-cols-12 .md-col-span-6 {
-        grid-column: span 12;
-    }
-    
-    .md-table th, .md-table td {
-        padding: 0.5rem;
-        font-size: 0.875rem;
-    }
-    
-    .md-btn-group {
-        flex-direction: column;
-    }
-    
-    .md-btn-group .md-btn {
-        margin-bottom: 0.25rem;
-        width: 100%;
-    }
+.autocomplete-item:last-child {
+    border-bottom: none;
 }
 </style>
 
@@ -1105,17 +576,16 @@ let selectedStartDate = null;
 let selectedEndDate = null;
 let currentCalendarDate = new Date();
 
-// Função para mostrar mensagens
 function showMessage(message, type = 'success') {
     const messageContainer = document.getElementById('messageContainer');
     const alertClass = type === 'success' ? 'alert-success' : (type === 'info' ? 'alert-info' : 'alert-error');
 
     messageContainer.innerHTML = `
-        <div role="alert" class="alert ${alertClass} mb-4">
-            <i class="material-icons">${type === 'success' ? 'check_circle' : (type === 'info' ? 'info' : 'error')}</i>
+        <div role="alert" class="alert ${alertClass}">
+            <i class="material-icons-round">${type === 'success' ? 'check_circle' : (type === 'info' ? 'info' : 'error')}</i>
             <span>${message}</span>
             <button type="button" class="btn btn-ghost btn-xs" onclick="this.closest('[role=alert]').remove()">
-                <i class="material-icons" style="font-size:16px;">close</i>
+                <i class="material-icons-round text-sm">close</i>
             </button>
         </div>
     `;
@@ -1126,25 +596,20 @@ function showMessage(message, type = 'success') {
     }, 5000);
 }
 
-// Searchable Select Implementation
 function initSearchableSelects() {
     const selects = document.querySelectorAll('select[data-placeholder]');
-    
-    console.log('Initializing searchable selects:', selects.length);
-    
+
     selects.forEach(select => {
-        // Skip if already processed
         if (select.style.display === 'none') return;
-        
+
         const container = document.createElement('div');
         container.className = 'searchable-select-container';
-        
+
         const input = document.createElement('input');
         input.type = 'text';
-        input.className = 'form-control search-input';
+        input.className = 'search-input';
         input.placeholder = select.getAttribute('data-placeholder');
-        
-        // Set initial value from selected option or current value
+
         const currentValue = select.value;
         const selectedOption = select.querySelector(`option[value="${currentValue}"]`);
         if (selectedOption && currentValue) {
@@ -1152,70 +617,64 @@ function initSearchableSelects() {
         } else {
             input.value = '';
         }
-        
+
         const dropdown = document.createElement('div');
         dropdown.className = 'dropdown-options';
-        
-        // Get all options
+
         const options = Array.from(select.options);
-        
+
         function populateDropdown(filter = '') {
             dropdown.innerHTML = '';
-            const filteredOptions = options.filter(option => 
+            const filteredOptions = options.filter(option =>
                 option.textContent.toLowerCase().includes(filter.toLowerCase())
             );
-            
+
             filteredOptions.forEach(option => {
                 const div = document.createElement('div');
                 div.className = 'dropdown-option';
                 div.textContent = option.textContent.trim();
                 div.setAttribute('data-value', option.value);
-                
-                // Mark as selected if this is the current value
+
                 if (option.value === select.value) {
                     div.classList.add('selected');
                 }
-                
+
                 div.addEventListener('click', () => {
                     select.value = option.value;
                     input.value = option.textContent.trim();
                     dropdown.style.display = 'none';
-                    
-                    // Trigger change event
+
                     const changeEvent = new Event('change', { bubbles: true });
                     select.dispatchEvent(changeEvent);
                 });
                 dropdown.appendChild(div);
             });
         }
-        
+
         input.addEventListener('focus', () => {
             populateDropdown(input.value);
             dropdown.style.display = 'block';
         });
-        
+
         input.addEventListener('input', () => {
             const inputValue = input.value.toLowerCase();
             populateDropdown(inputValue);
             dropdown.style.display = 'block';
-            
-            // Clear select value if input doesn't exactly match any option
-            const exactMatch = options.find(opt => 
+
+            const exactMatch = options.find(opt =>
                 opt.textContent.trim().toLowerCase() === inputValue
             );
-            
+
             select.value = exactMatch ? exactMatch.value : '';
-            
-            // Trigger change event for dependent filtering
+
             const changeEvent = new Event('change', { bubbles: true });
             select.dispatchEvent(changeEvent);
         });
-        
-        // Handle keyboard navigation
+
         input.addEventListener('keydown', (e) => {
             const visibleOptions = dropdown.querySelectorAll('.dropdown-option');
             const selectedIndex = Array.from(visibleOptions).findIndex(opt => opt.classList.contains('selected'));
-            
+
             if (e.key === 'ArrowDown') {
                 e.preventDefault();
                 const nextIndex = Math.min(selectedIndex + 1, visibleOptions.length - 1);
@@ -1238,43 +697,32 @@ function initSearchableSelects() {
                 }
             }
         });
-        
+
         document.addEventListener('click', (e) => {
             if (!container.contains(e.target)) {
                 dropdown.style.display = 'none';
             }
         });
-        
-        // Replace select with custom control
+
         select.style.display = 'none';
         select.parentNode.insertBefore(container, select);
         container.appendChild(input);
         container.appendChild(dropdown);
         container.appendChild(select);
-        
+
         populateDropdown();
-        
-        console.log('Initialized select:', select.name, 'with', options.length, 'options');
     });
 }
 
-// Calendário moderno estilo Skyscanner
 function initCalendar() {
     const dateRangeInput = document.getElementById('dateRange');
     const filterDateRangeInput = document.getElementById('date_range_filter');
 
-    console.log('Initializing calendar...', dateRangeInput, filterDateRangeInput);
-
     const modalElement = document.getElementById('datePickerModal');
-    if (!modalElement) {
-        console.error('datePickerModal not found!');
-        return;
-    }
+    if (!modalElement) return;
 
-    // Add click handlers for both date inputs
     if (dateRangeInput) {
         dateRangeInput.addEventListener('click', () => {
-            console.log('Date range input clicked');
             renderCalendar();
             modalElement.showModal();
         });
@@ -1282,7 +730,6 @@ function initCalendar() {
 
     if (filterDateRangeInput) {
         filterDateRangeInput.addEventListener('click', () => {
-            console.log('Filter date range input clicked');
             renderCalendar();
             modalElement.showModal();
         });
@@ -1298,7 +745,6 @@ function initCalendar() {
             if (dateRangeInput) dateRangeInput.value = '';
             document.getElementById('start_date').value = '';
             document.getElementById('end_date').value = '';
-            console.log('Dates cleared');
         });
     }
 
@@ -1325,7 +771,6 @@ function initCalendar() {
                 const start = formatDate(selectedStartDate);
                 const end = formatDate(selectedEndDate);
 
-                // Update both date inputs
                 if (dateRangeInput) {
                     dateRangeInput.value = `${start} - ${end}`;
                 }
@@ -1333,23 +778,17 @@ function initCalendar() {
                     filterDateRangeInput.value = `${start} - ${end}`;
                 }
 
-                // Update hidden fields if they exist
                 const startDateField = document.getElementById('start_date');
                 const endDateField = document.getElementById('end_date');
                 if (startDateField) startDateField.value = formatDateForInput(selectedStartDate);
                 if (endDateField) endDateField.value = formatDateForInput(selectedEndDate);
 
-                // Apply filter if in filter mode
                 currentFilters.date_range = { start: selectedStartDate, end: selectedEndDate };
                 applyFilters();
-
-                console.log('Dates applied:', start, end);
             }
             modalElement.close();
         });
     }
-
-    console.log('Calendar initialized successfully');
 }
 
 function renderCalendar() {
@@ -1357,21 +796,17 @@ function renderCalendar() {
     const monthDisplay = document.getElementById('currentMonth');
     const selectedRangeDisplay = document.getElementById('selectedRangeDisplay');
     const applyBtn = document.getElementById('applyDates');
-    
-    if (!grid || !monthDisplay) {
-        console.error('Calendar elements not found!');
-        return;
-    }
-    
+
+    if (!grid || !monthDisplay) return;
+
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
-    
-    monthDisplay.textContent = new Intl.DateTimeFormat('en-US', { 
-        month: 'long', 
-        year: 'numeric' 
+
+    monthDisplay.textContent = new Intl.DateTimeFormat('en-US', {
+        month: 'long',
+        year: 'numeric'
     }).format(currentCalendarDate);
-    
-    // Update selected range display
+
     if (selectedStartDate && selectedEndDate) {
         const rangeText = `${formatDate(selectedStartDate)} - ${formatDate(selectedEndDate)}`;
         document.getElementById('selectedRangeText').textContent = rangeText;
@@ -1381,11 +816,9 @@ function renderCalendar() {
         selectedRangeDisplay.style.display = 'none';
         applyBtn.disabled = true;
     }
-    
-    // Clear grid
+
     grid.innerHTML = '';
-    
-    // Add weekday headers
+
     const weekdays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
     weekdays.forEach(day => {
         const header = document.createElement('div');
@@ -1393,64 +826,54 @@ function renderCalendar() {
         header.textContent = day;
         grid.appendChild(header);
     });
-    
-    // Get first day of month and number of days
+
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-    
-    // Add empty cells for days before the first day of the month
+
     for (let i = 0; i < startingDayOfWeek; i++) {
         const emptyDay = document.createElement('div');
         emptyDay.className = 'calendar-day other-month';
         grid.appendChild(emptyDay);
     }
-    
-    // Add days of the month
+
     for (let day = 1; day <= daysInMonth; day++) {
         const dayElement = document.createElement('button');
         dayElement.className = 'calendar-day';
         dayElement.textContent = day;
         dayElement.type = 'button';
-        
+
         const currentDate = new Date(year, month, day);
-        
-        // Disable past dates
+
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         currentDate.setHours(0, 0, 0, 0);
-        
+
         if (currentDate < today) {
             dayElement.classList.add('disabled');
             dayElement.disabled = true;
         } else {
             dayElement.addEventListener('click', () => selectDate(currentDate, dayElement));
         }
-        
-        // Mark selected dates
+
         if (isDateSelected(currentDate)) {
             dayElement.classList.add('selected');
         }
-        
-        // Mark dates in range
+
         if (isDateInRange(currentDate)) {
             dayElement.classList.add('in-range');
         }
-        
+
         grid.appendChild(dayElement);
     }
-    
-    console.log('Calendar rendered for', monthDisplay.textContent);
 }
 
 function selectDate(date, element) {
     if (!selectedStartDate || (selectedStartDate && selectedEndDate)) {
-        // Start new selection
         selectedStartDate = new Date(date);
         selectedEndDate = null;
     } else if (selectedStartDate && !selectedEndDate) {
-        // Complete the range
         if (date < selectedStartDate) {
             selectedEndDate = selectedStartDate;
             selectedStartDate = new Date(date);
@@ -1458,17 +881,17 @@ function selectDate(date, element) {
             selectedEndDate = new Date(date);
         }
     }
-    
+
     renderCalendar();
 }
 
 function isDateSelected(date) {
     if (!selectedStartDate) return false;
-    
+
     const dateStr = date.toDateString();
     const startStr = selectedStartDate.toDateString();
     const endStr = selectedEndDate ? selectedEndDate.toDateString() : null;
-    
+
     return dateStr === startStr || (endStr && dateStr === endStr);
 }
 
@@ -1486,13 +909,8 @@ function formatDateForInput(date) {
 }
 
 function openDateRangePicker() {
-    console.log('Opening date range picker...');
-
     const modalElement = document.getElementById('datePickerModal');
-    if (!modalElement) {
-        console.error('datePickerModal not found!');
-        return;
-    }
+    if (!modalElement) return;
 
     renderCalendar();
     modalElement.showModal();
@@ -1502,22 +920,20 @@ function generateSchedules() {
     const days = document.getElementById('generated_days').value || '2';
     const startDate = document.getElementById('start_date').value;
     const endDate = document.getElementById('end_date').value;
-    
+
     let url = '{% url "coreRelback:report-refresh-schedule" %}?days=' + days;
     if (startDate) url += '&start_date=' + startDate;
     if (endDate) url += '&end_date=' + endDate;
-    
+
     showMessage('Generating schedules...', 'info');
     window.location.href = url;
 }
 
 function jobDetail(sessionKey) {
-    // Load job details via AJAX
     const contentEl = document.getElementById('jobDetailContent');
     contentEl.innerHTML = '<div class="flex justify-center py-6"><span class="loading loading-spinner loading-md"></span></div>';
     document.getElementById('jobDetailModal').showModal();
 
-    // Placeholder — real AJAX implementation pending
     setTimeout(() => {
         contentEl.innerHTML = `
             <div class="grid grid-cols-2 gap-4">
@@ -1535,16 +951,15 @@ function jobDetail(sessionKey) {
         `;
     }, 1000);
 }
+
 function viewLogs(sessionKey) {
-    // Load job logs via AJAX
     const contentEl = document.getElementById('jobLogsContent');
     contentEl.innerHTML = '<div class="flex justify-center py-6"><span class="loading loading-spinner loading-md"></span><span class="ml-2">Loading logs...</span></div>';
     document.getElementById('jobLogsModal').showModal();
 
-    // Placeholder — real AJAX implementation pending
     setTimeout(() => {
         contentEl.innerHTML = `
-            <pre class="bg-neutral text-neutral-content p-3 rounded-lg overflow-y-auto" style="max-height: 400px;">
+            <pre class="bg-neutral text-neutral-content p-3 rounded-lg overflow-y-auto max-h-96">
 [2025-08-01 15:30:00] Starting backup job for database: ${sessionKey}
 [2025-08-01 15:30:05] Connecting to database...
 [2025-08-01 15:30:06] Connection established
@@ -1566,7 +981,6 @@ function downloadLogs() {
     showMessage('Log download functionality will be implemented soon', 'info');
 }
 
-// Global variables for dynamic filtering
 let allReportsData = [];
 let filteredReportsData = [];
 let currentFilters = {
@@ -1579,11 +993,10 @@ let currentFilters = {
     date_range: null
 };
 
-// Initialize reports data from the page
 function initializeReportsData() {
     const tableRows = document.querySelectorAll('#tableReport tbody tr:not(.empty-state)');
     allReportsData = [];
-    
+
     tableRows.forEach(row => {
         const cells = row.querySelectorAll('td');
         if (cells.length >= 9) {
@@ -1601,15 +1014,12 @@ function initializeReportsData() {
             });
         }
     });
-    
+
     filteredReportsData = [...allReportsData];
-    console.log('Initialized reports data:', allReportsData.length, 'items');
 }
 
-// Apply all filters
 function applyFilters() {
     filteredReportsData = allReportsData.filter(item => {
-        // Quick search filter
         if (currentFilters.quickSearch) {
             const searchTerm = currentFilters.quickSearch.toLowerCase();
             const searchableText = [
@@ -1619,76 +1029,71 @@ function applyFilters() {
                 item.backup_type,
                 item.status
             ].join(' ').toLowerCase();
-            
+
             if (!searchableText.includes(searchTerm)) {
                 return false;
             }
         }
-        
-        // Specific field filters
+
         if (currentFilters.policy_name && item.policy_name !== currentFilters.policy_name) {
             return false;
         }
-        
+
         if (currentFilters.hostname && item.hostname !== currentFilters.hostname) {
             return false;
         }
-        
+
         if (currentFilters.db_name && item.db_name !== currentFilters.db_name) {
             return false;
         }
-        
+
         if (currentFilters.backup_type && item.backup_type !== currentFilters.backup_type) {
             return false;
         }
-        
+
         if (currentFilters.status_filter) {
             const itemStatus = item.status.toUpperCase();
             if (!itemStatus.includes(currentFilters.status_filter.toUpperCase())) {
                 return false;
             }
         }
-        
+
         return true;
     });
-    
+
     updateTableDisplay();
     updateStats();
 }
 
-// Update table display
 function updateTableDisplay() {
     const tbody = document.querySelector('#tableReport tbody');
     const emptyState = tbody.querySelector('.empty-state');
-    
-    // Hide all rows first
+
     allReportsData.forEach(item => {
         item.element.style.display = 'none';
     });
-    
-    // Show filtered rows
+
     if (filteredReportsData.length > 0) {
         filteredReportsData.forEach(item => {
             item.element.style.display = '';
             item.element.style.animation = 'fadeIn 0.3s ease';
         });
-        
+
         if (emptyState) {
             emptyState.style.display = 'none';
         }
     } else {
-        // Show empty state
         if (!emptyState) {
             const emptyRow = document.createElement('tr');
             emptyRow.className = 'empty-state';
             emptyRow.innerHTML = `
                 <td colspan="10" class="text-center py-10">
                     <div class="text-base-content/60 flex flex-col items-center gap-3">
-                        <i class="material-icons" style="font-size: 64px; color: #C74634;">search_off</i>
+                        <i class="material-icons-round text-6xl text-error">search_off</i>
                         <h5 class="text-lg font-semibold">No results found</h5>
                         <p>Try adjusting your filters or search terms.</p>
-                        <button type="button" class="btn btn-outline" onclick="clearAllFilters()">
-                            <i class="material-icons" style="font-size: 18px;">clear_all</i>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="clearAllFilters()">
+                            <i class="material-icons-round text-lg">clear_all</i>
                             Clear All Filters
                         </button>
                     </div>
@@ -1701,58 +1106,50 @@ function updateTableDisplay() {
     }
 }
 
-// Update stats cards
 function updateStats() {
     const statsCards = document.querySelectorAll('.stats-title');
-    
+
     if (statsCards.length >= 4) {
-        // Total Jobs
         statsCards[0].textContent = filteredReportsData.length;
-        
-        // Successful Jobs
-        const successful = filteredReportsData.filter(item => 
+
+        const successful = filteredReportsData.filter(item =>
             item.status.toUpperCase().includes('COMPLETED')
         ).length;
         statsCards[1].textContent = successful;
-        
-        // Failed Jobs
-        const failed = filteredReportsData.filter(item => 
+
+        const failed = filteredReportsData.filter(item =>
             item.status.toUpperCase().includes('FAILED')
         ).length;
         statsCards[2].textContent = failed;
-        
-        // Today's Jobs (simplified)
+
         const today = new Date().toLocaleDateString();
-        const todayJobs = filteredReportsData.filter(item => 
+        const todayJobs = filteredReportsData.filter(item =>
             item.start_time.includes(today.split('/').reverse().join('/'))
         ).length;
         statsCards[3].textContent = todayJobs;
     }
 }
 
-// Quick search autocomplete
 function initQuickSearch() {
     const quickSearchInput = document.getElementById('quickSearch');
     const autocompleteList = document.getElementById('quickSearchList');
     let currentFocus = -1;
-    
+
     if (!quickSearchInput || !autocompleteList) return;
-    
+
     quickSearchInput.addEventListener('input', function() {
         const searchTerm = this.value.toLowerCase().trim();
         currentFilters.quickSearch = searchTerm;
-        
-        // Clear autocomplete list
+
         autocompleteList.innerHTML = '';
         currentFocus = -1;
-        
+
         if (searchTerm.length < 2) {
             autocompleteList.style.display = 'none';
             applyFilters();
             return;
         }
-        
-        // Get unique suggestions from all data
+
         const suggestions = new Set();
         allReportsData.forEach(item => {
             [item.policy_name, item.hostname, item.db_name, item.backup_type].forEach(field => {
@@ -1761,18 +1158,17 @@ function initQuickSearch() {
                 }
             });
         });
-        
-        // Show suggestions
+
         const suggestionArray = Array.from(suggestions).slice(0, 5);
         if (suggestionArray.length > 0) {
             autocompleteList.style.display = 'block';
-            
+
             suggestionArray.forEach((suggestion, index) => {
                 const item = document.createElement('div');
                 item.className = 'autocomplete-item';
                 item.innerHTML = `
-                    <div style="font-weight: 500;">${suggestion}</div>
-                    <div style="font-size: 0.85rem; color: #697778;">Found in reports data</div>
+                    <div class="font-medium">${suggestion}</div>
+                    <div class="text-xs text-base-content/40">Found in reports data</div>
                 `;
                 item.addEventListener('click', function() {
                     quickSearchInput.value = suggestion;
@@ -1785,15 +1181,13 @@ function initQuickSearch() {
         } else {
             autocompleteList.style.display = 'none';
         }
-        
-        // Apply filter in real-time
+
         applyFilters();
     });
-    
-    // Handle keyboard navigation
+
     quickSearchInput.addEventListener('keydown', function(e) {
         const items = autocompleteList.querySelectorAll('.autocomplete-item');
-        
+
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             currentFocus++;
@@ -1814,14 +1208,13 @@ function initQuickSearch() {
             currentFocus = -1;
         }
     });
-    
+
     function setActive(items) {
         items.forEach((item, index) => {
             item.classList.toggle('active', index === currentFocus);
         });
     }
-    
-    // Close autocomplete when clicking outside
+
     document.addEventListener('click', function(e) {
         if (!quickSearchInput.contains(e.target) && !autocompleteList.contains(e.target)) {
             autocompleteList.style.display = 'none';
@@ -1829,145 +1222,73 @@ function initQuickSearch() {
     });
 }
 
-// Initialize filter dropdowns
 function initFilterDropdowns() {
-    const filterSelects = document.querySelectorAll('.filter-select');
-    
+    const filterSelects = document.querySelectorAll('.select[name]');
+
     filterSelects.forEach(select => {
         select.addEventListener('change', function() {
             const filterName = this.name;
-            currentFilters[filterName] = this.value;
-            applyFilters();
+            if (currentFilters.hasOwnProperty(filterName)) {
+                currentFilters[filterName] = this.value;
+                applyFilters();
+            }
         });
     });
 }
 
-// Clear all filters
 function clearAllFilters() {
-    // Reset all filter values
     Object.keys(currentFilters).forEach(key => {
         currentFilters[key] = '';
     });
     currentFilters.date_range = null;
-    
-    // Clear UI elements
-    document.getElementById('quickSearch').value = '';
-    document.querySelectorAll('.filter-select').forEach(select => {
+
+    const quickSearch = document.getElementById('quickSearch');
+    if (quickSearch) quickSearch.value = '';
+
+    document.querySelectorAll('select[name]').forEach(select => {
         select.value = '';
     });
-    document.getElementById('date_range_filter').value = '';
-    
-    // Hide autocomplete
-    document.getElementById('quickSearchList').style.display = 'none';
-    
-    // Apply filters (will show all data)
+
+    const dateFilter = document.getElementById('date_range_filter');
+    if (dateFilter) dateFilter.value = '';
+
+    const quickSearchList = document.getElementById('quickSearchList');
+    if (quickSearchList) quickSearchList.style.display = 'none';
+
     applyFilters();
 }
 
-// Function to open date range picker
-function openDateRangePicker() {
-    const modalElement = document.getElementById('datePickerModal');
-    if (modalElement) {
-        renderCalendar();
-        modalElement.showModal();
-    }
-}
-
-// Initialize components when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing components...');
-
-    // Initialize reports data first
     initializeReportsData();
-    
-    // Initialize filter components
     initQuickSearch();
     initFilterDropdowns();
-    
-    // Clear all filters button
-    document.getElementById('clearAllFilters').addEventListener('click', clearAllFilters);
-    
-    // Initialize components with error handling
+
+    const clearBtn = document.getElementById('clearAllFilters');
+    if (clearBtn) clearBtn.addEventListener('click', clearAllFilters);
+
     try {
         initSearchableSelects();
-        console.log('Searchable selects initialized');
     } catch (error) {
         console.error('Error initializing searchable selects:', error);
     }
-    
+
     try {
         initCalendar();
-        console.log('Calendar initialized');
     } catch (error) {
         console.error('Error initializing calendar:', error);
     }
-    
-    // Initialize date range values if they exist
+
     const startDateValue = document.getElementById('start_date')?.value;
     const endDateValue = document.getElementById('end_date')?.value;
-    
+
     if (startDateValue && endDateValue) {
         selectedStartDate = new Date(startDateValue);
         selectedEndDate = new Date(endDateValue);
-        console.log('Initialized with existing dates:', selectedStartDate, selectedEndDate);
     }
-    
-    console.log('Components initialized successfully');
 });
 
-// Real-time updates via WebSocket (Phase 18)
-(function reportsWebSocket() {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = protocol + '//' + window.location.host + '/ws/reports/';
-    let ws = null;
-    function connect() {
-        try {
-            ws = new WebSocket(wsUrl);
-            ws.onmessage = function(event) {
-                try {
-                    const data = JSON.parse(event.data);
-                    const s = data.summary || {};
-                    const elTotal = document.getElementById('wsStatTotal');
-                    const elOk = document.getElementById('wsStatSuccessful');
-                    const elFail = document.getElementById('wsStatFailed');
-                    const elToday = document.getElementById('wsStatToday');
-                    if (elTotal) elTotal.textContent = s.total ?? 0;
-                    if (elOk) elOk.textContent = s.successful ?? 0;
-                    if (elFail) elFail.textContent = s.failed ?? 0;
-                    if (elToday) elToday.textContent = s.today_jobs ?? 0;
-                    const tbody = document.getElementById('reportsTableBody');
-                    if (tbody && Array.isArray(data.jobs)) {
-                        const badge = function(st) {
-                            if (/completed/i.test(st)) return 'badge-success';
-                            if (/failed|interrupted/i.test(st)) return 'badge-error';
-                            if (/running/i.test(st)) return 'badge-info';
-                            if (/warning/i.test(st)) return 'badge-warning';
-                            return 'badge-ghost';
-                        };
-                        const fmt = function(iso) {
-                            if (!iso) return '-';
-                            try {
-                                const d = new Date(iso);
-                                return isNaN(d.getTime()) ? iso : d.toLocaleString(undefined, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-                            } catch (e) { return iso; }
-                        };
-                        tbody.innerHTML = data.jobs.length === 0
-                            ? '<tr><td colspan="10" class="text-center py-10"><div class="text-base-content/60 flex flex-col items-center gap-3"><i class="material-icons" style="font-size: 64px;">assessment</i><h5 class="text-lg font-semibold">No backup jobs found</h5><p>Backup jobs will appear here once they start running.</p></div></td></tr>'
-                            : data.jobs.map(function(j) {
-                                return '<tr><td style="padding:1rem;" class="md-font-medium">' + (j.policy_name || '-') + '</td><td>' + (j.hostname || '-') + '</td><td>' + (j.db_name || '-') + '</td><td><span class="badge badge-sm badge-info">' + (j.backup_type || '-') + '</span></td><td>' + fmt(j.start_time) + '</td><td>' + fmt(j.end_time) + '</td><td><span class="badge badge-sm ' + badge(j.status) + '">' + (j.status || '-') + '</span></td><td>' + (j.time_taken_display || '-') + '</td><td>' + (j.output_bytes_display || '-') + '</td><td class="text-center"><div class="flex gap-1 justify-center"><button type="button" class="btn btn-sm btn-ghost btn-square" title="View Details" onclick="jobDetail(\'' + (j.session_key || '') + '\')"><i class="material-icons" style="font-size: 16px;">visibility</i></button><button type="button" class="btn btn-sm btn-ghost btn-square" title="View Logs" onclick="viewLogs(\'' + (j.session_key || '') + '\')"><i class="material-icons" style="font-size: 16px;">description</i></button></div></td></tr>';
-                            }).join('');
-                    }
-                } catch (e) { console.warn('Reports WS parse error', e); }
-            };
-            ws.onclose = function() { ws = null; setTimeout(connect, 10000); };
-            ws.onerror = function() { if (ws) ws.close(); };
-        } catch (e) { console.warn('Reports WS connect error', e); setTimeout(connect, 10000); }
-    }
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', connect);
-    } else {
-        connect();
-    }
-})();
+setInterval(function() {
+    console.log('Auto-refresh check...');
+}, 30000);
 </script>
 {% endblock extra_js %}

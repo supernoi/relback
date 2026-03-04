@@ -450,7 +450,13 @@ relback/
 ├── databaseProject/             ← Oracle DDL / migration scripts
 ├── docs/
 │   ├── ARCHITECTURE.md          ← This document
+│   ├── QUICKSTART.md            ← Comandos para todos os modos (normal, teste, Docker)
+│   ├── RUNBOOK.md               ← Migrações, rollback, variáveis, health
+│   ├── DOCKER_PODMAN.md         ← Docker/Podman: build, run, Oracle Free
 │   ├── ROADMAP_TAILWIND_DAISYUI.md
+│   ├── ROADMAP_IMPROVEMENTS.md  ← Sugestões de melhoria (testes, observabilidade, segurança)
+│   ├── PLANO_REDESIGN_UI_UX.md  ← Plano redesign: clean, corporativo, confiança
+│   ├── SETUP_BANCO.md           ← Configuração do banco (SQLite/Oracle)
 │   └── UX_UI_analysis.md
 ├── nginx/                       ← Nginx reverse proxy (Phase 13): nginx.conf, entrypoint.sh, Dockerfile
 ├── Dockerfile                   ← Multi-stage (Node 20 CSS + Python 3.13 Gunicorn)

@@ -4,308 +4,300 @@
 {% block title %}{% if object %}Edit Host{% else %}Add Host{% endif %} - RelBack{% endblock title %}
 
 {% block content %}
-<div>
+<div class="space-y-5">
     <!-- Page Header -->
-    <div class="mb-4">
-        <div class="md-card p-4">
-            <div class="flex items-center">
-                <a href="{% url 'coreRelback:host-list' %}" class="btn btn-ghost mr-3">
-                    <i class="material-icons" style="vertical-align: middle;">arrow_back</i>
-                </a>
-                <div class="flex items-center">
-                    <i class="material-icons mr-3" style="font-size: 48px; color: var(--md-primary);">
-                        {% if object %}edit{% else %}add_circle{% endif %}
-                    </i>
-                    <div>
-                        <h1 class="h3 mb-1">{% if object %}Edit Host{% else %}Add New Host{% endif %}</h1>
-                        <p class="text-base-content/60 mb-0">{% if object %}Update host server information{% else %}Configure a new backup host server{% endif %}</p>
-                    </div>
-                </div>
+    <div class="bg-base-200 border border-base-300 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center gap-3">
+            <a href="{% url 'coreRelback:host-list' %}" class="btn btn-ghost btn-square">
+                <i class="material-icons-round text-2xl">arrow_back</i>
+            </a>
+            <i class="material-icons-round text-primary text-5xl">
+                {% if object %}edit{% else %}add_circle{% endif %}
+            </i>
+            <div>
+                <h1 class="text-2xl font-bold">{% if object %}Edit Host{% else %}Add New Host{% endif %}</h1>
+                <p class="text-base-content/60 text-sm">{% if object %}Update host server information{% else %}Configure a new backup host server{% endif %}</p>
             </div>
         </div>
     </div>
 
     <!-- Form -->
     <div class="flex justify-center">
-        <div class="w-full max-w-4xl">
-            <div class="md-card">
-                <div class="p-4">
-                    <form method="post">
-                        {% csrf_token %}
+        <div class="w-full max-w-4xl space-y-4">
+            <div class="bg-base-200 border border-base-300 rounded-xl p-5 shadow-sm">
+                <form method="post">
+                    {% csrf_token %}
 
-                        <!-- Basic Information Section -->
-                        <div class="mb-4">
-                            <h5 class="text-primary mb-3">
-                                <i class="material-icons mr-2" style="vertical-align: middle;">info</i>
-                                Basic Information
-                            </h5>
+                    <!-- Basic Information Section -->
+                    <div class="mb-6">
+                        <h5 class="text-primary font-semibold mb-3 flex items-center gap-2">
+                            <i class="material-icons-round">info</i>
+                            Basic Information
+                        </h5>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="form-control mb-3">
-                                    <label class="label" for="id_name">
-                                        <span class="label-text">
-                                            <i class="material-icons mr-1" style="font-size: 16px; vertical-align: middle;">storage</i>
-                                            Host Name *
-                                        </span>
-                                    </label>
-                                    <input type="text"
-                                           class="input input-bordered w-full{% if form.name.errors %} input-error{% endif %}"
-                                           id="id_name"
-                                           name="name"
-                                           value="{{ form.name.value|default:'' }}"
-                                           required>
-                                    {% if form.name.errors %}
-                                        <label class="label"><span class="label-text-alt text-error">{{ form.name.errors.0 }}</span></label>
-                                    {% endif %}
-                                </div>
-                                <div class="form-control mb-3">
-                                    <label class="label" for="id_client">
-                                        <span class="label-text">
-                                            <i class="material-icons mr-1" style="font-size: 16px; vertical-align: middle;">business</i>
-                                            Client *
-                                        </span>
-                                    </label>
-                                    <select class="select select-bordered w-full{% if form.client.errors %} select-error{% endif %}"
-                                            id="id_client"
-                                            name="client"
-                                            required>
-                                        <option value="">Select Client</option>
-                                        {% for client in clients %}
-                                        <option value="{{ client.id_client }}"
-                                                {% if form.client.value == client.id_client %}selected{% endif %}>
-                                            {{ client.name }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                    {% if form.client.errors %}
-                                        <label class="label"><span class="label-text-alt text-error">{{ form.client.errors.0 }}</span></label>
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <div class="form-control mb-3">
-                                <label class="label" for="id_description">
-                                    <span class="label-text">
-                                        <i class="material-icons mr-1" style="font-size: 16px; vertical-align: middle;">description</i>
-                                        Description
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label" for="id_name">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">storage</i>
+                                        Host Name *
                                     </span>
                                 </label>
-                                <textarea class="textarea textarea-bordered w-full{% if form.description.errors %} textarea-error{% endif %}"
-                                          id="id_description"
-                                          name="description"
-                                          rows="3">{{ form.description.value|default:'' }}</textarea>
-                                {% if form.description.errors %}
-                                    <label class="label"><span class="label-text-alt text-error">{{ form.description.errors.0 }}</span></label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.name.errors %} input-error{% endif %}"
+                                       id="id_name"
+                                       name="name"
+                                       value="{{ form.name.value|default:'' }}"
+                                       required>
+                                {% if form.name.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.name.errors.0 }}</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_client">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">business</i>
+                                        Client *
+                                    </span>
+                                </label>
+                                <select class="select select-bordered w-full{% if form.client.errors %} select-error{% endif %}"
+                                        id="id_client"
+                                        name="client"
+                                        required>
+                                    <option value="">Select Client</option>
+                                    {% for client in clients %}
+                                    <option value="{{ client.id_client }}"
+                                            {% if form.client.value == client.id_client %}selected{% endif %}>
+                                        {{ client.name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.client.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.client.errors.0 }}</span></label>
                                 {% endif %}
                             </div>
                         </div>
 
-                        <!-- Network Configuration Section -->
-                        <div class="mb-4">
-                            <h5 class="text-primary mb-3">
-                                <i class="material-icons mr-2" style="vertical-align: middle;">language</i>
-                                Network Configuration
-                            </h5>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="form-control mb-3">
-                                    <label class="label" for="id_ip_address">
-                                        <span class="label-text">
-                                            <i class="material-icons mr-1" style="font-size: 16px; vertical-align: middle;">router</i>
-                                            IP Address
-                                        </span>
-                                    </label>
-                                    <input type="text"
-                                           class="input input-bordered w-full{% if form.ip_address.errors %} input-error{% endif %}"
-                                           id="id_ip_address"
-                                           name="ip_address"
-                                           value="{{ form.ip_address.value|default:'' }}"
-                                           pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
-                                    {% if form.ip_address.errors %}
-                                        <label class="label"><span class="label-text-alt text-error">{{ form.ip_address.errors.0 }}</span></label>
-                                    {% else %}
-                                        <label class="label"><span class="label-text-alt text-base-content/60">Format: 192.168.1.100</span></label>
-                                    {% endif %}
-                                </div>
-                                <div class="form-control mb-3">
-                                    <label class="label" for="id_port">
-                                        <span class="label-text">
-                                            <i class="material-icons mr-1" style="font-size: 16px; vertical-align: middle;">settings_ethernet</i>
-                                            Port
-                                        </span>
-                                    </label>
-                                    <input type="number"
-                                           class="input input-bordered w-full{% if form.port.errors %} input-error{% endif %}"
-                                           id="id_port"
-                                           name="port"
-                                           value="{{ form.port.value|default:'22' }}"
-                                           min="1"
-                                           max="65535">
-                                    {% if form.port.errors %}
-                                        <label class="label"><span class="label-text-alt text-error">{{ form.port.errors.0 }}</span></label>
-                                    {% else %}
-                                        <label class="label"><span class="label-text-alt text-base-content/60">Default: 22 (SSH)</span></label>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- System Information Section -->
-                        <div class="mb-4">
-                            <h5 class="text-primary mb-3">
-                                <i class="material-icons mr-2" style="vertical-align: middle;">computer</i>
-                                System Information
-                            </h5>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div class="form-control mb-3">
-                                    <label class="label" for="id_platform">
-                                        <span class="label-text">
-                                            <i class="material-icons mr-1" style="font-size: 16px; vertical-align: middle;">laptop</i>
-                                            Operating System
-                                        </span>
-                                    </label>
-                                    <select class="select select-bordered w-full{% if form.platform.errors %} select-error{% endif %}"
-                                            id="id_platform"
-                                            name="platform">
-                                        <option value="">Select Platform</option>
-                                        <option value="Linux" {% if form.platform.value == 'Linux' %}selected{% endif %}>Linux</option>
-                                        <option value="Windows" {% if form.platform.value == 'Windows' %}selected{% endif %}>Windows</option>
-                                        <option value="AIX" {% if form.platform.value == 'AIX' %}selected{% endif %}>AIX</option>
-                                        <option value="Solaris" {% if form.platform.value == 'Solaris' %}selected{% endif %}>Solaris</option>
-                                        <option value="Other" {% if form.platform.value == 'Other' %}selected{% endif %}>Other</option>
-                                    </select>
-                                    {% if form.platform.errors %}
-                                        <label class="label"><span class="label-text-alt text-error">{{ form.platform.errors.0 }}</span></label>
-                                    {% endif %}
-                                </div>
-                                <div class="form-control mb-3">
-                                    <label class="label" for="id_version">
-                                        <span class="label-text">
-                                            <i class="material-icons mr-1" style="font-size: 16px; vertical-align: middle;">info</i>
-                                            OS Version
-                                        </span>
-                                    </label>
-                                    <input type="text"
-                                           class="input input-bordered w-full{% if form.version.errors %} input-error{% endif %}"
-                                           id="id_version"
-                                           name="version"
-                                           value="{{ form.version.value|default:'' }}">
-                                    {% if form.version.errors %}
-                                        <label class="label"><span class="label-text-alt text-error">{{ form.version.errors.0 }}</span></label>
-                                    {% else %}
-                                        <label class="label"><span class="label-text-alt text-base-content/60">e.g., Ubuntu 22.04, Windows Server 2019</span></label>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Status Section -->
-                        <div class="mb-4">
-                            <h5 class="text-primary mb-3">
-                                <i class="material-icons mr-2" style="vertical-align: middle;">settings</i>
-                                Status &amp; Configuration
-                            </h5>
-
-                            <div class="form-control mb-3">
-                                <label class="label cursor-pointer justify-start gap-3">
-                                    <input class="toggle toggle-primary"
-                                           type="checkbox"
-                                           id="id_active"
-                                           name="active"
-                                           {% if form.active.value %}checked{% endif %}>
-                                    <span class="label-text">
-                                        <i class="material-icons mr-1" style="font-size: 16px; vertical-align: middle;">power_settings_new</i>
-                                        Host is Active
-                                    </span>
-                                </label>
-                                <label class="label"><span class="label-text-alt text-base-content/60">Enable this host for backup operations</span></label>
-                            </div>
-                        </div>
-
-                        <!-- Additional Information (if editing) -->
-                        {% if object %}
-                        <div class="mb-4">
-                            <h5 class="text-primary mb-3">
-                                <i class="material-icons mr-2" style="vertical-align: middle;">history</i>
-                                Additional Information
-                            </h5>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="form-control">
-                                    <label class="label"><span class="label-text text-base-content/60">Host ID</span></label>
-                                    <p class="p-0 mt-1">{{ object.id_host }}</p>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label"><span class="label-text text-base-content/60">Created</span></label>
-                                    <p class="p-0 mt-1">{{ object.created_at|date:"F d, Y G:i" }}</p>
-                                </div>
-                                <div class="form-control">
-                                    <label class="label"><span class="label-text text-base-content/60">Last Updated</span></label>
-                                    <p class="p-0 mt-1">{{ object.updated_at|date:"F d, Y G:i"|default:"Never" }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        <!-- Form Actions -->
-                        <div class="flex gap-2 pt-3 border-t border-base-300">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="material-icons mr-1" style="vertical-align: middle;">save</i>
-                                {% if object %}Update Host{% else %}Create Host{% endif %}
-                            </button>
-                            <a href="{% url 'coreRelback:host-list' %}" class="btn btn-outline">
-                                <i class="material-icons mr-1" style="vertical-align: middle;">cancel</i>
-                                Cancel
-                            </a>
-                            {% if object %}
-                            <button type="button" class="btn btn-info ml-auto" id="testConnection">
-                                <i class="material-icons mr-1" style="vertical-align: middle;">wifi_tethering</i>
-                                Test Connection
-                            </button>
-                            <a href="{% url 'coreRelback:host-delete' object.id_host %}"
-                               class="btn btn-error btn-outline">
-                                <i class="material-icons mr-1" style="vertical-align: middle;">delete</i>
-                                Delete Host
-                            </a>
+                        <div class="form-control mt-4">
+                            <label class="label" for="id_description">
+                                <span class="label-text font-medium flex items-center gap-1">
+                                    <i class="material-icons-round text-base">description</i>
+                                    Description
+                                </span>
+                            </label>
+                            <textarea class="textarea textarea-bordered w-full{% if form.description.errors %} textarea-error{% endif %}"
+                                      id="id_description"
+                                      name="description"
+                                      rows="3">{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.errors %}
+                                <label class="label"><span class="label-text-alt text-error">{{ form.description.errors.0 }}</span></label>
                             {% endif %}
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <!-- Network Configuration Section -->
+                    <div class="mb-6">
+                        <h5 class="text-primary font-semibold mb-3 flex items-center gap-2">
+                            <i class="material-icons-round">language</i>
+                            Network Configuration
+                        </h5>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label" for="id_ip_address">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">router</i>
+                                        IP Address
+                                    </span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.ip_address.errors %} input-error{% endif %}"
+                                       id="id_ip_address"
+                                       name="ip_address"
+                                       value="{{ form.ip_address.value|default:'' }}"
+                                       pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
+                                {% if form.ip_address.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.ip_address.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">Format: 192.168.1.100</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_port">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">settings_ethernet</i>
+                                        Port
+                                    </span>
+                                </label>
+                                <input type="number"
+                                       class="input input-bordered w-full{% if form.port.errors %} input-error{% endif %}"
+                                       id="id_port"
+                                       name="port"
+                                       value="{{ form.port.value|default:'22' }}"
+                                       min="1"
+                                       max="65535">
+                                {% if form.port.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.port.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">Default: 22 (SSH)</span></label>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Information Section -->
+                    <div class="mb-6">
+                        <h5 class="text-primary font-semibold mb-3 flex items-center gap-2">
+                            <i class="material-icons-round">computer</i>
+                            System Information
+                        </h5>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label" for="id_platform">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">laptop</i>
+                                        Operating System
+                                    </span>
+                                </label>
+                                <select class="select select-bordered w-full{% if form.platform.errors %} select-error{% endif %}"
+                                        id="id_platform"
+                                        name="platform">
+                                    <option value="">Select Platform</option>
+                                    <option value="Linux" {% if form.platform.value == 'Linux' %}selected{% endif %}>Linux</option>
+                                    <option value="Windows" {% if form.platform.value == 'Windows' %}selected{% endif %}>Windows</option>
+                                    <option value="AIX" {% if form.platform.value == 'AIX' %}selected{% endif %}>AIX</option>
+                                    <option value="Solaris" {% if form.platform.value == 'Solaris' %}selected{% endif %}>Solaris</option>
+                                    <option value="Other" {% if form.platform.value == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                                {% if form.platform.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.platform.errors.0 }}</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_version">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">info</i>
+                                        OS Version
+                                    </span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.version.errors %} input-error{% endif %}"
+                                       id="id_version"
+                                       name="version"
+                                       value="{{ form.version.value|default:'' }}">
+                                {% if form.version.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.version.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">e.g., Ubuntu 22.04, Windows Server 2019</span></label>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Section -->
+                    <div class="mb-6">
+                        <h5 class="text-primary font-semibold mb-3 flex items-center gap-2">
+                            <i class="material-icons-round">settings</i>
+                            Status &amp; Configuration
+                        </h5>
+
+                        <div class="form-control">
+                            <label class="label cursor-pointer justify-start gap-3">
+                                <input class="toggle toggle-primary"
+                                       type="checkbox"
+                                       id="id_active"
+                                       name="active"
+                                       {% if form.active.value %}checked{% endif %}>
+                                <span class="label-text flex items-center gap-1">
+                                    <i class="material-icons-round text-base">power_settings_new</i>
+                                    Host is Active
+                                </span>
+                            </label>
+                            <label class="label"><span class="label-text-alt text-base-content/60">Enable this host for backup operations</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Additional Information (if editing) -->
+                    {% if object %}
+                    <div class="mb-6">
+                        <h5 class="text-primary font-semibold mb-3 flex items-center gap-2">
+                            <i class="material-icons-round">history</i>
+                            Additional Information
+                        </h5>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="form-control">
+                                <label class="label"><span class="label-text font-medium text-base-content/60">Host ID</span></label>
+                                <p class="text-sm mt-1">{{ object.id_host }}</p>
+                            </div>
+                            <div class="form-control">
+                                <label class="label"><span class="label-text font-medium text-base-content/60">Created</span></label>
+                                <p class="text-sm mt-1">{{ object.created_at|date:"F d, Y G:i" }}</p>
+                            </div>
+                            <div class="form-control">
+                                <label class="label"><span class="label-text font-medium text-base-content/60">Last Updated</span></label>
+                                <p class="text-sm mt-1">{{ object.updated_at|date:"F d, Y G:i"|default:"Never" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Form Actions -->
+                    <div class="flex flex-wrap gap-2 pt-4 border-t border-base-300">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons-round text-lg">save</i>
+                            {% if object %}Update Host{% else %}Create Host{% endif %}
+                        </button>
+                        <a href="{% url 'coreRelback:host-list' %}" class="btn btn-outline">
+                            <i class="material-icons-round text-lg">cancel</i>
+                            Cancel
+                        </a>
+                        {% if object %}
+                        <button type="button" class="btn btn-info ml-auto" id="testConnection">
+                            <i class="material-icons-round text-lg">wifi_tethering</i>
+                            Test Connection
+                        </button>
+                        <a href="{% url 'coreRelback:host-delete' object.id_host %}"
+                           class="btn btn-error btn-outline">
+                            <i class="material-icons-round text-lg">delete</i>
+                            Delete Host
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
             </div>
 
             <!-- Help Card -->
-            <div class="md-card mt-4">
-                <div class="bg-base-200 p-3 rounded-t-xl">
-                    <h6 class="mb-0">
-                        <i class="material-icons mr-2" style="vertical-align: middle;">help</i>
-                        Host Configuration Guidelines
-                    </h6>
+            <div class="bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-base-300 p-3 flex items-center gap-2">
+                    <i class="material-icons-round text-base-content/60">help</i>
+                    <h6 class="font-semibold">Host Configuration Guidelines</h6>
                 </div>
-                <div class="p-4">
+                <div class="p-4 text-sm">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <h6>Required Information:</h6>
-                            <ul>
+                            <h6 class="font-semibold mb-2">Required Information:</h6>
+                            <ul class="list-disc pl-5 space-y-1">
                                 <li><strong>Host Name:</strong> Unique identifier for the server</li>
                                 <li><strong>Client:</strong> Associated backup client</li>
                             </ul>
 
-                            <h6 class="mt-3">Network Settings:</h6>
-                            <ul>
+                            <h6 class="font-semibold mt-3 mb-2">Network Settings:</h6>
+                            <ul class="list-disc pl-5 space-y-1">
                                 <li><strong>IP Address:</strong> Server's network address</li>
                                 <li><strong>Port:</strong> Connection port (default: 22 for SSH)</li>
                             </ul>
                         </div>
                         <div>
-                            <h6>System Information:</h6>
-                            <ul>
+                            <h6 class="font-semibold mb-2">System Information:</h6>
+                            <ul class="list-disc pl-5 space-y-1">
                                 <li><strong>Platform:</strong> Operating system type</li>
                                 <li><strong>Version:</strong> Specific OS version/build</li>
                             </ul>
 
-                            <h6 class="mt-3">Best Practices:</h6>
-                            <ul>
+                            <h6 class="font-semibold mt-3 mb-2">Best Practices:</h6>
+                            <ul class="list-disc pl-5 space-y-1">
                                 <li>Use descriptive host names</li>
                                 <li>Keep system information up to date</li>
                                 <li>Test connections after configuration</li>
@@ -319,7 +311,6 @@
 </div>
 
 <script>
-// Form validation
 document.querySelector('form').addEventListener('submit', function(e) {
     const nameField = document.getElementById('id_name');
     const clientField = document.getElementById('id_client');
@@ -366,12 +357,12 @@ document.getElementById('testConnection').addEventListener('click', function() {
     const originalHTML = button.innerHTML;
     button.classList.add('loading');
     button.disabled = true;
-    button.innerHTML = '<i class="material-icons mr-1" style="vertical-align: middle;">sync</i>Testing...';
+    button.innerHTML = '<i class="material-icons-round text-lg">sync</i>Testing...';
 
     setTimeout(function() {
         button.classList.remove('loading');
         button.disabled = false;
-        button.innerHTML = '<i class="material-icons mr-1" style="vertical-align: middle;">check_circle</i>Connection OK';
+        button.innerHTML = '<i class="material-icons-round text-lg">check_circle</i>Connection OK';
         button.classList.replace('btn-info', 'btn-success');
 
         setTimeout(function() {

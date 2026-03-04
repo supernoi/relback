@@ -1,73 +1,87 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Report Log Detail{% endblock title %}
-{% block content %}
-<div class="container mx-auto px-4 mt-5">
-  <h1 class="mb-4">Report Backup Policy Detail</h1>
+{% block breadcrumb %}<li><a href="{% url 'coreRelback:report-read' %}">Reports</a></li><li>Log Detail</li>{% endblock breadcrumb %}
 
-  <div class="overflow-x-auto">
-    <table class="table table-xs w-full">
-      <tbody>
-        <tr>
-          <th>ID Policy</th>
-          <td>{{ policyDetail.id_policy }}</td>
-          <th>Policy Name</th>
-          <td>{{ policyDetail.policy_name }}</td>
-        </tr>
-        <tr>
-          <th>Status</th>
-          <td>{{ policyDetail.status }}</td>
-          <th>Backup Type</th>
-          <td>{{ policyDetail.backup_type }}</td>
-        </tr>
-        <tr>
-          <th>Client</th>
-          <td>{{ policyDetail.client.name }}</td>
-          <th>Database (DB_NAME)</th>
-          <td>{{ policyDetail.database.db_name }}</td>
-        </tr>
-        <tr>
-          <th>Hostname</th>
-          <td>{{ policyDetail.host.hostname }}</td>
-          <th>Duration Estimated</th>
-          <td>{{ policyDetail.duration }} Minutes</td>
-        </tr>
-        <tr>
-          <th>Size Backup Estimated</th>
-          <td>{{ policyDetail.size_backup }}</td>
-          <th>Duration Realized</th>
-          <td>{{ execDetail.time_taken_display }} H:M:S</td>
-        </tr>
-        <tr>
-          <th>Size Backup Realized</th>
-          <td>{{ execDetail.output_bytes_display }}</td>
-          <th colspan="2"></th>
-        </tr>
-      </tbody>
-    </table>
+{% block content %}
+<div class="space-y-6">
+
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+      <i class="material-icons-round text-primary text-xl">description</i>
+    </div>
+    <div>
+      <h1 class="text-xl font-bold">Backup Log Detail</h1>
+      <p class="text-sm text-base-content/50">Policy execution details and RMAN output</p>
+    </div>
   </div>
 
-  <div class="mt-5">
-    <div class="text-center mb-3">
-      <h4>Log of the Backup Execution (RMAN Output)</h4>
+  <div class="bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="table table-sm w-full">
+        <tbody>
+          <tr>
+            <th class="bg-base-300/50 w-40">ID Policy</th>
+            <td>{{ policyDetail.id_policy }}</td>
+            <th class="bg-base-300/50 w-40">Policy Name</th>
+            <td>{{ policyDetail.policy_name }}</td>
+          </tr>
+          <tr>
+            <th class="bg-base-300/50">Status</th>
+            <td>{{ policyDetail.status }}</td>
+            <th class="bg-base-300/50">Backup Type</th>
+            <td>{{ policyDetail.backup_type }}</td>
+          </tr>
+          <tr>
+            <th class="bg-base-300/50">Client</th>
+            <td>{{ policyDetail.client.name }}</td>
+            <th class="bg-base-300/50">Database (DB_NAME)</th>
+            <td>{{ policyDetail.database.db_name }}</td>
+          </tr>
+          <tr>
+            <th class="bg-base-300/50">Hostname</th>
+            <td>{{ policyDetail.host.hostname }}</td>
+            <th class="bg-base-300/50">Duration Estimated</th>
+            <td>{{ policyDetail.duration }} Minutes</td>
+          </tr>
+          <tr>
+            <th class="bg-base-300/50">Size Estimated</th>
+            <td>{{ policyDetail.size_backup }}</td>
+            <th class="bg-base-300/50">Duration Realized</th>
+            <td>{{ execDetail.time_taken_display }} H:M:S</td>
+          </tr>
+          <tr>
+            <th class="bg-base-300/50">Size Realized</th>
+            <td>{{ execDetail.output_bytes_display }}</td>
+            <td colspan="2"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+    <div class="px-5 py-3 border-b border-base-300 flex items-center gap-2">
+      <i class="material-icons-round text-base-content/50 text-lg">terminal</i>
+      <h2 class="font-semibold text-sm">RMAN Output Log</h2>
     </div>
     <div class="overflow-x-auto">
-      <table class="table table-xs table-zebra w-full">
+      <table class="table table-xs table-zebra w-full font-mono">
         <thead>
-          <tr>
-            <th>RECID</th>
-            <th>RMAN Output</th>
+          <tr class="bg-base-300/30">
+            <th class="w-20">RECID</th>
+            <th>Output</th>
           </tr>
         </thead>
         <tbody>
           {% for rl in reportLog %}
           <tr>
-            <td>{{ rl.recid }}</td>
-            <td>{{ rl.output }}</td>
+            <td class="text-base-content/50">{{ rl.recid }}</td>
+            <td class="whitespace-pre-wrap text-xs">{{ rl.output }}</td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="2" class="text-center">No log entries found.</td>
+            <td colspan="2" class="text-center py-8 text-base-content/40">No log entries found.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -75,10 +89,8 @@
     </div>
   </div>
 
-  <div class="mt-4">
-    <a href="{% url 'coreRelback:report-read' %}" class="btn btn-outline"
-      >Back</a
-    >
-  </div>
+  <a href="{% url 'coreRelback:report-read' %}" class="btn btn-outline btn-sm gap-1">
+    <i class="material-icons-round text-sm">arrow_back</i> Back to Reports
+  </a>
 </div>
 {% endblock content %}

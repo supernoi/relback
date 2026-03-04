@@ -4,116 +4,89 @@
 {% block title %}Delete Client - RelBack{% endblock title %}
 
 {% block content %}
-<div>
-    <!-- Page Header -->
-    <div class="mb-4">
-        <div class="md-card p-4">
-            <div class="flex items-center">
-                <a href="{% url 'coreRelback:client-list' %}" class="btn btn-ghost mr-3">
-                    <i class="material-icons" style="vertical-align: middle;">arrow_back</i>
-                </a>
-                <div class="flex items-center">
-                    <i class="material-icons mr-3" style="font-size: 48px; color: #dc3545;">warning</i>
-                    <div>
-                        <h1 class="h3 mb-1">Delete Client</h1>
-                        <p class="text-base-content/60 mb-0">Confirm deletion of this client</p>
+<div class="flex justify-center py-8">
+    <div class="w-full max-w-lg space-y-4">
+        <!-- Delete Confirmation Card -->
+        <div class="bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+            <div class="p-8 text-center">
+                <i class="material-icons-round text-error text-6xl mb-4">warning</i>
+                <h3 class="text-xl font-bold mb-2">Delete Client</h3>
+                <p class="text-base-content/60 mb-6">Are you sure you want to delete the following client?</p>
+
+                <!-- Client Details -->
+                <div class="bg-base-300 p-4 rounded-lg mb-6 text-left text-sm space-y-1">
+                    <div class="grid grid-cols-3 gap-2">
+                        <strong>Client Name:</strong>
+                        <span class="col-span-2">{{ object.name }}</span>
+                    </div>
+                    {% if object.description %}
+                    <div class="grid grid-cols-3 gap-2">
+                        <strong>Description:</strong>
+                        <span class="col-span-2">{{ object.description }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="grid grid-cols-3 gap-2">
+                        <strong>Client ID:</strong>
+                        <span class="col-span-2">{{ object.id_client }}</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <strong>Created:</strong>
+                        <span class="col-span-2">{{ object.created_at|date:"F d, Y G:i" }}</span>
                     </div>
                 </div>
+
+                <!-- Warning Message -->
+                <div class="alert alert-warning mb-6 text-left text-sm">
+                    <i class="material-icons-round">info</i>
+                    <div>
+                        <strong>Warning:</strong> This action cannot be undone. Deleting this client will also remove all associated hosts, databases, and backup policies.
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form id="deleteForm" method="post">
+                    {% csrf_token %}
+                    <div class="flex justify-center gap-3">
+                        <a href="{% url 'coreRelback:client-list' %}" class="btn btn-outline">
+                            <i class="material-icons-round text-lg">cancel</i>
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-error">
+                            <i class="material-icons-round text-lg">delete_forever</i>
+                            Yes, Delete Client
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
 
-    <!-- Confirmation Form -->
-    <div class="flex justify-center">
-        <div class="w-full max-w-lg">
-            <!-- Warning Card -->
-            <div class="md-card border border-error/30 mb-4">
-                <div class="bg-error/10 p-3 rounded-t-xl">
-                    <h5 class="mb-0 text-error">
-                        <i class="material-icons mr-2" style="vertical-align: middle;">dangerous</i>
-                        Confirm Deletion
-                    </h5>
-                </div>
-                <div class="p-4">
-                    <p class="mb-3">Are you sure you want to delete the following client?</p>
-
-                    <!-- Client Details -->
-                    <div class="bg-base-200 p-3 rounded-lg mb-3">
-                        <div class="grid grid-cols-3 gap-2 mb-1">
-                            <strong>Client Name:</strong>
-                            <span class="col-span-2">{{ object.name }}</span>
-                        </div>
-                        {% if object.description %}
-                        <div class="grid grid-cols-3 gap-2 mb-1">
-                            <strong>Description:</strong>
-                            <span class="col-span-2">{{ object.description }}</span>
-                        </div>
-                        {% endif %}
-                        <div class="grid grid-cols-3 gap-2 mb-1">
-                            <strong>Client ID:</strong>
-                            <span class="col-span-2">{{ object.id_client }}</span>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <strong>Created:</strong>
-                            <span class="col-span-2">{{ object.created_at|date:"F d, Y G:i" }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Warning Message -->
-                    <div class="alert alert-warning flex items-start gap-2">
-                        <i class="material-icons mt-1" style="font-size: 20px;">info</i>
-                        <div>
-                            <strong>Warning:</strong> This action cannot be undone. Deleting this client will also remove all associated hosts, databases, and backup policies.
-                        </div>
-                    </div>
-
-                    <!-- Form -->
-                    <form id="deleteForm" method="post">
-                        {% csrf_token %}
-                        <div class="flex gap-2 pt-3 border-t border-base-300">
-                            <button type="submit" class="btn btn-error">
-                                <i class="material-icons mr-1" style="vertical-align: middle;">delete_forever</i>
-                                Yes, Delete Client
-                            </button>
-                            <a href="{% url 'coreRelback:client-list' %}" class="btn btn-outline">
-                                <i class="material-icons mr-1" style="vertical-align: middle;">cancel</i>
-                                Cancel
-                            </a>
-                        </div>
-                    </form>
-                </div>
+        <!-- Related Data Warning -->
+        <div class="bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+            <div class="bg-info/10 p-3 flex items-center gap-2">
+                <i class="material-icons-round text-info">info</i>
+                <h6 class="font-semibold text-info">What will be deleted?</h6>
             </div>
-
-            <!-- Related Data Warning -->
-            <div class="md-card">
-                <div class="bg-info/10 p-3 rounded-t-xl">
-                    <h6 class="mb-0 text-info">
-                        <i class="material-icons mr-2" style="vertical-align: middle;">info</i>
-                        What will be deleted?
-                    </h6>
-                </div>
-                <div class="p-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="text-center">
-                            <i class="material-icons mb-2" style="font-size: 48px; color: var(--md-secondary);">storage</i>
-                            <p class="mb-1"><strong>Hosts</strong></p>
-                            <p class="text-base-content/60 text-sm">All associated hosts</p>
-                        </div>
-                        <div class="text-center">
-                            <i class="material-icons mb-2" style="font-size: 48px; color: var(--md-secondary);">database</i>
-                            <p class="mb-1"><strong>Databases</strong></p>
-                            <p class="text-base-content/60 text-sm">All associated databases</p>
-                        </div>
-                        <div class="text-center">
-                            <i class="material-icons mb-2" style="font-size: 48px; color: var(--md-secondary);">policy</i>
-                            <p class="mb-1"><strong>Policies</strong></p>
-                            <p class="text-base-content/60 text-sm">All backup policies</p>
-                        </div>
-                        <div class="text-center">
-                            <i class="material-icons mb-2" style="font-size: 48px; color: var(--md-secondary);">backup</i>
-                            <p class="mb-1"><strong>Backups</strong></p>
-                            <p class="text-base-content/60 text-sm">All backup history</p>
-                        </div>
+            <div class="p-5">
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div>
+                        <i class="material-icons-round text-base-content/40 text-4xl mb-1">storage</i>
+                        <p class="font-medium text-sm">Hosts</p>
+                        <p class="text-base-content/60 text-xs">All associated hosts</p>
+                    </div>
+                    <div>
+                        <i class="material-icons-round text-base-content/40 text-4xl mb-1">database</i>
+                        <p class="font-medium text-sm">Databases</p>
+                        <p class="text-base-content/60 text-xs">All associated databases</p>
+                    </div>
+                    <div>
+                        <i class="material-icons-round text-base-content/40 text-4xl mb-1">policy</i>
+                        <p class="font-medium text-sm">Policies</p>
+                        <p class="text-base-content/60 text-xs">All backup policies</p>
+                    </div>
+                    <div>
+                        <i class="material-icons-round text-base-content/40 text-4xl mb-1">backup</i>
+                        <p class="font-medium text-sm">Backups</p>
+                        <p class="text-base-content/60 text-xs">All backup history</p>
                     </div>
                 </div>
             </div>
@@ -122,7 +95,6 @@
 </div>
 
 <script>
-// Add confirmation dialog for extra safety
 document.getElementById('deleteForm').addEventListener('submit', function(e) {
     const clientName = '{{ object.name|escapejs }}';
     const confirmed = confirm(`Are you absolutely sure you want to delete "${clientName}"?\n\nThis action cannot be undone and will delete all associated data.`);

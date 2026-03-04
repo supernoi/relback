@@ -1,13 +1,195 @@
 {% extends "base.html" %}
-{% block title %}Database Form{% endblock title %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit Database{% else %}Create Database{% endif %} - RelBack{% endblock title %}
 
 {% block content %}
-  <h2>{% if form.instance.pk %}Edit Database{% else %}Create Database{% endif %}</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">
-      {% if form.instance.pk %}Update{% else %}Create{% endif %}
-    </button>
-  </form>
+<div class="space-y-5">
+    <!-- Page Header -->
+    <div class="bg-base-200 border border-base-300 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center gap-3">
+            <a href="{% url 'coreRelback:database-list' %}" class="btn btn-ghost btn-square">
+                <i class="material-icons-round text-2xl">arrow_back</i>
+            </a>
+            <i class="material-icons-round text-primary text-5xl">
+                {% if form.instance.pk %}edit{% else %}add_circle{% endif %}
+            </i>
+            <div>
+                <h1 class="text-2xl font-bold">{% if form.instance.pk %}Edit Database{% else %}Add New Database{% endif %}</h1>
+                <p class="text-base-content/60 text-sm">{% if form.instance.pk %}Update database information{% else %}Register a new database for backup{% endif %}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="flex justify-center">
+        <div class="w-full max-w-3xl space-y-4">
+            <div class="bg-base-200 border border-base-300 rounded-xl p-5 shadow-sm">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Database Information -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <i class="material-icons-round text-primary">database</i>
+                            Database Information
+                        </h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label" for="id_db_name">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">label</i>
+                                        Database Name *
+                                    </span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.db_name.errors %} input-error{% endif %}"
+                                       id="id_db_name"
+                                       name="db_name"
+                                       value="{{ form.db_name.value|default:'' }}"
+                                       maxlength="20"
+                                       required>
+                                {% if form.db_name.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.db_name.errors.0 }}</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_dbid">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">fingerprint</i>
+                                        DBID *
+                                    </span>
+                                </label>
+                                <input type="number"
+                                       class="input input-bordered w-full{% if form.dbid.errors %} input-error{% endif %}"
+                                       id="id_dbid"
+                                       name="dbid"
+                                       value="{{ form.dbid.value|default:'' }}"
+                                       required>
+                                {% if form.dbid.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.dbid.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">Oracle Database Identifier</span></label>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Association -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <i class="material-icons-round text-primary">link</i>
+                            Association
+                        </h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label" for="id_client">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">business</i>
+                                        Client *
+                                    </span>
+                                </label>
+                                <select class="select select-bordered w-full{% if form.client.errors %} select-error{% endif %}"
+                                        id="id_client"
+                                        name="client"
+                                        required>
+                                    <option value="">Select Client</option>
+                                    {% for choice in form.client.field.queryset %}
+                                    <option value="{{ choice.pk }}"
+                                            {% if form.client.value|stringformat:"s" == choice.pk|stringformat:"s" %}selected{% endif %}>
+                                        {{ choice }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.client.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.client.errors.0 }}</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_host">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">dns</i>
+                                        Host *
+                                    </span>
+                                </label>
+                                <select class="select select-bordered w-full{% if form.host.errors %} select-error{% endif %}"
+                                        id="id_host"
+                                        name="host"
+                                        required>
+                                    <option value="">Select Host</option>
+                                    {% for choice in form.host.field.queryset %}
+                                    <option value="{{ choice.pk }}"
+                                            {% if form.host.value|stringformat:"s" == choice.pk|stringformat:"s" %}selected{% endif %}>
+                                        {{ choice }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.host.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.host.errors.0 }}</span></label>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-6">
+                        <div class="form-control">
+                            <label class="label" for="id_description">
+                                <span class="label-text font-medium flex items-center gap-1">
+                                    <i class="material-icons-round text-base">description</i>
+                                    Description
+                                </span>
+                            </label>
+                            <textarea class="textarea textarea-bordered w-full{% if form.description.errors %} textarea-error{% endif %}"
+                                      id="id_description"
+                                      name="description"
+                                      rows="3"
+                                      maxlength="100">{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.errors %}
+                                <label class="label"><span class="label-text-alt text-error">{{ form.description.errors.0 }}</span></label>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex flex-wrap gap-2 pt-4 border-t border-base-300">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons-round text-lg">save</i>
+                            {% if form.instance.pk %}Update Database{% else %}Create Database{% endif %}
+                        </button>
+                        <a href="{% url 'coreRelback:database-list' %}" class="btn btn-outline">
+                            <i class="material-icons-round text-lg">cancel</i>
+                            Cancel
+                        </a>
+                        {% if form.instance.pk %}
+                        <a href="{% url 'coreRelback:database-delete' form.instance.pk %}"
+                           class="btn btn-error ml-auto">
+                            <i class="material-icons-round text-lg">delete</i>
+                            Delete Database
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+            <!-- Help Card -->
+            <div class="bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-base-300 p-3 flex items-center gap-2">
+                    <i class="material-icons-round text-base-content/60">help</i>
+                    <h6 class="font-semibold">Help &amp; Guidelines</h6>
+                </div>
+                <div class="p-4 text-sm">
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Database Name:</strong> The Oracle DB_NAME (up to 20 characters).</li>
+                        <li><strong>DBID:</strong> The unique Oracle Database Identifier (found via <code class="bg-base-300 px-1 rounded">SELECT DBID FROM V$DATABASE</code>).</li>
+                        <li><strong>Client &amp; Host:</strong> The client and host server where this database resides.</li>
+                        <li><strong>Description:</strong> Optional notes about environment, purpose, or version.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}

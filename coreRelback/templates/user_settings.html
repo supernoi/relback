@@ -5,52 +5,51 @@
 
 {% block content %}
 <div class="flex justify-center">
-    <div class="w-full max-w-3xl">
-        <div class="md-card">
-            <div class="bg-primary text-primary-content p-4 rounded-t-xl">
-                <h4 class="mb-0">
-                    <i class="material-icons mr-2" style="vertical-align: middle;">settings</i>
-                    User Settings
-                </h4>
+    <div class="w-full max-w-3xl space-y-4">
+        <!-- Settings Card -->
+        <div class="bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+            <div class="bg-primary text-primary-content p-4 flex items-center gap-2">
+                <i class="material-icons-round text-2xl">settings</i>
+                <h4 class="text-lg font-bold">User Settings</h4>
             </div>
-            <div class="p-4">
+            <div class="p-5">
                 <form method="post">
                     {% csrf_token %}
 
                     <!-- Personal Information -->
-                    <div class="mb-4">
-                        <h5 class="text-primary mb-3">
-                            <i class="material-icons mr-2" style="vertical-align: middle;">person</i>
+                    <div class="mb-6">
+                        <h5 class="text-primary font-semibold mb-3 flex items-center gap-2">
+                            <i class="material-icons-round">person</i>
                             Personal Information
                         </h5>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control mb-3">
-                                <label class="label" for="name"><span class="label-text">Full Name</span></label>
+                            <div class="form-control">
+                                <label class="label" for="name"><span class="label-text font-medium">Full Name</span></label>
                                 <input type="text" class="input input-bordered w-full" id="name" name="name"
                                        value="{{ relback_user.name|default:'' }}">
                             </div>
-                            <div class="form-control mb-3">
-                                <label class="label" for="email"><span class="label-text">Email Address</span></label>
+                            <div class="form-control">
+                                <label class="label" for="email"><span class="label-text font-medium">Email Address</span></label>
                                 <input type="email" class="input input-bordered w-full" id="email" name="email"
                                        value="{{ relback_user.email|default:'' }}">
                             </div>
                         </div>
-                        <div class="form-control mb-3 md:w-1/2">
-                            <label class="label" for="username"><span class="label-text">Username (read-only)</span></label>
+                        <div class="form-control mt-4 md:w-1/2">
+                            <label class="label" for="username"><span class="label-text font-medium">Username (read-only)</span></label>
                             <input type="text" class="input input-bordered w-full" id="username"
                                    value="{{ relback_user.username }}" disabled>
                         </div>
                     </div>
 
                     <!-- UI Preferences -->
-                    <div class="mb-4">
-                        <h5 class="text-primary mb-3">
-                            <i class="material-icons mr-2" style="vertical-align: middle;">palette</i>
+                    <div class="mb-6">
+                        <h5 class="text-primary font-semibold mb-3 flex items-center gap-2">
+                            <i class="material-icons-round">palette</i>
                             UI Preferences
                         </h5>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control mb-3">
-                                <label class="label" for="theme_preference"><span class="label-text">Theme</span></label>
+                            <div class="form-control">
+                                <label class="label" for="theme_preference"><span class="label-text font-medium">Theme</span></label>
                                 <select class="select select-bordered w-full" id="theme_preference" name="theme_preference">
                                     {% for value, label in theme_choices %}
                                         <option value="{{ value }}" {% if relback_user.theme_preference == value %}selected{% endif %}>
@@ -59,8 +58,8 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="form-control mb-3">
-                                <label class="label" for="language_preference"><span class="label-text">Language</span></label>
+                            <div class="form-control">
+                                <label class="label" for="language_preference"><span class="label-text font-medium">Language</span></label>
                                 <select class="select select-bordered w-full" id="language_preference" name="language_preference">
                                     {% for value, label in language_choices %}
                                         <option value="{{ value }}" {% if relback_user.language_preference == value %}selected{% endif %}>
@@ -73,9 +72,9 @@
                     </div>
 
                     <!-- Notifications -->
-                    <div class="mb-4">
-                        <h5 class="text-primary mb-3">
-                            <i class="material-icons mr-2" style="vertical-align: middle;">notifications</i>
+                    <div class="mb-6">
+                        <h5 class="text-primary font-semibold mb-3 flex items-center gap-2">
+                            <i class="material-icons-round">notifications</i>
                             Notifications
                         </h5>
                         <div class="form-control">
@@ -88,30 +87,30 @@
                     </div>
 
                     <!-- Security -->
-                    <div class="mb-4">
-                        <h5 class="text-primary mb-3">
-                            <i class="material-icons mr-2" style="vertical-align: middle;">security</i>
+                    <div class="mb-6">
+                        <h5 class="text-primary font-semibold mb-3 flex items-center gap-2">
+                            <i class="material-icons-round">security</i>
                             Security
                         </h5>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control mb-3">
-                                <label class="label" for="new_password"><span class="label-text">New Password (leave blank to keep current)</span></label>
+                            <div class="form-control">
+                                <label class="label" for="new_password"><span class="label-text font-medium">New Password (leave blank to keep current)</span></label>
                                 <input type="password" class="input input-bordered w-full" id="new_password" name="new_password">
                             </div>
-                            <div class="form-control mb-3">
-                                <label class="label" for="confirm_password"><span class="label-text">Confirm New Password</span></label>
+                            <div class="form-control">
+                                <label class="label" for="confirm_password"><span class="label-text font-medium">Confirm New Password</span></label>
                                 <input type="password" class="input input-bordered w-full" id="confirm_password">
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 pt-3 border-t border-base-300">
                         <button type="submit" class="btn btn-primary">
-                            <i class="material-icons mr-1" style="vertical-align: middle;">save</i>
+                            <i class="material-icons-round text-lg">save</i>
                             Save Changes
                         </button>
                         <a href="{% url 'coreRelback:index' %}" class="btn btn-outline">
-                            <i class="material-icons mr-1" style="vertical-align: middle;">cancel</i>
+                            <i class="material-icons-round text-lg">cancel</i>
                             Cancel
                         </a>
                     </div>
@@ -120,22 +119,21 @@
         </div>
 
         <!-- Account Information -->
-        <div class="md-card mt-4">
-            <div class="bg-info text-info-content p-3 rounded-t-xl">
-                <h6 class="mb-0">
-                    <i class="material-icons mr-2" style="vertical-align: middle;">info</i>
-                    Account Information
-                </h6>
+        <div class="bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+            <div class="bg-info text-info-content p-3 flex items-center gap-2">
+                <i class="material-icons-round">info</i>
+                <h6 class="font-semibold">Account Information</h6>
             </div>
-            <div class="p-4">
+            <div class="p-5">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                    <div class="space-y-1 text-sm">
                         <p><strong>Account created:</strong> {{ relback_user.created_at|date:"F d, Y" }}</p>
                         <p><strong>Last updated:</strong> {{ relback_user.updated_at|date:"F d, Y G:i" }}</p>
                     </div>
-                    <div>
+                    <div class="space-y-1 text-sm">
                         <p><strong>Last login:</strong> {{ relback_user.last_login|date:"F d, Y G:i"|default:"Never" }}</p>
-                        <p><strong>Status:</strong>
+                        <p>
+                            <strong>Status:</strong>
                             <span class="badge {% if relback_user.is_active %}badge-success{% else %}badge-error{% endif %}">
                                 {% if relback_user.is_active %}Active{% else %}Inactive{% endif %}
                             </span>
@@ -148,11 +146,10 @@
 </div>
 
 <script>
-// Password confirmation validation
 document.getElementById('confirm_password').addEventListener('input', function() {
     const password = document.getElementById('new_password').value;
     const confirmPassword = this.value;
-    
+
     if (password && confirmPassword && password !== confirmPassword) {
         this.setCustomValidity('Passwords do not match');
     } else {

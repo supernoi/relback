@@ -1,11 +1,10 @@
 {% load static %}{% load tailwind_tags %}
 <!doctype html>
-<html lang="en" data-theme="relback_dark">
+<html lang="en" data-theme="relback_light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>relBack — Sign In</title>
-    {# FOUC prevention: restore saved DaisyUI theme before first paint #}
+    <title>RelBack — Sign In</title>
     <script>
       (function () {
         var t = localStorage.getItem("relback-theme");
@@ -13,42 +12,40 @@
       })();
     </script>
     {% tailwind_css %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
   </head>
   <body class="bg-base-200 min-h-screen flex items-center justify-center p-4">
 
-    <div class="card w-full max-w-sm bg-base-100 shadow-xl border border-base-300">
+    <div class="card w-full max-w-sm bg-base-100 shadow-lg border border-base-300 rounded-xl">
       <div class="card-body gap-4">
 
-        {# Brand #}
-        <div class="flex flex-col items-center gap-1 mb-2">
-          <i class="material-icons text-primary" style="font-size:3rem;">storage</i>
-          <h1 class="text-2xl font-bold text-primary">relBack</h1>
-          <p class="text-sm opacity-50">Oracle Backup Management System</p>
+        <div class="flex flex-col items-center gap-2 mb-2">
+          <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+            <i class="material-icons-round text-primary-content text-2xl">backup</i>
+          </div>
+          <h1 class="text-2xl font-bold">RelBack</h1>
+          <p class="text-sm text-base-content/50">Backup Monitor — Sign In</p>
         </div>
 
-        {# Flash messages #}
         {% if messages %}
           {% for message in messages %}
-          <div role="alert"
-               class="alert shadow-sm {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}">
+          <div role="alert" class="alert alert-sm shadow-sm {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}">
             <span class="text-sm">{{ message }}</span>
           </div>
           {% endfor %}
         {% endif %}
 
-        {# Non-field errors #}
         {% if form.non_field_errors %}
-        <div role="alert" class="alert alert-error shadow-sm">
+        <div role="alert" class="alert alert-error alert-sm shadow-sm">
           <ul class="text-sm list-disc pl-4">
             {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
           </ul>
         </div>
         {% endif %}
 
-        {# Login form #}
         <form method="post" class="flex flex-col gap-3">
           {% csrf_token %}
-
           <div class="form-control">
             <label class="label pb-1" for="{{ form.username.id_for_label }}">
               <span class="label-text text-xs font-medium uppercase tracking-wide">Username</span>
@@ -56,9 +53,7 @@
             {{ form.username }}
             {% if form.username.errors %}
             <label class="label pt-1">
-              <span class="label-text-alt text-error">
-                {% for e in form.username.errors %}{{ e }}{% endfor %}
-              </span>
+              <span class="label-text-alt text-error">{% for e in form.username.errors %}{{ e }}{% endfor %}</span>
             </label>
             {% endif %}
           </div>
@@ -70,19 +65,15 @@
             {{ form.password }}
             {% if form.password.errors %}
             <label class="label pt-1">
-              <span class="label-text-alt text-error">
-                {% for e in form.password.errors %}{{ e }}{% endfor %}
-              </span>
+              <span class="label-text-alt text-error">{% for e in form.password.errors %}{{ e }}{% endfor %}</span>
             </label>
             {% endif %}
           </div>
 
-          <button type="submit" class="btn btn-primary w-full mt-1">
-            Sign In
-          </button>
+          <button type="submit" class="btn btn-primary w-full mt-1">Sign In</button>
         </form>
 
-        <p class="text-center text-xs opacity-60">
+        <p class="text-center text-xs text-base-content/50">
           Don't have an account?
           <a href="{% url 'coreRelback:register' %}" class="link link-primary font-medium">Sign up</a>
         </p>
@@ -90,7 +81,6 @@
     </div>
 
     <script>
-      // Auto-dismiss alerts after 5 s
       setTimeout(function () {
         document.querySelectorAll("[role=alert]").forEach(function (el) { el.remove(); });
       }, 5000);
