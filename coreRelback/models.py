@@ -33,6 +33,16 @@ class RelbackUser(models.Model):
         default='en'
     )
     notifications_enabled = models.BooleanField(default=True)
+    # Multi-tenant (Phase 19): optional default client for report/catalog scoping
+    default_client = models.ForeignKey(
+        'Client',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='users_default',
+        db_column='default_id_client',
+        help_text='Optional default client for Reports; catalog queries are scoped to this client when set.',
+    )
 
     class Meta:
         db_table = 'users'
@@ -83,6 +93,14 @@ class Client(models.Model):
         null=True
     )
     updated_at = models.DateTimeField(auto_now=True)
+    # Multi-tenant (Phase 19): optional per-client RMAN catalog DSN; credentials from settings/env
+    catalog_dsn = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True,
+        help_text="Optional Oracle RMAN catalog DSN for this client (e.g. host:port/service). "
+                  "When set, report queries use this catalog; credentials from ORACLE_CATALOG_*.",
+    )
 
     class Meta:
         db_table = 'clients'

@@ -121,6 +121,7 @@ class BackupJobResult:
     output_device_type: Optional[str] = None
     session_key: Optional[int] = None
     input_type: Optional[str] = None
+    db_key: Optional[int] = None  # RC_BACKUP_JOB_DETAILS DB_KEY; used by Demo and detail view
 
     @property
     def is_ok(self) -> bool:
@@ -163,3 +164,17 @@ class DashboardStats:
     active_policies_count: int = 0
     failed_jobs_last_24h: int = 0
     successful_jobs_last_24h: int = 0
+
+
+@dataclass
+class SlaBreach:
+    """
+    Value object: a backup SLA breach — expected backup window had no successful job.
+
+    Pure domain; no dependency on Django, Oracle, or notification transport.
+    """
+    db_name: str
+    schedule_start: datetime
+    policy_name: Optional[str] = None
+    hostname: Optional[str] = None
+    reason: str = "no_completed_backup_in_window"

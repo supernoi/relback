@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load django_tables2 %}
 
 {% block title %}Clients - RelBack{% endblock title %}
 
@@ -31,14 +32,14 @@
                 <i class="material-icons-round" style="font-size: 2.5rem;">business</i>
             </div>
             <div class="stat-title">Total Clients</div>
-            <div class="stat-value stats-title">{{ clients.count }}</div>
+            <div class="stat-value stats-title">{{ clients_count|default:0 }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-success">
                 <i class="material-icons-round" style="font-size: 2.5rem;">verified</i>
             </div>
             <div class="stat-title">Active Clients</div>
-            <div class="stat-value text-success stats-title">{{ clients|length }}</div>
+            <div class="stat-value text-success stats-title">{{ clients_count|default:0 }}</div>
         </div>
     </div>
 
@@ -58,74 +59,12 @@
         </div>
     </div>
 
-    <!-- Clients Table -->
+    <!-- Clients Table (django-tables2 pagination) -->
     <div>
         <div class="md-card md-card-decorated">
-            {% if clients %}
+            {% if table.page.object_list %}
                 <div class="overflow-x-auto">
-                    <table class="table table-xs table-zebra w-full">
-                        <thead>
-                            <tr>
-                                <th class="oracle-info-gradient">
-                                    <div class="table-header-content">
-                                        <i class="material-icons table-header-icon">business</i>
-                                        <span class="table-header-text">Client Name</span>
-                                    </div>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <i class="material-icons table-header-icon">description</i>
-                                    <span class="table-header-text">Description</span>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <i class="material-icons table-header-icon">schedule</i>
-                                    <span class="table-header-text">Created</span>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <i class="material-icons table-header-icon">settings</i>
-                                    <span class="table-header-text">Actions</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for client in clients %}
-                            <tr>
-                                <td>
-                                    <div class="table-cell-content">
-                                        <div class="table-cell-icon">
-                                            <i class="material-icons-round">business</i>
-                                        </div>
-                                        <div>
-                                            <h5 class="table-cell-title">{{ client.name|default:"Unnamed Client" }}</h5>
-                                            <small class="table-cell-subtitle">ID: {{ client.id_client }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="table-cell-text">{{ client.description|default:"No description" }}</span>
-                                </td>
-                                <td>
-                                    <span class="table-cell-text">{{ client.created_at|date:"M d, Y" }}</span>
-                                </td>
-                                <td>
-                                    <div class="btn-actions-group">
-                                        <button type="button" 
-                                                class="btn-action btn-edit" 
-                                                title="Edit Client"
-                                                onclick="openEditModal('{{ client.id_client }}', '{{ client.name|escapejs }}', '{{ client.description|default:""|escapejs }}')">
-                                            <i class="material-icons-round">edit</i>
-                                        </button>
-                                        <button type="button" 
-                                                class="btn-action btn-delete" 
-                                                title="Delete Client"
-                                                onclick="openDeleteModal('{{ client.id_client }}', '{{ client.name|escapejs }}', '{{ client.description|default:"No description"|escapejs }}', '{{ client.created_at|date:"F d, Y G:i" }}')">
-                                            <i class="material-icons-round">delete</i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    {% render_table table %}
                 </div>
             {% else %}
                 <!-- Empty State -->
