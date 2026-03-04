@@ -26,6 +26,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
+    'daphne',  # ASGI server (Phase 18) — must be before django.contrib
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'coreRelback',
     'django_tables2',
     'rest_framework',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -208,4 +210,15 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
+}
+
+# ---------------------------------------------------------------------------
+# Django Channels — WebSocket / ASGI (Phase 18)
+# ---------------------------------------------------------------------------
+ASGI_APPLICATION = "projectRelback.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
 }

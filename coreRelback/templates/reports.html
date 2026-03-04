@@ -38,28 +38,28 @@
                 <i class="material-icons-round" style="font-size: 2.5rem;">assignment</i>
             </div>
             <div class="stat-title">Total Jobs</div>
-            <div class="stat-value stats-title">{{ jobs|length }}</div>
+            <div class="stat-value stats-title" id="wsStatTotal">{{ jobs|length }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-success">
                 <i class="material-icons-round" style="font-size: 2.5rem;">check_circle</i>
             </div>
             <div class="stat-title">Successful</div>
-            <div class="stat-value text-success stats-title">{{ successful_jobs|default:0 }}</div>
+            <div class="stat-value text-success stats-title" id="wsStatSuccessful">{{ successful_jobs|default:0 }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-error">
                 <i class="material-icons-round" style="font-size: 2.5rem;">error</i>
             </div>
             <div class="stat-title">Failed</div>
-            <div class="stat-value text-error stats-title">{{ failed_jobs|default:0 }}</div>
+            <div class="stat-value text-error stats-title" id="wsStatFailed">{{ failed_jobs|default:0 }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-info">
                 <i class="material-icons-round" style="font-size: 2.5rem;">today</i>
             </div>
             <div class="stat-title">Today's Jobs</div>
-            <div class="stat-value stats-title">{{ today_jobs|default:0 }}</div>
+            <div class="stat-value stats-title" id="wsStatToday">{{ today_jobs|default:0 }}</div>
         </div>
     </div>
 
@@ -324,7 +324,7 @@
                             <th class="md-text-center">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="reportsTableBody">
                         {% for j in jobs %}
                         <tr>
                             <td style="padding: 1rem;" class="md-font-medium">{{ j.policy_name }}</td>
@@ -1915,10 +1915,59 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Components initialized successfully');
 });
 
-// Auto-refresh every 30 seconds
-setInterval(function() {
-    // You can implement auto-refresh logic here
-    console.log('Auto-refresh check...');
-}, 30000);
+// Real-time updates via WebSocket (Phase 18)
+(function reportsWebSocket() {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = protocol + '//' + window.location.host + '/ws/reports/';
+    let ws = null;
+    function connect() {
+        try {
+            ws = new WebSocket(wsUrl);
+            ws.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    const s = data.summary || {};
+                    const elTotal = document.getElementById('wsStatTotal');
+                    const elOk = document.getElementById('wsStatSuccessful');
+                    const elFail = document.getElementById('wsStatFailed');
+                    const elToday = document.getElementById('wsStatToday');
+                    if (elTotal) elTotal.textContent = s.total ?? 0;
+                    if (elOk) elOk.textContent = s.successful ?? 0;
+                    if (elFail) elFail.textContent = s.failed ?? 0;
+                    if (elToday) elToday.textContent = s.today_jobs ?? 0;
+                    const tbody = document.getElementById('reportsTableBody');
+                    if (tbody && Array.isArray(data.jobs)) {
+                        const badge = function(st) {
+                            if (/completed/i.test(st)) return 'badge-success';
+                            if (/failed|interrupted/i.test(st)) return 'badge-error';
+                            if (/running/i.test(st)) return 'badge-info';
+                            if (/warning/i.test(st)) return 'badge-warning';
+                            return 'badge-ghost';
+                        };
+                        const fmt = function(iso) {
+                            if (!iso) return '-';
+                            try {
+                                const d = new Date(iso);
+                                return isNaN(d.getTime()) ? iso : d.toLocaleString(undefined, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                            } catch (e) { return iso; }
+                        };
+                        tbody.innerHTML = data.jobs.length === 0
+                            ? '<tr><td colspan="10" class="text-center py-10"><div class="text-base-content/60 flex flex-col items-center gap-3"><i class="material-icons" style="font-size: 64px;">assessment</i><h5 class="text-lg font-semibold">No backup jobs found</h5><p>Backup jobs will appear here once they start running.</p></div></td></tr>'
+                            : data.jobs.map(function(j) {
+                                return '<tr><td style="padding:1rem;" class="md-font-medium">' + (j.policy_name || '-') + '</td><td>' + (j.hostname || '-') + '</td><td>' + (j.db_name || '-') + '</td><td><span class="badge badge-sm badge-info">' + (j.backup_type || '-') + '</span></td><td>' + fmt(j.start_time) + '</td><td>' + fmt(j.end_time) + '</td><td><span class="badge badge-sm ' + badge(j.status) + '">' + (j.status || '-') + '</span></td><td>' + (j.time_taken_display || '-') + '</td><td>' + (j.output_bytes_display || '-') + '</td><td class="text-center"><div class="flex gap-1 justify-center"><button type="button" class="btn btn-sm btn-ghost btn-square" title="View Details" onclick="jobDetail(\'' + (j.session_key || '') + '\')"><i class="material-icons" style="font-size: 16px;">visibility</i></button><button type="button" class="btn btn-sm btn-ghost btn-square" title="View Logs" onclick="viewLogs(\'' + (j.session_key || '') + '\')"><i class="material-icons" style="font-size: 16px;">description</i></button></div></td></tr>';
+                            }).join('');
+                    }
+                } catch (e) { console.warn('Reports WS parse error', e); }
+            };
+            ws.onclose = function() { ws = null; setTimeout(connect, 10000); };
+            ws.onerror = function() { if (ws) ws.close(); };
+        } catch (e) { console.warn('Reports WS connect error', e); setTimeout(connect, 10000); }
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', connect);
+    } else {
+        connect();
+    }
+})();
 </script>
 {% endblock extra_js %}

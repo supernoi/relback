@@ -216,7 +216,11 @@ Custom session-based auth using `RelbackUser`. No Django `AbstractBaseUser`.
 
 Session is stored in `django.contrib.sessions` (database-backed in production, file in dev).
 
-### 4.1 REST API (Phase 17)
+### 4.1 Real-time updates (Phase 18)
+
+Django Channels provides a WebSocket at `/ws/reports/` for the Reports page. Authenticated users receive JSON `{ jobs, summary, oracle_available }` on connect and every 30s. Server: `daphne projectRelback.asgi:application`. Consumer: `coreRelback/consumers.py` (`ReportsJobsConsumer`). In production, set `REDIS_URL` and use Redis channel layer for multi-worker scaling; `docker-compose.yml` includes a `redis` service.
+
+### 4.2 REST API (Phase 17)
 
 Django REST Framework provides read-only JSON endpoints for backup audit data (e.g. dashboards, Grafana).
 
@@ -256,7 +260,8 @@ Django REST Framework provides read-only JSON endpoints for backup audit data (e
 
 - **403 Forbidden:** request without valid session (login required; DRF default).
 - **Serializers:** `coreRelback/api/serializers.py` — domain entities (e.g. `BackupJobResult`) mapped to JSON; no Django models in the public API.
-### 4.2 Multi-tenant catalog (Phase 19)
+
+### 4.3 Multi-tenant catalog (Phase 19)
 
 Reports and log detail are scoped by client when configured:
 

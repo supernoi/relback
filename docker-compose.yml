@@ -28,6 +28,9 @@ services:
       - .env
     environment:
       DJANGO_SETTINGS_MODULE: projectRelback.settings_prod
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - redis
     volumes:
       - relback_db:/app/db.sqlite3
     healthcheck:
@@ -37,6 +40,12 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
 
   nginx:
     build: ./nginx
@@ -59,4 +68,5 @@ services:
 
 volumes:
   relback_db:
+  redis_data:
   nginx_certs:
