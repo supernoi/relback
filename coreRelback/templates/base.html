@@ -15,6 +15,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     {% block extra_css %}{% endblock extra_css %}
+    <style>
+      /* Global Table Variables */
+      [data-theme='relback_light'] {
+        --table-header-bg: #1e3a8a; /* blue-900 */
+        --table-header-text: #ffffff;
+        --table-zebra: #f8fafc;
+        --table-hover: #eff6ff;
+        --table-odd: #ffffff;
+      }
+      [data-theme='relback_dark'] {
+        --table-header-bg: #0f172a; /* slate-900 */
+        --table-header-text: #f1f5f9; /* slate-100 */
+        --table-zebra: #1e293b66; /* 40% opacity on slate-800 */
+        --table-hover: rgba(30, 58, 138, 0.3); /* blue-900/30 */
+        --table-odd: #0f172a;
+      }
+
+      /* Relback Global Data Table overrides */
+      .relback-table thead tr {
+        background-color: var(--table-header-bg) !important;
+        color: var(--table-header-text) !important;
+      }
+      .relback-table tbody tr:nth-child(odd) td,
+      .relback-table tbody tr:nth-child(odd) th {
+        background-color: var(--table-odd) !important;
+      }
+      .relback-table tbody tr:nth-child(even) td,
+      .relback-table tbody tr:nth-child(even) th {
+        background-color: var(--table-zebra) !important;
+      }
+      .relback-table tbody tr:hover td,
+      .relback-table tbody tr:hover th {
+        background-color: var(--table-hover) !important;
+        transition: background-color 0.12s ease;
+      }
+    </style>
   </head>
   <body class="bg-base-100 text-base-content">
     <div class="drawer lg:drawer-open">
