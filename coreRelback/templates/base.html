@@ -32,11 +32,7 @@
     {% block extra_css %}{% endblock extra_css %}
   </head>
   <body>
-    {# ────────────────────────────────────────────────────────────────────
-       DaisyUI Drawer Layout
-       lg:drawer-open  → sidebar always visible on large screens
-       On mobile: hidden behind overlay, toggled via #main-drawer checkbox
-    ──────────────────────────────────────────────────────────────────── #}
+    {# DaisyUI Drawer: sidebar visible on lg; on mobile toggled via #main-drawer #}
     <div class="drawer lg:drawer-open">
       <input id="main-drawer" type="checkbox" class="drawer-toggle" />
 
