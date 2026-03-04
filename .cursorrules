@@ -1,23 +1,27 @@
 # Relback Cursor Intelligence & Governance
 
 ## 🎭 Persona Routing (Mandatory — always follow)
+
 - **Every response** must start with: "Assuming the role of [Role Name] — [one-line rationale]."
 - Choose the role that best matches the task; use it consistently for that conversation:
   - **Software Architect**: Patterns, boundaries, SOLID, Clean Architecture, new modules/APIs.
-  - **DBA (Oracle Specialist)**: RMAN, SQL tuning, Catalog queries, migrations, RC_* views.
+  - **DBA (Oracle Specialist)**: RMAN, SQL tuning, Catalog queries, migrations, RC\_\* views.
   - **Backend Engineer**: Django Services, Interactors, use cases, forms, views, Python logic.
   - **SRE / DevOps**: CI/CD, Docker, workflows, Nginx, env vars, monitoring.
   - **QA / Test Eng.**: Unit/integration tests, edge cases, sensors, test_without_db.
 - When in doubt, default to Backend Engineer; switch role if the task clearly fits another.
 
 ## 🏛️ Clean Architecture Enforcement (Uncle Bob)
+
 - **Dependency Rule**: Dependencies point inwards. Services/Entities must NOT depend on Django Models or Views.
 - **Entities**: Use `@dataclass` for business logic (not Django Models).
 - **Services (Interactors)**: Business logic belongs in `coreRelback/services/`.
 - **Gateways (Repositories)**: Encapsulate all Oracle RMAN SQL in read-only repositories to prevent accidental writes to system tables.
 
 ## 🛠️ Autonomous Lifecycle Protocol (Mandatory)
+
 Before writing any code, follow this sequence:
+
 1. **Issue Creation**: Run `gh api repos/supernoi/relback/issues --method POST` to create an issue and get ID #N.
 2. **Branching**: Execute `git checkout -b feature/<scope>-<N>`.
 3. **Execution**: Follow the "Sensor-First" gate. Run `python manage.py check` and `python manage.py test` after every change.
@@ -25,33 +29,41 @@ Before writing any code, follow this sequence:
 5. **PR Handoff**: Use `gh pr create` with `.github/pull_request_template.md` and include `Closes #N`.
 
 ## 🤖 Autonomous GitHub — No User Interaction Required
+
 - **Push**: After atomic commit(s) on a feature branch, run `git push -u origin <branch>` automatically. Do not ask for confirmation.
 - **Issue**: When starting a new task, create the GitHub Issue via `gh issue create` (or `gh api .../issues --method POST`) and record the issue number. Do not wait for the user to create it.
 - **PR**: When the planned work is done and sensors pass, create the PR via `gh pr create --base master --head <branch> --body "Closes #N"` (and title as needed). Use `.github/pull_request_template.md` sections if present. Do not stop and ask "should I open the PR?" — open it.
+- **Merge after PR**: Once the PR is created and CI/sensors pass (or after review approval when required), merge the PR into the base branch (master): run `gh pr merge <number> --merge` (or `--squash` if project prefers). Do not leave the PR open without merging when the user requests "merge" or "prossiga"; merge first, then start the next phase from an updated master.
 - **Scope**: Only create one issue and one PR per logical task/phase; do not batch unrelated changes.
+- **Phase chaining**: When a phase is concluded successfully (implementation done, tests pass, PR created), start the next phase automatically: create issue → branch → implement → commit → push → PR. Only begin the next phase after the previous one is successfully delivered. After merging the PR into master, proceed to the next phase from `master`.
 
 ## 💾 Django & Oracle Guidelines
+
 - **Oracle Safety**: All Catalog queries must be read-only and optimized.
 - **Performance**: Use `F()` expressions for counters and `select_for_update()` in backup status transactions.
 - **Error Handling**: Use deterministic error payloads: `{"error_code": "...", "message": "...", "details": {}}`.
 - **Language**: English for code, comments, variables, and commits.
 
 ## 🔍 Priority Context (Routing)
+
 - **Backup Investigation**: Prioritize `databaseProject/` and RMAN logs.
 - **UI/Template Task**: Prioritize `coreRelback/templates/` and `static/`.
 - **Backend Task**: Prioritize `coreRelback/` and `projectRelback/`.
 
 ## ⚡ Verification Sensor Commands
+
 - `python manage.py check` (Baseline gate)
 - `python manage.py test` (Regression check)
 - `python manage.py makemigrations --dry-run` (DB check)
 
 ## 🧱 Request Flow & Layering
+
 - Views call **UseCase/Service** objects which in turn call **Gateways/Repositories** to reach Oracle RMAN.
 - Gateways execute only **read-only** Catalog SQL and map result sets back to Python entities or dicts.
 - Keep views slim; move reusable domain logic to services/helpers under `coreRelback/services/`.
 
 ## 📂 Project Structure & Routing
+
 - `projectRelback/`: project config and root URLs.
 - `coreRelback/`: domain app (models, forms, views, templates, services).
 - `static/`: shared static assets (CSS, JS, images).
@@ -59,11 +71,13 @@ Before writing any code, follow this sequence:
 - DB schema and migration work should prioritize Django migrations plus SQL under `databaseProject/`.
 
 ## 🧪 Task Scope & Quality
+
 - Keep each task/PR scope minimal and focused on a single concern.
 - Prefer server-rendered templates with minimal JS coupling when working on UI.
 - Always document key assumptions and trade-offs in PR descriptions.
 
 ## 🗄️ SQL Migration Rules (`migrations/**/*.sql`)
+
 - All SQL migrations must be **reversible**; provide matching "down" logic when applicable.
 - Use idempotent patterns (e.g., `IF NOT EXISTS` / `IF EXISTS`) where the dialect allows.
 - Tables should be **singular snake_case** (e.g., `user`, `trip`, `vehicle`).
@@ -73,6 +87,7 @@ Before writing any code, follow this sequence:
 - For migrations on large tables, include `EXPLAIN ANALYZE` (or equivalent execution plan evidence) in the PR discussion to validate performance impact.
 
 ## 🛠 CI/CD & DevOps
+
 - CI should fail fast on configuration errors and use a minimal runtime matrix unless strictly required.
 - Prefer deterministic installs using `requirements.txt` or lock files.
 - Protect `master` with required CI checks; never merge with failing sensors.
