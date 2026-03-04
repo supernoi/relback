@@ -71,73 +71,74 @@
 
 Pure Python dataclasses and enums. Zero imports from Django, Oracle, or any framework.
 
-| Symbol | Type | Purpose |
-|---|---|---|
-| `ClientEntity` | `@dataclass` | Business representation of a backup client |
-| `HostEntity` | `@dataclass` | Server/host that runs Oracle |
-| `DatabaseEntity` | `@dataclass` | Oracle database instance |
-| `BackupPolicyEntity` | `@dataclass` | RMAN backup policy with cron schedule |
-| `ScheduleEntry` | `@dataclass` | Expanded cron forecast entry |
-| `BackupJobResult` | `@dataclass` | One RMAN backup job from RC_RMAN_BACKUP_JOB_DETAILS |
-| `BackupLogEntry` | `@dataclass` | One output line from RC_RMAN_OUTPUT |
-| `DashboardStats` | `@dataclass` | Aggregated counts for dashboard |
-| `BackupStatusValue` | `Enum` | COMPLETED / FAILED / RUNNING / WARNING / INTERRUPTED / UNKNOWN |
-| `BackupType` | `Enum` | ARCHIVELOG / DB FULL / DB INCR / RECVR AREA / BACKUPSET |
-| `PolicyStatus` | `Enum` | ACTIVE / INACTIVE |
-| `BackupDestination` | `Enum` | DISK / SBT\_TAPE |
+| Symbol               | Type         | Purpose                                                        |
+| -------------------- | ------------ | -------------------------------------------------------------- |
+| `ClientEntity`       | `@dataclass` | Business representation of a backup client                     |
+| `HostEntity`         | `@dataclass` | Server/host that runs Oracle                                   |
+| `DatabaseEntity`     | `@dataclass` | Oracle database instance                                       |
+| `BackupPolicyEntity` | `@dataclass` | RMAN backup policy with cron schedule                          |
+| `ScheduleEntry`      | `@dataclass` | Expanded cron forecast entry                                   |
+| `BackupJobResult`    | `@dataclass` | One RMAN backup job from RC_RMAN_BACKUP_JOB_DETAILS            |
+| `BackupLogEntry`     | `@dataclass` | One output line from RC_RMAN_OUTPUT                            |
+| `DashboardStats`     | `@dataclass` | Aggregated counts for dashboard                                |
+| `BackupStatusValue`  | `Enum`       | COMPLETED / FAILED / RUNNING / WARNING / INTERRUPTED / UNKNOWN |
+| `BackupType`         | `Enum`       | ARCHIVELOG / DB FULL / DB INCR / RECVR AREA / BACKUPSET        |
+| `PolicyStatus`       | `Enum`       | ACTIVE / INACTIVE                                              |
+| `BackupDestination`  | `Enum`       | DISK / SBT_TAPE                                                |
 
 ### 2.2 Gateway Interfaces — `coreRelback/gateways/interfaces.py`
 
 Abstract base classes (Python `ABC`) that define the **ports**. Use cases depend only on these — they never import concrete repositories or ORM models.
 
-| Interface | Methods |
-|---|---|
-| `IClientRepository` | `get_all`, `get_by_id`, `count`, `create`, `update`, `delete` |
-| `IHostRepository` | `get_all`, `get_by_id`, `count`, `create`, `update`, `delete` |
-| `IDatabaseRepository` | `get_all`, `get_by_id`, `count`, `create`, `update`, `delete` |
-| `IBackupPolicyRepository` | `get_all`, `get_by_id`, `count`, `count_active`, `create`, `update`, `delete` |
-| `IScheduleRepository` | `get_upcoming`, `delete_all`, `create_batch` |
-| `IOracleRmanRepository` | `get_backup_jobs`, `get_running_jobs_count`, `get_backup_job_detail`, `get_backup_log` |
+| Interface                 | Methods                                                                                |
+| ------------------------- | -------------------------------------------------------------------------------------- |
+| `IClientRepository`       | `get_all`, `get_by_id`, `count`, `create`, `update`, `delete`                          |
+| `IHostRepository`         | `get_all`, `get_by_id`, `count`, `create`, `update`, `delete`                          |
+| `IDatabaseRepository`     | `get_all`, `get_by_id`, `count`, `create`, `update`, `delete`                          |
+| `IBackupPolicyRepository` | `get_all`, `get_by_id`, `count`, `count_active`, `create`, `update`, `delete`          |
+| `IScheduleRepository`     | `get_upcoming`, `delete_all`, `create_batch`                                           |
+| `IOracleRmanRepository`   | `get_backup_jobs`, `get_running_jobs_count`, `get_backup_job_detail`, `get_backup_log` |
 
 ### 2.3 Concrete Repositories — `coreRelback/gateways/repositories.py`
 
-| Class | Backend | Notes |
-|---|---|---|
-| `DjangoClientRepository` | Django ORM | Wraps `Client` model |
-| `DjangoHostRepository` | Django ORM | Wraps `Host` model |
-| `DjangoDatabaseRepository` | Django ORM | Wraps `Database` model |
-| `DjangoBackupPolicyRepository` | Django ORM | Wraps `BackupPolicy` model |
-| `DjangoScheduleRepository` | Django ORM | Wraps `Schedule` model |
-| `OracleRmanRepository` | python-oracledb | Queries Oracle RMAN Catalog views (`RC_RMAN_BACKUP_JOB_DETAILS`, `RC_RMAN_OUTPUT`); returns empty lists when `ORACLE_CATALOG` setting is `None` |
-| `DemoRmanRepository` | In-memory fixtures | Returns realistic fake RMAN data when `DEMO_MODE = True` in settings |
+| Class                          | Backend            | Notes                                                                                                                                           |
+| ------------------------------ | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DjangoClientRepository`       | Django ORM         | Wraps `Client` model                                                                                                                            |
+| `DjangoHostRepository`         | Django ORM         | Wraps `Host` model                                                                                                                              |
+| `DjangoDatabaseRepository`     | Django ORM         | Wraps `Database` model                                                                                                                          |
+| `DjangoBackupPolicyRepository` | Django ORM         | Wraps `BackupPolicy` model                                                                                                                      |
+| `DjangoScheduleRepository`     | Django ORM         | Wraps `Schedule` model                                                                                                                          |
+| `OracleRmanRepository`         | python-oracledb    | Queries Oracle RMAN Catalog views (`RC_RMAN_BACKUP_JOB_DETAILS`, `RC_RMAN_OUTPUT`); returns empty lists when `ORACLE_CATALOG` setting is `None` |
+| `DemoRmanRepository`           | In-memory fixtures | Returns realistic fake RMAN data when `DEMO_MODE = True` in settings                                                                            |
 
 ### 2.4 Use Cases — `coreRelback/services/use_cases.py`
 
 One class per business action (Single Responsibility). Each constructor accepts interface types, never concrete classes.
 
-| Use Case | Purpose |
-|---|---|
-| `GetDashboardStatsUseCase` | Aggregates counts for Dashboard |
-| `GetScheduleReportUseCase` | Reads upcoming backup schedule by date range |
-| `GenerateScheduleUseCase` | Expands cron policy fields into `Schedule` rows |
-| `AuditBackupUseCase` | Correlates schedules with Oracle job results |
-| `GetBackupDetailUseCase` | Fetches RMAN log lines for a specific job |
-| `CreateClientUseCase` | Validates + creates a Client |
-| `UpdateClientUseCase` | Validates + updates a Client |
-| `DeleteClientUseCase` | Removes a Client |
-| `CreateHostUseCase` | Validates + creates a Host |
-| `UpdateHostUseCase` | Validates + updates a Host |
-| `DeleteHostUseCase` | Removes a Host |
-| `CreateDatabaseUseCase` | Validates + creates a Database |
-| `UpdateDatabaseUseCase` | Validates + updates a Database |
-| `DeleteDatabaseUseCase` | Removes a Database |
-| `CreateBackupPolicyUseCase` | Validates + creates a BackupPolicy |
-| `UpdateBackupPolicyUseCase` | Validates + updates a BackupPolicy |
-| `DeleteBackupPolicyUseCase` | Removes a BackupPolicy |
+| Use Case                    | Purpose                                         |
+| --------------------------- | ----------------------------------------------- |
+| `GetDashboardStatsUseCase`  | Aggregates counts for Dashboard                 |
+| `GetScheduleReportUseCase`  | Reads upcoming backup schedule by date range    |
+| `GenerateScheduleUseCase`   | Expands cron policy fields into `Schedule` rows |
+| `AuditBackupUseCase`        | Correlates schedules with Oracle job results    |
+| `GetBackupDetailUseCase`    | Fetches RMAN log lines for a specific job       |
+| `CreateClientUseCase`       | Validates + creates a Client                    |
+| `UpdateClientUseCase`       | Validates + updates a Client                    |
+| `DeleteClientUseCase`       | Removes a Client                                |
+| `CreateHostUseCase`         | Validates + creates a Host                      |
+| `UpdateHostUseCase`         | Validates + updates a Host                      |
+| `DeleteHostUseCase`         | Removes a Host                                  |
+| `CreateDatabaseUseCase`     | Validates + creates a Database                  |
+| `UpdateDatabaseUseCase`     | Validates + updates a Database                  |
+| `DeleteDatabaseUseCase`     | Removes a Database                              |
+| `CreateBackupPolicyUseCase` | Validates + creates a BackupPolicy              |
+| `UpdateBackupPolicyUseCase` | Validates + updates a BackupPolicy              |
+| `DeleteBackupPolicyUseCase` | Removes a BackupPolicy                          |
 
 ### 2.5 Views — `coreRelback/views.py`
 
 Django views act as **HTTP adapters only**. They:
+
 1. Parse the HTTP request
 2. Instantiate concrete repositories and inject them into a use case
 3. Execute the use case
@@ -160,6 +161,15 @@ ORACLE_CATALOG = {
 
 When `ORACLE_CATALOG = None`, `OracleRmanRepository` returns empty lists — the UI renders an "Oracle catalog not available" banner without crashing.
 
+**Thin vs Thick mode (python-oracledb):**
+
+| Mode  | Requirement              | Use case                                      |
+| ----- | ------------------------- | --------------------------------------------- |
+| Thin  | No Oracle Client install  | Default in Relback — CI, Docker, dev machines |
+| Thick | Oracle Client (libs)      | Legacy or when Thin is unsupported            |
+
+Relback uses **Thin only** via `oracledb.connect(user=..., password=..., dsn=...)`. For Thick you would call `oracledb.init_oracle_client(lib_dir=...)` before `connect()`; not used here so deployment stays client-free. DSN format: `host:port/service_name` (e.g. `catalog.example.com:1521/RMANCAT`).
+
 ---
 
 ## 3. Data Model
@@ -180,15 +190,15 @@ Client
 
 ### Key Models
 
-| Model | Table | Purpose |
-|---|---|---|
-| `RelbackUser` | `users` | Custom user — no AbstractBaseUser, own password hashing |
-| `Client` | `clients` | Organizational unit (customer / business unit) |
-| `Host` | `hosts` | Physical/virtual server running Oracle |
-| `Database` | `databases` | Oracle instance (identified by `dbid`) |
-| `BackupPolicy` | `backup_policies` | RMAN backup schedule definition |
-| `Schedule` | `schedules` | Expanded forecast entry (policy × time) |
-| `VwBackupPolicies` | `vw_backup_policies` | Oracle view, `managed=False` |
+| Model              | Table                | Purpose                                                 |
+| ------------------ | -------------------- | ------------------------------------------------------- |
+| `RelbackUser`      | `users`              | Custom user — no AbstractBaseUser, own password hashing |
+| `Client`           | `clients`            | Organizational unit (customer / business unit)          |
+| `Host`             | `hosts`              | Physical/virtual server running Oracle                  |
+| `Database`         | `databases`          | Oracle instance (identified by `dbid`)                  |
+| `BackupPolicy`     | `backup_policies`    | RMAN backup schedule definition                         |
+| `Schedule`         | `schedules`          | Expanded forecast entry (policy × time)                 |
+| `VwBackupPolicies` | `vw_backup_policies` | Oracle view, `managed=False`                            |
 
 ---
 
@@ -196,15 +206,24 @@ Client
 
 Custom session-based auth using `RelbackUser`. No Django `AbstractBaseUser`.
 
-| Component | Location |
-|---|---|
-| `RelbackBackend` | `coreRelback/backends.py` — custom auth backend |
-| `LoginView` | `coreRelback/views.py` |
-| `LogoutView` | `coreRelback/views.py` |
-| `RegisterView` | `coreRelback/views.py` |
-| `LoginRequiredMixin` | Applied to all CRUD views and dashboard |
+| Component            | Location                                        |
+| -------------------- | ----------------------------------------------- |
+| `RelbackBackend`     | `coreRelback/backends.py` — custom auth backend |
+| `LoginView`          | `coreRelback/views.py`                          |
+| `LogoutView`         | `coreRelback/views.py`                          |
+| `RegisterView`       | `coreRelback/views.py`                          |
+| `LoginRequiredMixin` | Applied to all CRUD views and dashboard         |
 
 Session is stored in `django.contrib.sessions` (database-backed in production, file in dev).
+
+### 4.1 Multi-tenant catalog (Phase 19)
+
+Reports and log detail are scoped by client when configured:
+
+- **Client.catalog_dsn** (optional): when set, Oracle RMAN catalog queries for that client use this DSN; credentials from global `ORACLE_CATALOG`.
+- **RelbackUser.default_client** (optional): when set, `report_read` passes this client’s id to `AuditBackupUseCase` so only that client’s catalog is queried.
+- **report_read_log_detail**: passes `policy.client_id` to `GetBackupDetailUseCase` so the correct client catalog is used.
+- **IOracleRmanRepository** and **get_catalog_connection(client_id)** accept optional `client_id`; implementations use the client’s DSN when present.
 
 ---
 
@@ -231,19 +250,19 @@ coreRelback/templates/
 
 ### DaisyUI Theme Tokens
 
-| Token | relback\_light | relback\_dark | Purpose |
-|---|---|---|---|
-| `primary` | `#C74634` | `#6366f1` | Buttons, active elements (Oracle Red / Indigo-500) |
-| `secondary` | `#1A1A2E` | `#94a3b8` | Secondary labels, muted text |
-| `accent` | `#0052CC` | `#06b6d4` | Accent highlights (Oracle Blue / Cyan-500) |
-| `base-100` | `#f8fafc` | `#0f172a` | Page background |
-| `base-200` | _(default)_ | `#1e293b` | Cards, sidebar |
-| `base-300` | _(default)_ | `#334155` | Borders, dividers |
-| `success` | `#22c55e` | `#4ade80` | COMPLETED status (WCAG AA ≥4.5:1 on dark bg) |
-| `warning` | `#f59e0b` | `#fbbf24` | WARNING / RUNNING\_WITH\_ISSUES |
-| `error` | `#ef4444` | `#f87171` | FAILED status |
-| `info` | `#3b82f6` | `#93c5fd` | RUNNING status |
-| `neutral` | `#1e293b` | `#334155` | UNKNOWN / headers |
+| Token       | relback_light | relback_dark | Purpose                                            |
+| ----------- | ------------- | ------------ | -------------------------------------------------- |
+| `primary`   | `#C74634`     | `#6366f1`    | Buttons, active elements (Oracle Red / Indigo-500) |
+| `secondary` | `#1A1A2E`     | `#94a3b8`    | Secondary labels, muted text                       |
+| `accent`    | `#0052CC`     | `#06b6d4`    | Accent highlights (Oracle Blue / Cyan-500)         |
+| `base-100`  | `#f8fafc`     | `#0f172a`    | Page background                                    |
+| `base-200`  | _(default)_   | `#1e293b`    | Cards, sidebar                                     |
+| `base-300`  | _(default)_   | `#334155`    | Borders, dividers                                  |
+| `success`   | `#22c55e`     | `#4ade80`    | COMPLETED status (WCAG AA ≥4.5:1 on dark bg)       |
+| `warning`   | `#f59e0b`     | `#fbbf24`    | WARNING / RUNNING_WITH_ISSUES                      |
+| `error`     | `#ef4444`     | `#f87171`    | FAILED status                                      |
+| `info`      | `#3b82f6`     | `#93c5fd`    | RUNNING status                                     |
+| `neutral`   | `#1e293b`     | `#334155`    | UNKNOWN / headers                                  |
 
 > Dark theme uses lighter status colors (400-series instead of 600-series) to meet WCAG AA contrast ratio ≥4.5:1 against `#0f172a` background — critical for NOC/operations monitor readability.
 
@@ -261,42 +280,42 @@ coreRelback/templates/
 
 ### Test Modules
 
-| Module | Count | DB required | Purpose |
-|---|---|---|---|
-| `coreRelback.tests_domain` | 46 | No | Pure domain: entities, use cases, schedule expansion, RMAN parsing |
-| `coreRelback.tests` | 37 | Yes (SQLite) | Integration: views, auth, HTTP status codes |
+| Module                     | Count | DB required  | Purpose                                                            |
+| -------------------------- | ----- | ------------ | ------------------------------------------------------------------ |
+| `coreRelback.tests_domain` | 46    | No           | Pure domain: entities, use cases, schedule expansion, RMAN parsing |
+| `coreRelback.tests`        | 37    | Yes (SQLite) | Integration: views, auth, HTTP status codes                        |
 
 ---
 
 ## 7. Configuration Files
 
-| File | Use case | Oracle | DEMO\_MODE |
-|---|---|---|---|
-| `projectRelback/settings.py` | Base (not used directly) | hardcoded | off |
-| `projectRelback/settings_dev.py` | Dev — `DATABASES={}`, `DEBUG=True` | off | off |
-| `projectRelback/settings_local.py` | Local UI: SQLite file db + realistic mock RMAN data | off | on |
-| `projectRelback/settings_test.py` | CI integration tests: SQLite in-memory | off | off |
-| `projectRelback/settings_prod.py` | Production/Docker: `DEBUG=False`, WhiteNoise, all config from env vars | env vars | auto |
+| File                               | Use case                                                               | Oracle    | DEMO_MODE |
+| ---------------------------------- | ---------------------------------------------------------------------- | --------- | --------- |
+| `projectRelback/settings.py`       | Base (not used directly)                                               | hardcoded | off       |
+| `projectRelback/settings_dev.py`   | Dev — `DATABASES={}`, `DEBUG=True`                                     | off       | off       |
+| `projectRelback/settings_local.py` | Local UI: SQLite file db + realistic mock RMAN data                    | off       | on        |
+| `projectRelback/settings_test.py`  | CI integration tests: SQLite in-memory                                 | off       | off       |
+| `projectRelback/settings_prod.py`  | Production/Docker: `DEBUG=False`, WhiteNoise, all config from env vars | env vars  | auto      |
 
-| File | Purpose |
-|---|---|
-| `.sqlfluff` | sqlfluff dialect + excluded rules |
-| `.sqlfluffignore` | Oracle PL/SQL files excluded from lint |
-| `.djlintrc` | djlint profile=django, enforces T003 (named endblocks) |
-| `.prettierignore` | Prevents Prettier from formatting Django templates |
-| `.env.example` | Documented env var template — `DJANGO_SECRET_KEY`, `ALLOWED_HOSTS`, `DB_*`, `ORACLE_CATALOG_*`, `GUNICORN_WORKERS` |
-| `.dockerignore` | Lean Docker build context — excludes `.venv/`, `__pycache__/`, `db.sqlite3`, `.git/` |
+| File              | Purpose                                                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `.sqlfluff`       | sqlfluff dialect + excluded rules                                                                                  |
+| `.sqlfluffignore` | Oracle PL/SQL files excluded from lint                                                                             |
+| `.djlintrc`       | djlint profile=django, enforces T003 (named endblocks)                                                             |
+| `.prettierignore` | Prevents Prettier from formatting Django templates                                                                 |
+| `.env.example`    | Documented env var template — `DJANGO_SECRET_KEY`, `ALLOWED_HOSTS`, `DB_*`, `ORACLE_CATALOG_*`, `GUNICORN_WORKERS` |
+| `.dockerignore`   | Lean Docker build context — excludes `.venv/`, `__pycache__/`, `db.sqlite3`, `.git/`                               |
 
 ---
 
 ## 8. Management Commands
 
-| Command | Module | Purpose |
-|---|---|---|
-| `python manage.py tailwind install` | django-tailwind | Install npm dependencies |
-| `python manage.py tailwind build` | django-tailwind | Compile Tailwind CSS (production) |
-| `python manage.py tailwind start` | django-tailwind | Watch mode (development) |
-| `python manage.py seed_demo` | `coreRelback/management/commands/seed_demo.py` | Populate SQLite with realistic demo data (4 clients, 8 hosts, 8 databases, 8 policies, simulated RMAN jobs). Supports `--flush` flag. |
+| Command                             | Module                                         | Purpose                                                                                                                               |
+| ----------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `python manage.py tailwind install` | django-tailwind                                | Install npm dependencies                                                                                                              |
+| `python manage.py tailwind build`   | django-tailwind                                | Compile Tailwind CSS (production)                                                                                                     |
+| `python manage.py tailwind start`   | django-tailwind                                | Watch mode (development)                                                                                                              |
+| `python manage.py seed_demo`        | `coreRelback/management/commands/seed_demo.py` | Populate SQLite with realistic demo data (4 clients, 8 hosts, 8 databases, 8 policies, simulated RMAN jobs). Supports `--flush` flag. |
 
 ---
 
@@ -304,11 +323,11 @@ coreRelback/templates/
 
 ### Stack
 
-| Component | Version | Role |
-|---|---|---|
-| Gunicorn | 25.x | WSGI application server |
-| WhiteNoise | 6.x | Compressed static file serving (no Nginx needed for small deployments) |
-| Docker | multi-stage | Node 20 CSS builder + Python 3.13 runtime |
+| Component  | Version     | Role                                                                   |
+| ---------- | ----------- | ---------------------------------------------------------------------- |
+| Gunicorn   | 21.x–22.x   | WSGI application server (see `requirements.txt`)                       |
+| WhiteNoise | 6.x         | Compressed static file serving (no Nginx needed for small deployments) |
+| Docker     | multi-stage | Node 20 CSS builder + Python 3.13 runtime                              |
 
 ### Dockerfile (multi-stage)
 
@@ -325,23 +344,33 @@ Stage 2 (runtime)       python:3.13-slim
 
 ### Environment Variables (production)
 
-| Variable | Required | Default | Notes |
-|---|---|---|---|
-| `DJANGO_SECRET_KEY` | Yes | — | No unsafe fallback in prod |
-| `ALLOWED_HOSTS` | Yes | `localhost,127.0.0.1` | Comma-separated |
-| `DB_ENGINE` | No | sqlite3 | `django.db.backends.oracle` for Oracle |
-| `DB_NAME` / `DB_USER` / `DB_PASSWORD` / `DB_HOST` / `DB_PORT` | If Oracle | — | Oracle credentials |
-| `ORACLE_CATALOG_USER` / `ORACLE_CATALOG_PASSWORD` / `ORACLE_CATALOG_DSN` | If Oracle | — | RMAN catalog connection; empty → `DEMO_MODE=True` |
-| `GUNICORN_WORKERS` | No | 3 | `(2 * CPU) + 1` is standard |
+| Variable                                                                 | Required  | Default               | Notes                                             |
+| ------------------------------------------------------------------------ | --------- | --------------------- | ------------------------------------------------- |
+| `DJANGO_SECRET_KEY`                                                      | Yes       | —                     | No unsafe fallback in prod                        |
+| `ALLOWED_HOSTS`                                                          | Yes       | `localhost,127.0.0.1` | Comma-separated                                   |
+| `DB_ENGINE`                                                              | No        | sqlite3               | `django.db.backends.oracle` for Oracle            |
+| `DB_NAME` / `DB_USER` / `DB_PASSWORD` / `DB_HOST` / `DB_PORT`            | If Oracle | —                     | Oracle credentials                                |
+| `ORACLE_CATALOG_USER` / `ORACLE_CATALOG_PASSWORD` / `ORACLE_CATALOG_DSN` | If Oracle | —                     | RMAN catalog connection; empty → `DEMO_MODE=True` |
+| `GUNICORN_WORKERS`                                                       | No        | 3                     | `(2 * CPU) + 1` is standard                       |
 
 ### Quick Start
 
 ```bash
 cp .env.example .env        # fill DJANGO_SECRET_KEY at minimum
-docker compose up --build   # http://localhost:8000
+docker compose up --build   # http://localhost:80 (Nginx) or https://localhost:443 (self-signed)
 docker compose exec web python manage.py seed_demo  # optional demo data
 # Login: admin / demo1234
 ```
+
+### Nginx + TLS (reverse proxy)
+
+| Component | Role |
+| --------- | ----- |
+| **Nginx** | Reverse proxy in front of Gunicorn; listens on 80 (HTTP) and 443 (HTTPS). |
+| **Dev** | On first run, `nginx/entrypoint.sh` generates a self-signed certificate so HTTPS works without setup. |
+| **Prod** | Mount Let's Encrypt (certbot) certs: add to `docker-compose` for service `nginx`: `volumes: - ./certs:/etc/nginx/certs:ro` with `fullchain.pem` and `privkey.pem` in `./certs`. |
+
+**Files:** `nginx/nginx.conf`, `nginx/entrypoint.sh`, `nginx/Dockerfile`. Compose service `nginx` depends on `web` (healthcheck). Optional env in `.env.example`: `NGINX_CERTS_PATH` to document where prod certs live.
 
 ---
 
@@ -379,10 +408,35 @@ relback/
 │   ├── ARCHITECTURE.md          ← This document
 │   ├── ROADMAP_TAILWIND_DAISYUI.md
 │   └── UX_UI_analysis.md
+├── nginx/                       ← Nginx reverse proxy (Phase 13): nginx.conf, entrypoint.sh, Dockerfile
 ├── Dockerfile                   ← Multi-stage (Node 20 CSS + Python 3.13 Gunicorn)
-├── docker-compose.yml           ← One-command production preview
+├── docker-compose.yml           ← Web + Nginx; TLS self-signed (dev) or mount certs (prod)
 ├── .env.example                 ← Env var template (commit safe — no real values)
 ├── .dockerignore
 ├── .sqlfluff / .djlintrc        ← Lint configs
 └── .github/workflows/ci.yml     ← CI pipeline (check + tests + lint + docker build)
 ```
+
+---
+
+## 11. Future Roadmap (Phase 12+)
+
+High-level next steps are tracked in **`docs/ROADMAP_TAILWIND_DAISYUI.md`** (Phase 12+ table and implementation plan). Summary:
+
+| Focus            | Phases (priority)                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| **Infra & data** | 12 — Oracle Reconnect; 13 — Nginx + TLS                                            |
+| **Product**      | 14 — Alerting & SLA Monitor; 15 — Pagination; 16 — User Roles & Permissions        |
+| **Integration**  | 17 — API Layer (DRF); 18 — Real-time (Channels); 19 — Multi-tenant                 |
+
+All new features must respect the Dependency Rule: new use cases in `coreRelback/services/`, new gateways in `coreRelback/gateways/`, entities in `coreRelback/domain/entities.py`.
+
+---
+
+## 12. Build & Troubleshooting
+
+| Issue | Cause | Fix |
+| ----- | ----- | --- |
+| Docker build fails at `npm run build` (exit 127) | Stage 1 uses `npm ci --omit=dev`; `tailwindcss` is a devDependency and is not installed. | In `Dockerfile` stage `css-builder`, use `npm ci` (or `npm ci --include=dev`) so Tailwind CLI is available. |
+| `python manage.py check` fails in container | Missing env vars (`DJANGO_SECRET_KEY`, `ALLOWED_HOSTS`). | Set at least `DJANGO_SECRET_KEY` and `ALLOWED_HOSTS` (e.g. in `docker run -e ...` or `.env`). |
+| Oracle catalog "not available" in UI | `ORACLE_CATALOG_*` not set or invalid in settings. | Configure in `settings_prod.py` (env) or use Demo Mode (`settings_local.py`) for local preview. |

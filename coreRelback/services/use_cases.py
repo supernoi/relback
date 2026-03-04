@@ -198,9 +198,10 @@ class AuditBackupUseCase:
         db_name: Optional[str] = None,
         from_date: Optional[datetime.datetime] = None,
         to_date: Optional[datetime.datetime] = None,
+        client_id: Optional[int] = None,
     ) -> List[BackupJobResult]:
         jobs = self._rman.get_backup_jobs(
-            db_name=db_name, from_date=from_date, to_date=to_date
+            db_name=db_name, from_date=from_date, to_date=to_date, client_id=client_id
         )
         # Business rule: any job with no end_time and started > 4h ago is WARNING
         threshold = datetime.datetime.now() - datetime.timedelta(hours=4)
@@ -467,6 +468,7 @@ class GetBackupDetailUseCase:
         self,
         db_key: int,
         session_key: int,
+        client_id: Optional[int] = None,
     ) -> dict:
         """Return a dict with keys ``exec_detail`` and ``report_log``.
 
@@ -475,10 +477,10 @@ class GetBackupDetailUseCase:
         gracefully.
         """
         exec_detail: Optional[BackupJobResult] = self._rman.get_backup_job_detail(
-            db_key=db_key, session_key=session_key
+            db_key=db_key, session_key=session_key, client_id=client_id
         )
         report_log: List[BackupLogEntry] = self._rman.get_backup_log(
-            db_key=db_key, session_key=session_key
+            db_key=db_key, session_key=session_key, client_id=client_id
         )
         return {
             "exec_detail": exec_detail,

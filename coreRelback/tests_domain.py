@@ -233,10 +233,14 @@ class StubRmanRepo(IOracleRmanRepository):
     def get_backup_jobs(self, **kwargs) -> List[BackupJobResult]:
         return list(self._jobs)
 
-    def get_backup_job_detail(self, db_key: int, session_key: int) -> Optional[BackupJobResult]:
+    def get_backup_job_detail(
+        self, db_key: int, session_key: int, client_id=None
+    ) -> Optional[BackupJobResult]:
         return self._detail
 
-    def get_backup_log(self, db_key: int, session_key: int) -> List[BackupLogEntry]:
+    def get_backup_log(
+        self, db_key: int, session_key: int, client_id=None
+    ) -> List[BackupLogEntry]:
         return list(self._log)
 
 
@@ -767,6 +771,16 @@ class OracleRmanRepositoryUnavailableTest(TestCase):
             use_case = AuditBackupUseCase(OracleRmanRepository())
             result = use_case.execute()
             self.assertEqual(result, [])
+
+    def test_get_backup_jobs_passes_client_id_to_connection(self):
+        """Multi-tenant: repository passes client_id to get_catalog_connection."""
+        with patch(
+            "coreRelback.gateways.oracle_catalog.get_catalog_connection",
+            return_value=None,
+        ) as get_conn:
+            repo = OracleRmanRepository()
+            repo.get_backup_jobs(client_id=42)
+            get_conn.assert_called_once_with(client_id=42)
 
 
 # ---------------------------------------------------------------------------

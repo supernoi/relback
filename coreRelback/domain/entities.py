@@ -121,6 +121,7 @@ class BackupJobResult:
     output_device_type: Optional[str] = None
     session_key: Optional[int] = None
     input_type: Optional[str] = None
+    db_key: Optional[int] = None  # RC_BACKUP_JOB_DETAILS DB_KEY; used by Demo and detail view
 
     @property
     def is_ok(self) -> bool:
