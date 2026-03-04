@@ -37,20 +37,20 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="form-control">
-                                <label class="label" for="id_name">
+                                <label class="label" for="id_hostname">
                                     <span class="label-text font-medium flex items-center gap-1">
                                         <i class="material-icons-round text-base">storage</i>
                                         Host Name *
                                     </span>
                                 </label>
                                 <input type="text"
-                                       class="input input-bordered w-full{% if form.name.errors %} input-error{% endif %}"
-                                       id="id_name"
-                                       name="name"
-                                       value="{{ form.name.value|default:'' }}"
+                                       class="input input-bordered w-full{% if form.hostname.errors %} input-error{% endif %}"
+                                       id="id_hostname"
+                                       name="hostname"
+                                       value="{{ form.hostname.value|default:'' }}"
                                        required>
-                                {% if form.name.errors %}
-                                    <label class="label"><span class="label-text-alt text-error">{{ form.name.errors.0 }}</span></label>
+                                {% if form.hostname.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.hostname.errors.0 }}</span></label>
                                 {% endif %}
                             </div>
                             <div class="form-control">
@@ -104,20 +104,20 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="form-control">
-                                <label class="label" for="id_ip_address">
+                                <label class="label" for="id_ip">
                                     <span class="label-text font-medium flex items-center gap-1">
                                         <i class="material-icons-round text-base">router</i>
                                         IP Address
                                     </span>
                                 </label>
                                 <input type="text"
-                                       class="input input-bordered w-full{% if form.ip_address.errors %} input-error{% endif %}"
-                                       id="id_ip_address"
-                                       name="ip_address"
-                                       value="{{ form.ip_address.value|default:'' }}"
+                                       class="input input-bordered w-full{% if form.ip.errors %} input-error{% endif %}"
+                                       id="id_ip"
+                                       name="ip"
+                                       value="{{ form.ip.value|default:'' }}"
                                        pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
-                                {% if form.ip_address.errors %}
-                                    <label class="label"><span class="label-text-alt text-error">{{ form.ip_address.errors.0 }}</span></label>
+                                {% if form.ip.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.ip.errors.0 }}</span></label>
                                 {% else %}
                                     <label class="label"><span class="label-text-alt text-base-content/60">Format: 192.168.1.100</span></label>
                                 {% endif %}
@@ -130,22 +130,20 @@
                                     </span>
                                 </label>
                                 <input type="number"
-                                       class="input input-bordered w-full{% if form.port.errors %} input-error{% endif %}"
+                                       class="input input-bordered w-full"
                                        id="id_port"
                                        name="port"
-                                       value="{{ form.port.value|default:'22' }}"
+                                       value="22"
                                        min="1"
-                                       max="65535">
-                                {% if form.port.errors %}
-                                    <label class="label"><span class="label-text-alt text-error">{{ form.port.errors.0 }}</span></label>
-                                {% else %}
-                                    <label class="label"><span class="label-text-alt text-base-content/60">Default: 22 (SSH)</span></label>
-                                {% endif %}
+                                       max="65535"
+                                       disabled
+                                       title="Display only (not stored)">
+                                <label class="label"><span class="label-text-alt text-base-content/60">Default: 22 (SSH) — display only</span></label>
                             </div>
                         </div>
                     </div>
 
-                    <!-- System Information Section -->
+                    <!-- System Information Section (display only; not stored in current model) -->
                     <div class="mb-6">
                         <h5 class="text-primary font-semibold mb-3 flex items-center gap-2">
                             <i class="material-icons-round">computer</i>
@@ -160,19 +158,15 @@
                                         Operating System
                                     </span>
                                 </label>
-                                <select class="select select-bordered w-full{% if form.platform.errors %} select-error{% endif %}"
-                                        id="id_platform"
-                                        name="platform">
+                                <select class="select select-bordered w-full select-disabled" id="id_platform" disabled title="Display only (not stored)">
                                     <option value="">Select Platform</option>
-                                    <option value="Linux" {% if form.platform.value == 'Linux' %}selected{% endif %}>Linux</option>
-                                    <option value="Windows" {% if form.platform.value == 'Windows' %}selected{% endif %}>Windows</option>
-                                    <option value="AIX" {% if form.platform.value == 'AIX' %}selected{% endif %}>AIX</option>
-                                    <option value="Solaris" {% if form.platform.value == 'Solaris' %}selected{% endif %}>Solaris</option>
-                                    <option value="Other" {% if form.platform.value == 'Other' %}selected{% endif %}>Other</option>
+                                    <option value="Linux">Linux</option>
+                                    <option value="Windows">Windows</option>
+                                    <option value="AIX">AIX</option>
+                                    <option value="Solaris">Solaris</option>
+                                    <option value="Other">Other</option>
                                 </select>
-                                {% if form.platform.errors %}
-                                    <label class="label"><span class="label-text-alt text-error">{{ form.platform.errors.0 }}</span></label>
-                                {% endif %}
+                                <label class="label"><span class="label-text-alt text-base-content/60">Display only — not stored</span></label>
                             </div>
                             <div class="form-control">
                                 <label class="label" for="id_version">
@@ -181,16 +175,8 @@
                                         OS Version
                                     </span>
                                 </label>
-                                <input type="text"
-                                       class="input input-bordered w-full{% if form.version.errors %} input-error{% endif %}"
-                                       id="id_version"
-                                       name="version"
-                                       value="{{ form.version.value|default:'' }}">
-                                {% if form.version.errors %}
-                                    <label class="label"><span class="label-text-alt text-error">{{ form.version.errors.0 }}</span></label>
-                                {% else %}
-                                    <label class="label"><span class="label-text-alt text-base-content/60">e.g., Ubuntu 22.04, Windows Server 2019</span></label>
-                                {% endif %}
+                                <input type="text" class="input input-bordered w-full input-disabled" id="id_version" disabled placeholder="e.g. Ubuntu 22.04" title="Display only (not stored)">
+                                <label class="label"><span class="label-text-alt text-base-content/60">Display only — not stored</span></label>
                             </div>
                         </div>
                     </div>
@@ -312,7 +298,7 @@
 
 <script>
 document.querySelector('form').addEventListener('submit', function(e) {
-    const nameField = document.getElementById('id_name');
+    const nameField = document.getElementById('id_hostname');
     const clientField = document.getElementById('id_client');
     let hasErrors = false;
 
@@ -333,7 +319,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
     if (hasErrors) e.preventDefault();
 });
 
-document.getElementById('id_name').addEventListener('input', function() {
+document.getElementById('id_hostname').addEventListener('input', function() {
     if (this.value.trim()) this.classList.remove('input-error');
 });
 
@@ -341,7 +327,7 @@ document.getElementById('id_client').addEventListener('change', function() {
     if (this.value) this.classList.remove('select-error');
 });
 
-document.getElementById('id_ip_address').addEventListener('input', function() {
+document.getElementById('id_ip').addEventListener('input', function() {
     const ipPattern = /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/;
     const value = this.value.trim();
     if (value && !ipPattern.test(value)) {

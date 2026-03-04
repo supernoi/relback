@@ -255,6 +255,11 @@ class HostCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
     fields = ['hostname', 'description', 'ip', 'client']
     success_url = reverse_lazy('coreRelback:host-list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["clients"] = Client.objects.all().order_by("name")
+        return context
+
     def form_valid(self, form):
         relback_user = _get_relback_user(self.request)
         if relback_user is None:
@@ -277,6 +282,11 @@ class HostUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
     template_name = "host_form.html"
     fields = ['hostname', 'description', 'ip', 'client']
     success_url = reverse_lazy('coreRelback:host-list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["clients"] = Client.objects.all().order_by("name")
+        return context
 
     def form_valid(self, form):
         relback_user = _get_relback_user(self.request)
