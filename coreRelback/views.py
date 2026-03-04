@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from .models import Client, Host, Database, BackupPolicy, RelbackUser, Schedule
+from .mixins import RoleRequiredMixin
 from django import forms
 
 # --- Clean Architecture: use-case factories ---
@@ -145,7 +146,8 @@ class ClientListView(LoginRequiredMixin, ListView):
     context_object_name = "clients"
 
 
-class ClientCreateView(LoginRequiredMixin, CreateView):
+class ClientCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
+    required_roles = [RelbackUser.ROLE_ADMIN, RelbackUser.ROLE_OPERATOR]
     model = Client
     template_name = "client_form.html"
     fields = ['name', 'description']
@@ -165,7 +167,8 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
         return redirect(self.success_url)
 
 
-class ClientUpdateView(LoginRequiredMixin, UpdateView):
+class ClientUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
+    required_roles = [RelbackUser.ROLE_ADMIN, RelbackUser.ROLE_OPERATOR]
     model = Client
     template_name = "client_form.html"
     fields = ['name', 'description']
@@ -186,7 +189,8 @@ class ClientUpdateView(LoginRequiredMixin, UpdateView):
         return redirect(self.success_url)
 
 
-class ClientDeleteView(LoginRequiredMixin, DeleteView):
+class ClientDeleteView(RoleRequiredMixin, LoginRequiredMixin, DeleteView):
+    required_roles = [RelbackUser.ROLE_ADMIN]
     model = Client
     template_name = "client_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:client-list')
@@ -221,7 +225,8 @@ class HostListView(LoginRequiredMixin, ListView):
         return context
 
 
-class HostCreateView(LoginRequiredMixin, CreateView):
+class HostCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
+    required_roles = [RelbackUser.ROLE_ADMIN, RelbackUser.ROLE_OPERATOR]
     model = Host
     template_name = "host_form.html"
     fields = ['hostname', 'description', 'ip', 'client']
@@ -243,7 +248,8 @@ class HostCreateView(LoginRequiredMixin, CreateView):
         return redirect(self.success_url)
 
 
-class HostUpdateView(LoginRequiredMixin, UpdateView):
+class HostUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
+    required_roles = [RelbackUser.ROLE_ADMIN, RelbackUser.ROLE_OPERATOR]
     model = Host
     template_name = "host_form.html"
     fields = ['hostname', 'description', 'ip', 'client']
@@ -266,7 +272,8 @@ class HostUpdateView(LoginRequiredMixin, UpdateView):
         return redirect(self.success_url)
 
 
-class HostDeleteView(LoginRequiredMixin, DeleteView):
+class HostDeleteView(RoleRequiredMixin, LoginRequiredMixin, DeleteView):
+    required_roles = [RelbackUser.ROLE_ADMIN]
     model = Host
     template_name = "host_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:host-list')
@@ -299,7 +306,8 @@ class DatabaseListView(LoginRequiredMixin, ListView):
         return context
 
 
-class DatabaseCreateView(LoginRequiredMixin, CreateView):
+class DatabaseCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
+    required_roles = [RelbackUser.ROLE_ADMIN, RelbackUser.ROLE_OPERATOR]
     model = Database
     template_name = "database_form.html"
     fields = ['db_name', 'description', 'client', 'host', 'dbid']
@@ -322,7 +330,8 @@ class DatabaseCreateView(LoginRequiredMixin, CreateView):
         return redirect(self.success_url)
 
 
-class DatabaseUpdateView(LoginRequiredMixin, UpdateView):
+class DatabaseUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
+    required_roles = [RelbackUser.ROLE_ADMIN, RelbackUser.ROLE_OPERATOR]
     model = Database
     template_name = "database_form.html"
     fields = ['db_name', 'description', 'client', 'host', 'dbid']
@@ -346,7 +355,8 @@ class DatabaseUpdateView(LoginRequiredMixin, UpdateView):
         return redirect(self.success_url)
 
 
-class DatabaseDeleteView(LoginRequiredMixin, DeleteView):
+class DatabaseDeleteView(RoleRequiredMixin, LoginRequiredMixin, DeleteView):
+    required_roles = [RelbackUser.ROLE_ADMIN]
     model = Database
     template_name = "database_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:database-list')
@@ -391,7 +401,8 @@ class BackupPolicyListView(LoginRequiredMixin, ListView):
         return context
 
 
-class BackupPolicyCreateView(LoginRequiredMixin, CreateView):
+class BackupPolicyCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
+    required_roles = [RelbackUser.ROLE_ADMIN, RelbackUser.ROLE_OPERATOR]
     model = BackupPolicy
     template_name = "policy_form.html"
     fields = ['policy_name', 'client', 'database', 'host', 'backup_type', 'destination',
@@ -426,7 +437,8 @@ class BackupPolicyCreateView(LoginRequiredMixin, CreateView):
         return redirect(self.success_url)
 
 
-class BackupPolicyUpdateView(LoginRequiredMixin, UpdateView):
+class BackupPolicyUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
+    required_roles = [RelbackUser.ROLE_ADMIN, RelbackUser.ROLE_OPERATOR]
     model = BackupPolicy
     template_name = "policy_form.html"
     fields = ['policy_name', 'client', 'database', 'host', 'backup_type', 'destination',
@@ -462,7 +474,8 @@ class BackupPolicyUpdateView(LoginRequiredMixin, UpdateView):
         return redirect(self.success_url)
 
 
-class BackupPolicyDeleteView(LoginRequiredMixin, DeleteView):
+class BackupPolicyDeleteView(RoleRequiredMixin, LoginRequiredMixin, DeleteView):
+    required_roles = [RelbackUser.ROLE_ADMIN]
     model = BackupPolicy
     template_name = "policy_confirm_delete.html"
     success_url = reverse_lazy('coreRelback:policy-list')

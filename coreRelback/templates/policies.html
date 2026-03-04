@@ -16,10 +16,12 @@
                         <p class="page-subtitle">Manage backup schedules and retention policies</p>
                     </div>
                 </div>
+                {% if user_can_edit %}
                 <button type="button" class="btn btn-primary" data-modal-target="#addPolicyModal">
                     <i class="material-icons" style="font-size: 18px;">add</i>
                     Create Policy
                 </button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -219,16 +221,20 @@
                                                 title="View Details">
                                             <i class="material-icons">visibility</i>
                                         </button>
+                                        {% if user_can_edit %}
                                         <button type="button" class="btn-action btn-edit" 
                                                 onclick="openEditModal('{{ policy.id_policy }}', '{{ policy.policy_name|escapejs }}', '{{ policy.description|default:''|escapejs }}')"
                                                 title="Edit">
                                             <i class="material-icons">edit</i>
                                         </button>
+                                        {% endif %}
+                                        {% if user_can_delete %}
                                         <button type="button" class="btn-action btn-delete" 
                                                 onclick="openDeleteModal('{{ policy.id_policy }}', '{{ policy.policy_name|escapejs }}', '{{ policy.client.name|default:'No Client'|escapejs }}', '{{ policy.backup_type|default:'Unknown'|escapejs }}')"
                                                 title="Delete">
                                             <i class="material-icons">delete</i>
                                         </button>
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -243,10 +249,12 @@
                     </div>
                     <div class="empty-state-title">No Backup Policies</div>
                     <div class="empty-state-description">Start by creating your first backup policy to manage your backup schedules.</div>
+                    {% if user_can_edit %}
                     <button type="button" class="empty-state-action" onclick="openAddModal()">
                         <i class="material-icons md-me-1">add</i>
                         Create First Policy
                     </button>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
@@ -254,9 +262,11 @@
 </div>
 
 <!-- Floating Action Button -->
+{% if user_can_edit %}
 <button class="btn btn-circle btn-primary btn-lg fixed bottom-6 right-6 shadow-lg z-50" id="addPolicyFab" title="Add Policy">
     <i class="material-icons">add</i>
 </button>
+{% endif %}
 
 <!-- View Policy Details Modal -->
 <div class="custom-modal" id="viewPolicyModal">
@@ -630,9 +640,12 @@ const policiesData = [
 ];
 
 // FAB click handler
-document.getElementById('addPolicyFab').addEventListener('click', function() {
-    openAddModal();
-});
+const addPolicyFab = document.getElementById('addPolicyFab');
+if (addPolicyFab) {
+    addPolicyFab.addEventListener('click', function() {
+        openAddModal();
+    });
+}
 
 // Auto-complete functionality
 const searchInput = document.getElementById('searchPolicies');
