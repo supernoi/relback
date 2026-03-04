@@ -23,6 +23,7 @@ from coreRelback.domain.entities import (
     HostEntity,
     PolicyStatus,
     ScheduleEntry,
+    SlaBreach,
 )
 from coreRelback.gateways.interfaces import (
     IBackupPolicyRepository,
@@ -35,6 +36,7 @@ from coreRelback.gateways.interfaces import (
 from coreRelback.gateways.repositories import OracleRmanRepository
 from coreRelback.services.use_cases import (
     AuditBackupUseCase,
+    CheckBackupSlaUseCase,
     GetBackupDetailUseCase,
     CreateBackupPolicyUseCase,
     CreateClientUseCase,
@@ -408,6 +410,61 @@ class GetScheduleReportUseCaseTest(TestCase):
             to_date=datetime.date(2026, 3, 5),
         )
         self.assertEqual(len(entries), 0)
+
+
+class CheckBackupSlaUseCaseTest(TestCase):
+    """CheckBackupSlaUseCase: breaches when schedule has no completed backup for that day."""
+
+    def test_returns_breach_when_no_completed_job_for_schedule_day(self):
+        schedule_repo = StubScheduleRepo()
+        schedule_repo._entries.append(
+            ScheduleEntry(
+                id_schedule=1,
+                policy_id=1,
+                schedule_start=datetime.datetime(2026, 3, 3, 2, 0),
+                policy_name="FULL_DAILY",
+                db_name="ORCL",
+                hostname="db01",
+            )
+        )
+        rman_repo = StubRmanRepo(jobs=[])  # no jobs → breach
+        use_case = CheckBackupSlaUseCase(schedule_repo=schedule_repo, rman_repo=rman_repo)
+        breaches = use_case.execute(
+            from_date=datetime.date(2026, 3, 3),
+            to_date=datetime.date(2026, 3, 3),
+        )
+        self.assertEqual(len(breaches), 1)
+        self.assertIsInstance(breaches[0], SlaBreach)
+        self.assertEqual(breaches[0].db_name, "ORCL")
+        self.assertEqual(breaches[0].reason, "no_completed_backup_in_window")
+
+    def test_returns_no_breach_when_completed_job_exists_for_schedule_day(self):
+        schedule_repo = StubScheduleRepo()
+        schedule_repo._entries.append(
+            ScheduleEntry(
+                id_schedule=1,
+                policy_id=1,
+                schedule_start=datetime.datetime(2026, 3, 3, 2, 0),
+                policy_name="FULL_DAILY",
+                db_name="ORCL",
+            )
+        )
+        rman_repo = StubRmanRepo(
+            jobs=[
+                BackupJobResult(
+                    db_name="ORCL",
+                    dbid=1,
+                    status=BackupStatusValue.COMPLETED,
+                    start_time=datetime.datetime(2026, 3, 3, 2, 30),
+                )
+            ]
+        )
+        use_case = CheckBackupSlaUseCase(schedule_repo=schedule_repo, rman_repo=rman_repo)
+        breaches = use_case.execute(
+            from_date=datetime.date(2026, 3, 3),
+            to_date=datetime.date(2026, 3, 3),
+        )
+        self.assertEqual(len(breaches), 0)
 
 
 class AuditBackupUseCaseTest(TestCase):

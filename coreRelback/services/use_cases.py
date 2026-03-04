@@ -18,6 +18,7 @@ from coreRelback.domain.entities import (
     DashboardStats,
     HostEntity,
     ScheduleEntry,
+    SlaBreach,
 )
 from coreRelback.gateways.interfaces import (
     IBackupPolicyRepository,
@@ -207,6 +208,64 @@ class AuditBackupUseCase:
             if job.status == BackupStatusValue.RUNNING and job.start_time and job.start_time < threshold:
                 job.status = BackupStatusValue.WARNING
         return jobs
+
+
+class CheckBackupSlaUseCase:
+    """
+    Identifies SLA breaches: schedule windows with no completed backup.
+
+    Compares schedule entries (expected backups) with Oracle RMAN job results.
+    Returns a list of SlaBreach for each (db_name, schedule_start) that had
+    no COMPLETED job in the expected window (same day as schedule_start).
+    """
+
+    def __init__(
+        self,
+        schedule_repo: IScheduleRepository,
+        rman_repo: IOracleRmanRepository,
+    ):
+        self._schedules = schedule_repo
+        self._rman = rman_repo
+
+    def execute(
+        self,
+        from_date: Optional[datetime.date] = None,
+        to_date: Optional[datetime.date] = None,
+        days: int = 1,
+    ) -> List[SlaBreach]:
+        today = datetime.date.today()
+        from_date = from_date or today
+        to_date = to_date or (today + datetime.timedelta(days=days - 1))
+        from_dt = datetime.datetime.combine(from_date, datetime.time.min)
+        to_dt = datetime.datetime.combine(to_date, datetime.time.max)
+
+        entries = self._schedules.get_upcoming(from_date=from_date, to_date=to_date)
+        jobs = self._rman.get_backup_jobs(from_date=from_dt, to_date=to_dt)
+
+        completed_by_db_day: set = set()
+        for job in jobs:
+            if job.status != BackupStatusValue.COMPLETED or not job.start_time:
+                continue
+            key = (job.db_name, job.start_time.date())
+            completed_by_db_day.add(key)
+
+        breaches: List[SlaBreach] = []
+        for entry in entries:
+            db_name = entry.db_name or "UNKNOWN"
+            schedule_day = entry.schedule_start.date() if entry.schedule_start else None
+            if not schedule_day:
+                continue
+            if (db_name, schedule_day) not in completed_by_db_day:
+                breaches.append(
+                    SlaBreach(
+                        db_name=db_name,
+                        schedule_start=entry.schedule_start,
+                        policy_name=entry.policy_name,
+                        hostname=entry.hostname,
+                        reason="no_completed_backup_in_window",
+                    )
+                )
+        return breaches
 
 
 # ---------------------------------------------------------------------------

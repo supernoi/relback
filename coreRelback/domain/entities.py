@@ -163,3 +163,17 @@ class DashboardStats:
     active_policies_count: int = 0
     failed_jobs_last_24h: int = 0
     successful_jobs_last_24h: int = 0
+
+
+@dataclass
+class SlaBreach:
+    """
+    Value object: a backup SLA breach — expected backup window had no successful job.
+
+    Pure domain; no dependency on Django, Oracle, or notification transport.
+    """
+    db_name: str
+    schedule_start: datetime
+    policy_name: Optional[str] = None
+    hostname: Optional[str] = None
+    reason: str = "no_completed_backup_in_window"
