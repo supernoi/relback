@@ -17,6 +17,7 @@ from coreRelback.domain.entities import (
     DatabaseEntity,
     HostEntity,
     ScheduleEntry,
+    SlaBreach,
 )
 
 
@@ -217,4 +218,13 @@ class IOracleRmanRepository(ABC):
         client_id: Optional[int] = None,
     ) -> List[BackupLogEntry]:
         """Return RMAN output lines from RC_RMAN_OUTPUT for the given session."""
+        ...
+
+
+class INotificationGateway(ABC):
+    """Port for sending SLA breach alerts (email, webhook, etc.)."""
+
+    @abstractmethod
+    def send_sla_breaches(self, breaches: List[SlaBreach]) -> None:
+        """Send a notification for the given list of SLA breaches. Must not raise."""
         ...

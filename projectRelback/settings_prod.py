@@ -102,6 +102,12 @@ else:
 DEMO_MODE = not bool(_oracle_user)
 
 # ---------------------------------------------------------------------------
+# SLA Alerting — webhook URL for check_backup_sla command (optional)
+# When set, breaches are POSTed as JSON; otherwise StubNotificationGateway logs only.
+# ---------------------------------------------------------------------------
+SLA_ALERT_WEBHOOK_URL = os.environ.get("SLA_ALERT_WEBHOOK_URL", "").strip() or None
+
+# ---------------------------------------------------------------------------
 # Structured container logging — everything to stdout, WARNING+ globally,
 # INFO+ for relback namespace.
 # ---------------------------------------------------------------------------
