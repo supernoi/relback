@@ -84,6 +84,9 @@ else:
 
 # ---------------------------------------------------------------------------
 # Oracle RMAN Catalog — read from env; None activates DemoRmanRepository
+# Required env vars when using live catalog: ORACLE_CATALOG_USER,
+# ORACLE_CATALOG_PASSWORD, ORACLE_CATALOG_DSN (e.g. host:port/service_name).
+# Validate with: DJANGO_SETTINGS_MODULE=projectRelback.settings_prod python manage.py check
 # ---------------------------------------------------------------------------
 _oracle_user = os.environ.get("ORACLE_CATALOG_USER", "")
 if _oracle_user:
@@ -97,6 +100,26 @@ else:
 
 # Demo Mode flag (mirrored from settings_local for view logic compatibility)
 DEMO_MODE = not bool(_oracle_user)
+
+# ---------------------------------------------------------------------------
+# Channel layer — Redis in prod for multi-worker WebSocket (Phase 18)
+# Set REDIS_URL (e.g. redis://redis:6379/0) when running daphne + multiple workers.
+# ---------------------------------------------------------------------------
+_redis_url = os.environ.get("REDIS_URL", "")
+if _redis_url:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {"hosts": [_redis_url]},
+        },
+    }
+# else: keep base CHANNEL_LAYERS (InMemoryChannelLayer) for single process
+
+# ---------------------------------------------------------------------------
+# SLA Alerting — webhook URL for check_backup_sla command (optional)
+# When set, breaches are POSTed as JSON; otherwise StubNotificationGateway logs only.
+# ---------------------------------------------------------------------------
+SLA_ALERT_WEBHOOK_URL = os.environ.get("SLA_ALERT_WEBHOOK_URL", "").strip() or None
 
 # ---------------------------------------------------------------------------
 # Structured container logging — everything to stdout, WARNING+ globally,

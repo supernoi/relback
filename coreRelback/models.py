@@ -44,6 +44,21 @@ class RelbackUser(models.Model):
         help_text='Optional default client for Reports; catalog queries are scoped to this client when set.',
     )
 
+    ROLE_ADMIN = "admin"
+    ROLE_OPERATOR = "operator"
+    ROLE_VIEWER = "viewer"
+    ROLE_CHOICES = [
+        (ROLE_ADMIN, "Administrator"),
+        (ROLE_OPERATOR, "Operator"),
+        (ROLE_VIEWER, "Viewer"),
+    ]
+    role = models.CharField(
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default=ROLE_OPERATOR,
+        help_text="admin: full access; operator: create/update; viewer: read-only",
+    )
+
     class Meta:
         db_table = 'users'
         verbose_name = "Usuário"
