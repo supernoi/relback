@@ -1,8 +1,12 @@
-# Python bytecode
+# -----------------------------------------------------------------------------
+# Python
+# -----------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+.Python
+*.so
 
 # Virtual environments
 .venv/
@@ -11,27 +15,57 @@ venvRelback/
 env/
 ENV/
 
+# -----------------------------------------------------------------------------
 # Django
+# -----------------------------------------------------------------------------
 *.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
 staticfiles/
 media/
+*.pot
+*.mo
 
+# -----------------------------------------------------------------------------
+# Environment & secrets (never commit .env)
+# -----------------------------------------------------------------------------
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# -----------------------------------------------------------------------------
 # Distribution / packaging
+# -----------------------------------------------------------------------------
 dist/
 build/
 *.egg-info/
 .eggs/
+*.egg
 
-# Testing
+# -----------------------------------------------------------------------------
+# Testing & coverage
+# -----------------------------------------------------------------------------
 .coverage
+.coverage.*
 .pytest_cache/
 htmlcov/
 .tox/
+nosetests.xml
+coverage.xml
 
-# Editors / OS
+# -----------------------------------------------------------------------------
+# Linters / type checkers (local caches)
+# -----------------------------------------------------------------------------
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+.dmypy.json.*
+
+# -----------------------------------------------------------------------------
+# Editors & IDE (local only)
+# -----------------------------------------------------------------------------
 .DS_Store
 .idea/
 .vscode/
@@ -39,11 +73,17 @@ htmlcov/
 *.swo
 *~
 Thumbs.db
+*.code-workspace
 
-# Temporary files (project convention)
+# Cursor IDE (local rules / state)
+.cursor/
+
+# -----------------------------------------------------------------------------
+# Project-specific
+# -----------------------------------------------------------------------------
 temp/
 
-# Node
+# Node (django-tailwind, theme build)
 node_modules/
-
-projectRelback/__pycache__/settings.cpython-38.pyc
+npm-debug.log*
+yarn-error.log*
