@@ -17,10 +17,12 @@
                         <p class="page-subtitle">Manage your backup clients and organizations</p>
                     </div>
                 </div>
+                {% if user_can_edit %}
                 <button type="button" class="btn btn-primary" data-modal-target="#addClientModal">
                     <i class="material-icons" style="font-size: 18px;">add</i>
                     Add Client
                 </button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -72,20 +74,24 @@
                     <i class="material-icons empty-state-icon">business</i>
                     <h4 class="empty-state-title">No clients found</h4>
                     <p class="empty-state-description">Get started by adding your first client</p>
+                    {% if user_can_edit %}
                     <a href="{% url 'coreRelback:client-create' %}" class="btn btn-primary">
                         <i class="material-icons" style="font-size: 18px;">add</i>
                         Add First Client
                     </a>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
     </div>
 </div>
 
-<!-- Floating Action Button -->
+<!-- Floating Action Button (only for edit-capable roles) -->
+{% if user_can_edit %}
 <button class="btn btn-circle btn-primary btn-lg fixed bottom-6 right-6 shadow-lg z-50" id="addClientFab" title="Add Client">
     <i class="material-icons">add</i>
 </button>
+{% endif %}
 
 <!-- Delete Confirmation Modal -->
 <div class="custom-modal" id="deleteClientModal">
@@ -489,7 +495,8 @@ const clientsData = [
 ];
 
 // FAB click handler
-document.getElementById('addClientFab').addEventListener('click', function() {
+var addClientFab = document.getElementById('addClientFab');
+if (addClientFab) addClientFab.addEventListener('click', function() {
     window.location.href = '{% url "coreRelback:client-create" %}';
 });
 
