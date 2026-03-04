@@ -108,16 +108,27 @@ Before writing any code, follow this sequence:
 - Keep secrets only in GitHub Secrets (or secure secret stores), never in tracked files.
 - Include SQL linting or syntax validation in CI for queries under `databaseProject/` when feasible.
 
-## 🤖 Autonomous GitHub — Full Lifecycle & Conflict Prevention
+## 🛠️ Autonomous Lifecycle & Conflict Prevention (Strict Protocol)
 
-- [cite_start]**Serial Execution Only**: Always finish one Phase/Issue completely (including merging to master) before starting the next one. [cite: 10, 24] [cite_start]Do not allow multiple feature branches to remain open simultaneously to prevent merge conflicts. [cite: 16, 22]
-- [cite_start]**Automatic Push**: After atomic commit(s) on a feature branch, run `git push -u origin <branch>` immediately without asking. [cite: 16]
-- **Auto-PR & Merge**: Once implementation is done and all sensors (`manage.py check/test`) pass:
-  1. [cite_start]Create the PR via `gh pr create --base master --head <branch> --body "Closes #N"` using the standard template. [cite: 15, 18, 19]
-  2. [cite_start]**Immediate Merge**: If no blocking CI/review is required by the user, run `gh pr merge <number> --merge --delete-branch` immediately.
-  3. Do not stop and ask "should I merge?". [cite_start]If the task is done and tests are green, **merge it**. [cite: 21]
-- **Conflict Resolution**: If a conflict occurs during merge, the Agent must:
-  1. [cite_start]`git checkout master && git pull` [cite: 11, 26]
-  2. [cite_start]`git checkout feature/branch && git merge master` [cite: 11]
-  3. [cite_start]Resolve conflicts, run sensors, and re-push. [cite: 12, 16]
-- [cite_start]**Next Phase Trigger**: Only after the current PR is merged into `master`, switch back to `master`, pull the latest changes, and start the next phase from a clean state. [cite: 23, 25, 26]
+### A. Pre-Flight Check (Mandatory before ANY change)
+
+- **Status Sync**: Always run `git fetch origin master` and `git status`.
+- **Identify Branch**: If not on `master`, identify why. Never perform destructive actions (merge/delete) without a fresh `git pull origin master`.
+
+### B. The "Safe-Merge" Workflow
+
+To prevent file loss during merges, the Agent MUST follow this sequence:
+
+1. **Consolidation**: `git add . && git commit -m "..."` on the feature branch.
+2. **Master Sync**: `git checkout master && git pull origin master`.
+3. **Rebase/Merge Local**: `git checkout feature/branch && git merge master` (resolve conflicts here, never on master).
+4. **Validation**: Run `python manage.py check`. If it fails, STOP.
+5. **PR & Merge**:
+   - Use `gh pr create`.
+   - **WAIT for PR ID**.
+   - Use `gh pr merge --squash --delete-branch`. (O uso de `--squash` evita que a história suja da feature branch quebre o master).
+
+### C. File Integrity Guard
+
+- **No Overwrite**: Before any `git merge`, run `git diff master..HEAD --name-only`. If more files are being deleted than created unexpectedly, ASK for confirmation.
+- **Merge Tooling**: Prefer `git merge --no-ff` to keep a clear history of where the code came from.
