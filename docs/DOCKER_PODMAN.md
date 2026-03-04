@@ -33,15 +33,23 @@ docker compose exec web python manage.py seed_demo
 
 ## Com Oracle Database Free
 
+Imagem oficial: `container-registry.oracle.com/database/free:latest` (faça `docker login container-registry.oracle.com` antes do primeiro pull).
+
 ```bash
 cp .env.example .env
-# Definir ORACLE_PWD no .env
+# Opcional: ORACLE_PWD=YourSysPassword (senha SYS; default no compose: oracle)
 
 docker compose -f docker-compose.yml -f docker-compose.oracle.yml up -d
-# Aguardar log: "DATABASE IS READY TO USE" (primeira vez pode levar 5–10 min)
+# Aguardar no log: "DATABASE IS READY TO USE" (primeira vez pode levar 5–10 min)
+docker compose -f docker-compose.yml -f docker-compose.oracle.yml logs -f oracle
 ```
 
-Configure no `.env` (se usar Oracle como DB do Django): `DB_ENGINE`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `ORACLE_CATALOG_*`.
+No `.env`, configure o catálogo RMAN (pluggable DB = FREEPDB1):
+
+- `ORACLE_CATALOG_DSN=oracle:1521/FREEPDB1`
+- `ORACLE_CATALOG_USER=` e `ORACLE_CATALOG_PASSWORD=` (usuário/senha do schema no Oracle)
+
+Se usar Oracle também como banco do Django: `DB_ENGINE`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST=oracle`, `DB_PORT=1521`.
 
 ---
 

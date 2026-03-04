@@ -1,8 +1,27 @@
 # Plano de Redesign UI/UX — Relback
 
-> **Status: IMPLEMENTADO** — todas as 4 fases concluídas. 84 testes passando. Zero classes legado restantes.
+> **Status: IMPLEMENTADO** — as 4 fases foram concluídas. Zero classes legado nos templates; tema clean em produção.
 
 Análise da interface atual e plano para uma interface **limpa, corporativa e confiável**, com técnicas modernas de UI/UX.
+
+---
+
+## Status de implementação (o que já foi feito × o que falta)
+
+| Fase | Item | Status | Observação |
+|------|------|--------|------------|
+| **1** | Tema `tailwind.config.js`: primary azul, neutros slate | ✅ Feito | `relback_light` (#2563eb), `relback_dark` (#60a5fa), defaultTheme light |
+| **1** | Tokens de status (success, warning, error, info) | ✅ Feito | Com contraste WCAG documentado no próprio config |
+| **1** | Documentar tokens em `docs/` ("Design tokens") | ✅ Feito | `docs/DESIGN_TOKENS.md` |
+| **2** | Remover uso de `md-card`, `oracle-*-gradient`, etc. | ✅ Feito | Nenhuma ocorrência nos templates |
+| **2** | Não carregar `oracle-modern-theme.css` | ✅ Feito | Link removido do `base.html`; arquivo pode permanecer no repo como legado |
+| **3** | Sidebar, navbar, tabelas, formulários, modais, empty states | ✅ Feito | Padrão Tailwind/DaisyUI em todos os 20 templates |
+| **4** | Focus visible em interativos | ✅ Feito | `*:focus-visible` em `theme/static_src/src/styles.css` |
+| **4** | Revisar contraste WCAG AA (axe / Contrast Checker) | ⏳ Opcional | Tokens escolhidos para ≥4.5:1; ver `docs/DESIGN_TOKENS.md` §6 |
+| **4** | `prefers-reduced-motion` para animações | ✅ Feito | `theme/static_src/src/styles.css`: scroll auto, animações/transições mínimas |
+| **4** | Documentar padrões (primary vs secondary, badge vs alert) | ✅ Feito | `docs/DESIGN_TOKENS.md` §5 |
+
+**Resumo:** Todas as pendências de implementação foram concluídas. Opcional: auditoria formal com axe DevTools.
 
 ---
 

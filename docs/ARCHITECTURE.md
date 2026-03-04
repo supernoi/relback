@@ -456,6 +456,7 @@ relback/
 │   ├── ROADMAP_TAILWIND_DAISYUI.md
 │   ├── ROADMAP_IMPROVEMENTS.md  ← Sugestões de melhoria (testes, observabilidade, segurança)
 │   ├── PLANO_REDESIGN_UI_UX.md  ← Plano redesign: clean, corporativo, confiança
+│   ├── DESIGN_TOKENS.md         ← Tokens de cor/tema e padrões de uso (primary vs secondary, badge vs alert)
 │   ├── SETUP_BANCO.md           ← Configuração do banco (SQLite/Oracle)
 │   └── UX_UI_analysis.md
 ├── nginx/                       ← Nginx reverse proxy (Phase 13): nginx.conf, entrypoint.sh, Dockerfile
