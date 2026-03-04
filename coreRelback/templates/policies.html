@@ -73,9 +73,9 @@
     <div class="bg-base-100 border border-base-300 rounded-xl shadow-sm overflow-hidden">
         {% if policies %}
             <div class="overflow-x-auto">
-                <table class="table table-sm w-full" id="policiesTable">
+                <table class="table table-sm w-full policies-table" id="policiesTable">
                     <thead>
-                        <tr class="bg-base-200">
+                        <tr class="bg-primary text-primary-content font-semibold">
                             <th>
                                 <div class="flex items-center gap-2">
                                     <i class="material-icons-round text-sm opacity-70">policy</i>
@@ -128,7 +128,7 @@
                     </thead>
                     <tbody>
                         {% for policy in policies %}
-                        <tr class="policy-row hover:bg-base-200/50 transition-colors"
+                        <tr class="policy-row cursor-pointer"
                             data-policy-id="{{ policy.id_policy }}"
                             data-policy-name="{{ policy.policy_name|default:'Unnamed Policy'|escapejs }}"
                             data-policy-description="{{ policy.description|default:''|escapejs }}"
@@ -1077,4 +1077,34 @@ document.addEventListener('DOMContentLoaded', function() {
     searchInput.focus();
 });
 </script>
+
+<style>
+/* ── Policies grid: zebra + hover ──────────────────────────────── */
+[data-theme="relback_light"] .policies-table tbody tr.policy-row:nth-child(odd) td,
+[data-theme="relback_light"] .policies-table tbody tr.policy-row:nth-child(odd) th {
+  background-color: #ffffff !important;
+}
+[data-theme="relback_light"] .policies-table tbody tr.policy-row:nth-child(even) td,
+[data-theme="relback_light"] .policies-table tbody tr.policy-row:nth-child(even) th {
+  background-color: #f1f5f9 !important;
+}
+[data-theme="relback_dark"] .policies-table tbody tr.policy-row:nth-child(odd) td,
+[data-theme="relback_dark"] .policies-table tbody tr.policy-row:nth-child(odd) th {
+  background-color: #0f172a !important;
+}
+[data-theme="relback_dark"] .policies-table tbody tr.policy-row:nth-child(even) td,
+[data-theme="relback_dark"] .policies-table tbody tr.policy-row:nth-child(even) th {
+  background-color: #1e293b !important;
+}
+[data-theme="relback_light"] .policies-table tbody tr.policy-row:hover td,
+[data-theme="relback_light"] .policies-table tbody tr.policy-row:hover th {
+  background-color: #bfdbfe !important;
+  transition: background-color 0.12s ease;
+}
+[data-theme="relback_dark"] .policies-table tbody tr.policy-row:hover td,
+[data-theme="relback_dark"] .policies-table tbody tr.policy-row:hover th {
+  background-color: #1e40af !important;
+  transition: background-color 0.12s ease;
+}
+</style>
 {% endblock content %}

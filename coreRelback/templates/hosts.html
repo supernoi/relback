@@ -75,7 +75,7 @@
             <div class="overflow-x-auto">
                 <table class="table table-sm w-full hosts-table">
                     <thead>
-                        <tr class="bg-primary/45 text-base-content border-b-2 border-primary font-medium">
+                        <tr class="bg-primary text-primary-content font-semibold">
                             <th>
                                 <div class="flex items-center gap-2">
                                     <i class="material-icons-round text-sm opacity-70">dns</i>
@@ -632,37 +632,31 @@
    dark : base-100=#0f172a / base-200=#1e293b  primary=#60a5fa
 ──────────────────────────────────────────────────────────── */
 
-/* LIGHT – zebra */
+/* ── Hosts grid: zebra + hover ──────────────────────────────── */
 [data-theme="relback_light"] .hosts-table tbody tr.host-row:nth-child(odd) td,
 [data-theme="relback_light"] .hosts-table tbody tr.host-row:nth-child(odd) th {
   background-color: #ffffff !important;
 }
 [data-theme="relback_light"] .hosts-table tbody tr.host-row:nth-child(even) td,
 [data-theme="relback_light"] .hosts-table tbody tr.host-row:nth-child(even) th {
-  background-color: #e2e8f0 !important; /* slate-200 */
+  background-color: #f1f5f9 !important; /* slate-100 */
 }
-
-/* DARK – zebra */
 [data-theme="relback_dark"] .hosts-table tbody tr.host-row:nth-child(odd) td,
 [data-theme="relback_dark"] .hosts-table tbody tr.host-row:nth-child(odd) th {
-  background-color: #0f172a !important; /* slate-900 */
+  background-color: #0f172a !important;
 }
 [data-theme="relback_dark"] .hosts-table tbody tr.host-row:nth-child(even) td,
 [data-theme="relback_dark"] .hosts-table tbody tr.host-row:nth-child(even) th {
-  background-color: #1e293b !important; /* slate-800 */
+  background-color: #1e293b !important;
 }
-
-/* HOVER – light */
 [data-theme="relback_light"] .hosts-table tbody tr.host-row:hover td,
 [data-theme="relback_light"] .hosts-table tbody tr.host-row:hover th {
-  background-color: #bfdbfe !important; /* blue-200 */
+  background-color: #bfdbfe !important;
   transition: background-color 0.12s ease;
 }
-
-/* HOVER – dark */
 [data-theme="relback_dark"] .hosts-table tbody tr.host-row:hover td,
 [data-theme="relback_dark"] .hosts-table tbody tr.host-row:hover th {
-  background-color: #1e40af !important; /* blue-800 */
+  background-color: #1e40af !important;
   transition: background-color 0.12s ease;
 }
 </style>
