@@ -5,7 +5,10 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, D
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django_tables2 import RequestConfig
+from django.db.models import Q
 from .models import Client, Host, Database, BackupPolicy, RelbackUser, Schedule
+from .tables import ClientTable, HostTable, DatabaseTable, BackupPolicyTable
 from django import forms
 
 # --- Clean Architecture: use-case factories ---
@@ -144,6 +147,21 @@ class ClientListView(LoginRequiredMixin, ListView):
     template_name = "clients.html"
     context_object_name = "clients"
 
+    def get_queryset(self):
+        qs = super().get_queryset()
+        search = (self.request.GET.get("search") or "").strip()
+        if search:
+            qs = qs.filter(Q(name__icontains=search) | Q(description__icontains=search))
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        table = ClientTable(self.get_queryset())
+        RequestConfig(self.request, paginate={"per_page": 25}).configure(table)
+        context["table"] = table
+        context["clients_count"] = self.get_queryset().count()
+        return context
+
 
 class ClientCreateView(LoginRequiredMixin, CreateView):
     model = Client
@@ -205,19 +223,24 @@ class HostListView(LoginRequiredMixin, ListView):
     template_name = "hosts.html"
     context_object_name = "hosts"
 
+    def get_queryset(self):
+        qs = super().get_queryset().select_related("client")
+        search = (self.request.GET.get("search") or "").strip()
+        if search:
+            qs = qs.filter(hostname__icontains=search) | qs.filter(ip__icontains=search)
+        return qs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        hosts = self.get_queryset().select_related('client')
-
-        # Estatísticas para os cards (removendo filtro por status que não existe)
-        context['total_hosts'] = hosts.count()
-        # Assumindo que todos hosts listados estão ativos
-        context['active_hosts'] = hosts.count()
-        context['total_clients'] = Client.objects.count()
-        context['total_databases'] = Database.objects.filter(
-            host__in=hosts).count()
-        context['clients'] = Client.objects.all()  # Para o filtro
-
+        hosts = self.get_queryset()
+        table = HostTable(hosts)
+        RequestConfig(self.request, paginate={"per_page": 25}).configure(table)
+        context["table"] = table
+        context["total_hosts"] = hosts.count()
+        context["active_hosts"] = hosts.count()
+        context["total_clients"] = Client.objects.count()
+        context["total_databases"] = Database.objects.filter(host__in=hosts).count()
+        context["clients"] = Client.objects.all()
         return context
 
 
@@ -284,18 +307,23 @@ class DatabaseListView(LoginRequiredMixin, ListView):
     template_name = "databases.html"
     context_object_name = "databases"
 
+    def get_queryset(self):
+        qs = super().get_queryset().select_related("client", "host")
+        search = (self.request.GET.get("search") or "").strip()
+        if search:
+            qs = qs.filter(Q(db_name__icontains=search) | Q(description__icontains=search))
+        return qs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        databases = self.get_queryset().select_related('client', 'host')
-
-        # Estatísticas para os cards (removendo filtro por active que não existe)
-        context['total_databases'] = databases.count()
-        # Assumindo que todos databases listados estão ativos
-        context['active_databases'] = databases.count()
-        context['total_hosts'] = Host.objects.count()
-        context['total_policies'] = BackupPolicy.objects.filter(
-            database__in=databases).count()
-
+        databases = self.get_queryset()
+        table = DatabaseTable(databases)
+        RequestConfig(self.request, paginate={"per_page": 25}).configure(table)
+        context["table"] = table
+        context["total_databases"] = databases.count()
+        context["active_databases"] = databases.count()
+        context["total_hosts"] = Host.objects.count()
+        context["total_policies"] = BackupPolicy.objects.filter(database__in=databases).count()
         return context
 
 
@@ -374,20 +402,24 @@ class BackupPolicyListView(LoginRequiredMixin, ListView):
     template_name = "policies.html"
     context_object_name = "policies"
 
+    def get_queryset(self):
+        qs = super().get_queryset().select_related("client", "database", "host")
+        search = (self.request.GET.get("search") or "").strip()
+        if search:
+            qs = qs.filter(Q(policy_name__icontains=search) | Q(backup_type__icontains=search))
+        return qs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        policies = self.get_queryset().select_related('client', 'database', 'host')
-
-        # Estatísticas para os cards
-        context['total_policies'] = policies.count()
-        context['active_policies'] = policies.filter(
-            status__iexact='ACTIVE').count()
-        context['inactive_policies'] = policies.filter(
-            status__iexact='INACTIVE').count()
-        context['scheduled_policies'] = policies.filter(
-            status__iexact='ACTIVE').count() // 2
-        context['clients'] = Client.objects.all()  # Para o filtro
-
+        policies = self.get_queryset()
+        table = BackupPolicyTable(policies)
+        RequestConfig(self.request, paginate={"per_page": 25}).configure(table)
+        context["table"] = table
+        context["total_policies"] = policies.count()
+        context["active_policies"] = policies.filter(status__iexact="ACTIVE").count()
+        context["inactive_policies"] = policies.filter(status__iexact="INACTIVE").count()
+        context["scheduled_policies"] = policies.filter(status__iexact="ACTIVE").count() // 2
+        context["clients"] = Client.objects.all()
         return context
 
 
