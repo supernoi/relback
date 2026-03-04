@@ -1,13 +1,412 @@
 {% extends "base.html" %}
-{% block title %}Policy Form{% endblock title %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Edit Policy{% else %}Create Policy{% endif %} - RelBack{% endblock title %}
 
 {% block content %}
-  <h2>{% if form.instance.pk %}Edit Policy{% else %}Create Policy{% endif %}</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">
-      {% if form.instance.pk %}Update{% else %}Create{% endif %}
-    </button>
-  </form>
+<div class="space-y-5">
+    <!-- Page Header -->
+    <div class="bg-base-200 border border-base-300 rounded-xl p-5 shadow-sm">
+        <div class="flex items-center gap-3">
+            <a href="{% url 'coreRelback:policy-list' %}" class="btn btn-ghost btn-square">
+                <i class="material-icons-round text-2xl">arrow_back</i>
+            </a>
+            <i class="material-icons-round text-primary text-5xl">
+                {% if form.instance.pk %}edit{% else %}add_circle{% endif %}
+            </i>
+            <div>
+                <h1 class="text-2xl font-bold">{% if form.instance.pk %}Edit Policy{% else %}Create Backup Policy{% endif %}</h1>
+                <p class="text-base-content/60 text-sm">{% if form.instance.pk %}Update backup policy configuration{% else %}Define a new backup policy schedule{% endif %}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form -->
+    <div class="flex justify-center">
+        <div class="w-full max-w-4xl space-y-4">
+            <div class="bg-base-200 border border-base-300 rounded-xl p-5 shadow-sm">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <!-- Policy Identity -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <i class="material-icons-round text-primary">shield</i>
+                            Policy Identity
+                        </h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control">
+                                <label class="label" for="id_policy_name">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">label</i>
+                                        Policy Name *
+                                    </span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.policy_name.errors %} input-error{% endif %}"
+                                       id="id_policy_name"
+                                       name="policy_name"
+                                       value="{{ form.policy_name.value|default:'' }}"
+                                       maxlength="150"
+                                       required>
+                                {% if form.policy_name.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.policy_name.errors.0 }}</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_status">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">toggle_on</i>
+                                        Status *
+                                    </span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.status.errors %} input-error{% endif %}"
+                                       id="id_status"
+                                       name="status"
+                                       value="{{ form.status.value|default:'' }}"
+                                       maxlength="8"
+                                       required>
+                                {% if form.status.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.status.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">e.g., ACTIVE, INACTIVE</span></label>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Association -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <i class="material-icons-round text-primary">link</i>
+                            Association
+                        </h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="form-control">
+                                <label class="label" for="id_client">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">business</i>
+                                        Client *
+                                    </span>
+                                </label>
+                                <select class="select select-bordered w-full{% if form.client.errors %} select-error{% endif %}"
+                                        id="id_client"
+                                        name="client"
+                                        required>
+                                    <option value="">Select Client</option>
+                                    {% for choice in form.client.field.queryset %}
+                                    <option value="{{ choice.pk }}"
+                                            {% if form.client.value|stringformat:"s" == choice.pk|stringformat:"s" %}selected{% endif %}>
+                                        {{ choice }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.client.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.client.errors.0 }}</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_host">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">dns</i>
+                                        Host *
+                                    </span>
+                                </label>
+                                <select class="select select-bordered w-full{% if form.host.errors %} select-error{% endif %}"
+                                        id="id_host"
+                                        name="host"
+                                        required>
+                                    <option value="">Select Host</option>
+                                    {% for choice in form.host.field.queryset %}
+                                    <option value="{{ choice.pk }}"
+                                            {% if form.host.value|stringformat:"s" == choice.pk|stringformat:"s" %}selected{% endif %}>
+                                        {{ choice }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.host.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.host.errors.0 }}</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_database">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">database</i>
+                                        Database *
+                                    </span>
+                                </label>
+                                <select class="select select-bordered w-full{% if form.database.errors %} select-error{% endif %}"
+                                        id="id_database"
+                                        name="database"
+                                        required>
+                                    <option value="">Select Database</option>
+                                    {% for choice in form.database.field.queryset %}
+                                    <option value="{{ choice.pk }}"
+                                            {% if form.database.value|stringformat:"s" == choice.pk|stringformat:"s" %}selected{% endif %}>
+                                        {{ choice }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                {% if form.database.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.database.errors.0 }}</span></label>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Backup Configuration -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <i class="material-icons-round text-primary">backup</i>
+                            Backup Configuration
+                        </h4>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="form-control">
+                                <label class="label" for="id_backup_type">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">category</i>
+                                        Backup Type *
+                                    </span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.backup_type.errors %} input-error{% endif %}"
+                                       id="id_backup_type"
+                                       name="backup_type"
+                                       value="{{ form.backup_type.value|default:'' }}"
+                                       maxlength="30"
+                                       required>
+                                {% if form.backup_type.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.backup_type.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">e.g., FULL, INCREMENTAL, ARCHIVELOG</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_destination">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">save</i>
+                                        Destination *
+                                    </span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.destination.errors %} input-error{% endif %}"
+                                       id="id_destination"
+                                       name="destination"
+                                       value="{{ form.destination.value|default:'' }}"
+                                       maxlength="8"
+                                       required>
+                                {% if form.destination.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.destination.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">e.g., DISK, TAPE, SBT</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_size_backup">
+                                    <span class="label-text font-medium flex items-center gap-1">
+                                        <i class="material-icons-round text-base">data_usage</i>
+                                        Estimated Size
+                                    </span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.size_backup.errors %} input-error{% endif %}"
+                                       id="id_size_backup"
+                                       name="size_backup"
+                                       value="{{ form.size_backup.value|default:'' }}"
+                                       maxlength="10">
+                                {% if form.size_backup.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.size_backup.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">e.g., 50GB</span></label>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-control mt-4">
+                            <label class="label" for="id_duration">
+                                <span class="label-text font-medium flex items-center gap-1">
+                                    <i class="material-icons-round text-base">timer</i>
+                                    Duration (minutes)
+                                </span>
+                            </label>
+                            <input type="number"
+                                   class="input input-bordered w-full md:w-1/3{% if form.duration.errors %} input-error{% endif %}"
+                                   id="id_duration"
+                                   name="duration"
+                                   value="{{ form.duration.value|default:'' }}"
+                                   min="0">
+                            {% if form.duration.errors %}
+                                <label class="label"><span class="label-text-alt text-error">{{ form.duration.errors.0 }}</span></label>
+                            {% else %}
+                                <label class="label"><span class="label-text-alt text-base-content/60">Expected duration in minutes</span></label>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Cron Schedule -->
+                    <div class="mb-6">
+                        <h4 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <i class="material-icons-round text-primary">schedule</i>
+                            Cron Schedule
+                        </h4>
+
+                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                            <div class="form-control">
+                                <label class="label" for="id_minute">
+                                    <span class="label-text font-medium">Minute</span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.minute.errors %} input-error{% endif %}"
+                                       id="id_minute"
+                                       name="minute"
+                                       value="{{ form.minute.value|default:'0' }}"
+                                       maxlength="100">
+                                {% if form.minute.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.minute.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">0-59 or *</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_hour">
+                                    <span class="label-text font-medium">Hour</span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.hour.errors %} input-error{% endif %}"
+                                       id="id_hour"
+                                       name="hour"
+                                       value="{{ form.hour.value|default:'0' }}"
+                                       maxlength="100">
+                                {% if form.hour.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.hour.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">0-23 or *</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_day">
+                                    <span class="label-text font-medium">Day</span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.day.errors %} input-error{% endif %}"
+                                       id="id_day"
+                                       name="day"
+                                       value="{{ form.day.value|default:'*' }}"
+                                       maxlength="100">
+                                {% if form.day.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.day.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">1-31 or *</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_month">
+                                    <span class="label-text font-medium">Month</span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.month.errors %} input-error{% endif %}"
+                                       id="id_month"
+                                       name="month"
+                                       value="{{ form.month.value|default:'*' }}"
+                                       maxlength="100">
+                                {% if form.month.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.month.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">1-12 or *</span></label>
+                                {% endif %}
+                            </div>
+                            <div class="form-control">
+                                <label class="label" for="id_day_week">
+                                    <span class="label-text font-medium">Day of Week</span>
+                                </label>
+                                <input type="text"
+                                       class="input input-bordered w-full{% if form.day_week.errors %} input-error{% endif %}"
+                                       id="id_day_week"
+                                       name="day_week"
+                                       value="{{ form.day_week.value|default:'*' }}"
+                                       maxlength="100">
+                                {% if form.day_week.errors %}
+                                    <label class="label"><span class="label-text-alt text-error">{{ form.day_week.errors.0 }}</span></label>
+                                {% else %}
+                                    <label class="label"><span class="label-text-alt text-base-content/60">0-6 (Sun=0)</span></label>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-6">
+                        <div class="form-control">
+                            <label class="label" for="id_description">
+                                <span class="label-text font-medium flex items-center gap-1">
+                                    <i class="material-icons-round text-base">description</i>
+                                    Description
+                                </span>
+                            </label>
+                            <textarea class="textarea textarea-bordered w-full{% if form.description.errors %} textarea-error{% endif %}"
+                                      id="id_description"
+                                      name="description"
+                                      rows="3">{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.errors %}
+                                <label class="label"><span class="label-text-alt text-error">{{ form.description.errors.0 }}</span></label>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex flex-wrap gap-2 pt-4 border-t border-base-300">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons-round text-lg">save</i>
+                            {% if form.instance.pk %}Update Policy{% else %}Create Policy{% endif %}
+                        </button>
+                        <a href="{% url 'coreRelback:policy-list' %}" class="btn btn-outline">
+                            <i class="material-icons-round text-lg">cancel</i>
+                            Cancel
+                        </a>
+                        {% if form.instance.pk %}
+                        <a href="{% url 'coreRelback:policy-delete' form.instance.pk %}"
+                           class="btn btn-error ml-auto">
+                            <i class="material-icons-round text-lg">delete</i>
+                            Delete Policy
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+
+            <!-- Help Card -->
+            <div class="bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-base-300 p-3 flex items-center gap-2">
+                    <i class="material-icons-round text-base-content/60">help</i>
+                    <h6 class="font-semibold">Cron Schedule Reference</h6>
+                </div>
+                <div class="p-4 text-sm">
+                    <div class="overflow-x-auto">
+                        <table class="table table-xs">
+                            <thead>
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Range</th>
+                                    <th>Example</th>
+                                    <th>Meaning</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Minute</td><td>0-59</td><td>30</td><td>At minute 30</td></tr>
+                                <tr><td>Hour</td><td>0-23</td><td>2</td><td>At 2:00 AM</td></tr>
+                                <tr><td>Day</td><td>1-31</td><td>*/2</td><td>Every 2 days</td></tr>
+                                <tr><td>Month</td><td>1-12</td><td>*</td><td>Every month</td></tr>
+                                <tr><td>Day of Week</td><td>0-6</td><td>1-5</td><td>Mon-Fri</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}

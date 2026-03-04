@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary/60 rounded-sm;
+  }
+
+  ::selection {
+    @apply bg-primary/20 text-base-content;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .page-title {
+    @apply text-xl font-bold;
+  }
+
+  .card-section {
+    @apply bg-base-200 border border-base-300 rounded-xl shadow-sm overflow-hidden;
+  }
+
+  .icon-box {
+    @apply w-10 h-10 rounded-lg flex items-center justify-center;
+  }
+
+  .icon-box-sm {
+    @apply w-8 h-8 rounded-lg flex items-center justify-center;
+  }
+}

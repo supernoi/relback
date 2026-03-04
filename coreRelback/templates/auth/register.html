@@ -1,11 +1,10 @@
 {% load static %}{% load tailwind_tags %}
 <!doctype html>
-<html lang="en" data-theme="relback_dark">
+<html lang="en" data-theme="relback_light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>relBack — Sign Up</title>
-    {# FOUC prevention: restore saved DaisyUI theme before first paint #}
+    <title>RelBack — Sign Up</title>
     <script>
       (function () {
         var t = localStorage.getItem("relback-theme");
@@ -13,104 +12,87 @@
       })();
     </script>
     {% tailwind_css %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
   </head>
   <body class="bg-base-200 min-h-screen flex items-center justify-center p-4">
 
-    <div class="card w-full max-w-sm bg-base-100 shadow-xl border border-base-300 my-6">
+    <div class="card w-full max-w-sm bg-base-100 shadow-lg border border-base-300 rounded-xl my-6">
       <div class="card-body gap-4">
 
-        {# Brand #}
-        <div class="flex flex-col items-center gap-1 mb-2">
-          <i class="material-icons text-primary" style="font-size:3rem;">storage</i>
-          <h1 class="text-2xl font-bold text-primary">relBack</h1>
-          <p class="text-sm opacity-50">Create New Account</p>
+        <div class="flex flex-col items-center gap-2 mb-2">
+          <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+            <i class="material-icons-round text-primary-content text-2xl">backup</i>
+          </div>
+          <h1 class="text-2xl font-bold">RelBack</h1>
+          <p class="text-sm text-base-content/50">Create New Account</p>
         </div>
 
-        {# Flash messages #}
         {% if messages %}
           {% for message in messages %}
-          <div role="alert"
-               class="alert shadow-sm {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}">
+          <div role="alert" class="alert alert-sm shadow-sm {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}">
             <span class="text-sm">{{ message }}</span>
           </div>
           {% endfor %}
         {% endif %}
 
-        {# Registration form #}
         <form method="post" class="flex flex-col gap-3">
           {% csrf_token %}
 
-          {# Username #}
           <div class="form-control">
             <label class="label pb-1" for="{{ form.username.id_for_label }}">
               <span class="label-text text-xs font-medium uppercase tracking-wide">Username</span>
             </label>
             {{ form.username }}
             {% if form.username.errors %}
-            <label class="label pt-1">
-              <span class="label-text-alt text-error">{% for e in form.username.errors %}{{ e }}{% endfor %}</span>
-            </label>
+            <label class="label pt-1"><span class="label-text-alt text-error">{% for e in form.username.errors %}{{ e }}{% endfor %}</span></label>
             {% endif %}
           </div>
 
-          {# Full Name #}
           <div class="form-control">
             <label class="label pb-1" for="{{ form.name.id_for_label }}">
               <span class="label-text text-xs font-medium uppercase tracking-wide">Full Name</span>
             </label>
             {{ form.name }}
             {% if form.name.errors %}
-            <label class="label pt-1">
-              <span class="label-text-alt text-error">{% for e in form.name.errors %}{{ e }}{% endfor %}</span>
-            </label>
+            <label class="label pt-1"><span class="label-text-alt text-error">{% for e in form.name.errors %}{{ e }}{% endfor %}</span></label>
             {% endif %}
           </div>
 
-          {# Email #}
           <div class="form-control">
             <label class="label pb-1" for="{{ form.email.id_for_label }}">
               <span class="label-text text-xs font-medium uppercase tracking-wide">Email</span>
             </label>
             {{ form.email }}
             {% if form.email.errors %}
-            <label class="label pt-1">
-              <span class="label-text-alt text-error">{% for e in form.email.errors %}{{ e }}{% endfor %}</span>
-            </label>
+            <label class="label pt-1"><span class="label-text-alt text-error">{% for e in form.email.errors %}{{ e }}{% endfor %}</span></label>
             {% endif %}
           </div>
 
-          {# Password #}
           <div class="form-control">
             <label class="label pb-1" for="{{ form.password1.id_for_label }}">
               <span class="label-text text-xs font-medium uppercase tracking-wide">Password</span>
             </label>
             {{ form.password1 }}
             {% if form.password1.errors %}
-            <label class="label pt-1">
-              <span class="label-text-alt text-error">{% for e in form.password1.errors %}{{ e }}{% endfor %}</span>
-            </label>
+            <label class="label pt-1"><span class="label-text-alt text-error">{% for e in form.password1.errors %}{{ e }}{% endfor %}</span></label>
             {% endif %}
           </div>
 
-          {# Confirm Password #}
           <div class="form-control">
             <label class="label pb-1" for="{{ form.password2.id_for_label }}">
               <span class="label-text text-xs font-medium uppercase tracking-wide">Confirm Password</span>
             </label>
             {{ form.password2 }}
             {% if form.password2.errors %}
-            <label class="label pt-1">
-              <span class="label-text-alt text-error">{% for e in form.password2.errors %}{{ e }}{% endfor %}</span>
-            </label>
+            <label class="label pt-1"><span class="label-text-alt text-error">{% for e in form.password2.errors %}{{ e }}{% endfor %}</span></label>
             {% endif %}
           </div>
 
-          <button type="submit" class="btn btn-primary w-full mt-1">
-            Sign Up
-          </button>
+          <button type="submit" class="btn btn-primary w-full mt-1">Sign Up</button>
         </form>
 
-        <p class="text-center text-xs opacity-60">
+        <p class="text-center text-xs text-base-content/50">
           Already have an account?
           <a href="{% url 'coreRelback:login' %}" class="link link-primary font-medium">Sign in</a>
         </p>

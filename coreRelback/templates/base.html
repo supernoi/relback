@@ -1,110 +1,56 @@
 {% load static %} {% load tailwind_tags %} {% load backup_tags %}
 <!doctype html>
-<html lang="en" data-theme="relback_dark">
+<html lang="en" data-theme="relback_light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}RelBack - Oracle Report Backup{% endblock title %}</title>
-    {# FOUC prevention: restore saved DaisyUI theme BEFORE first CSS paint #}
+    <title>{% block title %}RelBack — Backup Monitor{% endblock title %}</title>
     <script>
       (function () {
         var t = localStorage.getItem("relback-theme");
         if (t) document.documentElement.setAttribute("data-theme", t);
       })();
     </script>
-
-    <!-- Tailwind CSS + DaisyUI (compiled via django-tailwind) -->
     {% tailwind_css %}
-
-    <!-- Material Icons (used throughout content templates — keep until Phase 4 icon audit) -->
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
-      rel="stylesheet"
-    />
-
-    <!-- Legacy content CSS: md-card, md-badge, md-btn etc. — remove per Phase 4 migration -->
-    <link href="{% static 'css/oracle-modern-theme.css' %}" rel="stylesheet" />
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     {% block extra_css %}{% endblock extra_css %}
   </head>
-  <body>
-    {# DaisyUI Drawer: sidebar visible on lg; on mobile toggled via #main-drawer #}
+  <body class="bg-base-100 text-base-content">
     <div class="drawer lg:drawer-open">
       <input id="main-drawer" type="checkbox" class="drawer-toggle" />
 
-      {# ── Page Content ──────────────────────────────────────────────── #}
       <div class="drawer-content flex flex-col min-h-screen">
 
-        {# Top Navbar ─────────────────────────────────────────────────── #}
-        <div class="navbar bg-base-200 border-b border-base-300 sticky top-0 z-30 px-4 gap-2 min-h-12">
-
-          {# Mobile: hamburger opens sidebar #}
-          <label
-            for="main-drawer"
-            class="btn btn-ghost btn-sm btn-circle drawer-button lg:hidden"
-            aria-label="Open menu"
-          >
-            <i class="material-icons">menu</i>
+        {# ── Navbar ──────────────────────────────────────────────────── #}
+        <header class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-30 px-4 gap-2 h-14 min-h-0">
+          <label for="main-drawer" class="btn btn-ghost btn-sm btn-square lg:hidden" aria-label="Open menu">
+            <i class="material-icons-round text-xl">menu</i>
           </label>
-
-          {# Breadcrumb slot — pages populate {% block breadcrumb %} #}
           <div class="flex-1 text-sm breadcrumbs overflow-hidden hidden sm:block">
             <ul>
-              <li>
-                <a href="{% url 'coreRelback:index' %}" class="opacity-60 hover:opacity-100">
-                  relBack
-                </a>
-              </li>
+              <li><a href="{% url 'coreRelback:index' %}" class="opacity-60 hover:opacity-100">RelBack</a></li>
               {% block breadcrumb %}{% endblock breadcrumb %}
             </ul>
           </div>
-
-          {# Right actions: theme toggle + user dropdown #}
           <div class="flex items-center gap-1">
-
-            {# Theme cycle button #}
-            <button
-              id="themeToggle"
-              class="btn btn-ghost btn-sm btn-circle"
-              title="Cycle theme"
-            >
-              <i class="material-icons text-xl" id="themeIcon">dark_mode</i>
+            <button id="themeToggle" class="btn btn-ghost btn-sm btn-square" title="Toggle theme">
+              <i class="material-icons-round text-lg" id="themeIcon">light_mode</i>
             </button>
-
-            {# User dropdown — DaisyUI pure-CSS, no JS required #}
             {% if user.is_authenticated %}
             <div class="dropdown dropdown-end">
-              <div
-                tabindex="0"
-                role="button"
-                class="btn btn-ghost btn-sm gap-1 normal-case"
-              >
-                <i class="material-icons text-xl">account_circle</i>
-                <span class="hidden md:inline text-sm font-normal">
-                  {{ request.user.username }}
-                </span>
-                <i class="material-icons text-sm">keyboard_arrow_down</i>
+              <div tabindex="0" role="button" class="btn btn-ghost btn-sm gap-1 normal-case">
+                <i class="material-icons-round text-lg">person</i>
+                <span class="hidden md:inline text-sm">{{ request.user.username }}</span>
+                <i class="material-icons-round text-xs">expand_more</i>
               </div>
-              <ul
-                tabindex="0"
-                class="dropdown-content menu bg-base-100 rounded-box shadow-lg border border-base-300 z-50 w-48 p-2 mt-1"
-              >
-                <li>
-                  <a href="{% url 'coreRelback:user-settings' %}">
-                    <i class="material-icons text-sm">settings</i>
-                    Settings
-                  </a>
-                </li>
+              <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-lg shadow-lg border border-base-300 z-50 w-44 p-1 mt-1">
+                <li><a href="{% url 'coreRelback:user-settings' %}"><i class="material-icons-round text-sm">settings</i> Settings</a></li>
                 <li>
                   <form method="post" action="{% url 'coreRelback:logout' %}" class="m-0">
                     {% csrf_token %}
-                    <button type="submit" class="w-full text-left flex items-center gap-2 px-2 py-1.5 rounded hover:bg-base-200">
-                      <i class="material-icons text-sm">logout</i>
-                      Sign Out
+                    <button type="submit" class="w-full text-left flex items-center gap-2">
+                      <i class="material-icons-round text-sm">logout</i> Sign Out
                     </button>
                   </form>
                 </li>
@@ -112,183 +58,97 @@
             </div>
             {% endif %}
           </div>
-        </div>
-        {# /Top Navbar #}
+        </header>
 
-        {# Flash messages — DaisyUI alerts (dismissible) ──────────────── #}
+        {# ── Flash messages ──────────────────────────────────────────── #}
         {% if messages %}
         <div class="px-4 pt-3 space-y-2">
           {% for message in messages %}
-          <div
-            role="alert"
-            class="alert shadow-sm {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}"
-          >
-            <i class="material-icons">
-              {% if message.tags == 'success' %}check_circle
-              {% elif message.tags == 'error' %}error
-              {% elif message.tags == 'warning' %}warning
-              {% else %}info{% endif %}
+          <div role="alert" class="alert alert-sm shadow-sm {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}">
+            <i class="material-icons-round text-lg">
+              {% if message.tags == 'success' %}check_circle{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}
             </i>
-            <span>{{ message }}</span>
-            <button
-              class="btn btn-ghost btn-xs"
-              onclick="this.closest('[role=alert]').remove()"
-              aria-label="Dismiss"
-            >
-              <i class="material-icons text-sm">close</i>
+            <span class="text-sm">{{ message }}</span>
+            <button class="btn btn-ghost btn-xs" onclick="this.closest('[role=alert]').remove()" aria-label="Dismiss">
+              <i class="material-icons-round text-sm">close</i>
             </button>
           </div>
           {% endfor %}
         </div>
         {% endif %}
 
-        {# Main Page Content ─────────────────────────────────────────── #}
-        <main class="flex-1 p-4">
+        {# ── Main content ────────────────────────────────────────────── #}
+        <main class="flex-1 p-4 lg:p-6">
           {% block content %}{% endblock content %}
         </main>
 
-        {# Footer ──────────────────────────────────────────────────── #}
-        <footer class="footer footer-center p-3 bg-base-200 border-t border-base-300 text-base-content text-xs opacity-50">
-          <aside>
-            <p>
-              <i class="material-icons" style="font-size:14px;vertical-align:middle;">copyright</i>
-              2025 RelBack — Oracle Report Backup
-            </p>
-          </aside>
+        {# ── Footer ──────────────────────────────────────────────────── #}
+        <footer class="py-3 px-4 border-t border-base-300 text-center text-xs text-base-content/40">
+          &copy; 2025 RelBack — Backup Monitor
         </footer>
       </div>
-      {# /drawer-content #}
 
-      {# ── Sidebar ──────────────────────────────────────────────────── #}
+      {# ── Sidebar ────────────────────────────────────────────────── #}
       <div class="drawer-side z-40">
         <label for="main-drawer" aria-label="Close menu" class="drawer-overlay"></label>
-
-        <aside class="bg-base-200 border-r border-base-300 flex flex-col w-64 min-h-screen">
-
-          {# Brand / Logo #}
+        <aside class="bg-base-200 border-r border-base-300 flex flex-col w-60 min-h-screen">
           <div class="flex items-center gap-3 px-4 py-4 border-b border-base-300">
-            <i class="material-icons text-primary" style="font-size:2rem;">storage</i>
+            <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center">
+              <i class="material-icons-round text-primary-content text-lg">backup</i>
+            </div>
             <div>
-              <p class="font-bold text-lg leading-tight text-primary">relBack</p>
-              <p class="text-xs opacity-50 leading-tight">Oracle Backup Monitor</p>
+              <p class="font-semibold text-base leading-tight">RelBack</p>
+              <p class="text-xs text-base-content/50 leading-tight">Backup Monitor</p>
             </div>
           </div>
 
-          {# Navigation links #}
-          <ul class="menu menu-md p-3 gap-0.5 flex-1">
-            <li class="menu-title text-xs uppercase tracking-wider opacity-40 mt-1">
-              Navigation
-            </li>
-            <li>
-              <a href="{% url 'coreRelback:index' %}">
-                <i class="material-icons text-sm">home</i>
-                Dashboard
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'coreRelback:client-list' %}">
-                <i class="material-icons text-sm">business</i>
-                Clients
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'coreRelback:host-list' %}">
-                <i class="material-icons text-sm">dns</i>
-                Hosts
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'coreRelback:database-list' %}">
-                <i class="material-icons text-sm">storage</i>
-                Databases
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'coreRelback:policy-list' %}">
-                <i class="material-icons text-sm">security</i>
-                Policies
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'coreRelback:report-read' %}">
-                <i class="material-icons text-sm">assessment</i>
-                Reports
-              </a>
-            </li>
+          <ul class="menu menu-sm p-3 gap-0.5 flex-1 [&_a]:rounded-lg">
+            <li class="menu-title text-[0.65rem] uppercase tracking-widest text-base-content/40 pt-2 pb-1">Main</li>
+            <li><a href="{% url 'coreRelback:index' %}"><i class="material-icons-round text-[1.1rem]">dashboard</i> Dashboard</a></li>
+            <li><a href="{% url 'coreRelback:report-read' %}"><i class="material-icons-round text-[1.1rem]">assessment</i> Reports</a></li>
+            <li class="menu-title text-[0.65rem] uppercase tracking-widest text-base-content/40 pt-3 pb-1">Manage</li>
+            <li><a href="{% url 'coreRelback:client-list' %}"><i class="material-icons-round text-[1.1rem]">business</i> Clients</a></li>
+            <li><a href="{% url 'coreRelback:host-list' %}"><i class="material-icons-round text-[1.1rem]">dns</i> Hosts</a></li>
+            <li><a href="{% url 'coreRelback:database-list' %}"><i class="material-icons-round text-[1.1rem]">storage</i> Databases</a></li>
+            <li><a href="{% url 'coreRelback:policy-list' %}"><i class="material-icons-round text-[1.1rem]">shield</i> Policies</a></li>
           </ul>
 
-          {# Bottom user info #}
           {% if user.is_authenticated %}
           <div class="flex items-center gap-2 px-4 py-3 border-t border-base-300">
-            <div class="avatar placeholder">
-              <div class="bg-primary text-primary-content rounded-full w-8 text-xs font-bold flex items-center justify-center">
-                {{ request.user.username|first|upper }}
-              </div>
+            <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
+              {{ request.user.username|first|upper }}
             </div>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium truncate">{{ request.user.username }}</p>
-              <p class="text-xs opacity-50">Logged in</p>
+              <p class="text-[0.65rem] text-base-content/40">Online</p>
             </div>
           </div>
           {% endif %}
         </aside>
       </div>
-      {# /drawer-side #}
     </div>
-    {# /drawer #}
 
     <script>
-      // ---------------------------------------------------------------
-      // DaisyUI Theme Cycle: relback_dark → relback_light → dracula → …
-      // Operates on <html data-theme="…"> (DaisyUI standard).
-      // localStorage key: 'relback-theme' (namespaced to avoid collisions).
-      // ---------------------------------------------------------------
-      const RELBACK_THEMES = ["relback_dark", "relback_light", "dracula"];
-      const THEME_ICONS = {
-        relback_dark: "dark_mode",
-        relback_light: "light_mode",
-        dracula: "nightlight",
-      };
-      const THEME_TITLES = {
-        relback_dark: "Dark (Oracle)",
-        relback_light: "Light",
-        dracula: "Dracula",
-      };
-
-      const themeToggle = document.getElementById("themeToggle");
-      const themeIcon = document.getElementById("themeIcon");
-
-      function applyTheme(t) {
+      const THEMES = ["relback_light", "relback_dark"];
+      const ICONS = { relback_light: "light_mode", relback_dark: "dark_mode" };
+      const btn = document.getElementById("themeToggle");
+      const ico = document.getElementById("themeIcon");
+      function setTheme(t) {
         document.documentElement.setAttribute("data-theme", t);
         localStorage.setItem("relback-theme", t);
-        if (themeIcon) themeIcon.textContent = THEME_ICONS[t] || "palette";
-        if (themeToggle)
-          themeToggle.title =
-            "Theme: " + (THEME_TITLES[t] || t) + " — click to cycle";
+        if (ico) ico.textContent = ICONS[t] || "palette";
       }
-
-      if (themeToggle) {
-        themeToggle.addEventListener("click", function () {
-          const curr =
-            document.documentElement.getAttribute("data-theme") ||
-            "relback_dark";
-          const idx = RELBACK_THEMES.indexOf(curr);
-          const next = RELBACK_THEMES[(idx + 1) % RELBACK_THEMES.length];
-          applyTheme(next);
+      if (btn) {
+        btn.addEventListener("click", function () {
+          var c = document.documentElement.getAttribute("data-theme") || "relback_light";
+          setTheme(THEMES[(THEMES.indexOf(c) + 1) % THEMES.length]);
         });
-        applyTheme(
-          document.documentElement.getAttribute("data-theme") || "relback_dark",
-        );
+        setTheme(document.documentElement.getAttribute("data-theme") || "relback_light");
       }
-
-      // Auto-dismiss DaisyUI alerts after 5 s
       setTimeout(function () {
-        document.querySelectorAll("[role=alert]").forEach(function (el) {
-          el.remove();
-        });
+        document.querySelectorAll("[role=alert]").forEach(function (el) { el.remove(); });
       }, 5000);
     </script>
-
     {% block extra_js %}{% endblock extra_js %}
   </body>
 </html>

@@ -3,434 +3,403 @@
 
 {% block title %}Clients - RelBack{% endblock title %}
 
+{% block breadcrumb %}Clients{% endblock breadcrumb %}
+
 {% block content %}
-<div class="md-container-fluid">
+<div class="max-w-7xl mx-auto px-4 py-6">
+
     <!-- Page Header -->
-    <div class="mb-5">
-        <div class="md-card page-header">
-            <div class="md-flex md-justify-between md-items-center">
-                <div class="md-flex md-items-center">
-                    <i class="material-icons page-header-icon">business</i>
-                    <div>
-                        <h1 class="page-title">Clients Management</h1>
-                        <p class="page-subtitle">Manage your backup clients and organizations</p>
-                    </div>
-                </div>
-                <button type="button" class="btn btn-primary" data-modal-target="#addClientModal">
-                    <i class="material-icons" style="font-size: 18px;">add</i>
-                    Add Client
-                </button>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div class="flex items-center gap-3">
+            <i class="material-icons-round text-primary text-3xl">business</i>
+            <div>
+                <h1 class="text-2xl font-bold">Clients Management</h1>
+                <p class="text-sm text-base-content/60">Manage your backup clients and organizations</p>
             </div>
         </div>
+        <button type="button" class="btn btn-primary" data-modal-target="#addClientModal">
+            <i class="material-icons-round text-lg">add</i>
+            Add Client
+        </button>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="stats stats-vertical lg:stats-horizontal shadow w-full mb-5">
+    <!-- Stats -->
+    <div class="stats stats-horizontal shadow-sm w-full mb-6 bg-base-100 border border-base-300">
         <div class="stat">
             <div class="stat-figure text-primary">
-                <i class="material-icons-round" style="font-size: 2.5rem;">business</i>
+                <i class="material-icons-round text-4xl">business</i>
             </div>
             <div class="stat-title">Total Clients</div>
-            <div class="stat-value stats-title">{{ clients.count }}</div>
+            <div class="stat-value text-primary">{{ clients.count }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-success">
-                <i class="material-icons-round" style="font-size: 2.5rem;">verified</i>
+                <i class="material-icons-round text-4xl">verified</i>
             </div>
             <div class="stat-title">Active Clients</div>
-            <div class="stat-value text-success stats-title">{{ clients|length }}</div>
+            <div class="stat-value text-success">{{ clients|length }}</div>
         </div>
     </div>
 
-    <!-- Search and Actions -->
-    <div class="mb-5 search-section">
-        <div class="md-card search-container">
-            <div class="search-grid">
-                <div class="autocomplete-container">
-                    <input type="text" class="input input-bordered w-full" id="searchClients" placeholder="Search clients..." autocomplete="off">
-                    <div class="autocomplete-list" id="autocompleteList"></div>
-                </div>
-                <button class="btn btn-ghost btn-sm clean-btn" id="cleanBtn">
-                    <i class="material-icons" style="font-size: 18px;">clear</i>
-                    Clean
-                </button>
+    <!-- Search -->
+    <div class="bg-base-100 border border-base-300 rounded-xl p-4 shadow-sm mb-6">
+        <div class="flex items-center gap-3">
+            <div class="relative flex-1">
+                <input type="text" class="input input-bordered w-full" id="searchClients" placeholder="Search clients..." autocomplete="off">
+                <div class="absolute top-full left-0 right-0 z-50 bg-base-100 border border-base-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto" id="autocompleteList" style="display: none;"></div>
             </div>
+            <button class="btn btn-ghost btn-sm" id="cleanBtn">
+                <i class="material-icons-round text-lg">clear</i>
+                Clear
+            </button>
         </div>
     </div>
 
     <!-- Clients Table -->
-    <div>
-        <div class="md-card md-card-decorated">
-            {% if clients %}
-                <div class="overflow-x-auto">
-                    <table class="table table-xs table-zebra w-full">
-                        <thead>
-                            <tr>
-                                <th class="oracle-info-gradient">
-                                    <div class="table-header-content">
-                                        <i class="material-icons table-header-icon">business</i>
-                                        <span class="table-header-text">Client Name</span>
+    <div class="bg-base-100 border border-base-300 rounded-xl shadow-sm overflow-hidden">
+        {% if clients %}
+            <div class="overflow-x-auto">
+                <table class="table table-sm w-full">
+                    <thead>
+                        <tr class="bg-base-200">
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">business</i>
+                                    Client Name
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">description</i>
+                                    Description
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">schedule</i>
+                                    Created
+                                </div>
+                            </th>
+                            <th>
+                                <div class="flex items-center gap-2">
+                                    <i class="material-icons-round text-sm opacity-70">settings</i>
+                                    Actions
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for client in clients %}
+                        <tr class="hover:bg-base-200/50 transition-colors">
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                        <i class="material-icons-round text-primary text-sm">business</i>
                                     </div>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <i class="material-icons table-header-icon">description</i>
-                                    <span class="table-header-text">Description</span>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <i class="material-icons table-header-icon">schedule</i>
-                                    <span class="table-header-text">Created</span>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <i class="material-icons table-header-icon">settings</i>
-                                    <span class="table-header-text">Actions</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for client in clients %}
-                            <tr>
-                                <td>
-                                    <div class="table-cell-content">
-                                        <div class="table-cell-icon">
-                                            <i class="material-icons-round">business</i>
-                                        </div>
-                                        <div>
-                                            <h5 class="table-cell-title">{{ client.name|default:"Unnamed Client" }}</h5>
-                                            <small class="table-cell-subtitle">ID: {{ client.id_client }}</small>
-                                        </div>
+                                    <div>
+                                        <h5 class="font-semibold text-sm">{{ client.name|default:"Unnamed Client" }}</h5>
+                                        <span class="text-xs text-base-content/50">ID: {{ client.id_client }}</span>
                                     </div>
-                                </td>
-                                <td>
-                                    <span class="table-cell-text">{{ client.description|default:"No description" }}</span>
-                                </td>
-                                <td>
-                                    <span class="table-cell-text">{{ client.created_at|date:"M d, Y" }}</span>
-                                </td>
-                                <td>
-                                    <div class="btn-actions-group">
-                                        <button type="button" 
-                                                class="btn-action btn-edit" 
-                                                title="Edit Client"
-                                                onclick="openEditModal('{{ client.id_client }}', '{{ client.name|escapejs }}', '{{ client.description|default:""|escapejs }}')">
-                                            <i class="material-icons-round">edit</i>
-                                        </button>
-                                        <button type="button" 
-                                                class="btn-action btn-delete" 
-                                                title="Delete Client"
-                                                onclick="openDeleteModal('{{ client.id_client }}', '{{ client.name|escapejs }}', '{{ client.description|default:"No description"|escapejs }}', '{{ client.created_at|date:"F d, Y G:i" }}')">
-                                            <i class="material-icons-round">delete</i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <!-- Empty State -->
-                <div class="empty-state">
-                    <i class="material-icons empty-state-icon">business</i>
-                    <h4 class="empty-state-title">No clients found</h4>
-                    <p class="empty-state-description">Get started by adding your first client</p>
-                    <a href="{% url 'coreRelback:client-create' %}" class="btn btn-primary">
-                        <i class="material-icons" style="font-size: 18px;">add</i>
-                        Add First Client
-                    </a>
-                </div>
-            {% endif %}
-        </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="text-sm">{{ client.description|default:"No description" }}</span>
+                            </td>
+                            <td>
+                                <span class="text-sm">{{ client.created_at|date:"M d, Y" }}</span>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-1">
+                                    <button type="button"
+                                            class="btn btn-ghost btn-xs"
+                                            title="Edit Client"
+                                            onclick="openEditModal('{{ client.id_client }}', '{{ client.name|escapejs }}', '{{ client.description|default:""|escapejs }}')">
+                                        <i class="material-icons-round text-sm">edit</i>
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-ghost btn-xs text-error"
+                                            title="Delete Client"
+                                            onclick="openDeleteModal('{{ client.id_client }}', '{{ client.name|escapejs }}', '{{ client.description|default:"No description"|escapejs }}', '{{ client.created_at|date:"F d, Y G:i" }}')">
+                                        <i class="material-icons-round text-sm">delete</i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="flex flex-col items-center justify-center py-16 px-4">
+                <i class="material-icons-round text-6xl text-base-content/20">business</i>
+                <h4 class="text-lg font-semibold text-base-content/70 mt-4">No clients found</h4>
+                <p class="text-sm text-base-content/50 mt-2">Get started by adding your first client</p>
+                <a href="{% url 'coreRelback:client-create' %}" class="btn btn-primary mt-4">
+                    <i class="material-icons-round text-lg">add</i>
+                    Add First Client
+                </a>
+            </div>
+        {% endif %}
     </div>
 </div>
 
-<!-- Floating Action Button -->
-<button class="btn btn-circle btn-primary btn-lg fixed bottom-6 right-6 shadow-lg z-50" id="addClientFab" title="Add Client">
-    <i class="material-icons">add</i>
-</button>
-
 <!-- Delete Confirmation Modal -->
-<div class="custom-modal" id="deleteClientModal">
-    <div class="custom-modal-backdrop"></div>
-    <div class="custom-modal-dialog">
-        <div class="custom-modal-content">
-            <!-- Modal Header -->
-            <div class="custom-modal-header">
-                <h5 class="custom-modal-title">
-                    <i class="material-icons">warning</i>
-                    Delete Client
-                </h5>
-                <button type="button" class="custom-modal-close" onclick="closeDeleteModal()">
-                    <i class="material-icons">close</i>
-                </button>
-            </div>
-            
-            <!-- Modal Body -->
-            <div class="custom-modal-body">
-                <!-- Warning Message -->
-                <div class="alert-danger">
-                    <i class="material-icons">dangerous</i>
-                    <div>
-                        <strong>Warning:</strong> This action cannot be undone. Deleting this client will also remove all associated hosts, databases, and backup policies.
-                    </div>
-                </div>
-                
-                <!-- Client Details -->
-                <p class="delete-question">Are you sure you want to delete the following client?</p>
-                
-                <div class="client-details">
-                    <div class="detail-row">
-                        <strong>Client Name:</strong>
-                        <span id="modal-client-name"></span>
-                    </div>
-                    <div class="detail-row">
-                        <strong>Description:</strong>
-                        <span id="modal-client-description"></span>
-                    </div>
-                    <div class="detail-row">
-                        <strong>Client ID:</strong>
-                        <span id="modal-client-id"></span>
-                    </div>
-                    <div class="detail-row">
-                        <strong>Created:</strong>
-                        <span id="modal-client-created"></span>
-                    </div>
-                </div>
+<div class="modal" id="deleteClientModal">
+    <div class="modal-box max-w-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="material-icons-round text-warning">warning</i>
+                Delete Client
+            </h3>
+            <button type="button" class="btn btn-ghost btn-sm btn-circle" onclick="closeDeleteModal()">
+                <i class="material-icons-round">close</i>
+            </button>
+        </div>
 
-                <!-- What will be deleted info -->
-                <div class="what-deleted-section">
-                    <div class="what-deleted-header">
-                        <i class="material-icons">info</i>
-                        What will be deleted?
-                    </div>
-                    <div class="what-deleted-content">
-                        <div class="deleted-item">
-                            <i class="material-icons">dns</i>
-                            <div>
-                                <strong>Hosts</strong>
-                                <small>All associated hosts</small>
-                            </div>
-                        </div>
-                        <div class="deleted-item">
-                            <i class="material-icons">storage</i>
-                            <div>
-                                <strong>Databases</strong>
-                                <small>All associated databases</small>
-                            </div>
-                        </div>
-                        <div class="deleted-item">
-                            <i class="material-icons">security</i>
-                            <div>
-                                <strong>Policies</strong>
-                                <small>All backup policies</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Modal Footer -->
-            <div class="custom-modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
-                    <i class="material-icons">cancel</i>
-                    Cancel
-                </button>
-                <form method="post" id="deleteClientForm" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-delete-confirm">
-                        <i class="material-icons">delete_forever</i>
-                        Yes, Delete Client
-                    </button>
-                </form>
+        <div class="alert alert-error mb-4">
+            <i class="material-icons-round">dangerous</i>
+            <div>
+                <strong>Warning:</strong> This action cannot be undone. Deleting this client will also remove all associated hosts, databases, and backup policies.
             </div>
         </div>
+
+        <p class="font-medium mb-3">Are you sure you want to delete the following client?</p>
+
+        <div class="bg-base-200 rounded-lg p-4 space-y-2 mb-4">
+            <div class="flex justify-between text-sm">
+                <strong>Client Name:</strong>
+                <span id="modal-client-name"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <strong>Description:</strong>
+                <span id="modal-client-description"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <strong>Client ID:</strong>
+                <span id="modal-client-id"></span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <strong>Created:</strong>
+                <span id="modal-client-created"></span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <div class="flex items-center gap-2 font-semibold text-sm mb-2">
+                <i class="material-icons-round text-info text-sm">info</i>
+                What will be deleted?
+            </div>
+            <div class="grid grid-cols-1 gap-2">
+                <div class="flex items-center gap-3 p-3 bg-base-200 rounded-lg">
+                    <i class="material-icons-round text-error text-lg">dns</i>
+                    <div>
+                        <div class="font-medium text-sm">Hosts</div>
+                        <div class="text-xs text-base-content/60">All associated hosts</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-base-200 rounded-lg">
+                    <i class="material-icons-round text-error text-lg">storage</i>
+                    <div>
+                        <div class="font-medium text-sm">Databases</div>
+                        <div class="text-xs text-base-content/60">All associated databases</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-base-200 rounded-lg">
+                    <i class="material-icons-round text-error text-lg">security</i>
+                    <div>
+                        <div class="font-medium text-sm">Policies</div>
+                        <div class="text-xs text-base-content/60">All backup policies</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="closeDeleteModal()">
+                <i class="material-icons-round text-lg">cancel</i>
+                Cancel
+            </button>
+            <form method="post" id="deleteClientForm" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-error">
+                    <i class="material-icons-round text-lg">delete_forever</i>
+                    Yes, Delete Client
+                </button>
+            </form>
+        </div>
     </div>
+    <div class="modal-backdrop" onclick="closeDeleteModal()"></div>
 </div>
 
 <!-- Edit Client Modal -->
-<div class="custom-modal" id="editClientModal">
-    <div class="custom-modal-backdrop"></div>
-    <div class="custom-modal-dialog">
-        <div class="custom-modal-content">
-            <!-- Modal Header -->
-            <div class="custom-modal-header edit-modal-header">
-                <h5 class="custom-modal-title">
-                    <i class="material-icons" style="color: #C74634;">edit</i>
-                    <span style="color: #E7F2F5;">Edit Client</span>
-                </h5>
-                <button type="button" class="custom-modal-close" onclick="closeEditModal()">
-                    <i class="material-icons">close</i>
-                </button>
+<div class="modal" id="editClientModal">
+    <div class="modal-box max-w-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="material-icons-round text-primary">edit</i>
+                Edit Client
+            </h3>
+            <button type="button" class="btn btn-ghost btn-sm btn-circle" onclick="closeEditModal()">
+                <i class="material-icons-round">close</i>
+            </button>
+        </div>
+
+        <div class="alert alert-info mb-4">
+            <i class="material-icons-round">info</i>
+            <div>
+                <strong>Update Information:</strong> Modify the client details below. Changes will be saved immediately upon submission.
             </div>
-            
-            <!-- Modal Body -->
-            <div class="custom-modal-body">
-                <!-- Info Message -->
-                <div class="alert-info">
-                    <i class="material-icons">info</i>
-                    <div>
-                        <strong>Update Information:</strong> Modify the client details below. Changes will be saved immediately upon submission.
+        </div>
+
+        <form method="post" id="editClientForm">
+            {% csrf_token %}
+
+            <div class="space-y-3 border-b border-base-200 pb-4 mb-4">
+                <h6 class="flex items-center gap-2 font-semibold text-sm">
+                    <i class="material-icons-round text-sm">business</i>
+                    Client Information
+                </h6>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label pb-1" for="edit-client-name">
+                            <span class="label-text font-medium">
+                                <i class="material-icons-round text-xs align-middle mr-1">business</i> Client Name *
+                            </span>
+                        </label>
+                        <input type="text"
+                               class="input input-bordered w-full"
+                               id="edit-client-name"
+                               name="name"
+                               required
+                               placeholder="Enter client name">
+                        <div class="form-error text-xs text-error mt-1 hidden" id="edit-name-error"></div>
+                    </div>
+                    <div class="form-control">
+                        <label class="label pb-1" for="edit-client-description">
+                            <span class="label-text font-medium">
+                                <i class="material-icons-round text-xs align-middle mr-1">description</i> Description
+                            </span>
+                        </label>
+                        <input type="text"
+                               class="input input-bordered w-full"
+                               id="edit-client-description"
+                               name="description"
+                               placeholder="Enter description (optional)">
+                        <div class="form-error text-xs text-error mt-1 hidden" id="edit-description-error"></div>
                     </div>
                 </div>
-                
-                <!-- Edit Form -->
-                <form method="post" id="editClientForm">
-                    {% csrf_token %}
-                    
-                    <div class="form-section">
-                        <h6 class="form-section-title">
-                            <i class="material-icons">business</i>
-                            Client Information
-                        </h6>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control">
-                                <label class="label pb-1" for="edit-client-name">
-                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">business</i> Client Name *</span>
-                                </label>
-                                <input type="text" 
-                                       class="input input-bordered w-full" 
-                                       id="edit-client-name" 
-                                       name="name" 
-                                       required
-                                       placeholder="Enter client name">
-                                <div class="form-error" id="edit-name-error"></div>
-                            </div>
-                            
-                            <div class="form-control">
-                                <label class="label pb-1" for="edit-client-description">
-                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">description</i> Description</span>
-                                </label>
-                                <input type="text" 
-                                       class="input input-bordered w-full" 
-                                       id="edit-client-description" 
-                                       name="description" 
-                                       placeholder="Enter description (optional)">
-                                <div class="form-error" id="edit-description-error"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Client ID Display -->
-                    <div class="form-section">
-                        <h6 class="form-section-title">
-                            <i class="material-icons">info</i>
-                            Additional Information
-                        </h6>
-                        
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <span class="info-label">Client ID:</span>
-                                <span class="info-value" id="edit-client-id-display"></span>
-                            </div>
-                        </div>
-                    </div>
-                </form>
             </div>
-            
-            <!-- Modal Footer -->
-            <div class="custom-modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeEditModal()">
-                    <i class="material-icons">cancel</i>
-                    Cancel
-                </button>
-                <button type="submit" form="editClientForm" class="btn-save-confirm" onclick="submitEditForm()">
-                    <i class="material-icons">save</i>
-                    Update Client
-                </button>
+
+            <div class="space-y-3">
+                <h6 class="flex items-center gap-2 font-semibold text-sm">
+                    <i class="material-icons-round text-sm">info</i>
+                    Additional Information
+                </h6>
+                <div class="bg-base-200 rounded-lg p-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-base-content/60">Client ID:</span>
+                        <span class="font-medium" id="edit-client-id-display"></span>
+                    </div>
+                </div>
             </div>
+        </form>
+
+        <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="closeEditModal()">
+                <i class="material-icons-round text-lg">cancel</i>
+                Cancel
+            </button>
+            <button type="submit" form="editClientForm" class="btn btn-primary" onclick="submitEditForm()">
+                <i class="material-icons-round text-lg">save</i>
+                Update Client
+            </button>
         </div>
     </div>
+    <div class="modal-backdrop" onclick="closeEditModal()"></div>
 </div>
 
-
-
 <!-- Add Client Modal -->
-<div id="addClientModal" class="custom-modal">
-    <div class="custom-modal-backdrop"></div>
-    <div class="custom-modal-dialog">
-        <div class="custom-modal-content">
-            <div class="custom-modal-header add-modal-header">
-                <h5 class="custom-modal-title">
-                    <i class="material-icons">add_business</i>
-                    <span>Add New Client</span>
-                </h5>
-                <button type="button" class="custom-modal-close" onclick="closeAddModal()">
-                    <i class="material-icons">close</i>
-                </button>
-            </div>
-            
-            <div class="custom-modal-body">
-                <form id="addClientForm" method="post" action="{% url 'coreRelback:client-create' %}">
-                    {% csrf_token %}
-                <div class="modal-section">
-                    <div class="form-section">
-                        <h5 class="form-section-title">
-                            <i class="material-icons md-me-2">info</i>
-                            Client Information
-                        </h5>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control">
-                                <label class="label pb-1" for="add-client-name">
-                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">business</i> Client Name *</span>
-                                </label>
-                                <input type="text" 
-                                       class="input input-bordered w-full" 
-                                       id="add-client-name" 
-                                       name="name" 
-                                       required>
-                            </div>
-                            <div class="form-control">
-                                <label class="label pb-1" for="add-client-description">
-                                    <span class="label-text font-medium"><i class="material-icons text-sm align-middle mr-1">description</i> Description</span>
-                                </label>
-                                <input type="text" 
-                                       class="input input-bordered w-full" 
-                                       id="add-client-description" 
-                                       name="description">
-                            </div>
-                        </div>
+<div class="modal" id="addClientModal">
+    <div class="modal-box max-w-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="material-icons-round text-primary">add_business</i>
+                Add New Client
+            </h3>
+            <button type="button" class="btn btn-ghost btn-sm btn-circle" onclick="closeAddModal()">
+                <i class="material-icons-round">close</i>
+            </button>
+        </div>
+
+        <form id="addClientForm" method="post" action="{% url 'coreRelback:client-create' %}">
+            {% csrf_token %}
+
+            <div class="space-y-3 border-b border-base-200 pb-4 mb-4">
+                <h6 class="flex items-center gap-2 font-semibold text-sm">
+                    <i class="material-icons-round text-sm">info</i>
+                    Client Information
+                </h6>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-control">
+                        <label class="label pb-1" for="add-client-name">
+                            <span class="label-text font-medium">
+                                <i class="material-icons-round text-xs align-middle mr-1">business</i> Client Name *
+                            </span>
+                        </label>
+                        <input type="text"
+                               class="input input-bordered w-full"
+                               id="add-client-name"
+                               name="name"
+                               required>
                     </div>
-                    
-                    <div class="form-section">
-                        <div class="alert alert-info">
-                            <i class="material-icons">help</i>
-                            <div>
-                                <h6 class="font-semibold">Guidelines</h6>
-                                <ul class="list-disc list-inside space-y-1 text-sm mt-1">
-                                    <li><strong>Client Name:</strong> A unique identifier for your organization or department</li>
-                                    <li><strong>Description:</strong> Optional details about the client's purpose or location</li>
-                                    <li>After creating a client, you can add hosts and databases associated with it</li>
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="form-control">
+                        <label class="label pb-1" for="add-client-description">
+                            <span class="label-text font-medium">
+                                <i class="material-icons-round text-xs align-middle mr-1">description</i> Description
+                            </span>
+                        </label>
+                        <input type="text"
+                               class="input input-bordered w-full"
+                               id="add-client-description"
+                               name="description">
                     </div>
-                </form>
+                </div>
             </div>
-            
-            <div class="custom-modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeAddModal()">
-                    <i class="material-icons">cancel</i>
-                    Cancel
-                </button>
-                <button type="submit" form="addClientForm" class="btn-add-confirm">
-                    <i class="material-icons">add</i>
-                    Create Client
-                </button>
+
+            <div class="alert alert-info">
+                <i class="material-icons-round">help</i>
+                <div>
+                    <h6 class="font-semibold">Guidelines</h6>
+                    <ul class="list-disc list-inside space-y-1 text-sm mt-1">
+                        <li><strong>Client Name:</strong> A unique identifier for your organization or department</li>
+                        <li><strong>Description:</strong> Optional details about the client's purpose or location</li>
+                        <li>After creating a client, you can add hosts and databases associated with it</li>
+                    </ul>
+                </div>
             </div>
+        </form>
+
+        <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="closeAddModal()">
+                <i class="material-icons-round text-lg">cancel</i>
+                Cancel
+            </button>
+            <button type="submit" form="addClientForm" class="btn btn-primary">
+                <i class="material-icons-round text-lg">add</i>
+                Create Client
+            </button>
         </div>
     </div>
-    </div>
+    <div class="modal-backdrop" onclick="closeAddModal()"></div>
 </div>
 
 <script>
 // Add Modal Functions
 function openAddModal() {
     const modal = document.getElementById('addClientModal');
-    modal.classList.add('show');
+    modal.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
-    
-    // Focus on first input
+
     setTimeout(() => {
         document.getElementById('add-client-name').focus();
     }, 100);
@@ -438,53 +407,47 @@ function openAddModal() {
 
 function closeAddModal() {
     const modal = document.getElementById('addClientModal');
-    modal.classList.remove('show');
+    modal.classList.remove('modal-open');
     document.body.style.overflow = '';
-    
-    // Reset form
+
     const form = document.getElementById('addClientForm');
     form.reset();
-    
-    // Clear any validation errors
+
     form.querySelectorAll('.input-bordered').forEach(input => {
-        input.classList.remove('error');
+        input.classList.remove('input-error');
     });
     form.querySelectorAll('.error-message').forEach(error => {
         error.remove();
     });
 }
 
-// Add Client Form Validation
 function validateAddForm() {
     const nameInput = document.getElementById('add-client-name');
     let isValid = true;
-    
-    // Clear previous errors
-    nameInput.classList.remove('error');
+
+    nameInput.classList.remove('input-error');
     const existingError = nameInput.parentNode.querySelector('.error-message');
     if (existingError) {
         existingError.remove();
     }
-    
-    // Validate name
+
     if (!nameInput.value.trim()) {
         showAddFormError(nameInput, 'Client name is required');
         isValid = false;
     }
-    
+
     return isValid;
 }
 
 function showAddFormError(input, message) {
-    input.classList.add('error');
-    
+    input.classList.add('input-error');
+
     const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
+    errorDiv.className = 'error-message text-xs text-error mt-1';
     errorDiv.textContent = message;
     input.parentNode.appendChild(errorDiv);
 }
 
-// Add Client Form Submit Handler
 document.getElementById('addClientForm').addEventListener('submit', function(e) {
     if (!validateAddForm()) {
         e.preventDefault();
@@ -492,53 +455,37 @@ document.getElementById('addClientForm').addEventListener('submit', function(e) 
     }
 });
 
-// Real-time validation for add form
 document.getElementById('add-client-name').addEventListener('input', function() {
-    if (this.classList.contains('error')) {
+    if (this.classList.contains('input-error')) {
         validateAddForm();
     }
 });
 
-// Update the Add button event listener in the existing DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Add Client button
     const addButton = document.querySelector('[data-modal-target="#addClientModal"]');
     if (addButton) {
         addButton.addEventListener('click', openAddModal);
     }
-
-    // Add modal click outside to close
-    const addModal = document.getElementById('addClientModal');
-    if (addModal) {
-        addModal.addEventListener('click', function(e) {
-            if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
-                closeAddModal();
-            }
-        });
-    }
 });
 
-// Update ESC key handler to include Add modal
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         const deleteModal = document.getElementById('deleteClientModal');
         const editModal = document.getElementById('editClientModal');
         const addModal = document.getElementById('addClientModal');
-        
-        if (deleteModal && deleteModal.classList.contains('show')) {
+
+        if (deleteModal && deleteModal.classList.contains('modal-open')) {
             closeDeleteModal();
-        } else if (editModal && editModal.classList.contains('show')) {
+        } else if (editModal && editModal.classList.contains('modal-open')) {
             closeEditModal();
-        } else if (addModal && addModal.classList.contains('show')) {
+        } else if (addModal && addModal.classList.contains('modal-open')) {
             closeAddModal();
         }
     }
 });
-
 </script>
 
 <script>
-// Dados dos clientes para auto-completar
 const clientsData = [
     {% for client in clients %}
     {
@@ -549,45 +496,36 @@ const clientsData = [
     {% endfor %}
 ];
 
-// FAB click handler
-document.getElementById('addClientFab').addEventListener('click', function() {
-    window.location.href = '{% url "coreRelback:client-create" %}';
-});
-
-// Auto-complete functionality
 const searchInput = document.getElementById('searchClients');
 const autocompleteList = document.getElementById('autocompleteList');
 let currentFocus = -1;
 
 searchInput.addEventListener('input', function() {
     const searchTerm = this.value.toLowerCase().trim();
-    
-    // Limpar lista anterior
+
     autocompleteList.innerHTML = '';
     currentFocus = -1;
-    
+
     if (searchTerm.length === 0) {
         autocompleteList.style.display = 'none';
         showAllRows();
         return;
     }
-    
-    // Filtrar clientes
-    const filteredClients = clientsData.filter(client => 
-        client.name.toLowerCase().includes(searchTerm) || 
+
+    const filteredClients = clientsData.filter(client =>
+        client.name.toLowerCase().includes(searchTerm) ||
         client.description.toLowerCase().includes(searchTerm)
     );
-    
-    // Mostrar sugestões
+
     if (filteredClients.length > 0) {
         autocompleteList.style.display = 'block';
-        
+
         filteredClients.slice(0, 5).forEach((client, index) => {
             const item = document.createElement('div');
-            item.className = 'autocomplete-item';
+            item.className = 'autocomplete-item px-4 py-3 cursor-pointer hover:bg-base-200 transition-colors border-b border-base-200 last:border-0';
             item.innerHTML = `
-                <div style="font-weight: 600; color: #3C4545; margin-bottom: 4px;">${client.name}</div>
-                <div style="font-size: 0.85rem; color: #697778;">${client.description}</div>
+                <div class="font-semibold text-sm">${client.name}</div>
+                <div class="text-xs text-base-content/60">${client.description}</div>
             `;
             item.addEventListener('click', function() {
                 searchInput.value = client.name;
@@ -599,15 +537,13 @@ searchInput.addEventListener('input', function() {
     } else {
         autocompleteList.style.display = 'none';
     }
-    
-    // Filtrar tabela em tempo real
+
     filterTable(searchTerm);
 });
 
-// Navegação por teclado no auto-complete
 searchInput.addEventListener('keydown', function(e) {
     const items = autocompleteList.querySelectorAll('.autocomplete-item');
-    
+
     if (e.key === 'ArrowDown') {
         e.preventDefault();
         currentFocus++;
@@ -631,28 +567,25 @@ searchInput.addEventListener('keydown', function(e) {
 
 function setActive(items) {
     items.forEach((item, index) => {
-        item.classList.toggle('active', index === currentFocus);
+        item.classList.toggle('bg-base-200', index === currentFocus);
     });
 }
 
-// Fechar auto-complete ao clicar fora
 document.addEventListener('click', function(e) {
     if (!searchInput.contains(e.target) && !autocompleteList.contains(e.target)) {
         autocompleteList.style.display = 'none';
     }
 });
 
-// Função para filtrar tabela
 function filterTable(searchTerm) {
     const tableRows = document.querySelectorAll('tbody tr');
-    
+
     tableRows.forEach(row => {
         const clientName = row.querySelector('h5').textContent.toLowerCase();
         const description = row.querySelector('td:nth-child(2) span').textContent.toLowerCase();
-        
+
         if (clientName.includes(searchTerm) || description.includes(searchTerm)) {
             row.style.display = '';
-            row.style.animation = 'fadeIn 0.3s ease';
         } else {
             row.style.display = 'none';
         }
@@ -663,140 +596,87 @@ function showAllRows() {
     const tableRows = document.querySelectorAll('tbody tr');
     tableRows.forEach(row => {
         row.style.display = '';
-        row.style.animation = 'fadeIn 0.3s ease';
     });
 }
 
-// Botão Clean
 document.getElementById('cleanBtn').addEventListener('click', function() {
     searchInput.value = '';
     autocompleteList.style.display = 'none';
     showAllRows();
     searchInput.focus();
-    
-    // Adicionar efeito visual ao botão
-    this.style.transform = 'scale(0.95)';
-    setTimeout(() => {
-        this.style.transform = 'scale(1)';
-    }, 150);
 });
 
-// Adicionar efeito hover aos botões
-document.querySelectorAll('.md-btn').forEach(btn => {
-    btn.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-2px)';
-    });
-    
-    btn.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
-    });
-});
-
-// Add row hover effects
-document.querySelectorAll('tbody tr').forEach(row => {
-    row.addEventListener('mouseenter', function() {
-        this.style.backgroundColor = 'var(--sky-30)';
-        this.style.transform = 'scale(1.005)';
-        this.style.transition = 'all 0.3s ease';
-    });
-    
-    row.addEventListener('mouseleave', function() {
-        this.style.backgroundColor = '';
-        this.style.transform = 'scale(1)';
-    });
-});
-
-// Adicionar efeitos aos botões de ação (agora usando apenas CSS)
-document.querySelectorAll('.btn-action').forEach(btn => {
-    // Os efeitos agora são controlados pelo CSS
-});
-
-// Focus automático no campo de busca
-document.addEventListener('DOMContentLoaded', function() {
-    searchInput.focus();
-});
-
-// Modal functions for delete confirmation
 function openDeleteModal(clientId, clientName, clientDescription, clientCreated) {
-    // Populate modal with client data
     document.getElementById('modal-client-name').textContent = clientName;
     document.getElementById('modal-client-description').textContent = clientDescription;
     document.getElementById('modal-client-id').textContent = clientId;
     document.getElementById('modal-client-created').textContent = clientCreated;
-    
-    // Set form action to delete URL
+
     const deleteForm = document.getElementById('deleteClientForm');
     deleteForm.action = `{% url 'coreRelback:client-delete' 0 %}`.replace('0', clientId);
-    
-    // Show modal
+
     const modal = document.getElementById('deleteClientModal');
-    modal.classList.add('show');
+    modal.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
 }
 
 function closeDeleteModal() {
     const modal = document.getElementById('deleteClientModal');
-    modal.classList.remove('show');
+    modal.classList.remove('modal-open');
     document.body.style.overflow = '';
 }
 
-// Modal functions for edit client
 function openEditModal(clientId, clientName, clientDescription) {
     const modal = document.getElementById('editClientModal');
     const nameInput = document.getElementById('edit-client-name');
     const descInput = document.getElementById('edit-client-description');
     const clientIdSpan = document.getElementById('edit-client-id-display');
-    
-    // Populate form fields
+
     nameInput.value = clientName;
     descInput.value = clientDescription || '';
     clientIdSpan.textContent = clientId;
-    
-    modal.classList.add('show');
+
+    modal.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
-    
-    // Focus on name input for immediate editing
+
     nameInput.focus();
 }
 
 function closeEditModal() {
     const modal = document.getElementById('editClientModal');
-    modal.classList.remove('show');
+    modal.classList.remove('modal-open');
     document.body.style.overflow = '';
-    
-    // Clear any error states
+
     clearFormErrors();
 }
 
 function clearFormErrors() {
     const errorElements = document.querySelectorAll('.form-error');
     const inputElements = document.querySelectorAll('.input-bordered');
-    
-    errorElements.forEach(el => el.classList.remove('show'));
-    inputElements.forEach(el => el.classList.remove('error'));
+
+    errorElements.forEach(el => el.classList.add('hidden'));
+    inputElements.forEach(el => el.classList.remove('input-error'));
 }
 
 function validateEditForm() {
     const nameInput = document.getElementById('edit-client-name');
     const nameError = document.getElementById('edit-name-error');
     let isValid = true;
-    
-    // Clear previous errors
+
     clearFormErrors();
-    
-    // Validate name field
+
     if (!nameInput.value.trim()) {
-        nameInput.classList.add('error');
+        nameInput.classList.add('input-error');
         nameError.textContent = 'Client name is required';
-        nameError.classList.add('show');
+        nameError.classList.remove('hidden');
         isValid = false;
     } else if (nameInput.value.trim().length < 2) {
-        nameInput.classList.add('error');
+        nameInput.classList.add('input-error');
         nameError.textContent = 'Client name must be at least 2 characters';
-        nameError.classList.add('show');
+        nameError.classList.remove('hidden');
         isValid = false;
     }
-    
+
     return isValid;
 }
 
@@ -804,104 +684,52 @@ function submitEditForm() {
     if (!validateEditForm()) {
         return;
     }
-    
+
     const nameInput = document.getElementById('edit-client-name');
     const descInput = document.getElementById('edit-client-description');
     const clientIdSpan = document.getElementById('edit-client-id-display');
-    const saveButton = document.querySelector('.btn-save-confirm');
-    
-    // Disable save button during submission
+    const saveButton = document.querySelector('#editClientModal .btn-primary');
+
     saveButton.disabled = true;
-    saveButton.innerHTML = '<i class="material-icons">hourglass_empty</i>Saving...';
-    
-    // Create a form and submit it traditionally
+    saveButton.innerHTML = '<i class="material-icons-round text-lg">hourglass_empty</i> Saving...';
+
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = `{% url 'coreRelback:client-update' 0 %}`.replace('0', clientIdSpan.textContent);
-    
-    // Add CSRF token
+
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
     csrfInput.name = 'csrfmiddlewaretoken';
     csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
     form.appendChild(csrfInput);
-    
-    // Add name field
+
     const nameField = document.createElement('input');
     nameField.type = 'hidden';
     nameField.name = 'name';
     nameField.value = nameInput.value.trim();
     form.appendChild(nameField);
-    
-    // Add description field
+
     const descField = document.createElement('input');
     descField.type = 'hidden';
     descField.name = 'description';
     descField.value = descInput.value.trim();
     form.appendChild(descField);
-    
-    // Append form to body and submit
+
     document.body.appendChild(form);
     form.submit();
 }
 
-// Close modal when clicking on backdrop
-document.getElementById('deleteClientModal').addEventListener('click', function(e) {
-    if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
-        closeDeleteModal();
-    }
-});
-
-// Close edit modal when clicking on backdrop
-document.addEventListener('DOMContentLoaded', function() {
-    const editModal = document.getElementById('editClientModal');
-    if (editModal) {
-        editModal.addEventListener('click', function(e) {
-            if (e.target === this || e.target.classList.contains('custom-modal-backdrop')) {
-                closeEditModal();
-            }
-        });
-    }
-});
-
-// Close modal with ESC key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        const deleteModal = document.getElementById('deleteClientModal');
-        const editModal = document.getElementById('editClientModal');
-        
-        if (deleteModal && deleteModal.classList.contains('show')) {
-            closeDeleteModal();
-        } else if (editModal && editModal.classList.contains('show')) {
-            closeEditModal();
-        }
-    }
-});
-
-// Real-time validation for edit form
 document.addEventListener('DOMContentLoaded', function() {
     const nameInput = document.getElementById('edit-client-name');
     if (nameInput) {
         nameInput.addEventListener('input', function() {
-            if (this.classList.contains('error')) {
+            if (this.classList.contains('input-error')) {
                 validateEditForm();
             }
         });
     }
+
+    searchInput.focus();
 });
-
-// Removido o confirm extra do submit do formulário de exclusão
-
-// Add visual feedback on delete button hover
-const deleteBtn = document.querySelector('.btn-delete-confirm');
-if (deleteBtn) {
-    deleteBtn.addEventListener('mouseenter', function() {
-        this.innerHTML = '<i class="material-icons">delete_forever</i>Confirm Delete';
-    });
-
-    deleteBtn.addEventListener('mouseleave', function() {
-        this.innerHTML = '<i class="material-icons">delete_forever</i>Yes, Delete Client';
-    });
-}
 </script>
 {% endblock content %}
