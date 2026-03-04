@@ -1,0 +1,42 @@
+# ---------------------------------------------------------------------------
+#  relback — Oracle Database Free (override)
+#
+#  Use with main compose to run the app against a local Oracle instance:
+#
+#    export ORACLE_PWD=YourPassword   # or set in .env
+#    docker compose -f docker-compose.yml -f docker-compose.oracle.yml up -d
+#
+#  Wait for Oracle to be ready (first run can take 5–10 min):
+#    docker compose -f docker-compose.yml -f docker-compose.oracle.yml logs -f oracle
+#    # Look for: "DATABASE IS READY TO USE"
+#
+#  Then in .env set Oracle RMAN catalog connection (pluggable DB = FREEPDB1):
+#    ORACLE_CATALOG_DSN=oracle:1521/FREEPDB1
+#    ORACLE_CATALOG_USER=<your_schema_user>
+#    ORACLE_CATALOG_PASSWORD=<your_schema_password>
+#
+#  Image: container-registry.oracle.com/database/free (pull with docker login first).
+# ---------------------------------------------------------------------------
+
+version: "3.9"
+
+services:
+  oracle:
+    image: container-registry.oracle.com/database/free:latest
+    hostname: oracle
+    restart: unless-stopped
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PWD: ${ORACLE_PWD:-oracle}   # SYS password; override via .env
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+    # First start can take 5–10 min. Wait for log "DATABASE IS READY TO USE".
+  web:
+    depends_on:
+      - oracle
+    environment:
+      ORACLE_CATALOG_DSN: oracle:1521/FREEPDB1
+
+volumes:
+  oracle_data:
