@@ -341,6 +341,8 @@ class DatabaseListView(LoginRequiredMixin, ListView):
         context["active_databases"] = databases.count()
         context["total_hosts"] = Host.objects.count()
         context["total_policies"] = BackupPolicy.objects.filter(database__in=databases).count()
+        context["hosts"] = Host.objects.all().select_related("client").order_by("hostname")
+        context["clients"] = Client.objects.all().order_by("name")
         return context
 
 
@@ -439,7 +441,9 @@ class BackupPolicyListView(LoginRequiredMixin, ListView):
         context["active_policies"] = policies.filter(status__iexact="ACTIVE").count()
         context["inactive_policies"] = policies.filter(status__iexact="INACTIVE").count()
         context["scheduled_policies"] = policies.filter(status__iexact="ACTIVE").count() // 2
-        context["clients"] = Client.objects.all()
+        context["clients"] = Client.objects.all().order_by("name")
+        context["hosts"] = Host.objects.all().select_related("client").order_by("hostname")
+        context["databases"] = Database.objects.all().select_related("client", "host").order_by("db_name")
         return context
 
 
