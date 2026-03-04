@@ -448,19 +448,27 @@ relback/
 │       ├── tailwind.config.js   ← DaisyUI themes: relback_light + relback_dark
 │       └── src/styles.css       ← @tailwind base/components/utilities entry point
 ├── databaseProject/             ← Oracle DDL / migration scripts
+├── deploy/                      ← Deployment (must stay committed)
+│   ├── docker/
+│   │   ├── docker-compose.yml   ← Web, Redis, Nginx (run from repo root via scripts)
+│   │   ├── docker-compose.oracle.yml  ← Oracle Free override
+│   │   └── README.md
+│   └── scripts/
+│       ├── compose-up.sh        ← Sobe stack; cria .env se faltar; -p relback
+│       └── compose-down.sh      ← Para stack (com fallback para Podman rootless)
 ├── docs/
 │   ├── ARCHITECTURE.md          ← This document
 │   ├── QUICKSTART.md            ← Comandos para todos os modos (normal, teste, Docker)
 │   ├── RUNBOOK.md               ← Migrações, rollback, variáveis, health
 │   ├── DOCKER_PODMAN.md         ← Docker/Podman: build, run, Oracle Free
+│   ├── TROUBLESHOOTING_CONTAINERS.md  ← Guia de troubleshooting (containers, logs, erros comuns)
 │   ├── ROADMAP_TAILWIND_DAISYUI.md
-│   ├── ROADMAP_IMPROVEMENTS.md  ← Sugestões de melhoria (testes, observabilidade, segurança)
-│   ├── PLANO_REDESIGN_UI_UX.md  ← Plano redesign: clean, corporativo, confiança
-│   ├── SETUP_BANCO.md           ← Configuração do banco (SQLite/Oracle)
+│   ├── ROADMAP_IMPROVEMENTS.md  ← Sugestões de melhoria
+│   ├── PLANO_REDESIGN_UI_UX.md
+│   ├── SETUP_BANCO.md
 │   └── UX_UI_analysis.md
-├── nginx/                       ← Nginx reverse proxy (Phase 13): nginx.conf, entrypoint.sh, Dockerfile
+├── nginx/                       ← Nginx reverse proxy: nginx.conf, entrypoint.sh, Dockerfile
 ├── Dockerfile                   ← Multi-stage (Node 20 CSS + Python 3.13 Gunicorn)
-├── docker-compose.yml           ← Web + Nginx; TLS self-signed (dev) or mount certs (prod)
 ├── .env.example                 ← Env var template (commit safe — no real values)
 ├── .dockerignore
 ├── .sqlfluff / .djlintrc        ← Lint configs

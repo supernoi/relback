@@ -1,0 +1,59 @@
+# Relback — Docker Compose (Web, Redis, Nginx)
+# Run from repo root: docker compose -f deploy/docker/docker-compose.yml up -d
+# Or use: ./deploy/scripts/compose-up.sh
+
+name: relback
+
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    image: relback:latest
+    restart: unless-stopped
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../../.env
+    environment:
+      DJANGO_SETTINGS_MODULE: projectRelback.settings_prod
+      REDIS_URL: redis://redis:6379/0
+      SQLITE_DB_PATH: /app/data/db.sqlite3
+    depends_on:
+      - redis
+    volumes:
+      - relback_db:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  nginx:
+    build:
+      context: ../../nginx
+      dockerfile: Dockerfile
+    image: relback-nginx:latest
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+      - "8443:443"
+    depends_on:
+      web:
+        condition: service_healthy
+    volumes:
+      - nginx_certs:/etc/nginx/certs
+
+volumes:
+  relback_db:
+  redis_data:
+  nginx_certs:

@@ -1,6 +1,7 @@
 # Docker e Podman — Relback
 
-Procedimentos para build, execução e testes com containers.
+Procedimentos para build, execução e testes com containers.  
+**Guia de troubleshooting:** `docs/TROUBLESHOOTING_CONTAINERS.md`.
 
 ---
 
@@ -13,50 +14,45 @@ Procedimentos para build, execução e testes com containers.
 
 ## Testar agora (mínimo)
 
-```bash
-cp .env.example .env
-# Editar .env: DJANGO_SECRET_KEY (obrigatório); DB_* e ORACLE_* vazios = SQLite + Demo
-
-docker compose up --build
-# ou
-podman compose up --build
-```
-
-Acesse http://localhost:8000. Para dados demo:
+Execute na raiz do repositório. O script cria `.env` a partir de `.env.example` se não existir:
 
 ```bash
-docker compose exec web python manage.py seed_demo
-# Login: admin / demo1234
+./deploy/scripts/compose-up.sh
+./deploy/scripts/compose-up.sh exec web python manage.py migrate --noinput
+./deploy/scripts/compose-up.sh exec web python manage.py seed_demo
 ```
+
+Acesse http://localhost:8080 ou http://localhost:8000. Login: admin / demo1234.
 
 ---
 
 ## Com Oracle Database Free
 
 ```bash
-cp .env.example .env
-# Definir ORACLE_PWD no .env
-
-docker compose -f docker-compose.yml -f docker-compose.oracle.yml up -d
+./deploy/scripts/compose-up.sh --oracle
 # Aguardar log: "DATABASE IS READY TO USE" (primeira vez pode levar 5–10 min)
+./deploy/scripts/compose-up.sh --oracle exec web python manage.py migrate --noinput
+./deploy/scripts/compose-up.sh --oracle exec web python manage.py seed_demo
 ```
 
-Configure no `.env` (se usar Oracle como DB do Django): `DB_ENGINE`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `ORACLE_CATALOG_*`.
+No `.env`: `ORACLE_PWD`, `ORACLE_CATALOG_DSN=oracle:1521/RELBACKPDB1` (e opcionalmente `ORACLE_CATALOG_USER` / `ORACLE_CATALOG_PASSWORD`).
 
 ---
 
 ## Comandos úteis
 
+Use os scripts na raiz (ou `-f deploy/docker/docker-compose.yml` e `-f deploy/docker/docker-compose.oracle.yml` com `-p relback`):
+
 | Comando | Descrição |
 |--------|-----------|
-| `docker compose up -d` | Sobe em background. |
-| `docker compose logs -f web` | Logs do app. |
-| `docker compose exec web python manage.py migrate --noinput` | Rodar migrações. |
-| `docker compose exec web python manage.py seed_demo` | Carregar dados demo. |
-| `docker compose down` | Parar e remover containers. |
-| `docker compose build --no-cache` | Rebuild sem cache. |
+| `./deploy/scripts/compose-up.sh` | Sobe em background. |
+| `./deploy/scripts/compose-up.sh logs -f web` | Logs do app. |
+| `./deploy/scripts/compose-up.sh exec web python manage.py migrate --noinput` | Rodar migrações. |
+| `./deploy/scripts/compose-up.sh exec web python manage.py seed_demo` | Carregar dados demo. |
+| `./deploy/scripts/compose-down.sh` | Parar e remover containers. |
+| `./deploy/scripts/compose-up.sh build --no-cache web` | Rebuild sem cache. |
 
-Com Podman: substitua `docker` por `podman`.
+Com Oracle: use `./deploy/scripts/compose-up.sh --oracle` e `./deploy/scripts/compose-down.sh --oracle`.
 
 ---
 

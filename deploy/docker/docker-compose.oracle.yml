@@ -1,0 +1,27 @@
+# Relback — Oracle Database Free (override)
+# Use with: ./deploy/scripts/compose-up.sh --oracle
+# Requires: docker login container-registry.oracle.com
+
+name: relback
+
+services:
+  oracle:
+    image: container-registry.oracle.com/database/free:latest
+    restart: unless-stopped
+    environment:
+      ORACLE_PWD: ${ORACLE_PWD:-oracle}
+    ports:
+      - "1521:1521"
+    volumes:
+      - oracle_data:/opt/oracle/oradata
+
+  web:
+    env_file:
+      - ../../.env
+    environment:
+      ORACLE_CATALOG_DSN: ${ORACLE_CATALOG_DSN:-oracle:1521/RELBACKPDB1}
+    depends_on:
+      - oracle
+
+volumes:
+  oracle_data:

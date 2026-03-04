@@ -1,6 +1,7 @@
 # Quickstart — Relback
 
-Comandos para iniciar o servidor em cada modo. Detalhes: `docs/ARCHITECTURE.md` e `docs/RUNBOOK.md`.
+Comandos para iniciar o servidor em cada modo. Detalhes: `docs/ARCHITECTURE.md` e `docs/RUNBOOK.md`.  
+**Login padrão (após `seed_demo`):** `admin` / `demo1234`. Troubleshooting de containers: `docs/TROUBLESHOOTING_CONTAINERS.md`.
 
 ---
 
@@ -37,16 +38,15 @@ python manage.py runserver
 
 **Opção A — Local:** idem ao “Servidor normal” acima.
 
-**Opção B — Docker/Podman:**
+**Opção B — Docker/Podman:** (execute na raiz do repo). Containers com prefixo `relback-`.
 
 ```bash
-cp .env.example .env
-docker compose up --build
-# Em outro terminal:
-docker compose exec web python manage.py seed_demo
+./deploy/scripts/compose-up.sh
+./deploy/scripts/compose-up.sh exec web python manage.py migrate --noinput
+./deploy/scripts/compose-up.sh exec web python manage.py seed_demo
 ```
 
-- **URL:** http://localhost:8000  
+- **URL:** http://localhost:8080 (Nginx) ou http://localhost:8000 (Gunicorn).  
 - **Login:** `admin` / `demo1234`
 
 **Opção C — Testes automatizados:**

@@ -74,7 +74,15 @@ Before writing any code, follow this sequence:
 - `coreRelback/`: domain app (models, forms, views, templates, services).
 - `static/`: shared static assets (CSS, JS, images).
 - `databaseProject/`: SQL artifacts, RMAN-related scripts, and operational SQL.
+- `docs/`: all project documentation (architecture, quickstart, troubleshooting, runbooks). **Must remain committed.**
+- `deploy/`: Docker Compose, scripts (`compose-up.sh`, `compose-down.sh`), and deployment config. **Must remain committed.**
 - DB schema and migration work should prioritize Django migrations plus SQL under `databaseProject/`.
+
+## 🚫 Preservation of docs/ and deploy/ (Anti-deletion)
+
+- **Never** run `git clean -fd` or `git checkout -- .` in a way that removes or overwrites uncommitted files under `docs/` or `deploy/`. These paths are essential and must stay in the repo.
+- **Before** switching branches (e.g. to create a fix branch from master): commit or stash any new or modified files in `docs/` and `deploy/` so they are not lost. Prefer committing them to the current branch or a dedicated docs/deploy branch, then merge to master.
+- **When** adding new docs or deploy assets, commit them in the same PR (or a follow-up PR) so they are never “only local” and then lost after a branch switch or merge.
 
 ## 🧪 Task Scope & Quality
 
