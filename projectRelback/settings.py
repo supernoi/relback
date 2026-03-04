@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django_browser_reload',
     'coreRelback',
     'django_tables2',
+    'rest_framework',
     'channels',
 ]
 
@@ -197,6 +198,18 @@ ORACLE_CATALOG: dict | None = {
     "user":     _os.environ.get("ORACLE_CATALOG_USER",     "relback"),
     "password": _os.environ.get("ORACLE_CATALOG_PASSWORD", "relback"),
     "dsn":      _os.environ.get("ORACLE_CATALOG_DSN",      "192.168.124.139:1521/cobaia"),
+}
+
+# ---------------------------------------------------------------------------
+# Django REST Framework — API layer (Phase 17)
+# ---------------------------------------------------------------------------
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
 }
 
 # ---------------------------------------------------------------------------
