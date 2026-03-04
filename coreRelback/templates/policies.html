@@ -131,11 +131,23 @@
                         <tr class="policy-row hover:bg-base-200/50 transition-colors"
                             data-policy-id="{{ policy.id_policy }}"
                             data-policy-name="{{ policy.policy_name|default:'Unnamed Policy'|escapejs }}"
-                            data-policy-description="{{ policy.description|default:'No description'|escapejs }}"
+                            data-policy-description="{{ policy.description|default:''|escapejs }}"
+                            data-client-id="{{ policy.client_id }}"
+                            data-host-id="{{ policy.host_id }}"
+                            data-database-id="{{ policy.database_id }}"
+                            data-backup-type="{{ policy.backup_type|default:'' }}"
+                            data-destination="{{ policy.destination|default:'DISK' }}"
+                            data-minute="{{ policy.minute|default:'0' }}"
+                            data-hour="{{ policy.hour|default:'*' }}"
+                            data-day="{{ policy.day|default:'*' }}"
+                            data-month="{{ policy.month|default:'*' }}"
+                            data-day-week="{{ policy.day_week|default:'*' }}"
+                            data-duration="{{ policy.duration|default:0 }}"
+                            data-size-backup="{{ policy.size_backup|default:'0' }}"
+                            data-status="{{ policy.status|default:'ACTIVE' }}"
                             data-client="{{ policy.client.name|default:'Unknown' }}"
                             data-host="{{ policy.host.hostname|default:'Unknown' }}"
                             data-database="{{ policy.database.db_name|default:'Unknown' }}"
-                            data-status="{% if policy.status == '1' %}active{% else %}inactive{% endif %}"
                             data-type="{{ policy.backup_type|default:'Unknown' }}">
                             <td>
                                 <div class="flex items-center gap-3">
@@ -217,7 +229,7 @@
                                         <i class="material-icons-round text-sm">visibility</i>
                                     </button>
                                     <button type="button" class="btn btn-ghost btn-xs"
-                                            onclick="openEditModal('{{ policy.id_policy }}', '{{ policy.policy_name|escapejs }}', '{{ policy.description|default:''|escapejs }}')"
+                                            onclick="openEditModal(this.closest('tr'))"
                                             title="Edit">
                                         <i class="material-icons-round text-sm">edit</i>
                                     </button>
@@ -411,7 +423,7 @@
 
 <!-- Edit Policy Modal -->
 <div class="modal" id="editPolicyModal">
-    <div class="modal-box max-w-lg">
+    <div class="modal-box max-w-4xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-bold flex items-center gap-2">
                 <i class="material-icons-round text-primary mr-2">edit</i>
@@ -422,63 +434,123 @@
             </button>
         </div>
 
-        <div class="alert alert-info mb-4">
-            <i class="material-icons-round">info</i>
-            <div>
-                <strong>Edit Policy Information</strong>
-                <p>Update the policy name and description. Other settings require advanced configuration.</p>
-            </div>
-        </div>
-
         <form id="editPolicyForm" method="post">
             {% csrf_token %}
-            <div class="space-y-3 border-b border-base-200 pb-4 mb-4">
-                <h6 class="flex items-center gap-2 font-semibold text-sm">
-                    <i class="material-icons-round text-sm">policy</i>
-                    Policy Information
-                </h6>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-control">
-                        <label class="label pb-1">
-                            <span class="label-text font-medium">
-                                <i class="material-icons-round text-xs align-middle mr-1">badge</i> Policy ID
-                            </span>
-                        </label>
-                        <div class="font-mono text-sm bg-base-200 px-3 py-2 rounded-lg">#<span id="edit-policy-id-display">---</span></div>
+            <div class="space-y-4">
+                <div class="border-b border-base-200 pb-4">
+                    <h6 class="flex items-center gap-2 font-semibold text-sm mb-3">
+                        <i class="material-icons-round text-sm">policy</i>
+                        Basic Information
+                    </h6>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label for="edit-policy-name" class="label pb-1"><span class="label-text font-medium">Policy Name *</span></label>
+                            <input type="text" id="edit-policy-name" name="policy_name" class="input input-bordered w-full" required>
+                            <div class="form-error text-xs text-error mt-1 hidden" id="edit-policy-name-error"></div>
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-client" class="label pb-1"><span class="label-text font-medium">Client *</span></label>
+                            <select id="edit-policy-client" name="client" class="select select-bordered w-full" required>
+                                <option value="">Select Client</option>
+                                {% for c in clients %}
+                                <option value="{{ c.id_client }}">{{ c.name|default:c.id_client }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-database" class="label pb-1"><span class="label-text font-medium">Database *</span></label>
+                            <select id="edit-policy-database" name="database" class="select select-bordered w-full" required>
+                                <option value="">Select Database</option>
+                                {% for db in databases %}
+                                <option value="{{ db.id_database }}" data-client-id="{{ db.client_id }}" data-host-id="{{ db.host_id }}">{{ db.db_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-host" class="label pb-1"><span class="label-text font-medium">Host *</span></label>
+                            <select id="edit-policy-host" name="host" class="select select-bordered w-full" required>
+                                <option value="">Select Host</option>
+                                {% for h in hosts %}
+                                <option value="{{ h.id_host }}" data-client-id="{{ h.client_id }}">{{ h.hostname }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-type" class="label pb-1"><span class="label-text font-medium">Backup Type *</span></label>
+                            <select id="edit-policy-type" name="backup_type" class="select select-bordered w-full" required>
+                                <option value="ARCHIVELOG">ARCHIVELOG</option>
+                                <option value="DB FULL">DB FULL</option>
+                                <option value="DB INCR">DB INCR</option>
+                                <option value="RECVR AREA">RECVR AREA</option>
+                                <option value="BACKUPSET">BACKUPSET</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-destination" class="label pb-1"><span class="label-text font-medium">Destination *</span></label>
+                            <select id="edit-policy-destination" name="destination" class="select select-bordered w-full" required>
+                                <option value="DISK">DISK</option>
+                                <option value="SBT_TAPE">SBT_TAPE</option>
+                                <option value="*">*</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-status" class="label pb-1"><span class="label-text font-medium">Status *</span></label>
+                            <select id="edit-policy-status" name="status" class="select select-bordered w-full" required>
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="INACTIVE">INACTIVE</option>
+                            </select>
+                        </div>
                     </div>
-
-                    <div class="form-control">
-                        <label for="edit-policy-name" class="label pb-1">
-                            <span class="label-text font-medium">
-                                <i class="material-icons-round text-xs align-middle mr-1">policy</i> Policy Name *
-                            </span>
-                        </label>
-                        <input type="text" id="edit-policy-name" name="policy_name" class="input input-bordered w-full" required>
-                        <div class="form-error text-xs text-error mt-1 hidden" id="edit-policy-name-error"></div>
+                    <div class="form-control mt-3">
+                        <label for="edit-policy-description" class="label pb-1"><span class="label-text font-medium">Description</span></label>
+                        <textarea id="edit-policy-description" name="description" class="textarea textarea-bordered w-full" rows="2"></textarea>
                     </div>
-
-                    <div class="form-control md:col-span-2">
-                        <label for="edit-policy-description" class="label pb-1">
-                            <span class="label-text font-medium">
-                                <i class="material-icons-round text-xs align-middle mr-1">description</i> Description
-                            </span>
-                        </label>
-                        <textarea id="edit-policy-description" name="description" class="textarea textarea-bordered w-full" rows="3"></textarea>
-                        <div class="form-error text-xs text-error mt-1 hidden" id="edit-policy-description-error"></div>
+                </div>
+                <div class="border-b border-base-200 pb-4">
+                    <h6 class="flex items-center gap-2 font-semibold text-sm mb-3"><i class="material-icons-round text-sm">schedule</i> Schedule (cron-style)</h6>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                        <div class="form-control">
+                            <label for="edit-policy-minute" class="label py-0 text-xs">Minute</label>
+                            <input type="text" id="edit-policy-minute" name="minute" class="input input-bordered input-sm w-full" value="0">
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-hour" class="label py-0 text-xs">Hour</label>
+                            <input type="text" id="edit-policy-hour" name="hour" class="input input-bordered input-sm w-full" value="*">
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-day" class="label py-0 text-xs">Day</label>
+                            <input type="text" id="edit-policy-day" name="day" class="input input-bordered input-sm w-full" value="*">
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-month" class="label py-0 text-xs">Month</label>
+                            <input type="text" id="edit-policy-month" name="month" class="input input-bordered input-sm w-full" value="*">
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-day_week" class="label py-0 text-xs">Day of week</label>
+                            <input type="text" id="edit-policy-day_week" name="day_week" class="input input-bordered input-sm w-full" value="*">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h6 class="flex items-center gap-2 font-semibold text-sm mb-3"><i class="material-icons-round text-sm">tune</i> Duration &amp; Size</h6>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label for="edit-policy-duration" class="label pb-1"><span class="label-text font-medium">Duration</span></label>
+                            <input type="number" id="edit-policy-duration" name="duration" class="input input-bordered w-full" value="0" min="0">
+                        </div>
+                        <div class="form-control">
+                            <label for="edit-policy-size" class="label pb-1"><span class="label-text font-medium">Size backup</span></label>
+                            <input type="text" id="edit-policy-size" name="size_backup" class="input input-bordered w-full" value="0">
+                        </div>
                     </div>
                 </div>
             </div>
         </form>
 
-        <div class="modal-action">
-            <button type="button" class="btn btn-ghost" onclick="closeEditModal()">
-                <i class="material-icons-round text-lg mr-1">close</i>
-                Cancel
-            </button>
+        <div class="modal-action mt-4">
+            <button type="button" class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
             <button type="button" class="btn btn-primary" onclick="submitEditForm()">
-                <i class="material-icons-round text-lg mr-1">save</i>
-                Save Changes
+                <i class="material-icons-round text-lg mr-1">save</i> Save Changes
             </button>
         </div>
     </div>
@@ -487,7 +559,7 @@
 
 <!-- Add Policy Modal -->
 <div class="modal" id="addPolicyModal">
-    <div class="modal-box max-w-lg">
+    <div class="modal-box max-w-4xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-bold flex items-center gap-2">
                 <i class="material-icons-round text-primary mr-2">add</i>
@@ -498,72 +570,122 @@
             </button>
         </div>
 
-        <div class="alert alert-info mb-4">
-            <i class="material-icons-round">info</i>
-            <div>
-                <strong>Create New Backup Policy</strong>
-                <p>Fill in the basic information to create a new backup policy. Advanced settings can be configured after creation.</p>
-            </div>
-        </div>
-
         <form id="addPolicyForm" method="post" action="{% url 'coreRelback:policy-create' %}">
             {% csrf_token %}
-
-            <div class="space-y-3 border-b border-base-200 pb-4 mb-4">
-                <h6 class="flex items-center gap-2 font-semibold text-sm">
-                    <i class="material-icons-round text-sm">policy</i>
-                    Basic Information
-                </h6>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-control">
-                        <label for="add-policy-name" class="label pb-1">
-                            <span class="label-text font-medium">
-                                <i class="material-icons-round text-xs align-middle mr-1">policy</i> Policy Name *
-                            </span>
-                        </label>
-                        <input type="text" id="add-policy-name" name="policy_name" class="input input-bordered w-full" required placeholder="Enter policy name">
-                        <div class="text-xs text-base-content/50 mt-1">Choose a descriptive name for this backup policy</div>
+            <div class="space-y-4">
+                <div class="border-b border-base-200 pb-4">
+                    <h6 class="flex items-center gap-2 font-semibold text-sm mb-3">
+                        <i class="material-icons-round text-sm">policy</i>
+                        Basic Information
+                    </h6>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label for="add-policy-name" class="label pb-1"><span class="label-text font-medium">Policy Name *</span></label>
+                            <input type="text" id="add-policy-name" name="policy_name" class="input input-bordered w-full" required placeholder="Enter policy name">
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-client" class="label pb-1"><span class="label-text font-medium">Client *</span></label>
+                            <select id="add-policy-client" name="client" class="select select-bordered w-full" required>
+                                <option value="">Select Client</option>
+                                {% for c in clients %}
+                                <option value="{{ c.id_client }}">{{ c.name|default:c.id_client }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-database" class="label pb-1"><span class="label-text font-medium">Database *</span></label>
+                            <select id="add-policy-database" name="database" class="select select-bordered w-full" required>
+                                <option value="">Select Database</option>
+                                {% for db in databases %}
+                                <option value="{{ db.id_database }}" data-client-id="{{ db.client_id }}" data-host-id="{{ db.host_id }}">{{ db.db_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-host" class="label pb-1"><span class="label-text font-medium">Host *</span></label>
+                            <select id="add-policy-host" name="host" class="select select-bordered w-full" required>
+                                <option value="">Select Host</option>
+                                {% for h in hosts %}
+                                <option value="{{ h.id_host }}" data-client-id="{{ h.client_id }}">{{ h.hostname }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-type" class="label pb-1"><span class="label-text font-medium">Backup Type *</span></label>
+                            <select id="add-policy-type" name="backup_type" class="select select-bordered w-full" required>
+                                <option value="ARCHIVELOG">ARCHIVELOG</option>
+                                <option value="DB FULL">DB FULL</option>
+                                <option value="DB INCR">DB INCR</option>
+                                <option value="RECVR AREA">RECVR AREA</option>
+                                <option value="BACKUPSET">BACKUPSET</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-destination" class="label pb-1"><span class="label-text font-medium">Destination *</span></label>
+                            <select id="add-policy-destination" name="destination" class="select select-bordered w-full" required>
+                                <option value="DISK">DISK</option>
+                                <option value="SBT_TAPE">SBT_TAPE</option>
+                                <option value="*">*</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-status" class="label pb-1"><span class="label-text font-medium">Status *</span></label>
+                            <select id="add-policy-status" name="status" class="select select-bordered w-full" required>
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="INACTIVE">INACTIVE</option>
+                            </select>
+                        </div>
                     </div>
-
-                    <div class="form-control">
-                        <label for="add-policy-description" class="label pb-1">
-                            <span class="label-text font-medium">
-                                <i class="material-icons-round text-xs align-middle mr-1">description</i> Description
-                            </span>
-                        </label>
-                        <textarea id="add-policy-description" name="description" class="textarea textarea-bordered w-full" rows="3" placeholder="Describe this backup policy (optional)"></textarea>
-                        <div class="text-xs text-base-content/50 mt-1">Provide additional details about this policy's purpose</div>
+                    <div class="form-control mt-3">
+                        <label for="add-policy-description" class="label pb-1"><span class="label-text font-medium">Description</span></label>
+                        <textarea id="add-policy-description" name="description" class="textarea textarea-bordered w-full" rows="2" placeholder="Optional"></textarea>
                     </div>
                 </div>
-            </div>
-
-            <div class="space-y-3 mb-4">
-                <h6 class="flex items-center gap-2 font-semibold text-sm">
-                    <i class="material-icons-round text-sm">info</i>
-                    Additional Configuration
-                </h6>
-                <div class="text-sm text-base-content/70">
-                    After creating this policy, you'll be able to configure:
-                    <ul class="my-2 pl-6 list-disc space-y-1">
-                        <li>Client and host assignments</li>
-                        <li>Database selection</li>
-                        <li>Backup type (FULL, INCREMENTAL, ARCHIVELOG)</li>
-                        <li>Schedule configuration</li>
-                        <li>Retention policies</li>
-                    </ul>
+                <div class="border-b border-base-200 pb-4">
+                    <h6 class="flex items-center gap-2 font-semibold text-sm mb-3"><i class="material-icons-round text-sm">schedule</i> Schedule (cron-style)</h6>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                        <div class="form-control">
+                            <label for="add-policy-minute" class="label py-0 text-xs">Minute</label>
+                            <input type="text" id="add-policy-minute" name="minute" class="input input-bordered input-sm w-full" value="0">
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-hour" class="label py-0 text-xs">Hour</label>
+                            <input type="text" id="add-policy-hour" name="hour" class="input input-bordered input-sm w-full" value="*">
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-day" class="label py-0 text-xs">Day</label>
+                            <input type="text" id="add-policy-day" name="day" class="input input-bordered input-sm w-full" value="*">
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-month" class="label py-0 text-xs">Month</label>
+                            <input type="text" id="add-policy-month" name="month" class="input input-bordered input-sm w-full" value="*">
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-day_week" class="label py-0 text-xs">Day of week</label>
+                            <input type="text" id="add-policy-day_week" name="day_week" class="input input-bordered input-sm w-full" value="*">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h6 class="flex items-center gap-2 font-semibold text-sm mb-3"><i class="material-icons-round text-sm">tune</i> Duration &amp; Size</h6>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label for="add-policy-duration" class="label pb-1"><span class="label-text font-medium">Duration</span></label>
+                            <input type="number" id="add-policy-duration" name="duration" class="input input-bordered w-full" value="0" min="0">
+                        </div>
+                        <div class="form-control">
+                            <label for="add-policy-size" class="label pb-1"><span class="label-text font-medium">Size backup</span></label>
+                            <input type="text" id="add-policy-size" name="size_backup" class="input input-bordered w-full" value="0">
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
 
-        <div class="modal-action">
-            <button type="button" class="btn btn-ghost" onclick="closeAddModal()">
-                <i class="material-icons-round text-lg mr-1">close</i>
-                Cancel
-            </button>
+        <div class="modal-action mt-4">
+            <button type="button" class="btn btn-ghost" onclick="closeAddModal()">Cancel</button>
             <button type="submit" form="addPolicyForm" class="btn btn-primary">
-                <i class="material-icons-round text-lg mr-1">add</i>
-                Create Policy
+                <i class="material-icons-round text-lg mr-1">add</i> Create Policy
             </button>
         </div>
     </div>
@@ -750,23 +872,42 @@ function closeDeleteModal() {
     document.body.style.overflow = '';
 }
 
-function openEditModal(policyId, policyName, policyDescription) {
-    const modal = document.getElementById('editPolicyModal');
-    const nameInput = document.getElementById('edit-policy-name');
-    const descInput = document.getElementById('edit-policy-description');
-    const policyIdSpan = document.getElementById('edit-policy-id-display');
-
-    nameInput.value = policyName;
-    descInput.value = policyDescription || '';
-    policyIdSpan.textContent = policyId;
+function openEditModal(row) {
+    if (!row || !row.dataset) return;
+    const d = row.dataset;
+    const policyId = d.policyId;
 
     const editForm = document.getElementById('editPolicyForm');
     editForm.action = `{% url 'coreRelback:policy-update' 0 %}`.replace('0', policyId);
 
+    document.getElementById('edit-policy-name').value = d.policyName || '';
+    document.getElementById('edit-policy-description').value = d.policyDescription || '';
+    const clientSelect = document.getElementById('edit-policy-client');
+    const hostSelect = document.getElementById('edit-policy-host');
+    const dbSelect = document.getElementById('edit-policy-database');
+    if (clientSelect) clientSelect.value = d.clientId || '';
+    if (hostSelect) hostSelect.value = d.hostId || '';
+    if (dbSelect) dbSelect.value = d.databaseId || '';
+    filterPolicyHostsByClient('edit-policy-host', d.clientId || '');
+    filterPolicyDatabasesByClientAndHost('edit-policy-database', d.clientId || '', d.hostId || '');
+    const typeSelect = document.getElementById('edit-policy-type');
+    const destSelect = document.getElementById('edit-policy-destination');
+    const statusSelect = document.getElementById('edit-policy-status');
+    if (typeSelect) typeSelect.value = d.backupType || 'DB FULL';
+    if (destSelect) destSelect.value = d.destination || 'DISK';
+    if (statusSelect) statusSelect.value = d.status || 'ACTIVE';
+    document.getElementById('edit-policy-minute').value = d.minute || '0';
+    document.getElementById('edit-policy-hour').value = d.hour || '*';
+    document.getElementById('edit-policy-day').value = d.day || '*';
+    document.getElementById('edit-policy-month').value = d.month || '*';
+    document.getElementById('edit-policy-day_week').value = d.dayWeek || '*';
+    document.getElementById('edit-policy-duration').value = d.duration !== undefined ? d.duration : '0';
+    document.getElementById('edit-policy-size').value = d.sizeBackup !== undefined ? d.sizeBackup : '0';
+
+    const modal = document.getElementById('editPolicyModal');
     modal.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
-
-    nameInput.focus();
+    document.getElementById('edit-policy-name').focus();
 }
 
 function closeEditModal() {
@@ -860,6 +1001,61 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+function filterPolicyHostsByClient(hostSelectId, clientId) {
+    const hostSelect = document.getElementById(hostSelectId);
+    if (!hostSelect) return;
+    hostSelect.querySelectorAll('option[data-client-id]').forEach(function(opt) {
+        opt.disabled = clientId !== '' && opt.dataset.clientId !== clientId;
+        opt.hidden = opt.disabled;
+    });
+}
+
+function filterPolicyDatabasesByClientAndHost(databaseSelectId, clientId, hostId) {
+    const dbSelect = document.getElementById(databaseSelectId);
+    if (!dbSelect) return;
+    dbSelect.querySelectorAll('option[data-client-id]').forEach(function(opt) {
+    const matchClient = !clientId || opt.dataset.clientId === clientId;
+    const matchHost = !hostId || opt.dataset.hostId === hostId;
+    opt.disabled = !matchClient || !matchHost;
+    opt.hidden = opt.disabled;
+    });
+}
+
+function setupPolicyCascade(prefix) {
+    const clientSel = document.getElementById(prefix + '-policy-client');
+    const hostSel = document.getElementById(prefix + '-policy-host');
+    const dbSel = document.getElementById(prefix + '-policy-database');
+    if (!clientSel || !hostSel || !dbSel) return;
+    clientSel.addEventListener('change', function() {
+        const cid = this.value || '';
+        hostSel.value = '';
+        dbSel.value = '';
+        filterPolicyHostsByClient(prefix + '-policy-host', cid);
+        filterPolicyDatabasesByClientAndHost(prefix + '-policy-database', cid, '');
+    });
+    hostSel.addEventListener('change', function() {
+        const opt = this.options[this.selectedIndex];
+        if (opt && opt.value && opt.dataset.clientId) {
+            clientSel.value = opt.dataset.clientId;
+            filterPolicyHostsByClient(prefix + '-policy-host', clientSel.value || '');
+        }
+        const hid = this.value || '';
+        dbSel.value = '';
+        filterPolicyDatabasesByClientAndHost(prefix + '-policy-database', clientSel.value || '', hid);
+    });
+    dbSel.addEventListener('change', function() {
+        const opt = this.options[this.selectedIndex];
+        if (opt && opt.value) {
+            if (opt.dataset.clientId) clientSel.value = opt.dataset.clientId;
+            if (opt.dataset.hostId) hostSel.value = opt.dataset.hostId;
+            filterPolicyHostsByClient(prefix + '-policy-host', clientSel.value || '');
+            filterPolicyDatabasesByClientAndHost(prefix + '-policy-database', clientSel.value || '', hostSel.value || '');
+        }
+    });
+    filterPolicyHostsByClient(prefix + '-policy-host', clientSel.value || '');
+    filterPolicyDatabasesByClientAndHost(prefix + '-policy-database', clientSel.value || '', hostSel.value || '');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const nameInput = document.getElementById('edit-policy-name');
     if (nameInput) {
@@ -869,6 +1065,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    setupPolicyCascade('add');
+    setupPolicyCascade('edit');
 
     const addButton = document.querySelector('[data-modal-target="#addPolicyModal"]');
     if (addButton) {

@@ -123,7 +123,7 @@
                     <tbody>
                     {% for database in databases %}
                     <tr class="database-row hover:bg-base-200/50 transition-colors"
-                        data-host="{{ database.host.name|default:'Unknown' }}"
+                        data-host="{{ database.host.hostname|default:'Unknown' }}"
                         data-type="{{ database.db_type|default:'Unknown' }}"
                         data-status="{% if database.active %}active{% else %}inactive{% endif %}"
                         data-backup="{% if database.last_backup_date %}{% with now_timestamp=now|date:'U'|add:'-604800' backup_timestamp=database.last_backup_date|date:'U' %}{% if backup_timestamp > now_timestamp %}recent{% else %}old{% endif %}{% endwith %}{% else %}none{% endif %}">
@@ -144,7 +144,7 @@
                             {% if database.host %}
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full {% if database.host.active %}bg-success{% else %}bg-base-300{% endif %} inline-block"></span>
-                                <span class="text-sm">{{ database.host.name }}</span>
+                                <span class="text-sm">{{ database.host.hostname }}</span>
                             </div>
                             {% else %}
                             <span class="text-sm text-base-content/50">No Host</span>
@@ -199,19 +199,19 @@
                                 <a href="#"
                                    class="btn btn-ghost btn-xs"
                                    title="View Details"
-                                   onclick="openViewModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.name|default:'No Host'|escapejs }}', '{{ database.db_type|default:'Unknown'|escapejs }}')">
+                                   onclick="openViewModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.hostname|default:'No Host'|escapejs }}', '{{ database.db_type|default:'Unknown'|escapejs }}')">
                                     <i class="material-icons-round text-sm">visibility</i>
                                 </a>
                                 <a href="#"
                                    class="btn btn-ghost btn-xs"
                                    title="Edit Database"
-                                   onclick="openEditModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}')">
+                                   onclick="openEditModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.client_id }}', '{{ database.host_id }}', '{{ database.dbid }}')">
                                     <i class="material-icons-round text-sm">edit</i>
                                 </a>
                                 <a href="#"
                                    class="btn btn-ghost btn-xs text-error"
                                    title="Delete Database"
-                                   onclick="openDeleteModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.name|default:'No Host'|escapejs }}')">
+                                   onclick="openDeleteModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.hostname|default:'No Host'|escapejs }}')">
                                     <i class="material-icons-round text-sm">delete</i>
                                 </a>
                             </div>
@@ -381,7 +381,7 @@
 
 <!-- Edit Database Modal -->
 <div class="modal" id="editDatabaseModal">
-    <div class="modal-box max-w-lg">
+    <div class="modal-box max-w-2xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-bold flex items-center gap-2">
                 <i class="material-icons-round text-primary">edit</i>
@@ -395,7 +395,7 @@
         <div class="alert alert-info mb-4">
             <i class="material-icons-round">info</i>
             <div>
-                <strong>Update Information:</strong> Modify the database details below. Changes will be saved immediately upon submission.
+                <strong>Update Information:</strong> Modify the database details below. Changes will be saved upon submission.
             </div>
         </div>
 
@@ -415,12 +415,40 @@
                         <input type="text"
                                class="input input-bordered w-full"
                                id="edit-database-name"
-                               name="name"
+                               name="db_name"
                                placeholder="Enter database name"
                                required>
                         <div class="form-error text-xs text-error mt-1 hidden" id="edit-database-name-error"></div>
                     </div>
                     <div class="form-control">
+                        <label class="label pb-1" for="edit-database-client">
+                            <span class="label-text font-medium">Client *</span>
+                        </label>
+                        <select class="select select-bordered w-full" id="edit-database-client" name="client" required>
+                            <option value="" disabled>Select Client</option>
+                            {% for client in clients %}
+                            <option value="{{ client.id_client }}">{{ client.name|default:client.id_client }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label class="label pb-1" for="edit-database-host">
+                            <span class="label-text font-medium">Host *</span>
+                        </label>
+                        <select class="select select-bordered w-full" id="edit-database-host" name="host" required>
+                            <option value="" disabled>Select Host</option>
+                            {% for host in hosts %}
+                            <option value="{{ host.id_host }}" data-client-id="{{ host.client_id }}">{{ host.hostname }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-control">
+                        <label class="label pb-1" for="edit-database-dbid">
+                            <span class="label-text font-medium">DBID</span>
+                        </label>
+                        <input type="number" class="input input-bordered w-full" id="edit-database-dbid" name="dbid" value="0" min="0">
+                    </div>
+                    <div class="form-control md:col-span-2">
                         <label class="label pb-1" for="edit-database-description">
                             <span class="label-text font-medium">Description</span>
                         </label>
@@ -429,23 +457,6 @@
                                   name="description"
                                   placeholder="Enter description"
                                   rows="3"></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <div class="space-y-3">
-                <h6 class="flex items-center gap-2 font-semibold text-sm">
-                    <i class="material-icons-round text-sm">info</i>
-                    Additional Information
-                </h6>
-                <div class="bg-base-200 rounded-lg p-3 space-y-2">
-                    <div class="flex justify-between text-sm">
-                        <strong>Database ID:</strong>
-                        <span id="edit-database-id-display"></span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <strong>Host:</strong>
-                        <span id="edit-database-host-display"></span>
                     </div>
                 </div>
             </div>
@@ -467,7 +478,7 @@
 
 <!-- Add Database Modal -->
 <div class="modal" id="addDatabaseModal">
-    <div class="modal-box max-w-2xl">
+    <div class="modal-box max-w-2xl max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-bold flex items-center gap-2">
                 <i class="material-icons-round text-primary">add_business</i>
@@ -496,8 +507,21 @@
                         <input type="text"
                                class="input input-bordered w-full"
                                id="add-database-name"
-                               name="name"
+                               name="db_name"
                                required>
+                    </div>
+                    <div class="form-control">
+                        <label class="label pb-1" for="add-database-client">
+                            <span class="label-text font-medium">
+                                <i class="material-icons-round text-xs align-middle mr-1">business</i> Client *
+                            </span>
+                        </label>
+                        <select class="select select-bordered w-full" id="add-database-client" name="client" required>
+                            <option value="" disabled selected>Select Client</option>
+                            {% for client in clients %}
+                            <option value="{{ client.id_client }}">{{ client.name|default:client.id_client }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                     <div class="form-control">
                         <label class="label pb-1" for="add-database-host">
@@ -511,12 +535,20 @@
                                 required>
                             <option value="" disabled selected>Select Host</option>
                             {% for host in hosts %}
-                            <option value="{{ host.id_host }}">{{ host.hostname }}</option>
+                            <option value="{{ host.id_host }}" data-client-id="{{ host.client_id }}">{{ host.hostname }}</option>
                             {% endfor %}
                         </select>
                     </div>
+                    <div class="form-control">
+                        <label class="label pb-1" for="add-database-dbid">
+                            <span class="label-text font-medium">
+                                <i class="material-icons-round text-xs align-middle mr-1">tag</i> DBID
+                            </span>
+                        </label>
+                        <input type="number" class="input input-bordered w-full" id="add-database-dbid" name="dbid" value="0" min="0">
+                    </div>
                 </div>
-                <div class="form-control">
+                <div class="form-control mt-2">
                     <label class="label pb-1" for="add-database-description">
                         <span class="label-text font-medium">
                             <i class="material-icons-round text-xs align-middle mr-1">description</i> Description
@@ -527,62 +559,6 @@
                               name="description"
                               rows="3"></textarea>
                 </div>
-            </div>
-
-            <div class="space-y-3 border-b border-base-200 pb-4 mb-4">
-                <h6 class="flex items-center gap-2 font-semibold text-sm">
-                    <i class="material-icons-round text-sm">settings</i>
-                    Database Configuration
-                </h6>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-control">
-                        <label class="label pb-1" for="add-database-type">
-                            <span class="label-text font-medium">
-                                <i class="material-icons-round text-xs align-middle mr-1">category</i> Database Type *
-                            </span>
-                        </label>
-                        <select class="select select-bordered w-full"
-                                id="add-database-type"
-                                name="db_type"
-                                required>
-                            <option value="" disabled selected>Select Type</option>
-                            <option value="Oracle">Oracle</option>
-                            <option value="MySQL">MySQL</option>
-                            <option value="PostgreSQL">PostgreSQL</option>
-                            <option value="SQL Server">SQL Server</option>
-                        </select>
-                    </div>
-                    <div class="form-control">
-                        <label class="label pb-1" for="add-database-version">
-                            <span class="label-text font-medium">
-                                <i class="material-icons-round text-xs align-middle mr-1">info</i> Version
-                            </span>
-                        </label>
-                        <input type="text"
-                               class="input input-bordered w-full"
-                               id="add-database-version"
-                               name="version">
-                    </div>
-                </div>
-            </div>
-
-            <div class="space-y-3 mb-4">
-                <h6 class="flex items-center gap-2 font-semibold text-sm">
-                    <i class="material-icons-round text-sm">settings</i>
-                    Status &amp; Configuration
-                </h6>
-                <label class="label cursor-pointer justify-start gap-3">
-                    <input type="checkbox"
-                           class="checkbox checkbox-primary"
-                           id="add-database-active"
-                           name="active"
-                           checked>
-                    <div class="flex items-center gap-1">
-                        <i class="material-icons-round text-sm">power_settings_new</i>
-                        <span class="label-text">Database is Active</span>
-                    </div>
-                </label>
-                <div class="text-xs text-base-content/50 ml-10">Enable this database for backup operations</div>
             </div>
         </form>
 
@@ -607,7 +583,7 @@ const databasesData = [
         id: '{{ database.id_database }}',
         name: "{{ database.db_name|default:'Unnamed Database'|escapejs }}",
         description: "{{ database.description|default:'No description'|escapejs }}",
-        host: "{{ database.host.name|default:'No Host'|escapejs }}",
+        host: "{{ database.host.hostname|default:'No Host'|escapejs }}",
         type: "{{ database.db_type|default:'Unknown'|escapejs }}"
     }{% if not forloop.last %},{% endif %}
     {% endfor %}
@@ -765,15 +741,20 @@ function closeDeleteModal() {
     document.body.style.overflow = '';
 }
 
-function openEditModal(databaseId, databaseName, databaseDescription) {
+function openEditModal(databaseId, databaseName, databaseDescription, clientId, hostId, dbid) {
     const modal = document.getElementById('editDatabaseModal');
     const nameInput = document.getElementById('edit-database-name');
     const descInput = document.getElementById('edit-database-description');
-    const databaseIdSpan = document.getElementById('edit-database-id-display');
+    const clientSelect = document.getElementById('edit-database-client');
+    const hostSelect = document.getElementById('edit-database-host');
+    const dbidInput = document.getElementById('edit-database-dbid');
 
-    nameInput.value = databaseName;
+    nameInput.value = databaseName || '';
     descInput.value = databaseDescription || '';
-    databaseIdSpan.textContent = databaseId;
+    if (dbidInput) dbidInput.value = dbid !== undefined && dbid !== '' ? dbid : '0';
+    if (clientSelect) clientSelect.value = clientId || '';
+    if (hostSelect) hostSelect.value = hostId || '';
+    filterHostOptionsByClient('edit-database-client', 'edit-database-host');
 
     const editForm = document.getElementById('editDatabaseForm');
     editForm.action = `{% url 'coreRelback:database-update' 0 %}`.replace('0', databaseId);
@@ -875,12 +856,58 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+function filterHostOptionsByClient(clientSelectId, hostSelectId, clearHostSelection) {
+    const clientSelect = document.getElementById(clientSelectId);
+    const hostSelect = document.getElementById(hostSelectId);
+    if (!clientSelect || !hostSelect) return;
+    const clientId = clientSelect.value || '';
+    const options = hostSelect.querySelectorAll('option[data-client-id]');
+    if (clearHostSelection !== false) hostSelect.value = '';
+    options.forEach(function(opt) {
+        opt.disabled = clientId !== '' && opt.dataset.clientId !== clientId;
+        opt.hidden = opt.disabled;
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const nameInput = document.getElementById('edit-database-name');
     if (nameInput) {
         nameInput.addEventListener('input', function() {
             if (this.classList.contains('input-error')) {
                 validateEditForm();
+            }
+        });
+    }
+
+    const addClient = document.getElementById('add-database-client');
+    const addHost = document.getElementById('add-database-host');
+    if (addClient && addHost) {
+        addClient.addEventListener('change', function() {
+            addHost.value = '';
+            filterHostOptionsByClient('add-database-client', 'add-database-host');
+        });
+        addHost.addEventListener('change', function() {
+            const opt = this.options[this.selectedIndex];
+            if (opt && opt.value && opt.dataset.clientId) {
+                addClient.value = opt.dataset.clientId;
+                filterHostOptionsByClient('add-database-client', 'add-database-host', false);
+            }
+        });
+        filterHostOptionsByClient('add-database-client', 'add-database-host');
+    }
+
+    const editClient = document.getElementById('edit-database-client');
+    const editHost = document.getElementById('edit-database-host');
+    if (editClient && editHost) {
+        editClient.addEventListener('change', function() {
+            editHost.value = '';
+            filterHostOptionsByClient('edit-database-client', 'edit-database-host');
+        });
+        editHost.addEventListener('change', function() {
+            const opt = this.options[this.selectedIndex];
+            if (opt && opt.value && opt.dataset.clientId) {
+                editClient.value = opt.dataset.clientId;
+                filterHostOptionsByClient('edit-database-client', 'edit-database-host', false);
             }
         });
     }

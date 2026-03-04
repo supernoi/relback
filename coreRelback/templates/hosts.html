@@ -73,9 +73,9 @@
     <div class="bg-base-100 border border-base-300 rounded-xl shadow-sm overflow-hidden">
         {% if hosts %}
             <div class="overflow-x-auto">
-                <table class="table table-sm w-full">
+                <table class="table table-sm w-full hosts-table">
                     <thead>
-                        <tr class="bg-base-200">
+                        <tr class="bg-primary/45 text-base-content border-b-2 border-primary font-medium">
                             <th>
                                 <div class="flex items-center gap-2">
                                     <i class="material-icons-round text-sm opacity-70">dns</i>
@@ -116,7 +116,16 @@
                     </thead>
                     <tbody>
                         {% for host in hosts %}
-                        <tr class="host-row hover:bg-base-200/50 transition-colors" data-client="{{ host.client.name|default:'Unknown' }}" data-status="active">
+                        <tr class="host-row cursor-pointer"
+                            data-client="{{ host.client.name|default:'Unknown' }}"
+                            data-status="active"
+                            data-host-id="{{ host.id_host }}"
+                            data-hostname="{{ host.hostname|escapejs }}"
+                            data-ip="{{ host.ip|default:''|escapejs }}"
+                            data-client-id="{{ host.client.id_client|default:'' }}"
+                            data-client-name="{{ host.client.name|default:''|escapejs }}"
+                            data-description="{{ host.description|default:''|escapejs }}"
+                            data-databases-count="{{ host.database_set.count }}">
                             <td>
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -144,7 +153,7 @@
                             <td>
                                 <span class="badge badge-info badge-sm">{{ host.database_set.count }}</span>
                             </td>
-                            <td>
+                            <td class="host-row-actions" onclick="event.stopPropagation();">
                                 <div class="flex items-center gap-1">
                                     <button type="button"
                                             class="btn btn-ghost btn-xs"
@@ -177,6 +186,58 @@
             </div>
         {% endif %}
     </div>
+</div>
+
+<!-- View Host Modal (read-only) -->
+<div class="modal" id="viewHostModal">
+    <div class="modal-box max-w-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="material-icons-round text-primary">visibility</i>
+                Host Details
+            </h3>
+            <button type="button" class="btn btn-ghost btn-sm btn-circle" onclick="closeViewModal()">
+                <i class="material-icons-round">close</i>
+            </button>
+        </div>
+        <div class="bg-base-200 rounded-lg p-4 space-y-3 mb-4">
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Host Name</span>
+                <span class="font-medium" id="view-host-name">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">IP Address</span>
+                <code class="font-mono text-sm" id="view-host-ip">—</code>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Client</span>
+                <span class="font-medium" id="view-host-client">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Host ID</span>
+                <span id="view-host-id">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Databases</span>
+                <span id="view-host-databases">—</span>
+            </div>
+            <div class="flex justify-between text-sm items-start">
+                <span class="text-base-content/60">Description</span>
+                <span class="font-medium text-right max-w-[60%]" id="view-host-description">—</span>
+            </div>
+        </div>
+        <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="closeViewModal()">
+                <i class="material-icons-round text-lg">close</i>
+                Close
+            </button>
+            <button type="button" class="btn btn-primary" id="viewHostEditBtn">
+                <i class="material-icons-round text-lg">edit</i>
+                Edit
+            </button>
+        </div>
+    </div>
+    <div class="modal-backdrop" onclick="closeViewModal()"></div>
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -563,6 +624,49 @@
     <div class="modal-backdrop" onclick="closeAddHostModal()"></div>
 </div>
 
+<style>
+/* ── Hosts grid: zebra + hover ────────────────────────────────
+   DaisyUI v4 table-zebra usa alta especificidade nos TDs,
+   portanto usamos !important diretamente nas cores dos temas.
+   light: base-100=#fff / base-300=#e2e8f0  primary=#2563eb
+   dark : base-100=#0f172a / base-200=#1e293b  primary=#60a5fa
+──────────────────────────────────────────────────────────── */
+
+/* LIGHT – zebra */
+[data-theme="relback_light"] .hosts-table tbody tr.host-row:nth-child(odd) td,
+[data-theme="relback_light"] .hosts-table tbody tr.host-row:nth-child(odd) th {
+  background-color: #ffffff !important;
+}
+[data-theme="relback_light"] .hosts-table tbody tr.host-row:nth-child(even) td,
+[data-theme="relback_light"] .hosts-table tbody tr.host-row:nth-child(even) th {
+  background-color: #e2e8f0 !important; /* slate-200 */
+}
+
+/* DARK – zebra */
+[data-theme="relback_dark"] .hosts-table tbody tr.host-row:nth-child(odd) td,
+[data-theme="relback_dark"] .hosts-table tbody tr.host-row:nth-child(odd) th {
+  background-color: #0f172a !important; /* slate-900 */
+}
+[data-theme="relback_dark"] .hosts-table tbody tr.host-row:nth-child(even) td,
+[data-theme="relback_dark"] .hosts-table tbody tr.host-row:nth-child(even) th {
+  background-color: #1e293b !important; /* slate-800 */
+}
+
+/* HOVER – light */
+[data-theme="relback_light"] .hosts-table tbody tr.host-row:hover td,
+[data-theme="relback_light"] .hosts-table tbody tr.host-row:hover th {
+  background-color: #bfdbfe !important; /* blue-200 */
+  transition: background-color 0.12s ease;
+}
+
+/* HOVER – dark */
+[data-theme="relback_dark"] .hosts-table tbody tr.host-row:hover td,
+[data-theme="relback_dark"] .hosts-table tbody tr.host-row:hover th {
+  background-color: #1e40af !important; /* blue-800 */
+  transition: background-color 0.12s ease;
+}
+</style>
+
 <script>
 const hostsData = [
     {% for host in hosts %}
@@ -686,6 +790,29 @@ document.getElementById('cleanBtn').addEventListener('click', function() {
     showAllRows();
     searchInput.focus();
 });
+
+function openViewModal(row) {
+    const d = row.dataset;
+    document.getElementById('view-host-name').textContent = d.hostname || '—';
+    document.getElementById('view-host-ip').textContent = d.ip || '—';
+    document.getElementById('view-host-client').textContent = d.clientName || '—';
+    document.getElementById('view-host-id').textContent = d.hostId || '—';
+    document.getElementById('view-host-databases').textContent = (d.databasesCount !== undefined ? d.databasesCount : '0') + ' database(s)';
+    document.getElementById('view-host-description').textContent = d.description || '—';
+    const viewModal = document.getElementById('viewHostModal');
+    viewModal.dataset.hostId = d.hostId || '';
+    viewModal.dataset.hostname = d.hostname || '';
+    viewModal.dataset.ip = d.ip || '';
+    viewModal.dataset.clientId = d.clientId || '';
+    viewModal.dataset.clientName = d.clientName || '';
+    viewModal.classList.add('modal-open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeViewModal() {
+    document.getElementById('viewHostModal').classList.remove('modal-open');
+    document.body.style.overflow = '';
+}
 
 function openDeleteModal(hostId, hostName, hostIp, hostClient, hostDatabases) {
     document.getElementById('modal-host-name').textContent = hostName;
@@ -925,6 +1052,25 @@ document.addEventListener('DOMContentLoaded', function() {
         addHostButton.addEventListener('click', openAddHostModal);
     }
 
+    const tbody = document.querySelector('.overflow-x-auto tbody');
+    if (tbody) {
+        tbody.addEventListener('click', function(e) {
+            const row = e.target.closest('tr.host-row');
+            if (!row || e.target.closest('.host-row-actions')) return;
+            openViewModal(row);
+        });
+    }
+
+    const viewHostEditBtn = document.getElementById('viewHostEditBtn');
+    if (viewHostEditBtn) {
+        viewHostEditBtn.addEventListener('click', function() {
+            const viewModal = document.getElementById('viewHostModal');
+            const d = viewModal.dataset;
+            closeViewModal();
+            openEditModal(d.hostId || '', d.hostname || '', d.ip || '', d.clientId || '', d.clientName || '');
+        });
+    }
+
     const nameInput = document.getElementById('edit-host-name');
     const ipInput = document.getElementById('edit-host-ip');
 
@@ -953,7 +1099,10 @@ document.addEventListener('keydown', function(e) {
         const editModal = document.getElementById('editHostModal');
         const addHostModal = document.getElementById('addHostModal');
 
-        if (deleteModal && deleteModal.classList.contains('modal-open')) {
+        const viewModal = document.getElementById('viewHostModal');
+        if (viewModal && viewModal.classList.contains('modal-open')) {
+            closeViewModal();
+        } else if (deleteModal && deleteModal.classList.contains('modal-open')) {
             closeDeleteModal();
         } else if (editModal && editModal.classList.contains('modal-open')) {
             closeEditModal();
