@@ -206,6 +206,47 @@ Custom session-based auth using `RelbackUser`. No Django `AbstractBaseUser`.
 
 Session is stored in `django.contrib.sessions` (database-backed in production, file in dev).
 
+### 4.1 REST API (Phase 17)
+
+Django REST Framework provides read-only JSON endpoints for backup audit data (e.g. dashboards, Grafana).
+
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|--------------|
+| `/api/backup-audit/` | GET | Session (IsAuthenticated) | List backup jobs from `AuditBackupUseCase`; optional query: `from_date`, `to_date`, `db_name` (ISO dates YYYY-MM-DD). |
+
+**Response shape (200):**
+
+```json
+{
+  "jobs": [
+    {
+      "db_name": "ORCL",
+      "dbid": 123456,
+      "status": "COMPLETED",
+      "start_time": "2025-03-01T02:00:00Z",
+      "end_time": "2025-03-01T02:15:00Z",
+      "backup_type": "DB FULL",
+      "output_bytes_display": "10G",
+      "time_taken_display": "00:15:00",
+      "output_device_type": "DISK",
+      "session_key": 42,
+      "input_type": "policy-name",
+      "severity": "success"
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "successful": 8,
+    "failed": 1,
+    "running": 1,
+    "oracle_available": true
+  }
+}
+```
+
+- **403 Forbidden:** request without valid session (login required; DRF default).
+- **Serializers:** `coreRelback/api/serializers.py` — domain entities (e.g. `BackupJobResult`) mapped to JSON; no Django models in the public API.
+
 ---
 
 ## 5. Frontend Architecture
