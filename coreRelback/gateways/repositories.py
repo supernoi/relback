@@ -363,12 +363,13 @@ FETCH FIRST 500 ROWS ONLY"""
         db_name: Optional[str] = None,
         from_date: Optional[datetime] = None,
         to_date: Optional[datetime] = None,
+        client_id: Optional[int] = None,
     ) -> List[BackupJobResult]:
         from coreRelback.gateways.oracle_catalog import get_catalog_connection
         import logging as _log
         _logger = _log.getLogger(__name__)
 
-        conn = get_catalog_connection()
+        conn = get_catalog_connection(client_id=client_id)
         if conn is None:
             return []
 
@@ -444,6 +445,7 @@ ORDER BY RECID"""
         self,
         db_key: int,
         session_key: int,
+        client_id: Optional[int] = None,
     ) -> Optional[BackupJobResult]:
         """Return a single BackupJobResult for the given db_key / session_key.
 
@@ -454,7 +456,7 @@ ORDER BY RECID"""
         import logging as _log
         _logger = _log.getLogger(__name__)
 
-        conn = get_catalog_connection()
+        conn = get_catalog_connection(client_id=client_id)
         if conn is None:
             return None
         try:
@@ -474,6 +476,7 @@ ORDER BY RECID"""
         self,
         db_key: int,
         session_key: int,
+        client_id: Optional[int] = None,
     ) -> List[BackupLogEntry]:
         """Return RMAN output lines from RC_RMAN_OUTPUT for the given session.
 
@@ -483,7 +486,7 @@ ORDER BY RECID"""
         import logging as _log
         _logger = _log.getLogger(__name__)
 
-        conn = get_catalog_connection()
+        conn = get_catalog_connection(client_id=client_id)
         if conn is None:
             return []
         try:
@@ -569,7 +572,13 @@ class DemoRmanRepository(IOracleRmanRepository):
             key += 1
         return sorted(jobs, key=lambda j: j.start_time or now, reverse=True)
 
-    def get_backup_jobs(self, days: int = 7) -> List[BackupJobResult]:
+    def get_backup_jobs(
+        self,
+        db_name: Optional[str] = None,
+        from_date: Optional[datetime] = None,
+        to_date: Optional[datetime] = None,
+        client_id: Optional[int] = None,
+    ) -> List[BackupJobResult]:
         if DemoRmanRepository._JOBS is None:
             DemoRmanRepository._JOBS = self._load_jobs()
         return DemoRmanRepository._JOBS
@@ -580,13 +589,23 @@ class DemoRmanRepository(IOracleRmanRepository):
             if j.status == BackupStatusValue.RUNNING
         )
 
-    def get_backup_job_detail(self, db_key: int, session_key: int) -> Optional[BackupJobResult]:
+    def get_backup_job_detail(
+        self,
+        db_key: int,
+        session_key: int,
+        client_id: Optional[int] = None,
+    ) -> Optional[BackupJobResult]:
         for job in self.get_backup_jobs():
             if job.db_key == db_key and job.session_key == session_key:
                 return job
         return None
 
-    def get_backup_log(self, db_key: int, session_key: int) -> List[BackupLogEntry]:
+    def get_backup_log(
+        self,
+        db_key: int,
+        session_key: int,
+        client_id: Optional[int] = None,
+    ) -> List[BackupLogEntry]:
         from datetime import datetime
         sample_log = [
             "RMAN> run {",
