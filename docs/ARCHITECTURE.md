@@ -206,6 +206,10 @@ Custom session-based auth using `RelbackUser`. No Django `AbstractBaseUser`.
 
 Session is stored in `django.contrib.sessions` (database-backed in production, file in dev).
 
+### 4.1 Real-time updates (Phase 18)
+
+Django Channels provides a WebSocket at `/ws/reports/` for the Reports page. Authenticated users receive JSON `{ jobs, summary, oracle_available }` on connect and every 30s. Server: `daphne projectRelback.asgi:application`. Consumer: `coreRelback/consumers.py` (`ReportsJobsConsumer`). In production, set `REDIS_URL` and use Redis channel layer for multi-worker scaling; `docker-compose.yml` includes a `redis` service.
+
 ---
 
 ## 5. Frontend Architecture

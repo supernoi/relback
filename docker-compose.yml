@@ -24,6 +24,9 @@ services:
       - .env
     environment:
       DJANGO_SETTINGS_MODULE: projectRelback.settings_prod
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - redis
     volumes:
       # Persist SQLite database (ignored in Oracle mode)
       - relback_db:/app/db.sqlite3
@@ -35,5 +38,12 @@ services:
       retries: 3
       start_period: 15s
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
 volumes:
   relback_db:
+  redis_data:
