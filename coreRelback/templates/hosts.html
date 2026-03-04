@@ -16,10 +16,12 @@
                         <p class="page-subtitle">Manage your backup host servers</p>
                     </div>
                 </div>
+                {% if user_can_edit %}
                 <button type="button" class="btn btn-primary" data-modal-target="#addHostModal">
                     <i class="material-icons" style="font-size: 18px;">add</i>
                     Add Host
                 </button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -140,18 +142,22 @@
                                 </td>
                                 <td>
                                     <div class="btn-actions-group">
+                                        {% if user_can_edit %}
                                         <button type="button" 
                                                 class="btn-action btn-edit" 
                                                 title="Edit Host"
                                                 onclick="openEditModal('{{ host.id_host }}', '{{ host.hostname|escapejs }}', '{{ host.ip|default:""|escapejs }}', '{{ host.client.id_client|default:"" }}', '{{ host.client.name|default:""|escapejs }}')">
                                             <i class="material-icons-round">edit</i>
                                         </button>
+                                        {% endif %}
+                                        {% if user_can_delete %}
                                         <button type="button" 
                                                 class="btn-action btn-delete" 
                                                 title="Delete Host"
                                                 onclick="openDeleteModal('{{ host.id_host }}', '{{ host.hostname|escapejs }}', '{{ host.ip|default:"No IP"|escapejs }}', '{{ host.client.name|default:"No Client"|escapejs }}', '{{ host.database_set.count }}')">
                                             <i class="material-icons-round">delete</i>
                                         </button>
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>
@@ -165,10 +171,12 @@
                     <i class="material-icons empty-state-icon">dns</i>
                     <h4 class="empty-state-title">No hosts found</h4>
                     <p class="empty-state-description">Get started by adding your first host</p>
+                    {% if user_can_edit %}
                     <a href="{% url 'coreRelback:host-create' %}" class="btn btn-primary">
                         <i class="material-icons" style="font-size: 18px;">add</i>
                         Add First Host
                     </a>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
@@ -176,9 +184,11 @@
 </div>
 
 <!-- Floating Action Button -->
+{% if user_can_edit %}
 <button class="btn btn-circle btn-primary btn-lg fixed bottom-6 right-6 shadow-lg z-50" id="addHostFab" title="Add Host">
     <i class="material-icons">add</i>
 </button>
+{% endif %}
 
 <!-- Delete Confirmation Modal -->
 <div class="custom-modal" id="deleteHostModal">
@@ -390,9 +400,12 @@ const hostsData = [
 ];
 
 // FAB click handler
-document.getElementById('addHostFab').addEventListener('click', function() {
-    openAddHostModal();
-});
+const addHostFab = document.getElementById('addHostFab');
+if (addHostFab) {
+    addHostFab.addEventListener('click', function() {
+        openAddHostModal();
+    });
+}
 
 // Auto-complete functionality
 const searchInput = document.getElementById('searchHosts');

@@ -33,8 +33,9 @@ Before writing any code, follow this sequence:
 - **Push**: After atomic commit(s) on a feature branch, run `git push -u origin <branch>` automatically. Do not ask for confirmation.
 - **Issue**: When starting a new task, create the GitHub Issue via `gh issue create` (or `gh api .../issues --method POST`) and record the issue number. Do not wait for the user to create it.
 - **PR**: When the planned work is done and sensors pass, create the PR via `gh pr create --base master --head <branch> --body "Closes #N"` (and title as needed). Use `.github/pull_request_template.md` sections if present. Do not stop and ask "should I open the PR?" — open it.
+- **Merge after PR**: Once the PR is created and CI/sensors pass (or after review approval when required), merge the PR into the base branch (master): run `gh pr merge <number> --merge` (or `--squash` if project prefers). Do not leave the PR open without merging when the user requests "merge" or "prossiga"; merge first, then start the next phase from an updated master.
 - **Scope**: Only create one issue and one PR per logical task/phase; do not batch unrelated changes.
-- **Phase chaining**: When a phase is concluded successfully (implementation done, tests pass, PR created), start the next phase automatically: create issue → branch → implement → commit → push → PR. Only begin the next phase after the previous one is successfully delivered.
+- **Phase chaining**: When a phase is concluded successfully (implementation done, tests pass, PR created), start the next phase automatically: create issue → branch → implement → commit → push → PR. Only begin the next phase after the previous one is successfully delivered. After merging the PR into master, proceed to the next phase from `master`.
 
 ## 💾 Django & Oracle Guidelines
 

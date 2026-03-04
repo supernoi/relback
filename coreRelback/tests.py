@@ -324,3 +324,66 @@ class ReportLogDetailViewTests(TestCase):
         response = self.client.get(self._url(policy_id=99999))
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context["policyDetail"])
+
+
+# ---------------------------------------------------------------------------
+# Phase 16 — User Roles & Permissions
+# ---------------------------------------------------------------------------
+
+class RolePermissionTests(TestCase):
+    """Tests for RoleRequiredMixin: viewer gets 403 on delete, admin can delete."""
+
+    def setUp(self):
+        from django.contrib.auth.models import User
+        from coreRelback.models import RelbackUser, Client
+
+        # RelbackUser viewer
+        self.viewer_ru = RelbackUser(
+            username="viewer_user",
+            status=1,
+            email="viewer@test.com",
+            role=RelbackUser.ROLE_VIEWER,
+        )
+        self.viewer_ru.set_password("pass123")
+        self.viewer_ru.save()
+        self.viewer_django = User.objects.create_user(
+            username="viewer_user",
+            password="pass123",
+            email="viewer@test.com",
+            is_active=True,
+        )
+
+        # RelbackUser admin
+        self.admin_ru = RelbackUser(
+            username="admin_user",
+            status=1,
+            email="admin@test.com",
+            role=RelbackUser.ROLE_ADMIN,
+        )
+        self.admin_ru.set_password("pass123")
+        self.admin_ru.save()
+        self.admin_django = User.objects.create_user(
+            username="admin_user",
+            password="pass123",
+            email="admin@test.com",
+            is_active=True,
+        )
+
+        self.client_entity = Client.objects.create(name="To Delete Client", created_by=self.admin_ru)
+
+    def test_viewer_gets_403_on_client_delete(self):
+        """User with role viewer must receive 403 when attempting client delete."""
+        self.client.force_login(self.viewer_django)
+        url = reverse("coreRelback:client-delete", kwargs={"pk": self.client_entity.pk})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_admin_can_delete_client(self):
+        """User with role admin must be able to delete a client (redirect after delete)."""
+        from coreRelback.models import Client
+        self.client.force_login(self.admin_django)
+        url = reverse("coreRelback:client-delete", kwargs={"pk": self.client_entity.pk})
+        response = self.client.post(url)
+        self.assertIn(response.status_code, (302, 303))
+        self.assertIn(reverse("coreRelback:client-list"), response.get("Location", ""))
+        self.assertFalse(Client.objects.filter(pk=self.client_entity.pk).exists())

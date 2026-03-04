@@ -7,10 +7,14 @@ version: "3.9"
 #    1. cp .env.example .env  && edit DJANGO_SECRET_KEY
 #    2. docker compose up --build
 #    3. docker compose exec web python manage.py seed_demo
-#    4. Open http://localhost:8000  |  login: admin / demo1234
+#    4. Open http://localhost:80 (via Nginx) or https://localhost:443 (self-signed)
+#       Direct Gunicorn: http://localhost:8000  |  login: admin / demo1234
 #
 #  Oracle production mode:
 #    Set DB_ENGINE, DB_NAME, DB_USER … and ORACLE_CATALOG_* in .env
+#
+#  TLS: Nginx generates a self-signed cert on first run (dev). For production,
+#  mount Let's Encrypt certs: add volume ./certs:/etc/nginx/certs:ro to nginx.
 # ---------------------------------------------------------------------------
 
 services:
@@ -18,8 +22,8 @@ services:
     build: .
     image: relback:latest
     restart: unless-stopped
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     env_file:
       - .env
     environment:
@@ -28,7 +32,6 @@ services:
     depends_on:
       - redis
     volumes:
-      # Persist SQLite database (ignored in Oracle mode)
       - relback_db:/app/db.sqlite3
     healthcheck:
       test: ["CMD", "python", "-c",
@@ -44,6 +47,26 @@ services:
     volumes:
       - redis_data:/data
 
+  nginx:
+    build: ./nginx
+    image: relback-nginx:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      web:
+        condition: service_healthy
+    volumes:
+      - nginx_certs:/etc/nginx/certs
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
 volumes:
   relback_db:
   redis_data:
+  nginx_certs:

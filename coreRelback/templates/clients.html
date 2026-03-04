@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load django_tables2 %}
 
 {% block title %}Clients - RelBack{% endblock title %}
 
@@ -16,10 +17,12 @@
                         <p class="page-subtitle">Manage your backup clients and organizations</p>
                     </div>
                 </div>
+                {% if user_can_edit %}
                 <button type="button" class="btn btn-primary" data-modal-target="#addClientModal">
                     <i class="material-icons" style="font-size: 18px;">add</i>
                     Add Client
                 </button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -31,14 +34,14 @@
                 <i class="material-icons-round" style="font-size: 2.5rem;">business</i>
             </div>
             <div class="stat-title">Total Clients</div>
-            <div class="stat-value stats-title">{{ clients.count }}</div>
+            <div class="stat-value stats-title">{{ clients_count|default:0 }}</div>
         </div>
         <div class="stat">
             <div class="stat-figure text-success">
                 <i class="material-icons-round" style="font-size: 2.5rem;">verified</i>
             </div>
             <div class="stat-title">Active Clients</div>
-            <div class="stat-value text-success stats-title">{{ clients|length }}</div>
+            <div class="stat-value text-success stats-title">{{ clients_count|default:0 }}</div>
         </div>
     </div>
 
@@ -58,74 +61,12 @@
         </div>
     </div>
 
-    <!-- Clients Table -->
+    <!-- Clients Table (django-tables2 pagination) -->
     <div>
         <div class="md-card md-card-decorated">
-            {% if clients %}
+            {% if table.page.object_list %}
                 <div class="overflow-x-auto">
-                    <table class="table table-xs table-zebra w-full">
-                        <thead>
-                            <tr>
-                                <th class="oracle-info-gradient">
-                                    <div class="table-header-content">
-                                        <i class="material-icons table-header-icon">business</i>
-                                        <span class="table-header-text">Client Name</span>
-                                    </div>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <i class="material-icons table-header-icon">description</i>
-                                    <span class="table-header-text">Description</span>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <i class="material-icons table-header-icon">schedule</i>
-                                    <span class="table-header-text">Created</span>
-                                </th>
-                                <th class="oracle-info-gradient">
-                                    <i class="material-icons table-header-icon">settings</i>
-                                    <span class="table-header-text">Actions</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for client in clients %}
-                            <tr>
-                                <td>
-                                    <div class="table-cell-content">
-                                        <div class="table-cell-icon">
-                                            <i class="material-icons-round">business</i>
-                                        </div>
-                                        <div>
-                                            <h5 class="table-cell-title">{{ client.name|default:"Unnamed Client" }}</h5>
-                                            <small class="table-cell-subtitle">ID: {{ client.id_client }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="table-cell-text">{{ client.description|default:"No description" }}</span>
-                                </td>
-                                <td>
-                                    <span class="table-cell-text">{{ client.created_at|date:"M d, Y" }}</span>
-                                </td>
-                                <td>
-                                    <div class="btn-actions-group">
-                                        <button type="button" 
-                                                class="btn-action btn-edit" 
-                                                title="Edit Client"
-                                                onclick="openEditModal('{{ client.id_client }}', '{{ client.name|escapejs }}', '{{ client.description|default:""|escapejs }}')">
-                                            <i class="material-icons-round">edit</i>
-                                        </button>
-                                        <button type="button" 
-                                                class="btn-action btn-delete" 
-                                                title="Delete Client"
-                                                onclick="openDeleteModal('{{ client.id_client }}', '{{ client.name|escapejs }}', '{{ client.description|default:"No description"|escapejs }}', '{{ client.created_at|date:"F d, Y G:i" }}')">
-                                            <i class="material-icons-round">delete</i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    {% render_table table %}
                 </div>
             {% else %}
                 <!-- Empty State -->
@@ -133,20 +74,24 @@
                     <i class="material-icons empty-state-icon">business</i>
                     <h4 class="empty-state-title">No clients found</h4>
                     <p class="empty-state-description">Get started by adding your first client</p>
+                    {% if user_can_edit %}
                     <a href="{% url 'coreRelback:client-create' %}" class="btn btn-primary">
                         <i class="material-icons" style="font-size: 18px;">add</i>
                         Add First Client
                     </a>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
     </div>
 </div>
 
-<!-- Floating Action Button -->
+<!-- Floating Action Button (only for edit-capable roles) -->
+{% if user_can_edit %}
 <button class="btn btn-circle btn-primary btn-lg fixed bottom-6 right-6 shadow-lg z-50" id="addClientFab" title="Add Client">
     <i class="material-icons">add</i>
 </button>
+{% endif %}
 
 <!-- Delete Confirmation Modal -->
 <div class="custom-modal" id="deleteClientModal">
@@ -550,7 +495,8 @@ const clientsData = [
 ];
 
 // FAB click handler
-document.getElementById('addClientFab').addEventListener('click', function() {
+var addClientFab = document.getElementById('addClientFab');
+if (addClientFab) addClientFab.addEventListener('click', function() {
     window.location.href = '{% url "coreRelback:client-create" %}';
 });
 

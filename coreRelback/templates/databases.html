@@ -16,10 +16,12 @@
                         <p class="page-subtitle">Manage your database backup configurations</p>
                     </div>
                 </div>
+                {% if user_can_edit %}
                 <button type="button" class="btn btn-primary" data-modal-target="#addDatabaseModal">
                     <i class="material-icons" style="font-size: 18px;">add</i>
                     Add Database
                 </button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -207,18 +209,22 @@
                                        onclick="openViewModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.name|default:'No Host'|escapejs }}', '{{ database.db_type|default:'Unknown'|escapejs }}')">
                                         <i class="material-icons">visibility</i>
                                     </a>
+                                    {% if user_can_edit %}
                                     <a href="#" 
                                        class="btn-action btn-edit"
                                        title="Edit Database"
                                        onclick="openEditModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}')">
                                         <i class="material-icons">edit</i>
                                     </a>
+                                    {% endif %}
+                                    {% if user_can_delete %}
                                     <a href="#" 
                                        class="btn-action btn-delete"
                                        title="Delete Database"
                                        onclick="openDeleteModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.name|default:'No Host'|escapejs }}')">
                                         <i class="material-icons">delete</i>
                                     </a>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -229,10 +235,12 @@
                                     <i class="material-icons md-mb-3" style="font-size: 64px; color: #C74634; opacity: 0.6;">storage</i>
                                     <h5 class="md-text-muted">No databases found</h5>
                                     <p class="md-text-muted">Start by adding your first database configuration.</p>
+                                    {% if user_can_edit %}
                                     <a href="{% url 'coreRelback:database-create' %}" class="btn btn-primary">
                                         <i class="material-icons" style="font-size: 18px;">add</i>
                                         Add First Database
                                     </a>
+                                    {% endif %}
                                 </div>
                             </td>
                         </tr>
@@ -246,9 +254,11 @@
 </div>
 
 <!-- Floating Action Button -->
+{% if user_can_edit %}
 <button class="btn btn-circle btn-primary btn-lg fixed bottom-6 right-6 shadow-lg z-50" id="addDatabaseFab" title="Add Database">
     <i class="material-icons">add</i>
 </button>
+{% endif %}
 
 <!-- View Database Details Modal -->
 <div class="custom-modal" id="viewDatabaseModal">
@@ -661,9 +671,12 @@ const databasesData = [
 ];
 
 // FAB click handler
-document.getElementById('addDatabaseFab').addEventListener('click', function() {
+const addDatabaseFab = document.getElementById('addDatabaseFab');
+if (addDatabaseFab) {
+addDatabaseFab.addEventListener('click', function() {
     openAddModal();
 });
+}
 
 // Auto-complete functionality
 const searchInput = document.getElementById('searchDatabases');

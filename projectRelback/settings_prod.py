@@ -84,6 +84,9 @@ else:
 
 # ---------------------------------------------------------------------------
 # Oracle RMAN Catalog — read from env; None activates DemoRmanRepository
+# Required env vars when using live catalog: ORACLE_CATALOG_USER,
+# ORACLE_CATALOG_PASSWORD, ORACLE_CATALOG_DSN (e.g. host:port/service_name).
+# Validate with: DJANGO_SETTINGS_MODULE=projectRelback.settings_prod python manage.py check
 # ---------------------------------------------------------------------------
 _oracle_user = os.environ.get("ORACLE_CATALOG_USER", "")
 if _oracle_user:
@@ -111,6 +114,12 @@ if _redis_url:
         },
     }
 # else: keep base CHANNEL_LAYERS (InMemoryChannelLayer) for single process
+
+# ---------------------------------------------------------------------------
+# SLA Alerting — webhook URL for check_backup_sla command (optional)
+# When set, breaches are POSTed as JSON; otherwise StubNotificationGateway logs only.
+# ---------------------------------------------------------------------------
+SLA_ALERT_WEBHOOK_URL = os.environ.get("SLA_ALERT_WEBHOOK_URL", "").strip() or None
 
 # ---------------------------------------------------------------------------
 # Structured container logging — everything to stdout, WARNING+ globally,
