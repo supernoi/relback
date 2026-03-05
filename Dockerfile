@@ -11,6 +11,7 @@ RUN cd theme/static_src && npm ci --silent
 
 # Copy config + source CSS
 COPY theme/static_src/tailwind.config.js theme/static_src/
+COPY theme/static_src/postcss.config.js  theme/static_src/
 COPY theme/static_src/src/                theme/static_src/src/
 
 # Copy templates and JS that Tailwind scans for class names
