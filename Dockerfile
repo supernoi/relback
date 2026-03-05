@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Install npm dependencies first (cached layer if package.json unchanged)
 COPY theme/static_src/package*.json theme/static_src/
-RUN cd theme/static_src && npm ci --omit=dev --silent
+RUN cd theme/static_src && npm ci --silent
 
 # Copy config + source CSS
 COPY theme/static_src/tailwind.config.js theme/static_src/
