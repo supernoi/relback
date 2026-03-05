@@ -222,12 +222,7 @@
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                <div class="flex items-center justify-center gap-1">
-                                    <button type="button" class="btn btn-ghost btn-xs"
-                                            onclick="openViewModal('{{ policy.id_policy }}', '{{ policy.policy_name|escapejs }}', '{{ policy.description|default:'No description'|escapejs }}', '{{ policy.client.name|default:'No Client'|escapejs }}', '{{ policy.host.hostname|default:'No Host'|escapejs }}', '{{ policy.database.db_name|default:'No Database'|escapejs }}', '{{ policy.backup_type|default:'Unknown'|escapejs }}', '{% if policy.status == '1' %}Active{% else %}Inactive{% endif %}', '{{ policy.hour|default:'*' }}:{{ policy.minute|default:'00' }}', '{% if policy.day_week %}Weekly ({{ policy.day_week }}){% elif policy.day %}Monthly ({{ policy.day }}){% else %}Daily{% endif %}')"
-                                            title="View Details">
-                                        <i class="material-icons-round text-sm">visibility</i>
-                                    </button>
+                                <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
                                     <button type="button" class="btn btn-ghost btn-xs"
                                             onclick="openEditModal(this.closest('tr'))"
                                             title="Edit">
@@ -333,6 +328,10 @@
             <button type="button" class="btn btn-ghost" onclick="closeViewModal()">
                 <i class="material-icons-round text-lg mr-1">close</i>
                 Close
+            </button>
+            <button type="button" class="btn btn-primary" id="viewPolicyEditBtn">
+                <i class="material-icons-round text-lg">edit</i>
+                Edit
             </button>
         </div>
     </div>
@@ -829,19 +828,25 @@ document.getElementById('cleanBtn').addEventListener('click', function() {
     searchInput.focus();
 });
 
-function openViewModal(policyId, policyName, policyDescription, policyClient, policyHost, policyDatabase, policyType, policyStatus, policyTime, policyFrequency) {
-    document.getElementById('view-policy-id').textContent = policyId;
-    document.getElementById('view-policy-name').textContent = policyName;
-    document.getElementById('view-policy-description').textContent = policyDescription || 'No description';
-    document.getElementById('view-policy-client').textContent = policyClient;
-    document.getElementById('view-policy-host').textContent = policyHost;
-    document.getElementById('view-policy-database').textContent = policyDatabase;
-    document.getElementById('view-policy-type').textContent = policyType;
-    document.getElementById('view-policy-status').textContent = policyStatus;
-    document.getElementById('view-policy-time').textContent = policyTime;
-    document.getElementById('view-policy-frequency').textContent = policyFrequency;
-
+function openViewModal(row) {
+    const d = row.dataset;
+    document.getElementById('view-policy-id').textContent = '#' + (d.policyId || '—');
+    document.getElementById('view-policy-name').textContent = d.policyName || '—';
+    document.getElementById('view-policy-description').textContent = d.policyDescription || '—';
+    document.getElementById('view-policy-client').textContent = d.client || '—';
+    document.getElementById('view-policy-host').textContent = d.host || '—';
+    document.getElementById('view-policy-database').textContent = d.database || '—';
+    document.getElementById('view-policy-type').textContent = d.backupType || '—';
+    const st = d.status || '';
+    document.getElementById('view-policy-status').textContent = (st === '1' || st.toLowerCase() === 'active') ? 'Active' : 'Inactive';
+    document.getElementById('view-policy-time').textContent = (d.hour || '*') + ':' + (d.minute || '00');
+    const dw = d.dayWeek, dy = d.day;
+    document.getElementById('view-policy-frequency').textContent =
+        dw && dw !== '*' ? 'Weekly (day ' + dw + ')' :
+        dy && dy !== '*' ? 'Monthly (day ' + dy + ')' : 'Daily';
     const modal = document.getElementById('viewPolicyModal');
+    modal.dataset.rowRef = '';
+    modal._rowRef = row;
     modal.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
 }
@@ -1072,6 +1077,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const addButton = document.querySelector('[data-modal-target="#addPolicyModal"]');
     if (addButton) {
         addButton.addEventListener('click', openAddModal);
+    }
+
+    const tbody = document.querySelector('.overflow-x-auto tbody');
+    if (tbody) {
+        tbody.addEventListener('click', function(e) {
+            const row = e.target.closest('tr.policy-row');
+            if (!row) return;
+            const actions = e.target.closest('[onclick]');
+            if (actions) return;
+            openViewModal(row);
+        });
+    }
+
+    const viewPolicyEditBtn = document.getElementById('viewPolicyEditBtn');
+    if (viewPolicyEditBtn) {
+        viewPolicyEditBtn.addEventListener('click', function() {
+            const modal = document.getElementById('viewPolicyModal');
+            const row = modal._rowRef;
+            closeViewModal();
+            if (row) openEditModal(row);
+        });
     }
 
     searchInput.focus();

@@ -123,10 +123,17 @@
                     <tbody>
                     {% for database in databases %}
                     <tr class="database-row cursor-pointer"
-                        data-host="{{ database.host.hostname|default:'Unknown' }}"
+                        data-database-id="{{ database.id_database }}"
+                        data-db-name="{{ database.db_name|default:'Unnamed Database'|escapejs }}"
+                        data-description="{{ database.description|default:''|escapejs }}"
+                        data-client-id="{{ database.client_id|default:'' }}"
+                        data-client-name="{{ database.client.name|default:'No Client'|escapejs }}"
+                        data-host-id="{{ database.host_id|default:'' }}"
+                        data-host="{{ database.host.hostname|default:'No Host'|escapejs }}"
+                        data-dbid="{{ database.dbid|default:'0' }}"
                         data-type="{{ database.db_type|default:'Unknown' }}"
                         data-status="{% if database.active %}active{% else %}inactive{% endif %}"
-                        data-backup="{% if database.last_backup_date %}{% with now_timestamp=now|date:'U'|add:'-604800' backup_timestamp=database.last_backup_date|date:'U' %}{% if backup_timestamp > now_timestamp %}recent{% else %}old{% endif %}{% endwith %}{% else %}none{% endif %}">
+                        data-backup="{% if database.last_backup_date %}{{ database.last_backup_date|date:'Y-m-d' }}{% else %}Never{% endif %}">
                         <td>
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -203,26 +210,20 @@
                             </div>
                             {% endif %}
                         </td>
-                        <td>
+                        <td class="database-row-actions" onclick="event.stopPropagation()">
                             <div class="flex items-center gap-1">
-                                <a href="#"
-                                   class="btn btn-ghost btn-xs"
-                                   title="View Details"
-                                   onclick="openViewModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.hostname|default:'No Host'|escapejs }}', '{{ database.db_type|default:'Unknown'|escapejs }}')">
-                                    <i class="material-icons-round text-sm">visibility</i>
-                                </a>
-                                <a href="#"
+                                <button type="button"
                                    class="btn btn-ghost btn-xs"
                                    title="Edit Database"
                                    onclick="openEditModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.client_id }}', '{{ database.host_id }}', '{{ database.dbid }}')">
                                     <i class="material-icons-round text-sm">edit</i>
-                                </a>
-                                <a href="#"
+                                </button>
+                                <button type="button"
                                    class="btn btn-ghost btn-xs text-error"
                                    title="Delete Database"
                                    onclick="openDeleteModal('{{ database.id_database }}', '{{ database.db_name|escapejs }}', '{{ database.description|default:''|escapejs }}', '{{ database.host.hostname|default:'No Host'|escapejs }}')">
                                     <i class="material-icons-round text-sm">delete</i>
-                                </a>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -268,39 +269,53 @@
             </div>
         </div>
 
-        <div class="space-y-3">
-            <h6 class="flex items-center gap-2 font-semibold text-sm">
-                <i class="material-icons-round text-sm">storage</i>
-                Basic Information
-            </h6>
-            <div class="bg-base-200 rounded-lg p-4 space-y-2">
-                <div class="flex justify-between text-sm">
-                    <strong>Database Name:</strong>
-                    <span id="view-database-name"></span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <strong>Description:</strong>
-                    <span id="view-database-description"></span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <strong>Database ID:</strong>
-                    <span id="view-database-id"></span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <strong>Host:</strong>
-                    <span id="view-database-host"></span>
-                </div>
-                <div class="flex justify-between text-sm">
-                    <strong>Type:</strong>
-                    <span id="view-database-type"></span>
-                </div>
+        <div class="bg-base-200 rounded-lg p-4 space-y-3">
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Database Name</span>
+                <code class="font-mono text-sm" id="view-database-name">—</code>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Database ID</span>
+                <span class="font-mono text-sm" id="view-database-id">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Client</span>
+                <span id="view-database-client">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Host</span>
+                <span class="font-mono text-sm" id="view-database-host">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Type</span>
+                <span id="view-database-type">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">DBID</span>
+                <span class="font-mono text-sm" id="view-database-dbid">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Status</span>
+                <span id="view-database-status">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Last Backup</span>
+                <span class="font-mono text-sm" id="view-database-backup">—</span>
+            </div>
+            <div class="flex justify-between text-sm items-start">
+                <span class="text-base-content/60">Description</span>
+                <span class="text-right max-w-[60%]" id="view-database-description">—</span>
             </div>
         </div>
 
-        <div class="modal-action">
+        <div class="modal-action mt-4">
             <button type="button" class="btn btn-ghost" onclick="closeViewModal()">
                 <i class="material-icons-round text-lg">close</i>
                 Close
+            </button>
+            <button type="button" class="btn btn-primary" id="viewDatabaseEditBtn">
+                <i class="material-icons-round text-lg">edit</i>
+                Edit
             </button>
         </div>
     </div>
@@ -712,14 +727,24 @@ document.getElementById('cleanBtn').addEventListener('click', function() {
     searchInput.focus();
 });
 
-function openViewModal(databaseId, databaseName, databaseDescription, databaseHost, databaseType) {
-    document.getElementById('view-database-name').textContent = databaseName;
-    document.getElementById('view-database-description').textContent = databaseDescription || 'No description';
-    document.getElementById('view-database-id').textContent = databaseId;
-    document.getElementById('view-database-host').textContent = databaseHost;
-    document.getElementById('view-database-type').textContent = databaseType;
-
+function openViewModal(row) {
+    const d = row.dataset;
+    document.getElementById('view-database-name').textContent = d.dbName || '—';
+    document.getElementById('view-database-id').textContent = d.databaseId || '—';
+    document.getElementById('view-database-client').textContent = d.clientName || '—';
+    document.getElementById('view-database-host').textContent = d.host || '—';
+    document.getElementById('view-database-type').textContent = d.type || '—';
+    document.getElementById('view-database-dbid').textContent = d.dbid || '—';
+    document.getElementById('view-database-status').textContent = d.status === 'active' ? 'Active' : 'Inactive';
+    document.getElementById('view-database-backup').textContent = d.backup || 'Never';
+    document.getElementById('view-database-description').textContent = d.description || '—';
     const modal = document.getElementById('viewDatabaseModal');
+    modal.dataset.databaseId = d.databaseId || '';
+    modal.dataset.dbName = d.dbName || '';
+    modal.dataset.description = d.description || '';
+    modal.dataset.clientId = d.clientId || '';
+    modal.dataset.hostId = d.hostId || '';
+    modal.dataset.dbid = d.dbid || '';
     modal.classList.add('modal-open');
     document.body.style.overflow = 'hidden';
 }
@@ -924,6 +949,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const addButton = document.querySelector('[data-modal-target="#addDatabaseModal"]');
     if (addButton) {
         addButton.addEventListener('click', openAddModal);
+    }
+
+    const tbody = document.querySelector('.overflow-x-auto tbody');
+    if (tbody) {
+        tbody.addEventListener('click', function(e) {
+            const row = e.target.closest('tr.database-row');
+            if (!row || e.target.closest('.database-row-actions')) return;
+            openViewModal(row);
+        });
+    }
+
+    const viewDatabaseEditBtn = document.getElementById('viewDatabaseEditBtn');
+    if (viewDatabaseEditBtn) {
+        viewDatabaseEditBtn.addEventListener('click', function() {
+            const d = document.getElementById('viewDatabaseModal').dataset;
+            closeViewModal();
+            openEditModal(d.databaseId || '', d.dbName || '', d.description || '', d.clientId || '', d.hostId || '', d.dbid || '');
+        });
     }
 
     searchInput.focus();

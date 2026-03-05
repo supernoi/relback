@@ -90,7 +90,11 @@
                     </thead>
                     <tbody>
                         {% for client in clients %}
-                        <tr class="client-row cursor-pointer">
+                        <tr class="client-row cursor-pointer"
+                            data-client-id="{{ client.id_client }}"
+                            data-client-name="{{ client.name|default:'Unnamed Client'|escapejs }}"
+                            data-client-description="{{ client.description|default:''|escapejs }}"
+                            data-client-created="{{ client.created_at|date:'Y-m-d H:i' }}">
                             <td>
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -108,7 +112,7 @@
                             <td>
                                 <span class="text-sm">{{ client.created_at|date:"M d, Y" }}</span>
                             </td>
-                            <td>
+                            <td class="client-row-actions" onclick="event.stopPropagation()">
                                 <div class="flex items-center gap-1">
                                     <button type="button"
                                             class="btn btn-ghost btn-xs"
@@ -141,6 +145,50 @@
             </div>
         {% endif %}
     </div>
+</div>
+
+<!-- View Client Modal (read-only) -->
+<div class="modal" id="viewClientModal">
+    <div class="modal-box max-w-lg">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="material-icons-round text-primary">visibility</i>
+                Client Details
+            </h3>
+            <button type="button" class="btn btn-ghost btn-sm btn-circle" onclick="closeViewModal()">
+                <i class="material-icons-round">close</i>
+            </button>
+        </div>
+        <div class="bg-base-200 rounded-lg p-4 space-y-3 mb-4">
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Client Name</span>
+                <span class="font-medium" id="view-client-name">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Client ID</span>
+                <code class="font-mono text-sm" id="view-client-id">—</code>
+            </div>
+            <div class="flex justify-between text-sm items-start">
+                <span class="text-base-content/60">Description</span>
+                <span class="text-right max-w-[60%]" id="view-client-description">—</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-base-content/60">Created</span>
+                <span id="view-client-created">—</span>
+            </div>
+        </div>
+        <div class="modal-action">
+            <button type="button" class="btn btn-ghost" onclick="closeViewModal()">
+                <i class="material-icons-round text-lg">close</i>
+                Close
+            </button>
+            <button type="button" class="btn btn-primary" id="viewClientEditBtn">
+                <i class="material-icons-round text-lg">edit</i>
+                Edit
+            </button>
+        </div>
+    </div>
+    <div class="modal-backdrop" onclick="closeViewModal()"></div>
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -606,6 +654,25 @@ document.getElementById('cleanBtn').addEventListener('click', function() {
     searchInput.focus();
 });
 
+function openViewModal(row) {
+    const d = row.dataset;
+    document.getElementById('view-client-name').textContent = d.clientName || '—';
+    document.getElementById('view-client-id').textContent = d.clientId || '—';
+    document.getElementById('view-client-description').textContent = d.clientDescription || '—';
+    document.getElementById('view-client-created').textContent = d.clientCreated || '—';
+    const viewModal = document.getElementById('viewClientModal');
+    viewModal.dataset.clientId = d.clientId || '';
+    viewModal.dataset.clientName = d.clientName || '';
+    viewModal.dataset.clientDescription = d.clientDescription || '';
+    viewModal.classList.add('modal-open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeViewModal() {
+    document.getElementById('viewClientModal').classList.remove('modal-open');
+    document.body.style.overflow = '';
+}
+
 function openDeleteModal(clientId, clientName, clientDescription, clientCreated) {
     document.getElementById('modal-client-name').textContent = clientName;
     document.getElementById('modal-client-description').textContent = clientDescription;
@@ -729,7 +796,40 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    const tbody = document.querySelector('.overflow-x-auto tbody');
+    if (tbody) {
+        tbody.addEventListener('click', function(e) {
+            const row = e.target.closest('tr.client-row');
+            if (!row || e.target.closest('.client-row-actions')) return;
+            openViewModal(row);
+        });
+    }
+
+    const viewClientEditBtn = document.getElementById('viewClientEditBtn');
+    if (viewClientEditBtn) {
+        viewClientEditBtn.addEventListener('click', function() {
+            const d = document.getElementById('viewClientModal').dataset;
+            closeViewModal();
+            openEditModal(d.clientId || '', d.clientName || '', d.clientDescription || '');
+        });
+    }
+
     searchInput.focus();
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const viewModal = document.getElementById('viewClientModal');
+        const deleteModal = document.getElementById('deleteClientModal');
+        const editModal = document.getElementById('editClientModal');
+        if (viewModal && viewModal.classList.contains('modal-open')) {
+            closeViewModal();
+        } else if (deleteModal && deleteModal.classList.contains('modal-open')) {
+            closeDeleteModal();
+        } else if (editModal && editModal.classList.contains('modal-open')) {
+            closeEditModal();
+        }
+    }
 });
 </script>
 {% endblock content %}
